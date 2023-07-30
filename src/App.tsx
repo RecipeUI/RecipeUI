@@ -1,15 +1,15 @@
 import { Navbar } from "./components/Navbar";
-import { RecipeBody } from "./components/RecipeBody/RecipeBody";
+import { RecipeBodyContainer } from "./components/RecipeBody/RecipeBodyContainer";
 import { Sidebar } from "./components/Sidebar";
 
 function App() {
   return (
     // TODO: Remove bg-blue-100 when done testing
-    <div className="w-full h-screen bg-blue-100">
+    <div className="w-full h-screen">
       <Navbar />
-      <div className="flex bg-red-200 h-full">
+      <div className="flex app-container">
         <Sidebar />
-        <RecipeBody />
+        <RecipeBodyContainer />
       </div>
     </div>
   );
