@@ -36,10 +36,10 @@ export function getDefaultValue<T>(
   param: RecipeParam,
   checkRequired = false
 ): T | null | undefined {
-  if (param["default"] !== undefined) {
-    return param.default as T;
-  } else if (checkRequired && !param.required) {
+  if (checkRequired && !param.required) {
     return undefined;
+  } else if (param["default"] !== undefined) {
+    return param.default as T;
   } else if (param.type === RecipeParamType.String) {
     if (param.enum && param.enum.length > 0) {
       return param.enum[0] as T;

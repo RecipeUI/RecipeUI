@@ -12,6 +12,7 @@ import { useDebounce } from "usehooks-ts";
 import { linter, lintGutter } from "@codemirror/lint";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
+import { getDefaultValue } from "../../utils/main";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
@@ -21,17 +22,20 @@ const codeMirrorSetup = {
 // TODO: Link to our guides for setting up auth
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession!
   );
+
+  const selectedRecipe = currentSession.recipe;
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
-
   const secret = useSecretFromSM(selectedRecipe.project);
+  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
 
-  const { needsAuthSetup, hasRequiredParams } = useMemo(() => {
+  const { needsAuthSetup, hasRequiredParams, hasRequestBody } = useMemo(() => {
     const needsAuthSetup = selectedRecipe.auth !== null && secret == null;
 
     let hasRequiredParams = false;
+    let hasRequestBody = false;
     if (
       "requestBody" in selectedRecipe &&
       "objectSchema" in selectedRecipe["requestBody"]
@@ -39,19 +43,20 @@ export function RecipeParameterTab() {
       hasRequiredParams = Object.values(
         selectedRecipe.requestBody.objectSchema
       ).some((param) => param.required);
+      hasRequestBody = true;
     }
 
     return {
       needsAuthSetup,
       hasRequiredParams,
+      hasRequestBody,
     };
   }, [secret, selectedRecipe]);
   const needsParams =
     hasRequiredParams && Object.keys(requestBody).length === 0;
 
+  // Wait i actually want to do this by recipeId I think
   const showOnboarding = needsAuthSetup || needsParams;
-  const hasRequestBody = Object.keys(requestBody).length > 0;
-
   const hasExamples = "examples" in selectedRecipe;
 
   return (
@@ -70,29 +75,49 @@ export function RecipeParameterTab() {
               {needsParams && (
                 <>
                   <hr />
-                  {hasExamples ? (
-                    <div className="space-y-2">
-                      <h3 className="font-bold">Examples</h3>
-                      <p>
-                        Find some quick use cases or start adding parameters
-                        from the right.
-                      </p>
-                      <button
-                        className="btn btn-sm btn-neutral"
-                        onClick={() => {
-                          setBodyRoute(RecipeBodyRoute.Examples);
-                        }}
-                      >
-                        View examples
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <h3 className="font-bold">Parameters</h3>
-                      <p>
-                        Start adding parameters from the right to get started!
-                      </p>
-                    </div>
+                  <div className="space-y-2">
+                    <h3 className="font-bold">Parameters</h3>
+                    <p>
+                      Use our docs pane to the right or hit below to open the
+                      editor.
+                    </p>
+                    <button
+                      className="btn btn-sm btn-neutral"
+                      onClick={() => {
+                        if (
+                          needsParams &&
+                          "requestBody" in selectedRecipe &&
+                          "objectSchema" in selectedRecipe["requestBody"]
+                        ) {
+                          setRequestBody(
+                            getDefaultValue(
+                              selectedRecipe.requestBody,
+                              true
+                            ) as Record<string, unknown>
+                          );
+                        }
+                      }}
+                    >
+                      Open editor
+                    </button>
+                  </div>
+
+                  {hasExamples && (
+                    <>
+                      <hr />
+                      <div className="space-y-2">
+                        <h3 className="font-bold">Examples</h3>
+                        <p>Find some quick use cases or templates.</p>
+                        <button
+                          className="btn btn-sm btn-neutral"
+                          onClick={() => {
+                            setBodyRoute(RecipeBodyRoute.Examples);
+                          }}
+                        >
+                          View examples
+                        </button>
+                      </div>
+                    </>
                   )}
                 </>
               )}
@@ -100,7 +125,7 @@ export function RecipeParameterTab() {
           </div>
         </div>
       )}
-      {hasRequestBody && <RecipeJsonEditor />}
+      {!showOnboarding && hasRequestBody && <RecipeJsonEditor />}
       {!showOnboarding && !hasRequestBody && <NoEditorCopy />}
     </div>
   );
@@ -147,7 +172,7 @@ function RecipeJsonEditor() {
       } catch (e) {
         //
       }
-    }, 300),
+    }, 1000),
     [setRequestBody]
   );
 

@@ -4,10 +4,10 @@ import {
   RecipeBodyRoute,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeDocs } from "./RecipeDocs";
 import { RecipeExamplesTab } from "./RecipeExamplesTab";
 import { RecipeConfigTab } from "./RecipeConfigTab";
 import { useMemo } from "react";
+import { RecipeOutput } from "../RecipeOutput";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -66,7 +66,7 @@ export function RecipeBody() {
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Examples && <RecipeExamplesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}
-        <RecipeDocs />
+        <RecipeOutput />
       </div>
     </>
   );

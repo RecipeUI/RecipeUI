@@ -44,6 +44,7 @@ export function RecipeNeedsAuth({
     sm.getSecret(selectedRecipe.project) || ""
   );
 
+  const existingSecret = sm.getSecret(selectedRecipe.project);
   const hasChanged = apiKey !== sm.getSecret(selectedRecipe.project);
   const docLink = docLinks[selectedRecipe.project];
 
@@ -52,7 +53,8 @@ export function RecipeNeedsAuth({
     if (docLink) {
       bearerNote = (
         <p>
-          This recipe authorizes with a Bearer token that you need to add below.{" "}
+          This recipe authorizes with a Bearer token that you{" "}
+          {existingSecret ? "can edit below" : "need to add below"}.{" "}
           <a className="link tooltip" href={docLink}>
             {selectedRecipe.project} docs
           </a>
@@ -69,7 +71,10 @@ export function RecipeNeedsAuth({
           >
             Bearer token
           </span>
-          . Add your token below to get started.
+          .{" "}
+          {existingSecret
+            ? "Edit your token below."
+            : "Add your token below to get started."}
         </p>
       );
     }

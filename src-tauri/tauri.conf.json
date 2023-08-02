@@ -12,7 +12,18 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": true,
+        "open": false,
+        "save": false
+      },
+      "os": {
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
@@ -29,7 +40,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.recipeui",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -55,11 +66,12 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
         "resizable": true,
         "title": "RecipeUI",
-        "width": 800
+        "height": 800,
+        "minHeight": 800,
+        "width": 1200,
+        "minWidth": 1200
       }
     ]
   }

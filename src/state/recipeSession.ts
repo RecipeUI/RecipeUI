@@ -9,7 +9,7 @@ import { useInterval, useLocalStorage } from "usehooks-ts";
 
 const recipes = [...(_recipes as Recipe[])];
 
-interface RecipeSession {
+export interface RecipeSession {
   id: string;
   name: string;
   recipe: Recipe;
@@ -21,6 +21,7 @@ interface RecipeSessionSlice {
 
   setSessions: (sessions: RecipeSession[]) => void;
   setCurrentSession: (session: RecipeSession | null) => void;
+  updateSessionName: (session: RecipeSession, name: string) => void;
 
   addSession: (selectedRecipe: Recipe) => void;
   closeSession: (session: RecipeSession) => void;
@@ -32,6 +33,30 @@ export enum RecipeBodyRoute {
   Config = "Config",
 }
 
+export enum RecipeOutputType {
+  Response = "Response",
+  Error = "Error",
+}
+
+export enum RecipeOutputTab {
+  Output = "Output",
+  Docs = "Docs",
+}
+
+interface RecipeOutputSlice {
+  output: Record<string, unknown>;
+  outputType: RecipeOutputType;
+  setOutput: (params: {
+    output: Record<string, unknown>;
+    outputType: RecipeOutputType;
+  }) => void;
+
+  outputTab: RecipeOutputTab;
+  setOutputTab: (tab: RecipeOutputTab) => void;
+
+  clearOutput: () => void;
+}
+
 interface RecipeBodySlice {
   bodyRoute: RecipeBodyRoute;
   setBodyRoute: (route: RecipeBodyRoute) => void;
@@ -41,6 +66,7 @@ interface RecipeBodySlice {
   setRequestBody: (requestBody: Record<string, unknown>) => void;
   updateRequestBody: (updateProps: { path: string; value: unknown }) => void;
 }
+type Slices = RecipeSessionSlice & RecipeBodySlice & RecipeOutputSlice;
 
 export interface LocalStorageState {
   sessions: RecipeSession[];
@@ -49,7 +75,7 @@ export interface LocalStorageState {
 }
 
 const createRecipeSessionSlice: StateCreator<
-  RecipeBodySlice & RecipeSessionSlice,
+  Slices,
   [],
   [],
   RecipeSessionSlice
@@ -80,6 +106,24 @@ const createRecipeSessionSlice: StateCreator<
           bodyRoute: RecipeBodyRoute.Parameters,
         };
       }),
+
+    updateSessionName: (session, name) =>
+      set((prevState) => {
+        const sessions = prevState.sessions.map((s) => {
+          if (s.id === session.id) {
+            return {
+              ...s,
+              name,
+            };
+          }
+          return s;
+        });
+
+        return {
+          sessions,
+        };
+      }),
+
     addSession: (selectedRecipe) =>
       set((prevState) => {
         if (prevState.currentSession) {
@@ -100,6 +144,7 @@ const createRecipeSessionSlice: StateCreator<
           currentSession: newSession,
           sessions: [...prevState.sessions, newSession],
           requestBody: {},
+          outputTab: RecipeOutputTab.Docs,
         };
       }),
     closeSession: (session) =>
@@ -119,6 +164,7 @@ const createRecipeSessionSlice: StateCreator<
         });
 
         const nextSession = prevState.sessions[nextSessionIndex];
+
         if (!nextSession) {
           return {
             currentSession: null,
@@ -140,12 +186,9 @@ const createRecipeSessionSlice: StateCreator<
   };
 };
 
-const createRecipeBodySlice: StateCreator<
-  RecipeBodySlice & RecipeSessionSlice,
-  [],
-  [],
-  RecipeBodySlice
-> = (set) => {
+const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
+  set
+) => {
   return {
     bodyRoute: RecipeBodyRoute.Parameters,
     setBodyRoute: (route) => set(() => ({ bodyRoute: route })),
@@ -187,11 +230,54 @@ const createRecipeBodySlice: StateCreator<
   };
 };
 
-export const useRecipeSessionStore = create<
-  RecipeSessionSlice & RecipeBodySlice
->()((...a) => ({
+const createRecipeOutputSlice: StateCreator<
+  Slices,
+  [],
+  [],
+  RecipeOutputSlice
+> = (set) => {
+  return {
+    output: {},
+    // output: {
+    //   id: "chatcmpl-7jBgprQuQw9HsxkUZWTcoJf8CqaGe",
+    //   object: "chat.completion",
+    //   created: 1691004051,
+    //   model: "gpt-3.5-turbo-0613",
+    //   choices: [
+    //     {
+    //       index: 0,
+    //       message: {
+    //         role: "assistant",
+    //         content:
+    //           "Silicon city thrives\nTech giants sculpt innovation\nSan Francisco code",
+    //       },
+    //       finish_reason: "stop",
+    //     },
+    //   ],
+    //   usage: {
+    //     prompt_tokens: 56,
+    //     completion_tokens: 14,
+    //     total_tokens: 70,
+    //   },
+    // },
+    setOutput: ({ output, outputType }) =>
+      set(() => {
+        return { output, outputTab: RecipeOutputTab.Output, outputType };
+      }),
+
+    outputType: RecipeOutputType.Response,
+
+    outputTab: RecipeOutputTab.Docs,
+    setOutputTab: (tab) => set(() => ({ outputTab: tab })),
+
+    clearOutput: () => set(() => ({ output: {} })),
+  };
+};
+
+export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeSessionSlice(...a),
   ...createRecipeBodySlice(...a),
+  ...createRecipeOutputSlice(...a),
 }));
 
 const GLOBAL_POLLING_FACTOR = 10000;

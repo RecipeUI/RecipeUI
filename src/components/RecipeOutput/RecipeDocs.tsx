@@ -21,16 +21,14 @@ export function RecipeDocs() {
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
 
   return (
-    <div className="flex-1 relative border-l">
-      <div className="absolute inset-0 px-4 py-6 overflow-y-auto">
-        <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
-        {selectedRecipe.summary && (
-          <p className="mt-2">{selectedRecipe.summary}</p>
-        )}
-        {requestBody && "objectSchema" in requestBody && (
-          <RecipeDocsContainer param={requestBody} paramPath="" />
-        )}
-      </div>
+    <div className="absolute inset-0 px-4 py-6 overflow-y-auto">
+      <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
+      {selectedRecipe.summary && (
+        <p className="mt-2">{selectedRecipe.summary}</p>
+      )}
+      {requestBody && "objectSchema" in requestBody && (
+        <RecipeDocsContainer param={requestBody} paramPath="" />
+      )}
     </div>
   );
 }
@@ -184,7 +182,7 @@ function RecipeDocsParamContainer({
                 document
                   .getElementById(paramPath)
                   ?.lastElementChild?.scrollIntoView({
-                    behavior: "instant",
+                    behavior: "instant" as ScrollBehavior,
                     block: "center",
                   });
               }, 0); // Trick to wait for the DOM to update
@@ -365,10 +363,10 @@ function RecipeDocParamEdit({
     }
 
     return (
-      <input
-        type="text"
-        className="input input-sm input-bordered"
+      <textarea
+        className="textarea textarea-bordered textarea-sm w-full"
         defaultValue={paramSchema.default}
+        rows={1}
         value={paramState as string}
         onChange={(e) => {
           // TODO: This feels expensive
@@ -480,7 +478,7 @@ function RecipeDocObjectParam({
   }
 
   return (
-    <div className="border border-dashed rounded p-4 space-y-2">
+    <div className="border border-dashed rounded p-4 space-y-2 w-full">
       {Object.keys(paramState).map((innerParamName) => {
         const innerParamSchema = paramSchema.objectSchema[innerParamName];
         return (
@@ -517,13 +515,13 @@ function RecipeDocArrayParam({
     <div className="">
       <div
         className={classNames(
-          paramState.length > 0 && "mb-2 w-fit space-y-2 border rounded-sm p-2"
+          paramState.length > 0 && "mb-2 space-y-2 border rounded-sm p-2"
         )}
       >
-        {paramState?.map((param, index) => {
+        {paramState?.map((_, index) => {
           // TODO: Not good for nested I think?
           return (
-            <div key={index} className="flex items-center space-x-2 ">
+            <div key={index} className="flex items-center space-x-2 w-full">
               <RecipeDocParamEdit
                 paramSchema={paramSchema.arraySchema}
                 paramPath={`${paramPath}.[${index}]`}
@@ -652,11 +650,10 @@ function RecipeDocVariedParamEdit({
       <RecipeDocParamEdit paramPath={paramPath} paramSchema={primaryVariant} />
       <div
         className={classNames(
-          "tooltip",
-
-          primaryVariant.type === RecipeParamType.Array ? "mt-2" : "ml-2"
+          "tooltip tooltip-right",
+          primaryVariant.type === RecipeParamType.Array ? "mt-2" : "mt-2"
         )}
-        data-tip="This parameter can have different variants."
+        data-tip="This parameter can take different types."
       >
         <button
           className="btn btn-sm"
