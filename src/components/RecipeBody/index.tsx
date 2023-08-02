@@ -11,7 +11,9 @@ import { useMemo } from "react";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
-  const selectedRecipe = useRecipeSessionStore((state) => state.selectedRecipe);
+  const selectedRecipe = useRecipeSessionStore(
+    (state) => state.currentSession!.recipe
+  );
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   const routes = useMemo(() => {
@@ -60,7 +62,7 @@ export function RecipeBody() {
           );
         })}
       </div>
-      <div className="flex-1 border-t flex">
+      <div className="flex-1 border-t grid grid-cols-2">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Examples && <RecipeExamplesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}

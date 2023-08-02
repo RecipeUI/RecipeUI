@@ -15,7 +15,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export function RecipeDocs() {
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe!
+    (state) => state.currentSession!.recipe
   );
   const requestBody =
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;

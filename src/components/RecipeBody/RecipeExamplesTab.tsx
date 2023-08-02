@@ -6,7 +6,7 @@ import { RecipeMutationCore } from "../../types/recipes";
 
 export function RecipeExamplesTab() {
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe as RecipeMutationCore
+    (state) => state.currentSession!.recipe as RecipeMutationCore
   );
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);

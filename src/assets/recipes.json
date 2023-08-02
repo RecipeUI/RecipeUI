@@ -285,7 +285,8 @@
           ]
         }
       }
-    ]
+    ],
+    "id": "a42867b0-2e85-44b2-9130-273a42f7582b"
   },
   {
     "summary": "Creates a completion for the provided prompt and parameters.",
@@ -486,9 +487,10 @@
         }
       },
       "type": "object",
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "f168d599-6799-4d86-95ef-04693333d29f"
   },
   {
     "summary": "Creates a new edit for the provided input, instruction, and parameters.",
@@ -556,9 +558,10 @@
         }
       },
       "type": "object",
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "ce6954fa-5afc-4d54-b69d-548fc71728be"
   },
   {
     "summary": "Creates an image given a prompt.",
@@ -607,9 +610,10 @@
         }
       },
       "type": "object",
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "e5226081-79ff-40b6-b823-ab023891ed3b"
   },
   {
     "summary": "Creates an edited or extended image given an original image and a prompt.",
@@ -669,9 +673,10 @@
         }
       },
       "type": "object",
-      "content_type": "multipart/form-data",
+      "contentType": "multipart/form-data",
       "required": true
-    }
+    },
+    "id": "8ab40800-73a5-4c6a-9f30-7ed824924e33"
   },
   {
     "summary": "Creates a variation of a given image.",
@@ -720,9 +725,10 @@
         }
       },
       "type": "object",
-      "content_type": "multipart/form-data",
+      "contentType": "multipart/form-data",
       "required": true
-    }
+    },
+    "id": "a142bc5c-9b43-4080-8f89-ded7a08166fb"
   },
   {
     "summary": "Creates an embedding vector representing the input text.",
@@ -797,9 +803,10 @@
       },
       "type": "object",
       "additionalProperties": false,
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "e5936be1-4c9a-4fd7-9887-9a54c1d0885b"
   },
   {
     "summary": "Transcribes audio into the input language.",
@@ -853,9 +860,10 @@
       },
       "type": "object",
       "additionalProperties": false,
-      "content_type": "multipart/form-data",
+      "contentType": "multipart/form-data",
       "required": true
-    }
+    },
+    "id": "9b80396a-5db8-4c70-806d-53c1cd85a19d"
   },
   {
     "summary": "Translates audio into English.",
@@ -904,9 +912,10 @@
       },
       "type": "object",
       "additionalProperties": false,
-      "content_type": "multipart/form-data",
+      "contentType": "multipart/form-data",
       "required": true
-    }
+    },
+    "id": "619db2c1-5968-4948-9748-658e08fd7f03"
   },
   {
     "summary": "Returns a list of files that belong to the user's organization.",
@@ -914,7 +923,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/files",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "2f0b24c4-53c6-4bd0-9f8d-1040717a312f"
   },
   {
     "summary": "Upload a file that contains document(s) to be used across various endpoints/features. Currently, the size of all the files uploaded by one organization can be up to 1 GB. Please contact us if you need to increase the storage limit.\n",
@@ -939,9 +949,10 @@
       },
       "type": "object",
       "additionalProperties": false,
-      "content_type": "multipart/form-data",
+      "contentType": "multipart/form-data",
       "required": true
-    }
+    },
+    "id": "40f1d5ff-dad2-44ec-9b8c-b1cdaa7a9fd1"
   },
   {
     "summary": "Delete a file.",
@@ -949,7 +960,8 @@
     "method": "DELETE",
     "path": "https://api.openai.com/v1/files/{file_id}",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "2ca52bf0-3c30-456a-a461-85ceb16857bd"
   },
   {
     "summary": "Returns information about a specific file.",
@@ -957,7 +969,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/files/{file_id}",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "27abe894-87c5-4f87-8bd6-fef3d815370b"
   },
   {
     "summary": "Returns the contents of the specified file",
@@ -965,7 +978,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/files/{file_id}/content",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "00b2ba08-364e-473b-b39a-eab6aa54debd"
   },
   {
     "summary": "Creates a job that fine-tunes a specified model from a given dataset.\n\nResponse includes details of the enqueued job including job status and the name of the fine-tuned models once complete.\n\n[Learn more about Fine-tuning](/docs/guides/fine-tuning)\n",
@@ -1064,9 +1078,10 @@
         }
       },
       "type": "object",
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "e822f577-ae26-43da-b255-9f0ee3212ef2"
   },
   {
     "summary": "List your organization's fine-tuning jobs\n",
@@ -1074,7 +1089,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/fine-tunes",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "b00b1c21-2374-458c-bd5c-8fb4bb2738a9"
   },
   {
     "summary": "Gets info about the fine-tune job.\n\n[Learn more about Fine-tuning](/docs/guides/fine-tuning)\n",
@@ -1082,7 +1098,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/fine-tunes/{fine_tune_id}",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "e2a48210-2f7a-4cdb-9d27-ff05f6369e8e"
   },
   {
     "summary": "Immediately cancel a fine-tune job.\n",
@@ -1090,7 +1107,8 @@
     "method": "POST",
     "path": "https://api.openai.com/v1/fine-tunes/{fine_tune_id}/cancel",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "6171bf49-fcda-461e-8db2-b629c2caee65"
   },
   {
     "summary": "Get fine-grained status updates for a fine-tune job.\n",
@@ -1098,7 +1116,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/fine-tunes/{fine_tune_id}/events",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "b4aca0a8-3934-4ce3-9893-ae4b235da70d"
   },
   {
     "summary": "Lists the currently available models, and provides basic information about each one such as the owner and availability.",
@@ -1106,7 +1125,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/models",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "37a61c6e-3917-4442-85b8-2d5bcf4ec720"
   },
   {
     "summary": "Retrieves a model instance, providing basic information about the model such as the owner and permissioning.",
@@ -1114,7 +1134,8 @@
     "method": "GET",
     "path": "https://api.openai.com/v1/models/{model}",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "f7f873d2-86f7-4c6b-939a-b9db20019c46"
   },
   {
     "summary": "Delete a fine-tuned model. You must have the Owner role in your organization.",
@@ -1122,7 +1143,8 @@
     "method": "DELETE",
     "path": "https://api.openai.com/v1/models/{model}",
     "project": "OpenAI",
-    "auth": "Bearer"
+    "auth": "Bearer",
+    "id": "aa7c8f8c-a780-40ec-8c69-be58712a58a7"
   },
   {
     "summary": "Classifies if text violates OpenAI's Content Policy",
@@ -1171,8 +1193,9 @@
         }
       },
       "type": "object",
-      "content_type": "application/json",
+      "contentType": "application/json",
       "required": true
-    }
+    },
+    "id": "eab23b46-8f95-4d8a-9339-84e1777064a8"
   }
 ]

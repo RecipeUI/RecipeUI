@@ -3,12 +3,12 @@ import { RecipeBody } from ".";
 import { RecipeBodySearch } from "./RecipeBodySearch";
 
 export function RecipeBodyContainer() {
-  const selectedRecipe = useRecipeSessionStore((state) => state.selectedRecipe);
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   return (
     <div className="flex-1 flex flex-col">
       <RecipeBodySearch />
-      {selectedRecipe && <RecipeBody />}
+      {currentSession && <RecipeBody />}
     </div>
   );
 }

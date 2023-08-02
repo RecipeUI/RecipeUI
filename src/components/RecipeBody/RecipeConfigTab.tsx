@@ -9,7 +9,7 @@ const docLinks = _docLinks as Record<string, string>;
 
 export function RecipeConfigTab() {
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe!
+    (state) => state.currentSession!.recipe
   );
 
   const needsAuth = selectedRecipe.auth !== null;
@@ -37,7 +37,7 @@ export function RecipeNeedsAuth({
   onboardingFlow?: boolean;
 }) {
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe!
+    (state) => state.currentSession!.recipe
   );
   const sm = useSecretManager();
   const [apiKey, setAPIKey] = useState<string>(

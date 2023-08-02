@@ -94,6 +94,7 @@ interface RecipeCore {
   path: string;
   project: string;
   auth: RecipeAuthType.Bearer | null;
+  id: string;
 }
 
 export enum RecipeMutationContentType {

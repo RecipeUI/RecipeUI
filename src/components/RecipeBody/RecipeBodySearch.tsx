@@ -10,16 +10,15 @@ import { useRecipeSessionStore } from "../../state/recipeSession";
 
 export function RecipeBodySearch() {
   const recipes = useRecipeSessionStore((state) => state.recipes);
-  const setSelectedRecipe = useRecipeSessionStore(
-    (state) => state.setSelectedRecipe
-  );
+  const addSession = useRecipeSessionStore((state) => state.addSession);
 
+  // TODO: Add shortcut to open search bar for CMD T
   // TODO: Make sure search bar opens when user starts typing
   return (
     <Downshift<Recipe>
       onChange={(selection) => {
         if (selection) {
-          setSelectedRecipe(selection);
+          addSession(selection);
         }
       }}
       itemToString={(item) => (item ? item.path : "")}

@@ -22,7 +22,7 @@ const codeMirrorSetup = {
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe!
+    (state) => state.currentSession!.recipe
   );
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
 
@@ -50,8 +50,9 @@ export function RecipeParameterTab() {
     hasRequiredParams && Object.keys(requestBody).length === 0;
 
   const showOnboarding = needsAuthSetup || needsParams;
-
   const hasRequestBody = Object.keys(requestBody).length > 0;
+
+  const hasExamples = "examples" in selectedRecipe;
 
   return (
     <div className="flex-1">
@@ -69,21 +70,30 @@ export function RecipeParameterTab() {
               {needsParams && (
                 <>
                   <hr />
-                  <div className="space-y-2">
-                    <h3 className="font-bold">Examples</h3>
-                    <p>
-                      Find some quick use cases or start adding parameters from
-                      the right.
-                    </p>
-                    <button
-                      className="btn btn-sm btn-neutral"
-                      onClick={() => {
-                        setBodyRoute(RecipeBodyRoute.Examples);
-                      }}
-                    >
-                      View examples
-                    </button>
-                  </div>
+                  {hasExamples ? (
+                    <div className="space-y-2">
+                      <h3 className="font-bold">Examples</h3>
+                      <p>
+                        Find some quick use cases or start adding parameters
+                        from the right.
+                      </p>
+                      <button
+                        className="btn btn-sm btn-neutral"
+                        onClick={() => {
+                          setBodyRoute(RecipeBodyRoute.Examples);
+                        }}
+                      >
+                        View examples
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <h3 className="font-bold">Parameters</h3>
+                      <p>
+                        Start adding parameters from the right to get started!
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -112,7 +122,7 @@ function RecipeJsonEditor() {
   const _requestBody = useRecipeSessionStore((state) => state.requestBody);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
   const selectedRecipe = useRecipeSessionStore(
-    (state) => state.selectedRecipe!
+    (state) => state.currentSession!.recipe!
   );
 
   const [requestCode, setRequestCode] = useState("");
@@ -121,7 +131,7 @@ function RecipeJsonEditor() {
   // Note(jeane): I find these lines of code pretty bad, but I can't think of an alternative.
   // We have two different sources for updating the request body. This code editor and the
   // docs pane. Both suffer from input that can be typed very quickly and will need
-  // a lot of back and forth between jSON.stringify and JSON.parse.
+  // a lot of back and forth between JSON.stringify and JSON.parse.
   //
   // Choosing to make this editor where it's okay if the code is lagging.
   useEffect(() => {
