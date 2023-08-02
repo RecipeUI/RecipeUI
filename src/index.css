@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.app-container {
-  height: calc(100vh - theme(spacing.10));
+.cm-editor {
+  outline: none !important;
 }

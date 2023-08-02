@@ -1,14 +1,16 @@
-import { Navbar } from "./components/Navbar";
+// import { Navbar } from "./components/Navbar";
 import { RecipeBodyContainer } from "./components/RecipeBody/RecipeBodyContainer";
-import { Sidebar } from "./components/Sidebar";
+import { RecipeSidebar } from "./components/RecipeSidebar";
+// import { Sidebar } from "./components/Sidebar";
 
 function App() {
   return (
-    // TODO: Remove bg-blue-100 when done testing
-    <div className="w-full h-screen">
-      <Navbar />
-      <div className="flex app-container">
-        <Sidebar />
+    <div className="w-full h-screen flex flex-col">
+      {/* TODO: Navbar should be hidden in desktop mode */}
+      {/* <Navbar /> */}
+      <div className="flex flex-1 border-t">
+        {/* <Sidebar /> */}
+        <RecipeSidebar />
         <RecipeBodyContainer />
       </div>
     </div>

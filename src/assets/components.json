@@ -1,0 +1,2244 @@
+{
+  "Error": {
+    "object_schema": {
+      "type": {
+        "type": "string",
+        "nullable": false,
+        "required": true
+      },
+      "message": {
+        "type": "string",
+        "nullable": false,
+        "required": true
+      },
+      "param": {
+        "type": "string",
+        "nullable": true,
+        "required": true
+      },
+      "code": {
+        "type": "string",
+        "nullable": true,
+        "required": true
+      }
+    },
+    "type": "object",
+    "required": true
+  },
+  "ErrorResponse": {
+    "object_schema": {
+      "error": {
+        "object_schema": {
+          "type": {
+            "type": "string",
+            "nullable": false,
+            "required": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": false,
+            "required": true
+          },
+          "param": {
+            "type": "string",
+            "nullable": true,
+            "required": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true,
+            "required": true
+          }
+        },
+        "type": "object",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "DeleteModelResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "deleted": {
+        "type": "boolean",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateCompletionRequest": {
+    "object_schema": {
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "text-davinci-003",
+              "text-davinci-002",
+              "text-davinci-001",
+              "code-davinci-002",
+              "text-curie-001",
+              "text-babbage-001",
+              "text-ada-001"
+            ]
+          }
+        ],
+        "type": "anyOf",
+        "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models/overview) for descriptions of them.\n",
+        "required": true
+      },
+      "prompt": {
+        "variants": [
+          {
+            "type": "string",
+            "default": "",
+            "example": "This is a test."
+          },
+          {
+            "array_schema": {
+              "type": "string",
+              "default": "",
+              "example": "This is a test."
+            },
+            "type": "array"
+          },
+          {
+            "array_schema": {
+              "type": "integer"
+            },
+            "type": "array",
+            "example": "[1212, 318, 257, 1332, 13]",
+            "minItems": 1
+          },
+          {
+            "array_schema": {
+              "array_schema": {
+                "type": "integer"
+              },
+              "type": "array",
+              "minItems": 1
+            },
+            "type": "array",
+            "example": "[[1212, 318, 257, 1332, 13]]",
+            "minItems": 1
+          }
+        ],
+        "type": "oneOf",
+        "nullable": true,
+        "default": "<|endoftext|>",
+        "description": "The prompt(s) to generate completions for, encoded as a string, array of strings, array of tokens, or array of token arrays.\n\nNote that <|endoftext|> is the document separator that the model sees during training, so if a prompt is not specified the model will generate as if from the beginning of a new document.\n",
+        "required": true
+      },
+      "suffix": {
+        "type": "string",
+        "nullable": true,
+        "default": null,
+        "example": "test.",
+        "description": "The suffix that comes after a completion of inserted text."
+      },
+      "max_tokens": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 0,
+        "default": 16,
+        "example": 16,
+        "description": "The maximum number of [tokens](/tokenizer) to generate in the completion.\n\nThe token count of your prompt plus `max_tokens` cannot exceed the model's context length. [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) for counting tokens.\n"
+      },
+      "temperature": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 2,
+        "default": 1,
+        "example": 1,
+        "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n\nWe generally recommend altering this or `top_p` but not both.\n"
+      },
+      "top_p": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 1,
+        "default": 1,
+        "example": 1,
+        "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or `temperature` but not both.\n"
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 128,
+        "default": 1,
+        "example": 1,
+        "description": "How many completions to generate for each prompt.\n\n**Note:** Because this parameter generates many completions, it can quickly consume your token quota. Use carefully and ensure that you have reasonable settings for `max_tokens` and `stop`.\n"
+      },
+      "stream": {
+        "type": "boolean",
+        "nullable": true,
+        "default": false,
+        "description": "Whether to stream back partial progress. If set, tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format) as they become available, with the stream terminated by a `data: [DONE]` message. [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb).\n"
+      },
+      "logprobs": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 5,
+        "default": null,
+        "description": "Include the log probabilities on the `logprobs` most likely tokens, as well the chosen tokens. For example, if `logprobs` is 5, the API will return a list of the 5 most likely tokens. The API will always return the `logprob` of the sampled token, so there may be up to `logprobs+1` elements in the response.\n\nThe maximum value for `logprobs` is 5.\n"
+      },
+      "echo": {
+        "type": "boolean",
+        "nullable": true,
+        "default": false,
+        "description": "Echo back the prompt in addition to the completion\n"
+      },
+      "stop": {
+        "variants": [
+          {
+            "type": "string",
+            "nullable": true,
+            "default": "<|endoftext|>",
+            "example": "\n"
+          },
+          {
+            "array_schema": {
+              "type": "string",
+              "example": "[\"\\n\"]"
+            },
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4
+          }
+        ],
+        "type": "oneOf",
+        "nullable": true,
+        "default": null,
+        "description": "Up to 4 sequences where the API will stop generating further tokens. The returned text will not contain the stop sequence.\n"
+      },
+      "presence_penalty": {
+        "type": "number",
+        "nullable": true,
+        "minimum": -2,
+        "maximum": 2,
+        "default": 0,
+        "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.\n\n[See more information about frequency and presence penalties.](/docs/api-reference/parameter-details)\n"
+      },
+      "frequency_penalty": {
+        "type": "number",
+        "nullable": true,
+        "minimum": -2,
+        "maximum": 2,
+        "default": 0,
+        "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.\n\n[See more information about frequency and presence penalties.](/docs/api-reference/parameter-details)\n"
+      },
+      "best_of": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 20,
+        "default": 1,
+        "description": "Generates `best_of` completions server-side and returns the \"best\" (the one with the highest log probability per token). Results cannot be streamed.\n\nWhen used with `n`, `best_of` controls the number of candidate completions and `n` specifies how many to return – `best_of` must be greater than `n`.\n\n**Note:** Because this parameter generates many completions, it can quickly consume your token quota. Use carefully and ensure that you have reasonable settings for `max_tokens` and `stop`.\n"
+      },
+      "logit_bias": {
+        "object_schema": {},
+        "type": "object",
+        "nullable": true,
+        "default": null,
+        "description": "Modify the likelihood of specified tokens appearing in the completion.\n\nAccepts a json object that maps tokens (specified by their token ID in the GPT tokenizer) to an associated bias value from -100 to 100. You can use this [tokenizer tool](/tokenizer?view=bpe) (which works for both GPT-2 and GPT-3) to convert text to token IDs. Mathematically, the bias is added to the logits generated by the model prior to sampling. The exact effect will vary per model, but values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.\n\nAs an example, you can pass `{\"50256\": -100}` to prevent the <|endoftext|> token from being generated.\n",
+        "additionalProperties": {
+          "type": "integer"
+        }
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateCompletionResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "choices": {
+        "array_schema": {
+          "object_schema": {
+            "text": {
+              "type": "string",
+              "required": true
+            },
+            "index": {
+              "type": "integer",
+              "required": true
+            },
+            "logprobs": {
+              "object_schema": {
+                "tokens": {
+                  "array_schema": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "token_logprobs": {
+                  "array_schema": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "top_logprobs": {
+                  "array_schema": {
+                    "object_schema": {},
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "integer"
+                    }
+                  },
+                  "type": "array"
+                },
+                "text_offset": {
+                  "array_schema": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object",
+              "nullable": true,
+              "required": true
+            },
+            "finish_reason": {
+              "type": "string",
+              "enum": ["stop", "length"],
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "usage": {
+        "object_schema": {
+          "prompt_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "total_tokens": {
+            "type": "integer",
+            "required": true
+          }
+        },
+        "type": "object"
+      }
+    },
+    "type": "object"
+  },
+  "ChatCompletionRequestMessage": {
+    "object_schema": {
+      "role": {
+        "type": "string",
+        "enum": ["system", "user", "assistant", "function"],
+        "description": "The role of the messages author. One of `system`, `user`, `assistant`, or `function`.",
+        "required": true
+      },
+      "content": {
+        "type": "string",
+        "nullable": true,
+        "description": "The contents of the message. `content` is required for all messages, and may be null for assistant messages with function calls.",
+        "required": true
+      },
+      "name": {
+        "type": "string",
+        "description": "The name of the author of this message. `name` is required if role is `function`, and it should be the name of the function whose response is in the `content`. May contain a-z, A-Z, 0-9, and underscores, with a maximum length of 64 characters."
+      },
+      "function_call": {
+        "object_schema": {
+          "name": {
+            "type": "string",
+            "description": "The name of the function to call.",
+            "required": true
+          },
+          "arguments": {
+            "type": "string",
+            "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function.",
+            "required": true
+          }
+        },
+        "type": "object",
+        "description": "The name and arguments of a function that should be called, as generated by the model."
+      }
+    },
+    "type": "object"
+  },
+  "ChatCompletionFunctionParameters": {
+    "object_schema": {},
+    "type": "object",
+    "description": "The parameters the functions accepts, described as a JSON Schema object. See the [guide](/docs/guides/gpt/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format.\n\nTo describe a function that accepts no parameters, provide the value `{\"type\": \"object\", \"properties\": {}}`.",
+    "additionalProperties": true,
+    "required": true
+  },
+  "ChatCompletionFunctions": {
+    "object_schema": {
+      "name": {
+        "type": "string",
+        "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.",
+        "required": true
+      },
+      "description": {
+        "type": "string",
+        "description": "A description of what the function does, used by the model to choose when and how to call the function."
+      },
+      "parameters": {
+        "object_schema": {},
+        "type": "object",
+        "description": "The parameters the functions accepts, described as a JSON Schema object. See the [guide](/docs/guides/gpt/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format.\n\nTo describe a function that accepts no parameters, provide the value `{\"type\": \"object\", \"properties\": {}}`.",
+        "additionalProperties": true,
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "ChatCompletionResponseMessage": {
+    "object_schema": {
+      "role": {
+        "type": "string",
+        "enum": ["system", "user", "assistant", "function"],
+        "description": "The role of the author of this message.",
+        "required": true
+      },
+      "content": {
+        "type": "string",
+        "nullable": true,
+        "description": "The contents of the message."
+      },
+      "function_call": {
+        "object_schema": {
+          "name": {
+            "type": "string",
+            "description": "The name of the function to call."
+          },
+          "arguments": {
+            "type": "string",
+            "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+          }
+        },
+        "type": "object",
+        "description": "The name and arguments of a function that should be called, as generated by the model."
+      }
+    },
+    "type": "object",
+    "required": true
+  },
+  "ChatCompletionStreamResponseDelta": {
+    "object_schema": {
+      "role": {
+        "type": "string",
+        "enum": ["system", "user", "assistant", "function"],
+        "description": "The role of the author of this message."
+      },
+      "content": {
+        "type": "string",
+        "nullable": true,
+        "description": "The contents of the chunk message."
+      },
+      "function_call": {
+        "object_schema": {
+          "name": {
+            "type": "string",
+            "description": "The name of the function to call."
+          },
+          "arguments": {
+            "type": "string",
+            "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+          }
+        },
+        "type": "object",
+        "description": "The name and arguments of a function that should be called, as generated by the model."
+      }
+    },
+    "type": "object",
+    "required": true
+  },
+  "CreateChatCompletionRequest": {
+    "object_schema": {
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "gpt-4",
+              "gpt-4-0314",
+              "gpt-4-0613",
+              "gpt-4-32k",
+              "gpt-4-32k-0314",
+              "gpt-4-32k-0613",
+              "gpt-3.5-turbo",
+              "gpt-3.5-turbo-16k",
+              "gpt-3.5-turbo-0301",
+              "gpt-3.5-turbo-0613",
+              "gpt-3.5-turbo-16k-0613"
+            ]
+          }
+        ],
+        "type": "anyOf",
+        "example": "gpt-3.5-turbo",
+        "description": "ID of the model to use. See the [model endpoint compatibility](/docs/models/model-endpoint-compatibility) table for details on which models work with the Chat API.",
+        "required": true
+      },
+      "messages": {
+        "array_schema": {
+          "object_schema": {
+            "role": {
+              "type": "string",
+              "enum": ["system", "user", "assistant", "function"],
+              "description": "The role of the messages author. One of `system`, `user`, `assistant`, or `function`.",
+              "required": true
+            },
+            "content": {
+              "type": "string",
+              "nullable": true,
+              "description": "The contents of the message. `content` is required for all messages, and may be null for assistant messages with function calls.",
+              "required": true
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the author of this message. `name` is required if role is `function`, and it should be the name of the function whose response is in the `content`. May contain a-z, A-Z, 0-9, and underscores, with a maximum length of 64 characters."
+            },
+            "function_call": {
+              "object_schema": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the function to call.",
+                  "required": true
+                },
+                "arguments": {
+                  "type": "string",
+                  "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function.",
+                  "required": true
+                }
+              },
+              "type": "object",
+              "description": "The name and arguments of a function that should be called, as generated by the model."
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "description": "A list of messages comprising the conversation so far. [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb).",
+        "minItems": 1,
+        "required": true
+      },
+      "functions": {
+        "array_schema": {
+          "object_schema": {
+            "name": {
+              "type": "string",
+              "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.",
+              "required": true
+            },
+            "description": {
+              "type": "string",
+              "description": "A description of what the function does, used by the model to choose when and how to call the function."
+            },
+            "parameters": {
+              "object_schema": {},
+              "type": "object",
+              "description": "The parameters the functions accepts, described as a JSON Schema object. See the [guide](/docs/guides/gpt/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format.\n\nTo describe a function that accepts no parameters, provide the value `{\"type\": \"object\", \"properties\": {}}`.",
+              "additionalProperties": true,
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "description": "A list of functions the model may generate JSON inputs for.",
+        "minItems": 1
+      },
+      "function_call": {
+        "variants": [
+          {
+            "type": "string",
+            "enum": ["none", "auto"]
+          },
+          {
+            "object_schema": {
+              "name": {
+                "type": "string",
+                "description": "The name of the function to call.",
+                "required": true
+              }
+            },
+            "type": "object"
+          }
+        ],
+        "type": "oneOf",
+        "description": "Controls how the model responds to function calls. \"none\" means the model does not call a function, and responds to the end-user. \"auto\" means the model can pick between an end-user or calling a function.  Specifying a particular function via `{\"name\":\\ \"my_function\"}` forces the model to call that function. \"none\" is the default when no functions are present. \"auto\" is the default if functions are present."
+      },
+      "temperature": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 2,
+        "default": 1,
+        "example": 1,
+        "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n\nWe generally recommend altering this or `top_p` but not both.\n"
+      },
+      "top_p": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 1,
+        "default": 1,
+        "example": 1,
+        "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or `temperature` but not both.\n"
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 128,
+        "default": 1,
+        "example": 1,
+        "description": "How many chat completion choices to generate for each input message."
+      },
+      "stream": {
+        "type": "boolean",
+        "nullable": true,
+        "default": false,
+        "description": "If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format) as they become available, with the stream terminated by a `data: [DONE]` message. [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb).\n"
+      },
+      "stop": {
+        "variants": [
+          {
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "array_schema": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4
+          }
+        ],
+        "type": "oneOf",
+        "default": null,
+        "description": "Up to 4 sequences where the API will stop generating further tokens.\n"
+      },
+      "max_tokens": {
+        "type": "integer",
+        "default": "inf",
+        "description": "The maximum number of [tokens](/tokenizer) to generate in the chat completion.\n\nThe total length of input tokens and generated tokens is limited by the model's context length. [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) for counting tokens.\n"
+      },
+      "presence_penalty": {
+        "type": "number",
+        "nullable": true,
+        "minimum": -2,
+        "maximum": 2,
+        "default": 0,
+        "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.\n\n[See more information about frequency and presence penalties.](/docs/api-reference/parameter-details)\n"
+      },
+      "frequency_penalty": {
+        "type": "number",
+        "nullable": true,
+        "minimum": -2,
+        "maximum": 2,
+        "default": 0,
+        "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.\n\n[See more information about frequency and presence penalties.](/docs/api-reference/parameter-details)\n"
+      },
+      "logit_bias": {
+        "object_schema": {},
+        "type": "object",
+        "nullable": true,
+        "default": null,
+        "description": "Modify the likelihood of specified tokens appearing in the completion.\n\nAccepts a json object that maps tokens (specified by their token ID in the tokenizer) to an associated bias value from -100 to 100. Mathematically, the bias is added to the logits generated by the model prior to sampling. The exact effect will vary per model, but values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.\n",
+        "additionalProperties": {
+          "type": "integer"
+        }
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateChatCompletionResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "choices": {
+        "array_schema": {
+          "object_schema": {
+            "index": {
+              "type": "integer",
+              "required": true
+            },
+            "message": {
+              "object_schema": {
+                "role": {
+                  "type": "string",
+                  "enum": ["system", "user", "assistant", "function"],
+                  "description": "The role of the author of this message.",
+                  "required": true
+                },
+                "content": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "The contents of the message."
+                },
+                "function_call": {
+                  "object_schema": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the function to call."
+                    },
+                    "arguments": {
+                      "type": "string",
+                      "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+                    }
+                  },
+                  "type": "object",
+                  "description": "The name and arguments of a function that should be called, as generated by the model."
+                }
+              },
+              "type": "object",
+              "required": true
+            },
+            "finish_reason": {
+              "type": "string",
+              "enum": ["stop", "length", "function_call"],
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "usage": {
+        "object_schema": {
+          "prompt_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "total_tokens": {
+            "type": "integer",
+            "required": true
+          }
+        },
+        "type": "object"
+      }
+    },
+    "type": "object"
+  },
+  "CreateChatCompletionStreamResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "choices": {
+        "array_schema": {
+          "object_schema": {
+            "index": {
+              "type": "integer",
+              "required": true
+            },
+            "delta": {
+              "object_schema": {
+                "role": {
+                  "type": "string",
+                  "enum": ["system", "user", "assistant", "function"],
+                  "description": "The role of the author of this message."
+                },
+                "content": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "The contents of the chunk message."
+                },
+                "function_call": {
+                  "object_schema": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the function to call."
+                    },
+                    "arguments": {
+                      "type": "string",
+                      "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+                    }
+                  },
+                  "type": "object",
+                  "description": "The name and arguments of a function that should be called, as generated by the model."
+                }
+              },
+              "type": "object",
+              "required": true
+            },
+            "finish_reason": {
+              "type": "string",
+              "nullable": true,
+              "enum": ["stop", "length", "function_call"],
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateEditRequest": {
+    "object_schema": {
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["text-davinci-edit-001", "code-davinci-edit-001"]
+          }
+        ],
+        "type": "anyOf",
+        "example": "text-davinci-edit-001",
+        "description": "ID of the model to use. You can use the `text-davinci-edit-001` or `code-davinci-edit-001` model with this endpoint.",
+        "required": true
+      },
+      "input": {
+        "type": "string",
+        "nullable": true,
+        "default": "",
+        "example": "What day of the wek is it?",
+        "description": "The input text to use as a starting point for the edit."
+      },
+      "instruction": {
+        "type": "string",
+        "example": "Fix the spelling mistakes.",
+        "description": "The instruction that tells the model how to edit the prompt.",
+        "required": true
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 20,
+        "default": 1,
+        "example": 1,
+        "description": "How many edits to generate for the input and instruction."
+      },
+      "temperature": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 2,
+        "default": 1,
+        "example": 1,
+        "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n\nWe generally recommend altering this or `top_p` but not both.\n"
+      },
+      "top_p": {
+        "type": "number",
+        "nullable": true,
+        "minimum": 0,
+        "maximum": 1,
+        "default": 1,
+        "example": 1,
+        "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or `temperature` but not both.\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateEditResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "choices": {
+        "array_schema": {
+          "object_schema": {
+            "text": {
+              "type": "string",
+              "required": true
+            },
+            "index": {
+              "type": "integer",
+              "required": true
+            },
+            "finish_reason": {
+              "type": "string",
+              "enum": ["stop", "length"],
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "usage": {
+        "object_schema": {
+          "prompt_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "total_tokens": {
+            "type": "integer",
+            "required": true
+          }
+        },
+        "type": "object",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateImageRequest": {
+    "object_schema": {
+      "prompt": {
+        "type": "string",
+        "example": "A cute baby sea otter",
+        "description": "A text description of the desired image(s). The maximum length is 1000 characters.",
+        "required": true
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 10,
+        "default": 1,
+        "example": 1,
+        "description": "The number of images to generate. Must be between 1 and 10."
+      },
+      "size": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["256x256", "512x512", "1024x1024"],
+        "default": "1024x1024",
+        "example": "1024x1024",
+        "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`."
+      },
+      "response_format": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["url", "b64_json"],
+        "default": "url",
+        "example": "url",
+        "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`."
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object"
+  },
+  "ImagesResponse": {
+    "object_schema": {
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "url": {
+              "type": "string"
+            },
+            "b64_json": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateImageEditRequest": {
+    "object_schema": {
+      "image": {
+        "type": "file",
+        "description": "The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not provided, image must have transparency, which will be used as the mask.",
+        "format": "binary",
+        "required": true
+      },
+      "mask": {
+        "type": "file",
+        "description": "An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the same dimensions as `image`.",
+        "format": "binary"
+      },
+      "prompt": {
+        "type": "string",
+        "example": "A cute baby sea otter wearing a beret",
+        "description": "A text description of the desired image(s). The maximum length is 1000 characters.",
+        "required": true
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 10,
+        "default": 1,
+        "example": 1,
+        "description": "The number of images to generate. Must be between 1 and 10."
+      },
+      "size": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["256x256", "512x512", "1024x1024"],
+        "default": "1024x1024",
+        "example": "1024x1024",
+        "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`."
+      },
+      "response_format": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["url", "b64_json"],
+        "default": "url",
+        "example": "url",
+        "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`."
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateImageVariationRequest": {
+    "object_schema": {
+      "image": {
+        "type": "file",
+        "description": "The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB, and square.",
+        "format": "binary",
+        "required": true
+      },
+      "n": {
+        "type": "integer",
+        "nullable": true,
+        "minimum": 1,
+        "maximum": 10,
+        "default": 1,
+        "example": 1,
+        "description": "The number of images to generate. Must be between 1 and 10."
+      },
+      "size": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["256x256", "512x512", "1024x1024"],
+        "default": "1024x1024",
+        "example": "1024x1024",
+        "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`."
+      },
+      "response_format": {
+        "type": "string",
+        "nullable": true,
+        "enum": ["url", "b64_json"],
+        "default": "url",
+        "example": "url",
+        "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`."
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateModerationRequest": {
+    "object_schema": {
+      "input": {
+        "variants": [
+          {
+            "type": "string",
+            "default": "",
+            "example": "I want to kill them."
+          },
+          {
+            "array_schema": {
+              "type": "string",
+              "default": "",
+              "example": "I want to kill them."
+            },
+            "type": "array"
+          }
+        ],
+        "type": "oneOf",
+        "description": "The input text to classify",
+        "required": true
+      },
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["text-moderation-latest", "text-moderation-stable"]
+          }
+        ],
+        "type": "anyOf",
+        "nullable": false,
+        "default": "text-moderation-latest",
+        "example": "text-moderation-stable",
+        "description": "Two content moderations models are available: `text-moderation-stable` and `text-moderation-latest`.\n\nThe default is `text-moderation-latest` which will be automatically upgraded over time. This ensures you are always using our most accurate model. If you use `text-moderation-stable`, we will provide advanced notice before updating the model. Accuracy of `text-moderation-stable` may be slightly lower than for `text-moderation-latest`.\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateModerationResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "results": {
+        "array_schema": {
+          "object_schema": {
+            "flagged": {
+              "type": "boolean",
+              "required": true
+            },
+            "categories": {
+              "object_schema": {
+                "hate": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "hate/threatening": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "self-harm": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "sexual": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "sexual/minors": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "violence": {
+                  "type": "boolean",
+                  "required": true
+                },
+                "violence/graphic": {
+                  "type": "boolean",
+                  "required": true
+                }
+              },
+              "type": "object",
+              "required": true
+            },
+            "category_scores": {
+              "object_schema": {
+                "hate": {
+                  "type": "number",
+                  "required": true
+                },
+                "hate/threatening": {
+                  "type": "number",
+                  "required": true
+                },
+                "self-harm": {
+                  "type": "number",
+                  "required": true
+                },
+                "sexual": {
+                  "type": "number",
+                  "required": true
+                },
+                "sexual/minors": {
+                  "type": "number",
+                  "required": true
+                },
+                "violence": {
+                  "type": "number",
+                  "required": true
+                },
+                "violence/graphic": {
+                  "type": "number",
+                  "required": true
+                }
+              },
+              "type": "object",
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateFileRequest": {
+    "object_schema": {
+      "file": {
+        "type": "file",
+        "description": "Name of the [JSON Lines](https://jsonlines.readthedocs.io/en/latest/) file to be uploaded.\n\nIf the `purpose` is set to \"fine-tune\", each line is a JSON record with \"prompt\" and \"completion\" fields representing your [training examples](/docs/guides/fine-tuning/prepare-training-data).\n",
+        "format": "binary",
+        "required": true
+      },
+      "purpose": {
+        "type": "string",
+        "description": "The intended purpose of the uploaded documents.\n\nUse \"fine-tune\" for [Fine-tuning](/docs/api-reference/fine-tunes). This allows us to validate the format of the uploaded file.\n",
+        "required": true
+      }
+    },
+    "type": "object",
+    "additionalProperties": false
+  },
+  "DeleteFileResponse": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "deleted": {
+        "type": "boolean",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateFineTuneRequest": {
+    "object_schema": {
+      "training_file": {
+        "type": "string",
+        "example": "file-ajSREls59WBbvgSzJSVWxMCB",
+        "description": "The ID of an uploaded file that contains training data.\n\nSee [upload file](/docs/api-reference/files/upload) for how to upload a file.\n\nYour dataset must be formatted as a JSONL file, where each training\nexample is a JSON object with the keys \"prompt\" and \"completion\".\nAdditionally, you must upload your file with the purpose `fine-tune`.\n\nSee the [fine-tuning guide](/docs/guides/fine-tuning/creating-training-data) for more details.\n",
+        "required": true
+      },
+      "validation_file": {
+        "type": "string",
+        "nullable": true,
+        "example": "file-XjSREls59WBbvgSzJSVWxMCa",
+        "description": "The ID of an uploaded file that contains validation data.\n\nIf you provide this file, the data is used to generate validation\nmetrics periodically during fine-tuning. These metrics can be viewed in\nthe [fine-tuning results file](/docs/guides/fine-tuning/analyzing-your-fine-tuned-model).\nYour train and validation data should be mutually exclusive.\n\nYour dataset must be formatted as a JSONL file, where each validation\nexample is a JSON object with the keys \"prompt\" and \"completion\".\nAdditionally, you must upload your file with the purpose `fine-tune`.\n\nSee the [fine-tuning guide](/docs/guides/fine-tuning/creating-training-data) for more details.\n"
+      },
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["ada", "babbage", "curie", "davinci"]
+          }
+        ],
+        "type": "anyOf",
+        "nullable": true,
+        "default": "curie",
+        "example": "curie",
+        "description": "The name of the base model to fine-tune. You can select one of \"ada\",\n\"babbage\", \"curie\", \"davinci\", or a fine-tuned model created after 2022-04-21.\nTo learn more about these models, see the\n[Models](https://platform.openai.com/docs/models) documentation.\n"
+      },
+      "n_epochs": {
+        "type": "integer",
+        "nullable": true,
+        "default": 4,
+        "description": "The number of epochs to train the model for. An epoch refers to one\nfull cycle through the training dataset.\n"
+      },
+      "batch_size": {
+        "type": "integer",
+        "nullable": true,
+        "default": null,
+        "description": "The batch size to use for training. The batch size is the number of\ntraining examples used to train a single forward and backward pass.\n\nBy default, the batch size will be dynamically configured to be\n~0.2% of the number of examples in the training set, capped at 256 -\nin general, we've found that larger batch sizes tend to work better\nfor larger datasets.\n"
+      },
+      "learning_rate_multiplier": {
+        "type": "number",
+        "nullable": true,
+        "default": null,
+        "description": "The learning rate multiplier to use for training.\nThe fine-tuning learning rate is the original learning rate used for\npretraining multiplied by this value.\n\nBy default, the learning rate multiplier is the 0.05, 0.1, or 0.2\ndepending on final `batch_size` (larger learning rates tend to\nperform better with larger batch sizes). We recommend experimenting\nwith values in the range 0.02 to 0.2 to see what produces the best\nresults.\n"
+      },
+      "prompt_loss_weight": {
+        "type": "number",
+        "nullable": true,
+        "default": 0.01,
+        "description": "The weight to use for loss on the prompt tokens. This controls how\nmuch the model tries to learn to generate the prompt (as compared\nto the completion which always has a weight of 1.0), and can add\na stabilizing effect to training when completions are short.\n\nIf prompts are extremely long (relative to completions), it may make\nsense to reduce this weight so as to avoid over-prioritizing\nlearning the prompt.\n"
+      },
+      "compute_classification_metrics": {
+        "type": "boolean",
+        "nullable": true,
+        "default": false,
+        "description": "If set, we calculate classification-specific metrics such as accuracy\nand F-1 score using the validation set at the end of every epoch.\nThese metrics can be viewed in the [results file](/docs/guides/fine-tuning/analyzing-your-fine-tuned-model).\n\nIn order to compute classification metrics, you must provide a\n`validation_file`. Additionally, you must\nspecify `classification_n_classes` for multiclass classification or\n`classification_positive_class` for binary classification.\n"
+      },
+      "classification_n_classes": {
+        "type": "integer",
+        "nullable": true,
+        "default": null,
+        "description": "The number of classes in a classification task.\n\nThis parameter is required for multiclass classification.\n"
+      },
+      "classification_positive_class": {
+        "type": "string",
+        "nullable": true,
+        "default": null,
+        "description": "The positive class in binary classification.\n\nThis parameter is needed to generate precision, recall, and F1\nmetrics when doing binary classification.\n"
+      },
+      "classification_betas": {
+        "array_schema": {
+          "type": "number"
+        },
+        "type": "array",
+        "nullable": true,
+        "default": null,
+        "example": [0.6, 1, 1.5, 2],
+        "description": "If this is provided, we calculate F-beta scores at the specified\nbeta values. The F-beta score is a generalization of F-1 score.\nThis is only used for binary classification.\n\nWith a beta of 1 (i.e. the F-1 score), precision and recall are\ngiven the same weight. A larger beta score puts more weight on\nrecall and less on precision. A smaller beta score puts more weight\non precision and less on recall.\n"
+      },
+      "suffix": {
+        "type": "string",
+        "nullable": true,
+        "default": null,
+        "description": "A string of up to 40 characters that will be added to your fine-tuned model name.\n\nFor example, a `suffix` of \"custom-model-name\" would produce a model name like `ada:ft-your-org:custom-model-name-2022-02-15-04-21-04`.\n"
+      }
+    },
+    "type": "object"
+  },
+  "CreateEmbeddingRequest": {
+    "object_schema": {
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["text-embedding-ada-002"]
+          }
+        ],
+        "type": "anyOf",
+        "example": "text-embedding-ada-002",
+        "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models/overview) for descriptions of them.\n",
+        "required": true
+      },
+      "input": {
+        "variants": [
+          {
+            "type": "string",
+            "default": "",
+            "example": "This is a test."
+          },
+          {
+            "array_schema": {
+              "type": "string",
+              "default": "",
+              "example": "This is a test."
+            },
+            "type": "array"
+          },
+          {
+            "array_schema": {
+              "type": "integer"
+            },
+            "type": "array",
+            "example": "[1212, 318, 257, 1332, 13]",
+            "minItems": 1
+          },
+          {
+            "array_schema": {
+              "array_schema": {
+                "type": "integer"
+              },
+              "type": "array",
+              "minItems": 1
+            },
+            "type": "array",
+            "example": "[[1212, 318, 257, 1332, 13]]",
+            "minItems": 1
+          }
+        ],
+        "type": "oneOf",
+        "example": "The quick brown fox jumped over the lazy dog",
+        "description": "Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a single request, pass an array of strings or array of token arrays. Each input must not exceed the max input tokens for the model (8191 tokens for `text-embedding-ada-002`). [Example Python code](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) for counting tokens.\n",
+        "required": true
+      },
+      "user": {
+        "type": "string",
+        "example": "user-1234",
+        "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices/end-user-ids).\n"
+      }
+    },
+    "type": "object",
+    "additionalProperties": false
+  },
+  "CreateEmbeddingResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "index": {
+              "type": "integer",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "embedding": {
+              "array_schema": {
+                "type": "number"
+              },
+              "type": "array",
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "usage": {
+        "object_schema": {
+          "prompt_tokens": {
+            "type": "integer",
+            "required": true
+          },
+          "total_tokens": {
+            "type": "integer",
+            "required": true
+          }
+        },
+        "type": "object",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateTranscriptionRequest": {
+    "object_schema": {
+      "file": {
+        "type": "file",
+        "description": "The audio file object (not file name) to transcribe, in one of these formats: mp3, mp4, mpeg, mpga, m4a, wav, or webm.\n",
+        "format": "binary",
+        "required": true
+      },
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["whisper-1"]
+          }
+        ],
+        "type": "anyOf",
+        "example": "whisper-1",
+        "description": "ID of the model to use. Only `whisper-1` is currently available.\n",
+        "required": true
+      },
+      "prompt": {
+        "type": "string",
+        "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text/prompting) should match the audio language.\n"
+      },
+      "response_format": {
+        "type": "string",
+        "enum": ["json", "text", "srt", "verbose_json", "vtt"],
+        "default": "json",
+        "description": "The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.\n"
+      },
+      "temperature": {
+        "type": "number",
+        "default": 0,
+        "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+      },
+      "language": {
+        "type": "string",
+        "description": "The language of the input audio. Supplying the input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) format will improve accuracy and latency.\n"
+      }
+    },
+    "type": "object",
+    "additionalProperties": false
+  },
+  "CreateTranscriptionResponse": {
+    "object_schema": {
+      "text": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "CreateTranslationRequest": {
+    "object_schema": {
+      "file": {
+        "type": "file",
+        "description": "The audio file object (not file name) translate, in one of these formats: mp3, mp4, mpeg, mpga, m4a, wav, or webm.\n",
+        "format": "binary",
+        "required": true
+      },
+      "model": {
+        "variants": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": ["whisper-1"]
+          }
+        ],
+        "type": "anyOf",
+        "example": "whisper-1",
+        "description": "ID of the model to use. Only `whisper-1` is currently available.\n",
+        "required": true
+      },
+      "prompt": {
+        "type": "string",
+        "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text/prompting) should be in English.\n"
+      },
+      "response_format": {
+        "type": "string",
+        "default": "json",
+        "description": "The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt.\n"
+      },
+      "temperature": {
+        "type": "number",
+        "default": 0,
+        "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+      }
+    },
+    "type": "object",
+    "additionalProperties": false
+  },
+  "CreateTranslationResponse": {
+    "object_schema": {
+      "text": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "Model": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created": {
+        "type": "integer",
+        "required": true
+      },
+      "owned_by": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "OpenAIFile": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "bytes": {
+        "type": "integer",
+        "required": true
+      },
+      "created_at": {
+        "type": "integer",
+        "required": true
+      },
+      "filename": {
+        "type": "string",
+        "required": true
+      },
+      "purpose": {
+        "type": "string",
+        "required": true
+      },
+      "status": {
+        "type": "string"
+      },
+      "status_details": {
+        "type": "string",
+        "nullable": true
+      }
+    },
+    "type": "object"
+  },
+  "FineTuneEvent": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created_at": {
+        "type": "integer",
+        "required": true
+      },
+      "level": {
+        "type": "string",
+        "required": true
+      },
+      "message": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "ListModelsResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "created": {
+              "type": "integer",
+              "required": true
+            },
+            "owned_by": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "ListFilesResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "bytes": {
+              "type": "integer",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "filename": {
+              "type": "string",
+              "required": true
+            },
+            "purpose": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string"
+            },
+            "status_details": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "ListFineTuneEventsResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "level": {
+              "type": "string",
+              "required": true
+            },
+            "message": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  },
+  "FineTune": {
+    "object_schema": {
+      "id": {
+        "type": "string",
+        "required": true
+      },
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "created_at": {
+        "type": "integer",
+        "required": true
+      },
+      "updated_at": {
+        "type": "integer",
+        "required": true
+      },
+      "model": {
+        "type": "string",
+        "required": true
+      },
+      "fine_tuned_model": {
+        "type": "string",
+        "nullable": true,
+        "required": true
+      },
+      "organization_id": {
+        "type": "string",
+        "required": true
+      },
+      "status": {
+        "type": "string",
+        "required": true
+      },
+      "hyperparams": {
+        "object_schema": {
+          "n_epochs": {
+            "type": "integer",
+            "required": true
+          },
+          "batch_size": {
+            "type": "integer",
+            "required": true
+          },
+          "prompt_loss_weight": {
+            "type": "number",
+            "required": true
+          },
+          "learning_rate_multiplier": {
+            "type": "number",
+            "required": true
+          },
+          "compute_classification_metrics": {
+            "type": "boolean"
+          },
+          "classification_positive_class": {
+            "type": "string"
+          },
+          "classification_n_classes": {
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": true
+      },
+      "training_files": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "bytes": {
+              "type": "integer",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "filename": {
+              "type": "string",
+              "required": true
+            },
+            "purpose": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string"
+            },
+            "status_details": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "validation_files": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "bytes": {
+              "type": "integer",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "filename": {
+              "type": "string",
+              "required": true
+            },
+            "purpose": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string"
+            },
+            "status_details": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "result_files": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "bytes": {
+              "type": "integer",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "filename": {
+              "type": "string",
+              "required": true
+            },
+            "purpose": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string"
+            },
+            "status_details": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      },
+      "events": {
+        "array_schema": {
+          "object_schema": {
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "level": {
+              "type": "string",
+              "required": true
+            },
+            "message": {
+              "type": "string",
+              "required": true
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "type": "object"
+  },
+  "ListFineTunesResponse": {
+    "object_schema": {
+      "object": {
+        "type": "string",
+        "required": true
+      },
+      "data": {
+        "array_schema": {
+          "object_schema": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "object": {
+              "type": "string",
+              "required": true
+            },
+            "created_at": {
+              "type": "integer",
+              "required": true
+            },
+            "updated_at": {
+              "type": "integer",
+              "required": true
+            },
+            "model": {
+              "type": "string",
+              "required": true
+            },
+            "fine_tuned_model": {
+              "type": "string",
+              "nullable": true,
+              "required": true
+            },
+            "organization_id": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string",
+              "required": true
+            },
+            "hyperparams": {
+              "object_schema": {
+                "n_epochs": {
+                  "type": "integer",
+                  "required": true
+                },
+                "batch_size": {
+                  "type": "integer",
+                  "required": true
+                },
+                "prompt_loss_weight": {
+                  "type": "number",
+                  "required": true
+                },
+                "learning_rate_multiplier": {
+                  "type": "number",
+                  "required": true
+                },
+                "compute_classification_metrics": {
+                  "type": "boolean"
+                },
+                "classification_positive_class": {
+                  "type": "string"
+                },
+                "classification_n_classes": {
+                  "type": "integer"
+                }
+              },
+              "type": "object",
+              "required": true
+            },
+            "training_files": {
+              "array_schema": {
+                "object_schema": {
+                  "id": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "object": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "created_at": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "filename": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "status_details": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array",
+              "required": true
+            },
+            "validation_files": {
+              "array_schema": {
+                "object_schema": {
+                  "id": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "object": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "created_at": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "filename": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "status_details": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array",
+              "required": true
+            },
+            "result_files": {
+              "array_schema": {
+                "object_schema": {
+                  "id": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "object": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "created_at": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "filename": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "status_details": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array",
+              "required": true
+            },
+            "events": {
+              "array_schema": {
+                "object_schema": {
+                  "object": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "created_at": {
+                    "type": "integer",
+                    "required": true
+                  },
+                  "level": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "required": true
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array",
+        "required": true
+      }
+    },
+    "type": "object"
+  }
+}

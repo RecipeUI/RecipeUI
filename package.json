@@ -1,5 +1,5 @@
 {
-  "name": "recipesui",
+  "name": "recipeui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,16 +10,29 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lint": "^6.4.0",
     "@heroicons/react": "^2.0.18",
+    "@tauri-apps/api": "^1.4.0",
+    "@uiw/react-codemirror": "^4.21.9",
     "classnames": "^2.3.2",
     "downshift": "^8.0.0",
+    "fuse.js": "^6.6.2",
+    "immer": "^10.0.2",
+    "lodash.debounce": "^4.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.7",
+    "usehooks-ts": "^2.9.1",
+    "uuid": "^9.0.0",
     "zustand": "^4.3.9"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.4.0",
+    "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
