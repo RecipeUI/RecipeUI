@@ -22,7 +22,7 @@ export function RecipeOutput() {
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "border px-2 py-1 cursor-pointer ",
+                  "first:!border-l-0 border-l px-2 py-1 cursor-pointer ",
                   currentTab === RecipeOutputTab.Docs
                     ? "bg-white"
                     : "bg-gray-600 text-white"

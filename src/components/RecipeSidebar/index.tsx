@@ -12,14 +12,14 @@ export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
-  if (!currentSession) return null;
+  // if (!currentSession) return null;
 
   return (
     <div className="w-56 border-r">
       <h3 className="font-bold text-sm my-4 mx-4">Sessions</h3>
       <div>
         {sessions.map((session) => {
-          const isCurrentSession = currentSession.id === session.id;
+          const isCurrentSession = currentSession?.id === session.id;
 
           return (
             <SessionTab
