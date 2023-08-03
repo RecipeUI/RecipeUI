@@ -256,6 +256,7 @@
         }
       }
     ],
+    "tags": ["Popular", "Examples"],
     "id": "a42867b0-2e85-44b2-9130-273a42f7582b"
   },
   {
@@ -265,6 +266,7 @@
     "path": "https://api.openai.com/v1/completions",
     "project": "OpenAI",
     "auth": "Bearer",
+    "deprecated": true,
     "requestBody": {
       "objectSchema": {
         "model": {
@@ -461,77 +463,6 @@
       "required": true
     },
     "id": "f168d599-6799-4d86-95ef-04693333d29f"
-  },
-  {
-    "summary": "Creates a new edit for the provided input, instruction, and parameters.",
-    "title": "Create Edit",
-    "method": "POST",
-    "path": "https://api.openai.com/v1/edits",
-    "project": "OpenAI",
-    "auth": "Bearer",
-    "requestBody": {
-      "objectSchema": {
-        "model": {
-          "variants": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string",
-              "enum": ["text-davinci-edit-001", "code-davinci-edit-001"]
-            }
-          ],
-          "type": "anyOf",
-          "example": "text-davinci-edit-001",
-          "description": "ID of the model to use. You can use the `text-davinci-edit-001` or `code-davinci-edit-001` model with this endpoint.",
-          "required": true
-        },
-        "input": {
-          "type": "string",
-          "nullable": true,
-          "default": "",
-          "example": "What day of the wek is it?",
-          "description": "The input text to use as a starting point for the edit."
-        },
-        "instruction": {
-          "type": "string",
-          "example": "Fix the spelling mistakes.",
-          "description": "The instruction that tells the model how to edit the prompt.",
-          "required": true
-        },
-        "n": {
-          "type": "integer",
-          "nullable": true,
-          "minimum": 1,
-          "maximum": 20,
-          "default": 1,
-          "example": 1,
-          "description": "How many edits to generate for the input and instruction."
-        },
-        "temperature": {
-          "type": "number",
-          "nullable": true,
-          "minimum": 0,
-          "maximum": 2,
-          "default": 1,
-          "example": 1,
-          "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n\nWe generally recommend altering this or `top_p` but not both.\n"
-        },
-        "top_p": {
-          "type": "number",
-          "nullable": true,
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1,
-          "example": 1,
-          "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or `temperature` but not both.\n"
-        }
-      },
-      "type": "object",
-      "contentType": "application/json",
-      "required": true
-    },
-    "id": "ce6954fa-5afc-4d54-b69d-548fc71728be"
   },
   {
     "summary": "Creates an image given a prompt.",

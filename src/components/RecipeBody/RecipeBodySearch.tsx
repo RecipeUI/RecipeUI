@@ -262,22 +262,29 @@ function RecipeListItems({
   selectedRecipe: Recipe | null;
 }) {
   const _recipes = useRecipeSessionStore((state) => state.recipes);
-  const recipeWithLabels = useMemo(
-    () =>
-      _recipes.map((recipe) => {
-        const optionLabel = `${recipe.project} / ${recipe.title}`;
+  const recipeWithLabels = useMemo(() => {
+    const newRecipes = _recipes
+      .filter((recipe) => !recipe.deprecated)
+      .map((recipe) => {
+        const optionLabel = `${recipe.project} ${recipe.title}`;
 
         return {
           ...recipe,
           label: optionLabel,
         };
-      }),
-    [_recipes]
-  );
+      });
+    newRecipes.sort((a, b) => {
+      const lengthA = a.tags ? a.tags.length : 0;
+      const lengthB = b.tags ? b.tags.length : 0;
+      return lengthB - lengthA; // Sorting in descending order, so the item with the most tags comes first
+    });
+
+    return newRecipes;
+  }, [_recipes]);
 
   const recipeSearch = useMemo(() => {
     return new Fuse(recipeWithLabels, {
-      keys: ["summary", "path", "optionLabel"],
+      keys: ["summary", "path", "label"],
       threshold: 0.4,
     });
   }, [recipeWithLabels]);
@@ -308,8 +315,7 @@ function RecipeListItems({
   return (
     <>
       {recipes.map((recipe, index) => {
-        const optionLabel = `${recipe.project} / ${recipe.title}`;
-
+        console.log(recipe);
         return (
           <li
             className={classNames(
@@ -321,15 +327,20 @@ function RecipeListItems({
             )}
             // @ts-expect-error being lazy here with types
             {...getItemProps({
-              key: optionLabel,
+              key: recipe.label,
               index,
               item: recipe,
             })}
           >
             <RouteTypeLabel recipeMethod={recipe.method} />
             <div className="flex-1">
-              <div className="text-base dark:text-gray-300">
+              <div className="text-base dark:text-gray-300 space-x-2">
                 <span>{recipe.path}</span>
+                {recipe.tags?.map((tag) => (
+                  <div className="badge badge-neutral" key={tag}>
+                    {tag}
+                  </div>
+                ))}
               </div>
               <div className="line-clamp-2 text-gray-600 text-sm dark:text-gray-400">
                 {recipe.title}
