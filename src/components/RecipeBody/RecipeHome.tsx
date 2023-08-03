@@ -12,6 +12,13 @@ const RECIPE_INITIAL_MARKETPLACE = [
       "Harness the power of cutting-edge AI models. Integrate world-class natural language processing into your applications and transform the way you interact with data.",
   },
   {
+    title: "GIPHY",
+    project: "GIPHY",
+    subheader: "Dynamic GIFs at Your Fingertips",
+    description:
+      "Bring your platform to life! Embed Giphy's vast library of animated GIFs to add fun, expression, and creativity to any digital experience.",
+  },
+  {
     title: "Reddit",
     project: "Reddit",
     subheader: "Social Content Feeds and Comments",
@@ -31,13 +38,6 @@ const RECIPE_INITIAL_MARKETPLACE = [
     subheader: "Map, Navigate, and Localize",
     description:
       "Connect users to the world. Integrate real-time mapping, navigation, and location-based services to provide tailored experiences and seamless journeys.",
-  },
-  {
-    title: "GIPHY",
-    project: "GIPHY",
-    subheader: "Dynamic GIFs at Your Fingertips",
-    description:
-      "Bring your platform to life! Embed Giphy's vast library of animated GIFs to add fun, expression, and creativity to any digital experience.",
   },
   {
     title: "Pokémon",

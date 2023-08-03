@@ -93,7 +93,7 @@ interface RecipeCore {
   method: RecipeMethod;
   path: string;
   project: string;
-  auth: RecipeAuthType.Bearer | null;
+  auth: RecipeAuthType.Bearer | string | null;
   id: string;
   tags?: string[];
   deprecated?: boolean;

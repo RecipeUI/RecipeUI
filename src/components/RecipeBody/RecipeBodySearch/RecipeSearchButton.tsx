@@ -35,6 +35,8 @@ export function RecipeSearchButton() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
+    const url = new URL(recipe.path);
+
     if (recipe.auth) {
       const token = sm.getSecret(recipe.project);
       if (!token) {
@@ -44,6 +46,10 @@ export function RecipeSearchButton() {
 
       if (recipe.auth === RecipeAuthType.Bearer) {
         headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      if (recipe.auth.includes("query")) {
+        url.searchParams.append(recipe.auth.split(":")[1], token);
       }
     }
     let body: undefined | string | FormData;
@@ -104,7 +110,7 @@ export function RecipeSearchButton() {
         body,
       };
 
-      const res = await fetch(recipe.path, payload);
+      const res = await fetch(url, payload);
       const json = await res.json();
 
       setOutput({

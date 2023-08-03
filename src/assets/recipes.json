@@ -1098,5 +1098,15 @@
       "required": true
     },
     "id": "eab23b46-8f95-4d8a-9339-84e1777064a8"
+  },
+  {
+    "summary": "GIPHY Trending returns a list of the most relevant and engaging content each and every day. Our feed of trending content is continuously updated, so you always have the latest and greatest at your fingertips",
+    "title": "Trending Endpoint",
+    "method": "GET",
+    "path": "https://api.giphy.com/v1/gifs/trending",
+    "project": "Giphy",
+    "auth": "query=api_key",
+    "tags": ["Popular", "Simple"],
+    "id": "26a0397e-b8d6-4299-96b7-189405f7c2aa"
   }
 ]

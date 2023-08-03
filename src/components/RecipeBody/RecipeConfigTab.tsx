@@ -48,10 +48,10 @@ export function RecipeNeedsAuth({
   const hasChanged = apiKey !== sm.getSecret(selectedRecipe.project);
   const docLink = docLinks[selectedRecipe.project];
 
-  let bearerNote = <></>;
+  let authNote = <></>;
   if (selectedRecipe.auth === RecipeAuthType.Bearer) {
     if (docLink) {
-      bearerNote = (
+      authNote = (
         <p>
           This recipe authorizes with a Bearer token that you{" "}
           {existingSecret ? "can edit below" : "need to add below"}.{" "}
@@ -62,7 +62,7 @@ export function RecipeNeedsAuth({
         </p>
       );
     } else {
-      bearerNote = (
+      authNote = (
         <p>
           This recipe authorizes with a{" "}
           <span
@@ -78,6 +78,12 @@ export function RecipeNeedsAuth({
         </p>
       );
     }
+  } else if (selectedRecipe.auth && selectedRecipe.auth.includes("query")) {
+    authNote = (
+      <p>
+        This recipe authorizes with a query param token that you can add below.
+      </p>
+    );
   }
 
   const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
@@ -86,7 +92,7 @@ export function RecipeNeedsAuth({
     <>
       <div className="text-start">
         <h3 className="font-bold mb-2">Setup</h3>
-        {bearerNote}
+        {authNote}
         {showAuthFlow ? (
           <div className="sm:space-x-2 mt-2 flex gap-2 flex-col sm:block">
             <input

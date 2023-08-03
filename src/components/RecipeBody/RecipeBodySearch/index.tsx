@@ -68,7 +68,6 @@ export function RecipeBodySearch() {
       });
       setRecipes(items);
     },
-
     items: recipes,
     itemToString(item) {
       return item ? item.path : "";
@@ -87,6 +86,9 @@ export function RecipeBodySearch() {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();
         setCurrentSession(null);
+        // TODO: This is a bug, it won't let me initialize empty values
+        setInputValue("");
+        setLocalInputValue("");
         openMenu();
       }
     };
@@ -115,6 +117,11 @@ export function RecipeBodySearch() {
 
   const debouncedInputValue = useDebounce(localInputValue, 300);
   useEffect(() => {
+    if (!debouncedInputValue) {
+      setRecipes(recipeWithLabels);
+      return;
+    }
+
     const items = recipeSearch.search(debouncedInputValue).map((r) => {
       return r.item;
     });
