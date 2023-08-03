@@ -12,7 +12,7 @@ export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
-  // if (!currentSession) return null;
+  if (!currentSession) return null;
 
   return (
     <div className="w-56 border-r">
