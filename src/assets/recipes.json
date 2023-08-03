@@ -230,27 +230,19 @@
         }
       },
       {
-        "title": "Write a Haiku 2",
-        "description": "We ask the system to act as a Haiku poet and ask it to write a poem about San Francisco. In the follow up, we ask it to modify the poem to incorporate mentions about the recent AI boom.",
+        "title": "Ask it to write code",
+        "description": "We ask the system to act as a programmer and ask it to write two simple javascript apps.",
         "author": "Samuel San",
         "requestBody": {
-          "model": "gpt-3.5-turbo",
+          "model": "gpt-4",
           "messages": [
             {
               "role": "system",
-              "content": "You are a Haiku poet"
+              "content": "You are a professional programmer."
             },
             {
               "role": "user",
-              "content": "Write me a poem about San Francisco"
-            },
-            {
-              "role": "assistant",
-              "content": "Golden Gate stretches\nFog whispers 'neath the bridges\nSan Francisco dreams"
-            },
-            {
-              "role": "user",
-              "content": "Incorporate something about the recent AI boom"
+              "content": "Write me two short and simple javascript apps."
             }
           ]
         }
@@ -514,6 +506,18 @@
       "contentType": "application/json",
       "required": true
     },
+    "examples": [
+      {
+        "title": "Bears at the beach",
+        "description": "Ask the AI to generate 2 images of bears at the beach.",
+        "author": "Jeane Carlos",
+        "requestBody": {
+          "prompt": "Two bears at the beach",
+          "n": 3,
+          "size": "512x512"
+        }
+      }
+    ],
     "id": "e5226081-79ff-40b6-b823-ab023891ed3b"
   },
   {
