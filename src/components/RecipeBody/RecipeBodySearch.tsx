@@ -2,7 +2,7 @@ import Downshift from "downshift";
 import classNames from "classnames";
 import { Recipe, RecipeAuthType } from "../../types/recipes";
 import Fuse from "fuse.js";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 
 import { useDebounce } from "usehooks-ts";

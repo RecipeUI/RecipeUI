@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import {
   RecipeArrayParam,
-  RecipeFileParam,
   RecipeObjectParam,
   RecipeParam,
   RecipeParamType,

@@ -4,7 +4,7 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
-import React, { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 export function RecipeOutput() {
