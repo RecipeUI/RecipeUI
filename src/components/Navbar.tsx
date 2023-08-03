@@ -1,7 +1,17 @@
+import { useRecipeSessionStore } from "../state/recipeSession";
+
 export function Navbar() {
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between h-12 items-center font-bold shadow-sm px-4 text-black">
-      <div className="flex items-center">
+      <button
+        className="flex items-center cursor-pointer"
+        onClick={() => {
+          setCurrentSession(null);
+        }}
+      >
         <svg
           width="27"
           height="28"
@@ -34,7 +44,7 @@ export function Navbar() {
           </defs>
         </svg>
         <h1 className="ml-2 dark:text-white">RecipeUI</h1>
-      </div>
+      </button>
     </div>
   );
 }

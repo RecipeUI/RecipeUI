@@ -77,10 +77,48 @@ interface FileManagerSlice {
   deleteFileManager: (path: string) => void;
 }
 
+export enum DeepActionType {
+  UpdateRecipeInput = "UpdateRecipeInput",
+}
+interface UpdateRecipeInputAction {
+  type: DeepActionType.UpdateRecipeInput;
+  payload: string;
+}
+
+type DeepAction = UpdateRecipeInputAction;
+export interface DeepActionsSlice {
+  deepActions: DeepAction[];
+  clearDeepAction: (type: DeepActionType) => void;
+  addDeepAction: (action: DeepAction) => void;
+}
+
 type Slices = RecipeSessionSlice &
   RecipeBodySlice &
   RecipeOutputSlice &
-  FileManagerSlice;
+  FileManagerSlice &
+  DeepActionsSlice;
+
+const createDeepActionSlice: StateCreator<Slices, [], [], DeepActionsSlice> = (
+  set
+) => {
+  return {
+    deepActions: [],
+    clearDeepAction: (type) => {
+      set((prevState) => {
+        return {
+          deepActions: prevState.deepActions.filter((a) => a.type !== type),
+        };
+      });
+    },
+    addDeepAction: (action) => {
+      set((prevState) => {
+        return {
+          deepActions: [...prevState.deepActions, action],
+        };
+      });
+    },
+  };
+};
 
 export interface LocalStorageState {
   sessions: RecipeSession[];
@@ -371,6 +409,7 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeBodySlice(...a),
   ...createRecipeOutputSlice(...a),
   ...createFileManagerSlice(...a),
+  ...createDeepActionSlice(...a),
 }));
 
 const GLOBAL_POLLING_FACTOR = 10000;
