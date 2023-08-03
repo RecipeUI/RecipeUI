@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import {
   RecipeArrayParam,
+  RecipeFileParam,
   RecipeObjectParam,
   RecipeParam,
   RecipeParamType,
@@ -9,7 +10,7 @@ import {
 } from "../../types/recipes";
 import ReactMarkdown from "react-markdown";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { getDefaultValue, getValueInObjPath } from "../../utils/main";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -447,9 +448,91 @@ function RecipeDocParamEdit({
     return (
       <RecipeDocObjectParam paramPath={paramPath} paramSchema={paramSchema} />
     );
+  } else if (paramSchema.type === RecipeParamType.File) {
+    return <RecipeFileParam paramPath={paramPath} />;
   }
 
   return <EditInEditor />;
+}
+
+function RecipeFileParam({ paramPath }: { paramPath: string }) {
+  const requestBody = useRecipeSessionStore((state) => state.requestBody);
+  const fileManagerInfo = useRecipeSessionStore((state) => state.fileManager);
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession!
+  );
+  const updateFileInfo = useRecipeSessionStore(
+    (state) => state.updateFileManager
+  );
+  const deleteFileInfo = useRecipeSessionStore(
+    (state) => state.deleteFileManager
+  );
+
+  const updateRequestBody = useRecipeSessionStore(
+    (state) => state.updateRequestBody
+  );
+
+  const fileInfo = fileManagerInfo[currentSession.id] as File | undefined;
+  const paramState = getValueInObjPath(requestBody, paramPath) as
+    | string
+    | undefined;
+
+  useEffect(() => {
+    if (fileInfo === undefined && paramState !== undefined) {
+      updateRequestBody({
+        path: paramPath,
+        value: null,
+      });
+    }
+  }, []);
+
+  const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      updateRequestBody({
+        path: paramPath,
+        value: file?.name,
+      });
+      updateFileInfo(currentSession.id, file);
+    }
+  };
+
+  return (
+    <div className="flex space-x-2 items-center">
+      {fileInfo && paramState ? (
+        <div>
+          <span className="mr-2 text-sm border border-dashed rounded-md p-2">
+            {fileInfo.name}
+          </span>
+          <button
+            className="btn btn-sm"
+            onClick={() => {
+              updateRequestBody({
+                path: paramPath,
+                value: null,
+              });
+              deleteFileInfo(currentSession.id);
+            }}
+          >
+            Change
+          </button>
+        </div>
+      ) : (
+        <input
+          type="file"
+          className="file-input file-input-bordered w-full max-w-xs file-input-sm"
+          onChange={onUpload}
+        />
+      )}
+      <div
+        className="tooltip text-sm"
+        data-tip="Files you upload are only available temporarily. We do not store anything locally or online."
+      >
+        Where is my file stored?
+      </div>
+    </div>
+  );
 }
 
 function EditInEditor() {

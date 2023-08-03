@@ -66,7 +66,17 @@ interface RecipeBodySlice {
   setRequestBody: (requestBody: Record<string, unknown>) => void;
   updateRequestBody: (updateProps: { path: string; value: unknown }) => void;
 }
-type Slices = RecipeSessionSlice & RecipeBodySlice & RecipeOutputSlice;
+
+interface FileManagerSlice {
+  fileManager: Record<string, File>;
+  updateFileManager: (path: string, file: File) => void;
+  deleteFileManager: (path: string) => void;
+}
+
+type Slices = RecipeSessionSlice &
+  RecipeBodySlice &
+  RecipeOutputSlice &
+  FileManagerSlice;
 
 export interface LocalStorageState {
   sessions: RecipeSession[];
@@ -274,10 +284,32 @@ const createRecipeOutputSlice: StateCreator<
   };
 };
 
+const createFileManagerSlice: StateCreator<Slices, [], [], FileManagerSlice> = (
+  set
+) => {
+  return {
+    fileManager: {},
+    updateFileManager: (path, file) =>
+      set((prevState) => ({
+        fileManager: {
+          ...prevState.fileManager,
+          [path]: file,
+        },
+      })),
+    deleteFileManager: (path) =>
+      set((prevState) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [path]: _, ...nextFileManager } = prevState.fileManager;
+        return { fileManager: nextFileManager };
+      }),
+  };
+};
+
 export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeSessionSlice(...a),
   ...createRecipeBodySlice(...a),
   ...createRecipeOutputSlice(...a),
+  ...createFileManagerSlice(...a),
 }));
 
 const GLOBAL_POLLING_FACTOR = 10000;

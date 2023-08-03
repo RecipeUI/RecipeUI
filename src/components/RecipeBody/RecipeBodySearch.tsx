@@ -110,6 +110,7 @@ function RecipeSearchButton() {
   const clearOutput = useRecipeSessionStore((store) => store.clearOutput);
   const sm = useSecretManager();
   const [isSending, setIsSending] = useState(false);
+  const fileManager = useRecipeSessionStore((store) => store.fileManager);
 
   const onSubmit = async () => {
     setIsSending(true);
@@ -139,7 +140,7 @@ function RecipeSearchButton() {
         headers["Authorization"] = `Bearer ${token}`;
       }
     }
-    let body: undefined | string;
+    let body: undefined | string | FormData;
 
     // TODO: We can have very strict validation eventually
     if (
@@ -156,7 +157,38 @@ function RecipeSearchButton() {
         alert("Please fill in all required fields.");
         return;
       }
-      body = JSON.stringify(requestBody);
+
+      const contentType = currentSession.recipe.requestBody.contentType;
+
+      if (contentType === "application/json") {
+        body = JSON.stringify(requestBody);
+      } else if (contentType === "multipart/form-data") {
+        // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
+        delete headers["Content-Type"];
+
+        const formData = new FormData();
+
+        for (const key in requestBody) {
+          let payload = requestBody[key];
+
+          if (typeof payload === "object" && payload !== null) {
+            payload = JSON.stringify(payload);
+          }
+
+          if (key === "file") {
+            // This only works well for 1 layer deep route. Think of something better when we bump into multi layer
+            const file = fileManager[currentSession.id];
+            if (!file) {
+              alert("Please upload a file first.");
+              return;
+            }
+            payload = file;
+          }
+
+          formData.append(key, payload as string | Blob);
+        }
+        body = formData;
+      }
     }
 
     try {
@@ -168,7 +200,6 @@ function RecipeSearchButton() {
 
       const res = await fetch(recipe.path, payload);
       const json = await res.json();
-      console.log(res, json);
 
       setOutput({
         output: json,
@@ -200,9 +231,8 @@ function RecipeSearchButton() {
     <div className="tooltip tooltip-bottom" data-tip="CMD+Enter">
       <button
         ref={ref}
-        aria-label={"toggle menu"}
         className={classNames(
-          "btn sm:w-24 w-full",
+          "btn dark:btn-accent dark:text-white sm:w-24 w-full",
           (!currentSession || isSending) && "btn-disabled"
         )}
         type="button"

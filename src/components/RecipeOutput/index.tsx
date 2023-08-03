@@ -24,7 +24,7 @@ export function RecipeOutput() {
                 className={classNames(
                   "first:!border-l-0 border-l px-2 py-1 cursor-pointer ",
                   currentTab === RecipeOutputTab.Docs
-                    ? "bg-white"
+                    ? ""
                     : "bg-gray-600 text-white"
                 )}
               >
@@ -45,7 +45,9 @@ export function RecipeOutputConsole() {
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white">
       <h1 className="text-xl font-bold">Output</h1>
       {Object.keys(output).length > 0 && (
-        <pre className="mt-2">{JSON.stringify(output, null, 2)}</pre>
+        <pre className="mt-2 whitespace-break-spaces">
+          {JSON.stringify(output, null, 2)}
+        </pre>
       )}
     </div>
   );
