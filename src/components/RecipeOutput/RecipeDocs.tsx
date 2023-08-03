@@ -449,13 +449,13 @@ function RecipeDocParamEdit({
       <RecipeDocObjectParam paramPath={paramPath} paramSchema={paramSchema} />
     );
   } else if (paramSchema.type === RecipeParamType.File) {
-    return <RecipeFileParam paramPath={paramPath} />;
+    return <RecipeFileParamEdit paramPath={paramPath} />;
   }
 
   return <EditInEditor />;
 }
 
-function RecipeFileParam({ paramPath }: { paramPath: string }) {
+function RecipeFileParamEdit({ paramPath }: { paramPath: string }) {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const fileManagerInfo = useRecipeSessionStore((state) => state.fileManager);
   const currentSession = useRecipeSessionStore(

@@ -109,8 +109,10 @@ function RecipeSearchButton() {
   const setOutput = useRecipeSessionStore((store) => store.setOutput);
   const clearOutput = useRecipeSessionStore((store) => store.clearOutput);
   const sm = useSecretManager();
-  const [isSending, setIsSending] = useState(false);
   const fileManager = useRecipeSessionStore((store) => store.fileManager);
+
+  const isSending = useRecipeSessionStore((store) => store.isSending);
+  const setIsSending = useRecipeSessionStore((store) => store.setIsSending);
 
   const onSubmit = async () => {
     setIsSending(true);

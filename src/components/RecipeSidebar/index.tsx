@@ -17,8 +17,6 @@ export function RecipeSidebar() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      console.log("in here", event.metaKey, event.ctrlKey, event.key);
-
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();
         setCurrentSession(null);
@@ -39,7 +37,7 @@ export function RecipeSidebar() {
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-sm ml-4 ">Sessions</h3>
         <button
-          className="hover:bg-blue-900 px-4 py-3 tooltip tooltip-bottom"
+          className="hover:bg-blue-600 dark:hover:bg-blue-900 px-4 py-3 tooltip tooltip-bottom"
           data-tip="Add a new session (CMD+K)"
           onClick={() => {
             setCurrentSession(null);

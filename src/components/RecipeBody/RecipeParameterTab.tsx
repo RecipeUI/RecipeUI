@@ -185,7 +185,7 @@ function RecipeJsonEditor() {
         <h3 className="text-lg font-bold">Request Body</h3>
         <div
           className="tooltip tooltip-right"
-          data-tip={`This the payload we'll send to ${selectedRecipe.project}. Use parameters on the right or choose from examples.`}
+          data-tip={`This is the payload we'll send to ${selectedRecipe.project}. Use parameters on the right or choose from examples.`}
         >
           <InformationCircleIcon className="h-4 w-4" />
         </div>

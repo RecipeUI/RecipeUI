@@ -39,13 +39,17 @@ export enum RecipeOutputType {
 }
 
 export enum RecipeOutputTab {
-  Output = "Output",
+  Output = "Response",
   Docs = "Docs",
 }
 
 interface RecipeOutputSlice {
+  isSending: boolean;
+  setIsSending: (isSending: boolean) => void;
+
   output: Record<string, unknown>;
   outputType: RecipeOutputType;
+
   setOutput: (params: {
     output: Record<string, unknown>;
     outputType: RecipeOutputType;
@@ -114,6 +118,7 @@ const createRecipeSessionSlice: StateCreator<
           currentSession: session,
           requestBody,
           bodyRoute: RecipeBodyRoute.Parameters,
+          outputTab: RecipeOutputTab.Docs,
         };
       }),
 
@@ -247,7 +252,63 @@ const createRecipeOutputSlice: StateCreator<
   RecipeOutputSlice
 > = (set) => {
   return {
+    isSending: false,
+    setIsSending: (isSending) =>
+      set(() => ({ isSending, outputTab: RecipeOutputTab.Output })),
+
     output: {},
+    // output: {
+    //   id: "chatcmpl-7jMrqbnKzdqSJGuQpIcu2YJ9rL4di",
+    //   object: "chat.completion",
+    //   created: 1691047018,
+    //   model: "gpt-3.5-turbo-0613",
+    //   choices: [
+    //     {
+    //       index: 0,
+    //       message: {
+    //         role: "assistant",
+    //         content:
+    //           'Sure! Here\'s a simple code for a number guessing game in Python:\n\n```python\nimport random\n\nnumber = random.randint(1, 100)\nguess = 0\ntries = 0\n\nprint("Welcome to the Number Guessing Game!")\nprint("I\'m thinking of a number between 1 and 100.")\n\nwhile guess != number:\n    guess = int(input("Take a guess: "))\n    tries += 1\n\n    if guess < number:\n        print("Too low!")\n    elif guess > number:\n        print("Too high!")\n    else:\n        print("Congratulations! You guessed the number in", tries, "tries!")\n\n```\n\nIn this code, the program generates a random number between 1 and 100 using the `random.randint` function. The user is prompted to make a guess, and the program checks if the guess is too low, too high, or correct. It keeps track of the number of tries and stops the loop when the correct guess is made.',
+    //       },
+    //       finish_reason: "stop",
+    //     },
+    //   ],
+    //   usage: {
+    //     prompt_tokens: 27,
+    //     completion_tokens: 202,
+    //     total_tokens: 229,
+    //   },
+    // },
+    // output: {
+    //   id: "chatcmpl-7jNvMQC3Moyz7aMfPhBSA1yEigHem",
+    //   object: "chat.completion",
+    //   created: 1691051080,
+    //   model: "gpt-4-0613",
+    //   choices: [
+    //     {
+    //       index: 0,
+    //       message: {
+    //         role: "assistant",
+    //         content:
+    //           "Sure! I will write a code for a simple Number Guessing Game. The user will have to guess a number between 1 and 10 and the program will tell if the guess is correct or not. Here's how you could do it.\n\nIn the first snippet, we are going to generate a random number between 1 and 10.\n\n```javascript\nvar randomNumber = Math.floor(Math.random() * 10) + 1;\nconsole.log(randomNumber); // For testing purposes.\n```\n\nIn the second snippet, we would create a function to accept the user's guess, then checks if it's the same as the random number and alert the user if it's correct or not.\n\n```javascript\nfunction guessNumber(userGuess) {\n    if(userGuess === randomNumber) {\n        alert(\"Congratulations, you've guessed the right number!\");\n    } else {\n        alert(\"Sorry, that's not correct. The correct number was \" + randomNumber);\n    }\n}\n```\n\nTo use the function, just call `guessNumber()` with the guessed number as the argument. For example:\n\n```javascript\nguessNumber(7);\n```\nThis simple game can be expanded by giving the user multiple tries to guess the number, implementing a scoring system, or other features that enhance the user experience.",
+    //       },
+    //       finish_reason: "stop",
+    //     },
+    //   ],
+    //   usage: {
+    //     prompt_tokens: 30,
+    //     completion_tokens: 260,
+    //     total_tokens: 290,
+    //   },
+    // },
+    // output: {
+    //   created: 1691049237,
+    //   data: [
+    //     {
+    //       url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-WxgWfYsuv9cB1gLymr9wTLil/user-sfA1NVKyEWjq40wdBZgXvr4c/img-lQI52GAcHZQQ3TXAwkM0osLi.png?st=2023-08-03T06%3A53%3A57Z&se=2023-08-03T08%3A53%3A57Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-08-03T01%3A41%3A56Z&ske=2023-08-04T01%3A41%3A56Z&sks=b&skv=2021-08-06&sig=1NJFTlV6ze5vsjpxJpPf/Yn6ZC/wM396%2B/eHQmEbsRo%3D",
+    //     },
+    //   ],
+    // },
     // output: {
     //   id: "chatcmpl-7jBgprQuQw9HsxkUZWTcoJf8CqaGe",
     //   object: "chat.completion",
