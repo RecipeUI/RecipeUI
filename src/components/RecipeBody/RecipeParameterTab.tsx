@@ -55,9 +55,9 @@ export function RecipeParameterTab() {
   const needsParams =
     hasRequiredParams && Object.keys(requestBody).length === 0;
 
-  // Wait i actually want to do this by recipeId I think
   const showOnboarding = needsAuthSetup || needsParams;
   const hasExamples = "examples" in selectedRecipe;
+  const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
 
   return (
     <div className="flex-1">
@@ -125,7 +125,9 @@ export function RecipeParameterTab() {
           </div>
         </div>
       )}
-      {!showOnboarding && hasRequestBody && <RecipeJsonEditor />}
+      {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
+        <RecipeJsonEditor />
+      )}
       {!showOnboarding && !hasRequestBody && <NoEditorCopy />}
     </div>
   );

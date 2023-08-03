@@ -3,20 +3,51 @@ import {
   RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
 
-  if (!currentSession) return null;
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      console.log("in here", event.metaKey, event.ctrlKey, event.key);
+
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
+        setCurrentSession(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Remove the keydown event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  if (sessions.length === 0) return null;
 
   return (
     <div className="hidden sm:block w-56 border-r">
-      <h3 className="font-bold text-sm my-4 mx-4">Sessions</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="font-bold text-sm ml-4 ">Sessions</h3>
+        <button
+          className="hover:bg-blue-900 px-4 py-3 tooltip tooltip-bottom"
+          data-tip="Add a new session (CMD+K)"
+          onClick={() => {
+            setCurrentSession(null);
+          }}
+        >
+          <PlusCircleIcon className="w-4 h-4" />
+        </button>
+      </div>
       <div>
         {sessions.map((session) => {
           const isCurrentSession = currentSession?.id === session.id;
@@ -81,7 +112,7 @@ function SessionTab({
       <RouteTypeLabel size="small" recipeMethod={session.recipe.method} />
       {isEditing ? (
         <input
-          className="text-black outline-none ml-2"
+          className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900"
           onBlur={onUpdateSessionName}
           onKeyDown={(e) => {
             if (e.key === "Enter") onUpdateSessionName();

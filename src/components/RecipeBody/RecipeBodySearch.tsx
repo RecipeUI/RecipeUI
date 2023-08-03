@@ -16,12 +16,17 @@ export function RecipeBodySearch() {
   const recipes = useRecipeSessionStore((state) => state.recipes);
   const addSession = useRecipeSessionStore((state) => state.addSession);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
 
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "p") {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();
+        setCurrentSession(null);
+
         ref.current?.click();
         ref.current?.focus();
         ref.current?.select();
@@ -69,7 +74,7 @@ export function RecipeBodySearch() {
                   onClick={() => {
                     if (!isOpen) openMenu();
                   }}
-                  placeholder="Start typing here to search.... (Shortcut: CMD+P)"
+                  placeholder="Start typing here to search.... (Shortcut: CMD+K)"
                   className="outline-none w-full dark:bg-transparent"
                   {...getInputProps()}
                 />
