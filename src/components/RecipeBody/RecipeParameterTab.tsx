@@ -8,7 +8,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import debounce from "lodash.debounce";
 
 import { json, jsonParseLinter } from "@codemirror/lang-json";
-import { useDebounce } from "usehooks-ts";
+import { useDarkMode, useDebounce } from "usehooks-ts";
 import { linter, lintGutter } from "@codemirror/lint";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
@@ -78,7 +78,7 @@ export function RecipeParameterTab() {
                   <div className="space-y-2">
                     <h3 className="font-bold">Parameters</h3>
                     <p>
-                      Use our docs pane to the right or hit below to open the
+                      Use the docs panel to the right or hit below to open the
                       editor.
                     </p>
                     <button
@@ -175,6 +175,7 @@ function RecipeJsonEditor() {
     }, 1000),
     [setRequestBody]
   );
+  const { isDarkMode } = useDarkMode();
 
   return (
     <div className="mx-4 my-6">
@@ -191,6 +192,7 @@ function RecipeJsonEditor() {
         className="h-full !outline-none border-none"
         value={requestCode}
         basicSetup={codeMirrorSetup}
+        theme={isDarkMode ? "dark" : "light"}
         extensions={extensions}
         onChange={(newCode) => {
           setRequestCode(newCode);

@@ -70,7 +70,7 @@ export function RecipeBodySearch() {
                     if (!isOpen) openMenu();
                   }}
                   placeholder="Start typing here to search.... (Shortcut: CMD+P)"
-                  className="outline-none w-full"
+                  className="outline-none w-full dark:bg-transparent"
                   {...getInputProps()}
                 />
               </div>
@@ -256,7 +256,7 @@ function RecipeListItems({
 
   if (recipes.length === 0 && inputValue) {
     return (
-      <li className="py-2 px-4 shadow-sm flex space-x-2">
+      <li className="py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-600">
         <div className="flex-1">
           <div className="text-base">
             <span className="">No recipes found for </span>
@@ -279,8 +279,8 @@ function RecipeListItems({
               selectedRecipe?.path === recipe.path &&
                 highlightedIndex !== index &&
                 "bg-gray-300",
-              highlightedIndex === index && "bg-blue-300",
-              "py-2 px-4 shadow-sm flex space-x-2"
+              highlightedIndex === index && "bg-blue-300 dark:!bg-neutral-700",
+              "py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-800"
             )}
             // @ts-expect-error being lazy here with types
             {...getItemProps({
@@ -291,15 +291,13 @@ function RecipeListItems({
           >
             <RouteTypeLabel recipeMethod={recipe.method} />
             <div className="flex-1">
-              <div className="text-base">
-                <span className="">{optionLabel} - </span>
+              <div className="text-base dark:text-gray-300">
                 <span>{recipe.path}</span>
               </div>
-              {recipe.summary && (
-                <div className="line-clamp-2 text-gray-600 text-sm">
-                  {recipe.summary}
-                </div>
-              )}
+              <div className="line-clamp-2 text-gray-600 text-sm dark:text-gray-400">
+                {recipe.title}
+                {recipe.summary && `: ${recipe.summary}`}
+              </div>
             </div>
           </li>
         );
