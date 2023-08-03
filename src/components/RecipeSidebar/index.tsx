@@ -15,7 +15,7 @@ export function RecipeSidebar() {
   if (!currentSession) return null;
 
   return (
-    <div className="w-56 border-r">
+    <div className="hidden sm:block w-56 border-r">
       <h3 className="font-bold text-sm my-4 mx-4">Sessions</h3>
       <div>
         {sessions.map((session) => {

@@ -57,10 +57,10 @@ export function RecipeBodySearch() {
         <div className="p-4">
           <div className="flex flex-col relative">
             <div
-              className="flex space-x-2"
+              className="flex sm:space-x-2 flex-col sm:flex-row"
               {...getRootProps({}, { suppressRefError: true })}
             >
-              <div className="input input-bordered flex-1 flex items-center space-x-2">
+              <div className="input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0">
                 {selectedRecipe?.method && (
                   <RouteTypeLabel recipeMethod={selectedRecipe.method} />
                 )}
@@ -77,7 +77,7 @@ export function RecipeBodySearch() {
               <RecipeSearchButton />
             </div>
             <ul
-              className={`absolute bg-white top-14 w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10 ${
+              className={`absolute bg-white top-14 w-full mt-2 sm:mt-0 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10 ${
                 !(isOpen && recipes.length) && "hidden"
               }`}
               {...getMenuProps()}
@@ -197,7 +197,7 @@ function RecipeSearchButton() {
         ref={ref}
         aria-label={"toggle menu"}
         className={classNames(
-          "btn w-24",
+          "btn sm:w-24 w-full",
           (!currentSession || isSending) && "btn-disabled"
         )}
         type="button"
@@ -256,7 +256,7 @@ function RecipeListItems({
 
   if (recipes.length === 0 && inputValue) {
     return (
-      <li className="py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-600">
+      <li className="py-2 px-4 shadow-sm flex sm:space-x-2 dark:bg-neutral-600">
         <div className="flex-1">
           <div className="text-base">
             <span className="">No recipes found for </span>

@@ -21,7 +21,7 @@ export function RecipeDocs() {
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
 
   return (
-    <div className="absolute inset-0 px-4 py-6 overflow-y-auto">
+    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
       <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
       {selectedRecipe.summary && (
         <p className="mt-2">{selectedRecipe.summary}</p>

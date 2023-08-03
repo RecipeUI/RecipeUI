@@ -64,7 +64,7 @@ export function RecipeParameterTab() {
       {showOnboarding && (
         <div className="space-y-4 mb-4 mx-4 mt-6">
           <div className="alert w-full flex">
-            <div className="space-y-4 w-full">
+            <div className="space-y-4 w-full text-start">
               <h1 className="font-bold text-2xl">Get Started</h1>
               {needsAuthSetup && (
                 <>

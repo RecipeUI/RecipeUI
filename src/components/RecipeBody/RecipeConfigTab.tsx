@@ -17,7 +17,7 @@ export function RecipeConfigTab() {
   return (
     <div className="flex-1 relative px-4 py-6">
       <div className="alert flex flex-col items-start w-full">
-        <div className="w-full space-y-4">
+        <div className="w-full space-y-4 text-start">
           <h1 className="text-xl font-bold">Config</h1>
           {needsAuth && (
             <>
@@ -84,11 +84,11 @@ export function RecipeNeedsAuth({
 
   return (
     <>
-      <div className="">
+      <div className="text-start">
         <h3 className="font-bold mb-2">Setup</h3>
         {bearerNote}
         {showAuthFlow ? (
-          <div className="space-x-2 mt-2">
+          <div className="sm:space-x-2 mt-2 flex gap-2 flex-col sm:block">
             <input
               type="text"
               placeholder="api_key_here"

@@ -15,7 +15,7 @@ export function RecipeExamplesTab() {
 
   return (
     <div className="flex-1 relative">
-      <div className="absolute inset-0 mx-4 my-6 overflow-y-auto">
+      <div className="sm:absolute inset-0 mx-4 my-6 overflow-y-auto">
         <h1 className="text-xl font-bold">Examples</h1>
         <p className="mt-2">
           Use some of examples below to quickly prefill the editor.

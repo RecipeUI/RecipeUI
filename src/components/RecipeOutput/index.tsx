@@ -11,7 +11,7 @@ export function RecipeOutput() {
   const output = useRecipeSessionStore((state) => state.output);
 
   return (
-    <div className="flex-1 relative border-l">
+    <div className="flex-1 relative border-t sm:border-l sm:border-t-0">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {Object.keys(output).length > 0 && (
@@ -42,7 +42,7 @@ export function RecipeOutputConsole() {
   const output = useRecipeSessionStore((state) => state.output);
 
   return (
-    <div className="absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white">
+    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white">
       <h1 className="text-xl font-bold">Output</h1>
       {Object.keys(output).length > 0 && (
         <pre className="mt-2">{JSON.stringify(output, null, 2)}</pre>

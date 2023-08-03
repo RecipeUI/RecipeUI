@@ -1,6 +1,6 @@
 export function Navbar() {
   return (
-    <div className="w-full flex justify-between h-12 items-center font-bold shadow-sm px-4 text-black">
+    <div className="py-2 sm:py-0 w-full flex justify-between h-12 items-center font-bold shadow-sm px-4 text-black">
       <div className="flex items-center">
         <svg
           width="27"
