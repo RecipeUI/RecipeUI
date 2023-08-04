@@ -98,7 +98,7 @@ export function RecipeHome() {
       <p>
         Discover recipes built from the community. More recipes will come soon.
       </p>
-      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 mt-4 gap-4">
+      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4">
         {RECIPE_INITIAL_MARKETPLACE.map((recipe) => {
           return (
             <RecipeHomeBox
