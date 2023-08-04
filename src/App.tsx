@@ -5,7 +5,6 @@ import { RecipeContainer } from "./components/RecipeContainer";
 function App() {
   return (
     <div className="w-full h-screen flex flex-col">
-      {/* TODO: Navbar should be hidden in desktop mode */}
       <Navbar />
       <RecipeContainer />
     </div>

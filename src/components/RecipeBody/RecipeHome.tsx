@@ -94,7 +94,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
 export function RecipeHome() {
   return (
     <div className="flex-1 flex flex-col p-4">
-      <h1 className="text-2xl font-bold">Recipe Marketplace</h1>
+      <h1 className="text-2xl font-bold dark:text-white">Recipe Marketplace</h1>
       <p>
         Discover recipes built from the community. More recipes will come soon.
       </p>
@@ -138,7 +138,7 @@ function RecipeHomeBox({
       <div className="flex justify-between ">
         <div className="flex items-center">
           {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
-          <h2 className="font-bold text-xl">{title}</h2>
+          <h2 className="font-bold text-xl dark:text-white">{title}</h2>
         </div>
         <div
           className="tooltip"
@@ -164,8 +164,12 @@ function RecipeHomeBox({
           </button>
         </div>
       </div>
-      <h3 className="font-bold text-sm">{subheader ?? "Testing"}</h3>
-      <p className="text-sm text-gray-600 line-clamp-3">{description}</p>
+      <h3 className="font-bold text-sm dark:text-gray-100">
+        {subheader ?? "Testing"}
+      </h3>
+      <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
+        {description}
+      </p>
     </div>
   );
 }
