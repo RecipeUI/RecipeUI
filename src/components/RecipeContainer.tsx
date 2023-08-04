@@ -7,7 +7,6 @@ export function RecipeContainer() {
 
   return (
     <div className="flex flex-1 border-t">
-      {/* <Sidebar /> */}
       <RecipeSidebar />
       <RecipeBodyContainer />
     </div>

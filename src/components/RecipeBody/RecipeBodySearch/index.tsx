@@ -152,7 +152,7 @@ export function RecipeBodySearch() {
           <RecipeSearchButton />
         </div>
         <ul
-          className={`absolute bg-white top-14 w-full mt-2 sm:mt-0 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10 
+          className={`w-full mt-2 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10 
           ${!isOpen && "hidden"}
 
           `}
