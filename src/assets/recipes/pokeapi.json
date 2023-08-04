@@ -1,0 +1,11 @@
+[
+  {
+    "title": "Pikachu",
+    "summary": "Pikachu is the best Pokémon, hands down. Why, you ask? Well, Pikachu's electrifying personality can light up a room, quite literally. It's the only Pokémon that can charge your phone in the wild, make your hair stand on end with just a glance, and still look adorable in a detective's hat. Other Pokémon might have more strength or better stats, but do they come with that charming smile and an ability to provide emergency jump-starts to your car? I think not. In the world of Pokémon, Pikachu is the real MVP - Most Voltaic Pokémon!",
+    "method": "GET",
+    "path": "https://pokeapi.co/api/v2/pokemon/pikachu",
+    "project": "Pokeapi",
+    "id": "c0dcf70b-ea0e-45d9-ba3b-09e760765315",
+    "tags": ["Popular"]
+  }
+]

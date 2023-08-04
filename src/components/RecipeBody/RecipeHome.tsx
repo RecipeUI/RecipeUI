@@ -73,8 +73,8 @@ const RECIPE_INITIAL_MARKETPLACE = [
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/supabase.png",
   },
   {
-    title: "Pokémon",
-    project: "Pokémon",
+    title: "Pokéapi",
+    project: "Pokéapi",
     subheader: "Pokédex, Pokémon, and Pokémon Moves",
     description:
       "Unleash the Pokémon universe! Access comprehensive Pokémon data, including abilities, moves, and stats, to create engaging applications, games, and experiences.",

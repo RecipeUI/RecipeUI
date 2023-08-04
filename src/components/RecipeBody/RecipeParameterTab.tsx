@@ -40,7 +40,7 @@ export function RecipeParameterTab() {
     hasQueryParams,
     hasRequiredQueryParams,
   } = useMemo(() => {
-    const needsAuthSetup = selectedRecipe.auth !== null && secret == null;
+    const needsAuthSetup = selectedRecipe.auth != null && secret == null;
 
     let hasRequiredBodyParams = false;
     let hasRequestBody = false;
@@ -78,6 +78,7 @@ export function RecipeParameterTab() {
   const needsQueryParams = hasRequiredQueryParams && !hasQueryParamPayload;
 
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
+
   const hasExamples = "examples" in selectedRecipe;
 
   return (

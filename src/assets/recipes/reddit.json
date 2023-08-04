@@ -1,0 +1,31 @@
+[
+  {
+    "summary": "Search",
+    "title": "Search reddit",
+    "method": "GET",
+    "path": "https://oauth.reddit.com/r/all",
+    "project": "Reddit",
+    "auth": "bearer",
+    "id": "9eb8f340-aac3-4abc-a73e-6eccfebafd76",
+    "queryParams": {
+      "q": {
+        "type": "string",
+        "description": "A search query no longer than 512 characters",
+        "required": true
+      },
+      "sort": {
+        "type": "string",
+        "description": "one of (relevance, hot, top, new, comments)",
+        "enum": ["relevance", "hot", "top", "new", "comments"]
+      },
+      "limit": {
+        "type": "integer",
+        "description": "The maximum number of objects to return. (Default: “25”)",
+        "default": 25,
+        "minimum": 1,
+        "maximum": 100
+      }
+    },
+    "tags": ["Popular"]
+  }
+]

@@ -1,5 +1,4 @@
 import { StateCreator, create } from "zustand";
-import _recipes from "../assets/recipes.json";
 import { Recipe } from "../types/recipes";
 import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
@@ -7,7 +6,17 @@ import { v4 as uuidv4 } from "uuid";
 import { useEffect } from "react";
 import { useInterval, useLocalStorage } from "usehooks-ts";
 
-const recipes = [...(_recipes as Recipe[])];
+import giphy_recipes from "../assets/recipes/giphy.json";
+import openai from "../assets/recipes/openai.json";
+import pokeapi from "../assets/recipes/pokeapi.json";
+import reddit from "../assets/recipes/reddit.json";
+
+const recipes: Recipe[] = [
+  ...openai,
+  ...giphy_recipes,
+  ...reddit,
+  ...pokeapi,
+] as Recipe[];
 
 export interface RecipeSession {
   id: string;
