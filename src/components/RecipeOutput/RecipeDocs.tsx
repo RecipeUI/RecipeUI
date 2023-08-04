@@ -193,10 +193,14 @@ function RecipeDocsParamContainer({
   );
 
   const isParamInState = paramState !== undefined;
+  console.log({ paramState });
 
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
-
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const [hideDocs, setHideDocs] = useState(true);
+
+  const showNestedDocs = !isParamInState || !hideDocs;
 
   return (
     <div className="border rounded-sm p-4" id={`${paramPath}`}>
@@ -206,33 +210,35 @@ function RecipeDocsParamContainer({
           paramSchema={paramSchema}
         />
 
-        <button
-          ref={buttonRef}
-          className={classNames("btn btn-sm", isParamInState && "btn-error")}
-          onClick={() => {
-            if (isParamInState) {
-              updateParams({ path: paramPath, value: undefined });
-            } else {
-              updateParams({
-                path: paramPath,
-                value: getDefaultValue(paramSchema),
-              });
+        <div>
+          <button
+            ref={buttonRef}
+            className={classNames("btn btn-sm", isParamInState && "btn-error")}
+            onClick={() => {
+              if (isParamInState) {
+                updateParams({ path: paramPath, value: undefined });
+              } else {
+                updateParams({
+                  path: paramPath,
+                  value: getDefaultValue(paramSchema),
+                });
 
-              if (!isQueryParam) {
-                setTimeout(() => {
-                  document
-                    .getElementById(paramPath)
-                    ?.lastElementChild?.scrollIntoView({
-                      behavior: "instant" as ScrollBehavior,
-                      block: "center",
-                    });
-                }, 0); // Trick to wait for the DOM to update
+                if (!isQueryParam) {
+                  setTimeout(() => {
+                    document
+                      .getElementById(paramPath)
+                      ?.lastElementChild?.scrollIntoView({
+                        behavior: "instant" as ScrollBehavior,
+                        block: "center",
+                      });
+                  }, 0); // Trick to wait for the DOM to update
+                }
               }
-            }
-          }}
-        >
-          {isParamInState ? "Remove" : "Add"}
-        </button>
+            }}
+          >
+            {isParamInState ? "Remove" : "Add"}
+          </button>
+        </div>
       </div>
       {paramSchema.description && (
         <ReactMarkdown
@@ -246,10 +252,25 @@ function RecipeDocsParamContainer({
       )}
       {paramSchema.type === RecipeParamType.Array &&
         paramSchema.arraySchema.type === RecipeParamType.Object && (
-          <ArrayParamDocs
-            objectSchema={paramSchema.arraySchema.objectSchema}
-            hasParamState={paramState !== undefined}
-          />
+          <>
+            <button
+              className={classNames(
+                !isParamInState && "hidden",
+                "text-sm underline"
+              )}
+              onClick={() => {
+                setHideDocs(!hideDocs);
+              }}
+            >
+              {hideDocs ? "Show docs" : "Hide docs"}
+            </button>
+            {showNestedDocs && (
+              <ArrayParamDocs
+                objectSchema={paramSchema.arraySchema.objectSchema}
+                hasParamState={paramState !== undefined}
+              />
+            )}
+          </>
         )}
 
       {paramState !== undefined && (
