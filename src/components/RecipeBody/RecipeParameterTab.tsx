@@ -13,6 +13,7 @@ import { linter, lintGutter } from "@codemirror/lint";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
+import { RecipeParamType } from "../../types/recipes";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
@@ -28,36 +29,57 @@ export function RecipeParameterTab() {
 
   const selectedRecipe = currentSession.recipe;
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
+  const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const secret = useSecretFromSM(selectedRecipe.project);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
+  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
 
-  const { needsAuthSetup, hasRequiredParams, hasRequestBody } = useMemo(() => {
+  const {
+    needsAuthSetup,
+    hasRequiredBodyParams,
+    hasRequestBody,
+    hasQueryParams,
+    hasRequiredQueryParams,
+  } = useMemo(() => {
     const needsAuthSetup = selectedRecipe.auth !== null && secret == null;
 
-    let hasRequiredParams = false;
+    let hasRequiredBodyParams = false;
     let hasRequestBody = false;
     if (
       "requestBody" in selectedRecipe &&
       "objectSchema" in selectedRecipe["requestBody"]
     ) {
-      hasRequiredParams = Object.values(
+      hasRequiredBodyParams = Object.values(
         selectedRecipe.requestBody.objectSchema
       ).some((param) => param.required);
       hasRequestBody = true;
     }
 
+    let hasQueryParams = false;
+    let hasRequiredQueryParams = false;
+    if ("queryParams" in selectedRecipe && selectedRecipe.queryParams != null) {
+      hasRequiredQueryParams = Object.values(selectedRecipe.queryParams).some(
+        (param) => param.required
+      );
+      hasQueryParams = true;
+    }
+
     return {
       needsAuthSetup,
-      hasRequiredParams,
+      hasRequiredBodyParams,
       hasRequestBody,
+      hasQueryParams,
+      hasRequiredQueryParams,
     };
   }, [secret, selectedRecipe]);
-  const needsParams =
-    hasRequiredParams && Object.keys(requestBody).length === 0;
-
-  const showOnboarding = needsAuthSetup || needsParams;
-  const hasExamples = "examples" in selectedRecipe;
   const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
+  const needsBodyParams = hasRequiredBodyParams && !hasRequestBodyPayload;
+
+  const hasQueryParamPayload = Object.keys(queryParams).length > 0;
+  const needsQueryParams = hasRequiredQueryParams && !hasQueryParamPayload;
+
+  const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
+  const hasExamples = "examples" in selectedRecipe;
 
   return (
     <div className="flex-1">
@@ -72,20 +94,23 @@ export function RecipeParameterTab() {
                   <RecipeNeedsAuth onboardingFlow />
                 </>
               )}
-              {needsParams && (
+              {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
                 <>
                   <hr />
                   <div className="space-y-2">
                     <h3 className="font-bold">Parameters</h3>
                     <p>
-                      Use the docs panel to the right or hit below to open the
-                      editor.
+                      Use the docs panel to the right
+                      {!needsBodyParams
+                        ? " to start adding params"
+                        : " or hit below to open the editor"}
+                      .
                     </p>
                     <button
                       className="btn btn-sm btn-neutral"
                       onClick={() => {
                         if (
-                          needsParams &&
+                          needsBodyParams &&
                           "requestBody" in selectedRecipe &&
                           "objectSchema" in selectedRecipe["requestBody"]
                         ) {
@@ -96,9 +121,28 @@ export function RecipeParameterTab() {
                             ) as Record<string, unknown>
                           );
                         }
+
+                        if (
+                          needsQueryParams &&
+                          "queryParams" in selectedRecipe &&
+                          selectedRecipe.queryParams != null
+                        ) {
+                          const record: Record<string, unknown> = {};
+                          Object.entries(selectedRecipe.queryParams).forEach(
+                            ([key, value]) => {
+                              const defaultVal = getDefaultValue(value, true);
+                              if (defaultVal !== undefined) {
+                                record[key] = defaultVal;
+                              }
+                            }
+                          );
+                          setQueryParams(record);
+                        }
+
+                        // TODO: Got to make this work for query params
                       }}
                     >
-                      Open editor
+                      {needsBodyParams ? "Open editor" : "Initialize params"}
                     </button>
                   </div>
 
@@ -128,7 +172,13 @@ export function RecipeParameterTab() {
       {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
         <RecipeJsonEditor />
       )}
-      {!showOnboarding && !hasRequestBody && <NoEditorCopy />}
+      {(!showOnboarding || hasQueryParamPayload) && hasQueryParams && (
+        <RecipeQueryParameters />
+      )}
+
+      {!showOnboarding && !hasRequestBody && !hasQueryParams && (
+        <NoEditorCopy />
+      )}
     </div>
   );
 }
@@ -201,6 +251,60 @@ function RecipeJsonEditor() {
           debouncedSetRequestBody(newCode);
         }}
       />
+    </div>
+  );
+}
+
+function RecipeQueryParameters() {
+  // const selectedRecipe = useRecipeSessionStore(
+  //   (state) => state.currentSession!.recipe!
+  // );
+  const queryParams = useRecipeSessionStore((state) => state.queryParams);
+  // const url = useMemo(() => {
+  //   const _url = new URL(selectedRecipe.path);
+  //   Object.entries(queryParams).forEach(([key, value]) => {
+  //     if (typeof value !== "string") {
+  //       _url.searchParams.append(key, JSON.stringify(value));
+  //     } else {
+  //       _url.searchParams.append(key, value);
+  //     }
+  //   });
+
+  //   return _url;
+  // }, [queryParams, selectedRecipe.path]);
+
+  const hasNoParams = Object.keys(queryParams).length === 0;
+  return (
+    <div className="mx-4 my-6">
+      <div className="flex items-center space-x-1 mb-2">
+        <h3 className="text-lg font-bold">Query Parameters</h3>
+        <div
+          className="tooltip tooltip-right"
+          data-tip={`These are appended to the end of the url. Use parameters on the right or choose from examples.`}
+        >
+          <InformationCircleIcon className="h-4 w-4" />
+        </div>
+      </div>
+      <pre className="whitespace-pre-wrap">
+        {Object.entries(queryParams).map(([key, value]) => {
+          return (
+            <div key={key}>
+              <span className="">{key}:</span>{" "}
+              <span className="">
+                {typeof value !== "object"
+                  ? (value as unknown as string | number | boolean)
+                  : JSON.stringify(value)}
+              </span>
+            </div>
+          );
+        })}
+      </pre>
+      {hasNoParams ? (
+        <div className="alert">
+          This endpoint doesn't need params but you can easily configure params
+          in the doc pane.
+        </div>
+      ) : null}
     </div>
   );
 }

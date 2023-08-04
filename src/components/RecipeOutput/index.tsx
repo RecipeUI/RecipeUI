@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import {
   RecipeOutputTab,
+  RecipeOutputType,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
@@ -44,13 +45,15 @@ export function RecipeOutput() {
 export function RecipeOutputConsole() {
   const output = useRecipeSessionStore((state) => state.output);
   const isSending = useRecipeSessionStore((state) => state.isSending);
+  const outputType = useRecipeSessionStore((state) => state.outputType);
 
   const { stringifiedOutput, imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
     const stringifiedOutput = JSON.stringify(output, null, 2);
 
     const codeBlockRegex = /```(.*?)```/gs;
-    const imageRegex = /(https?:\/\/[^\s'"]+\.png(\?[^\s'"]*)?)/g;
+    const imageRegex =
+      /(https?:\/\/[^\s'"]+\.(png|jpg|jpeg|gif|bmp|webp)(\?[^\s'"]*)?)/g;
 
     // const codeBlocks = stringifiedOutput.match(codeBlockRegex) || [];
     // const imageBlocks = stringifiedOutput.match(imageRegex) || [];
@@ -80,23 +83,33 @@ export function RecipeOutputConsole() {
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white space-y-6">
       {imageBlocks.length > 0 && (
-        <OutputModule
-          title="Images Found"
-          tooltip="We found these image URLs from the response."
-          body={
-            <div className="carousel carousel-center max-w-md p-4 space-x-4 bg-neutral rounded-box">
-              {imageBlocks.map((imageUrl) => {
-                return (
-                  <img
-                    src={imageUrl}
-                    key={imageUrl}
-                    className="carousel-item max-h-48 rounded-md"
-                  />
-                );
-              })}
-            </div>
-          }
-        />
+        <>
+          <OutputModule
+            title="Images Found"
+            tooltip="We found these image URLs from the response."
+            body={
+              <>
+                {imageBlocks.length > 1 && (
+                  <p className="mb-2">
+                    We found {imageBlocks.length} images. Scroll right to see
+                    them all.
+                  </p>
+                )}
+                <div className="carousel rounded-box">
+                  {imageBlocks.map((imageUrl, i) => {
+                    return (
+                      <img
+                        src={imageUrl}
+                        key={imageUrl + i}
+                        className="carousel-item rounded-md max-h-48 object-cover"
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            }
+          />
+        </>
       )}
       {codeBlocks.length > 0 && (
         <OutputModule
@@ -122,9 +135,21 @@ export function RecipeOutputConsole() {
           title="Response"
           body={
             <>
-              <pre className="mt-2 whitespace-break-spaces">
-                {stringifiedOutput}
-              </pre>
+              <div
+                className={classNames(
+                  outputType === RecipeOutputType.Error && "mockup-code"
+                )}
+              >
+                <pre
+                  className={classNames(
+                    "mt-2 whitespace-break-spaces",
+                    outputType === RecipeOutputType.Error &&
+                      "bg-warning text-warning-content px-2"
+                  )}
+                >
+                  {stringifiedOutput}
+                </pre>
+              </div>
               {Object.keys(output).length > 0 && (
                 <button
                   className="btn btn-neutral btn-sm mt-2"

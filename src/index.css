@@ -5,3 +5,14 @@
 .cm-editor {
   outline: none !important;
 }
+
+.mockup-code pre:before {
+  margin-right: 0 !important;
+}
+
+@layer base {
+  .recipe-md ul {
+    list-style: disc outside none;
+    @apply px-4 my-1;
+  }
+}

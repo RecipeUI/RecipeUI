@@ -85,8 +85,9 @@ export enum RecipeMethod {
 }
 
 export enum RecipeAuthType {
-  Bearer = "Bearer",
+  Bearer = "bearer",
 }
+
 interface RecipeCore {
   title: string;
   summary?: string;
@@ -94,9 +95,11 @@ interface RecipeCore {
   path: string;
   project: string;
   auth: RecipeAuthType.Bearer | string | null;
+  cors?: boolean;
   id: string;
   tags?: string[];
   deprecated?: boolean;
+  queryParams?: Record<string, RecipeParam>;
 }
 
 export enum RecipeMutationContentType {

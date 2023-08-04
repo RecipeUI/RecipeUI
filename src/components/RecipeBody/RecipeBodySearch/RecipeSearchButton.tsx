@@ -6,6 +6,7 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { useSecretManager } from "../../../state/recipeAuth";
+import { RECIPE_PROXY } from "../../../utils/constants";
 
 export function RecipeSearchButton() {
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
@@ -17,6 +18,7 @@ export function RecipeSearchButton() {
 
   const isSending = useRecipeSessionStore((store) => store.isSending);
   const setIsSending = useRecipeSessionStore((store) => store.setIsSending);
+  const queryParams = useRecipeSessionStore((store) => store.queryParams);
 
   const onSubmit = async () => {
     setIsSending(true);
@@ -35,7 +37,12 @@ export function RecipeSearchButton() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    const url = new URL(recipe.path);
+    let url = new URL(recipe.path);
+    // TODO: Should we just make this the default so no one deals with this problem?
+    if (recipe.cors) {
+      headers["recipe-domain"] = url.origin;
+      url = new URL(RECIPE_PROXY + url.pathname);
+    }
 
     if (recipe.auth) {
       const token = sm.getSecret(recipe.project);
@@ -49,7 +56,7 @@ export function RecipeSearchButton() {
       }
 
       if (recipe.auth.includes("query")) {
-        url.searchParams.append(recipe.auth.split(":")[1], token);
+        url.searchParams.append(recipe.auth.split("=")[1], token);
       }
     }
     let body: undefined | string | FormData;
@@ -103,6 +110,18 @@ export function RecipeSearchButton() {
       }
     }
 
+    for (const key in queryParams) {
+      const value = queryParams[key];
+      if (!value) continue;
+
+      if (typeof value === "object") {
+        url.searchParams.append(key, JSON.stringify(value));
+        continue;
+      }
+
+      url.searchParams.append(key, String(value));
+    }
+
     try {
       const payload = {
         method: recipe.method,
@@ -111,14 +130,21 @@ export function RecipeSearchButton() {
       };
 
       const res = await fetch(url, payload);
+
       const json = await res.json();
 
       setOutput({
         output: json,
-        outputType: RecipeOutputType.Response,
+        outputType: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
       });
     } catch (e) {
-      console.log(e);
+      setOutput({
+        output: {
+          error:
+            "Something went wrong. Can you report this issue to us at team@recipeui.com",
+        },
+        outputType: RecipeOutputType.Error,
+      });
     }
   };
 

@@ -42,6 +42,15 @@ export enum RecipeOutputTab {
   Output = "Response",
   Docs = "Docs",
 }
+export type RecipeParameters = {
+  requestBody: Record<string, unknown>;
+  queryParams: Record<string, unknown>;
+};
+
+const getEmptyParameters = (): RecipeParameters => ({
+  requestBody: {},
+  queryParams: {},
+});
 
 interface RecipeOutputSlice {
   isSending: boolean;
@@ -69,6 +78,10 @@ interface RecipeBodySlice {
   requestBody: Record<string, unknown>;
   setRequestBody: (requestBody: Record<string, unknown>) => void;
   updateRequestBody: (updateProps: { path: string; value: unknown }) => void;
+
+  queryParams: Record<string, unknown>;
+  setQueryParams: (queryParams: Record<string, unknown>) => void;
+  updateQueryParams: (updateProps: { path: string; value: unknown }) => void;
 }
 
 interface FileManagerSlice {
@@ -124,6 +137,7 @@ export interface LocalStorageState {
   sessions: RecipeSession[];
   currentSession: RecipeSessionSlice["currentSession"];
   requestBody: Record<string, unknown>;
+  queryParams: Record<string, unknown>;
 }
 
 const createRecipeSessionSlice: StateCreator<
@@ -142,19 +156,23 @@ const createRecipeSessionSlice: StateCreator<
     setCurrentSession: (session) =>
       set((prevState) => {
         if (prevState.currentSession) {
-          preserveSessionIdRequestToLocal({
+          preserveSessionParamsToLocal({
             sessionId: prevState.currentSession.id,
-            requestBody: prevState.requestBody,
+            params: {
+              requestBody: prevState.requestBody,
+              queryParams: prevState.queryParams,
+            },
           });
         }
 
-        const requestBody = session
-          ? retrieveRequestForSessionIdFromLocal(session.id)
-          : {};
+        const oldParams = session
+          ? retrieveParamsForSessionIdFromLocal(session.id)
+          : getEmptyParameters();
 
         return {
           currentSession: session,
-          requestBody,
+          requestBody: oldParams.requestBody,
+          queryParams: oldParams.queryParams,
           bodyRoute: RecipeBodyRoute.Parameters,
           outputTab: RecipeOutputTab.Docs,
         };
@@ -180,9 +198,12 @@ const createRecipeSessionSlice: StateCreator<
     addSession: (selectedRecipe) =>
       set((prevState) => {
         if (prevState.currentSession) {
-          preserveSessionIdRequestToLocal({
+          preserveSessionParamsToLocal({
             sessionId: prevState.currentSession.id,
-            requestBody: prevState.requestBody,
+            params: {
+              requestBody: prevState.requestBody,
+              queryParams: prevState.queryParams,
+            },
           });
         }
 
@@ -196,13 +217,13 @@ const createRecipeSessionSlice: StateCreator<
           bodyRoute: RecipeBodyRoute.Parameters,
           currentSession: newSession,
           sessions: [...prevState.sessions, newSession],
-          requestBody: {},
           outputTab: RecipeOutputTab.Docs,
+          ...getEmptyParameters(),
         };
       }),
     closeSession: (session) =>
       set((prevState) => {
-        deleteRequestForSessionIdFromLocal(session.id);
+        deleteParamsForSessionIdFromLocal(session.id);
 
         let nextSessionIndex = -1;
         const sessions = prevState.sessions.filter((s, i) => {
@@ -225,15 +246,16 @@ const createRecipeSessionSlice: StateCreator<
           };
         }
 
-        const requestBody = nextSession
-          ? retrieveRequestForSessionIdFromLocal(nextSession.id)
-          : {};
+        const oldParams = nextSession
+          ? retrieveParamsForSessionIdFromLocal(nextSession.id)
+          : getEmptyParameters();
 
         return {
           bodyRoute: RecipeBodyRoute.Parameters,
           currentSession: nextSession,
           sessions,
-          requestBody,
+          requestBody: oldParams.requestBody,
+          queryParams: oldParams.queryParams,
         };
       }),
   };
@@ -242,43 +264,65 @@ const createRecipeSessionSlice: StateCreator<
 const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
   set
 ) => {
+  function updateDraftParams({
+    path,
+    value,
+    draft,
+  }: {
+    path: string;
+    value: unknown;
+    draft: Record<string, unknown>;
+  }) {
+    const paths = path.split(".").slice(1);
+
+    while (paths.length > 1) {
+      const current = paths.shift()!;
+      draft = (
+        isArrayPath(current)
+          ? draft[getArrayPathIndex(current)]
+          : draft[current]
+      ) as typeof draft;
+    }
+
+    const finalPath = paths[0];
+    if (value === undefined) {
+      delete draft[finalPath];
+      return;
+    } else {
+      if (isArrayPath(finalPath)) {
+        draft[getArrayPathIndex(finalPath)] = value;
+      } else {
+        draft[finalPath] = value;
+      }
+    }
+  }
+
   return {
     bodyRoute: RecipeBodyRoute.Parameters,
     setBodyRoute: (route) => set(() => ({ bodyRoute: route })),
 
     recipes,
 
-    // sessionToRequestBody:
     requestBody: {},
     setRequestBody: (requestBody) => set(() => ({ requestBody })),
     updateRequestBody: ({ path, value }) =>
       set((prevState) => {
         const nextState = produce(prevState.requestBody, (draft) => {
-          const paths = path.split(".").slice(1);
-
-          while (paths.length > 1) {
-            const current = paths.shift()!;
-            draft = (
-              isArrayPath(current)
-                ? draft[getArrayPathIndex(current)]
-                : draft[current]
-            ) as typeof draft;
-          }
-
-          const finalPath = paths[0];
-          if (value === undefined) {
-            delete draft[finalPath];
-            return;
-          } else {
-            if (isArrayPath(finalPath)) {
-              draft[getArrayPathIndex(finalPath)] = value;
-            } else {
-              draft[finalPath] = value;
-            }
-          }
+          updateDraftParams({ path, value, draft });
         });
 
         return { requestBody: nextState };
+      }),
+
+    queryParams: {},
+    setQueryParams: (queryParams) => set(() => ({ queryParams })),
+    updateQueryParams: ({ path, value }) =>
+      set((prevState) => {
+        const nextState = produce(prevState.queryParams, (draft) => {
+          updateDraftParams({ path, value, draft });
+        });
+
+        return { queryParams: nextState };
       }),
   };
 };
@@ -295,80 +339,6 @@ const createRecipeOutputSlice: StateCreator<
       set(() => ({ isSending, outputTab: RecipeOutputTab.Output })),
 
     output: {},
-    // output: {
-    //   id: "chatcmpl-7jMrqbnKzdqSJGuQpIcu2YJ9rL4di",
-    //   object: "chat.completion",
-    //   created: 1691047018,
-    //   model: "gpt-3.5-turbo-0613",
-    //   choices: [
-    //     {
-    //       index: 0,
-    //       message: {
-    //         role: "assistant",
-    //         content:
-    //           'Sure! Here\'s a simple code for a number guessing game in Python:\n\n```python\nimport random\n\nnumber = random.randint(1, 100)\nguess = 0\ntries = 0\n\nprint("Welcome to the Number Guessing Game!")\nprint("I\'m thinking of a number between 1 and 100.")\n\nwhile guess != number:\n    guess = int(input("Take a guess: "))\n    tries += 1\n\n    if guess < number:\n        print("Too low!")\n    elif guess > number:\n        print("Too high!")\n    else:\n        print("Congratulations! You guessed the number in", tries, "tries!")\n\n```\n\nIn this code, the program generates a random number between 1 and 100 using the `random.randint` function. The user is prompted to make a guess, and the program checks if the guess is too low, too high, or correct. It keeps track of the number of tries and stops the loop when the correct guess is made.',
-    //       },
-    //       finish_reason: "stop",
-    //     },
-    //   ],
-    //   usage: {
-    //     prompt_tokens: 27,
-    //     completion_tokens: 202,
-    //     total_tokens: 229,
-    //   },
-    // },
-    // output: {
-    //   id: "chatcmpl-7jNvMQC3Moyz7aMfPhBSA1yEigHem",
-    //   object: "chat.completion",
-    //   created: 1691051080,
-    //   model: "gpt-4-0613",
-    //   choices: [
-    //     {
-    //       index: 0,
-    //       message: {
-    //         role: "assistant",
-    //         content:
-    //           "Sure! I will write a code for a simple Number Guessing Game. The user will have to guess a number between 1 and 10 and the program will tell if the guess is correct or not. Here's how you could do it.\n\nIn the first snippet, we are going to generate a random number between 1 and 10.\n\n```javascript\nvar randomNumber = Math.floor(Math.random() * 10) + 1;\nconsole.log(randomNumber); // For testing purposes.\n```\n\nIn the second snippet, we would create a function to accept the user's guess, then checks if it's the same as the random number and alert the user if it's correct or not.\n\n```javascript\nfunction guessNumber(userGuess) {\n    if(userGuess === randomNumber) {\n        alert(\"Congratulations, you've guessed the right number!\");\n    } else {\n        alert(\"Sorry, that's not correct. The correct number was \" + randomNumber);\n    }\n}\n```\n\nTo use the function, just call `guessNumber()` with the guessed number as the argument. For example:\n\n```javascript\nguessNumber(7);\n```\nThis simple game can be expanded by giving the user multiple tries to guess the number, implementing a scoring system, or other features that enhance the user experience.",
-    //       },
-    //       finish_reason: "stop",
-    //     },
-    //   ],
-    //   usage: {
-    //     prompt_tokens: 30,
-    //     completion_tokens: 260,
-    //     total_tokens: 290,
-    //   },
-    // },
-    // output: {
-    //   created: 1691049237,
-    //   data: [
-    //     {
-    //       url: "https://oaidalleapiprodscus.blob.core.windows.net/private/org-WxgWfYsuv9cB1gLymr9wTLil/user-sfA1NVKyEWjq40wdBZgXvr4c/img-lQI52GAcHZQQ3TXAwkM0osLi.png?st=2023-08-03T06%3A53%3A57Z&se=2023-08-03T08%3A53%3A57Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-08-03T01%3A41%3A56Z&ske=2023-08-04T01%3A41%3A56Z&sks=b&skv=2021-08-06&sig=1NJFTlV6ze5vsjpxJpPf/Yn6ZC/wM396%2B/eHQmEbsRo%3D",
-    //     },
-    //   ],
-    // },
-    // output: {
-    //   id: "chatcmpl-7jBgprQuQw9HsxkUZWTcoJf8CqaGe",
-    //   object: "chat.completion",
-    //   created: 1691004051,
-    //   model: "gpt-3.5-turbo-0613",
-    //   choices: [
-    //     {
-    //       index: 0,
-    //       message: {
-    //         role: "assistant",
-    //         content:
-    //           "Silicon city thrives\nTech giants sculpt innovation\nSan Francisco code",
-    //       },
-    //       finish_reason: "stop",
-    //     },
-    //   ],
-    //   usage: {
-    //     prompt_tokens: 56,
-    //     completion_tokens: 14,
-    //     total_tokens: 70,
-    //   },
-    // },
     setOutput: ({ output, outputType }) =>
       set(() => {
         return { output, outputTab: RecipeOutputTab.Output, outputType };
@@ -414,10 +384,15 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
 
 const GLOBAL_POLLING_FACTOR = 10000;
 const SESSION_HYDRATION_KEY = "SESSION_HYDRATION_KEY";
-const RECIPE_PARAMS_KEY_PREFIX = "RECIPE_PARAMS_";
+const RECIPE_BODY_PARAMS_KEY_PREFIX = "RECIPE_BODY_PARAMS_";
+const RECIPE_QUERY_PARAMS_KEY_PREFIX = "RECIPE_QUERY_PARAMS_";
 
-function getRecipeParamsKey(recipeId: string) {
-  return RECIPE_PARAMS_KEY_PREFIX + recipeId;
+function getRecipeBodyParamsKey(recipeId: string) {
+  return RECIPE_BODY_PARAMS_KEY_PREFIX + recipeId;
+}
+
+function getRecipeQueryParamsKey(recipeId: string) {
+  return RECIPE_QUERY_PARAMS_KEY_PREFIX + recipeId;
 }
 
 /*
@@ -431,7 +406,7 @@ export function useSaveRecipeUI() {
     {
       currentSession: null,
       sessions: [],
-      requestBody: {},
+      ...getEmptyParameters(),
     }
   );
 
@@ -443,6 +418,8 @@ export function useSaveRecipeUI() {
   );
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
+  const queryParams = useRecipeSessionStore((state) => state.queryParams);
+  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
 
   // On mount, hydrate from local storage
   useEffect(() => {
@@ -452,6 +429,7 @@ export function useSaveRecipeUI() {
     if (localSave.currentSession) setCurrentSession(localSave.currentSession);
     if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
+    if (localSave.queryParams) setQueryParams(localSave.queryParams);
   }, []);
 
   // Save changes every POLLING_FACTOR seconds
@@ -460,31 +438,43 @@ export function useSaveRecipeUI() {
       currentSession,
       sessions,
       requestBody,
+      queryParams,
     });
   }, GLOBAL_POLLING_FACTOR);
 }
 
 // We only need to save the session when we change tabs
-function preserveSessionIdRequestToLocal({
+function preserveSessionParamsToLocal({
   sessionId,
-  requestBody,
+  params: { requestBody, queryParams },
 }: {
   sessionId: string;
-  requestBody: Record<string, unknown>;
+  params: RecipeParameters;
 }) {
-  const key = getRecipeParamsKey(sessionId);
-  localStorage.setItem(key, JSON.stringify(requestBody));
+  localStorage.setItem(
+    getRecipeBodyParamsKey(sessionId),
+    JSON.stringify(requestBody)
+  );
+  localStorage.setItem(
+    getRecipeQueryParamsKey(sessionId),
+    JSON.stringify(queryParams)
+  );
 }
 
-function retrieveRequestForSessionIdFromLocal(
+function retrieveParamsForSessionIdFromLocal(
   sessionId: string
-): Record<string, unknown> {
-  const key = getRecipeParamsKey(sessionId);
-  return JSON.parse(localStorage.getItem(key) || "{}");
+): RecipeParameters {
+  return {
+    requestBody: JSON.parse(
+      localStorage.getItem(getRecipeBodyParamsKey(sessionId)) || "{}"
+    ),
+    queryParams: JSON.parse(
+      localStorage.getItem(getRecipeQueryParamsKey(sessionId)) || "{}"
+    ),
+  };
 }
 
-function deleteRequestForSessionIdFromLocal(sessionId: string) {
-  const key = getRecipeParamsKey(sessionId);
-
-  localStorage.removeItem(key);
+function deleteParamsForSessionIdFromLocal(sessionId: string) {
+  localStorage.removeItem(getRecipeBodyParamsKey(sessionId));
+  localStorage.removeItem(getRecipeQueryParamsKey(sessionId));
 }
