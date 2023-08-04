@@ -13,7 +13,6 @@ import { linter, lintGutter } from "@codemirror/lint";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
-import { RecipeParamType } from "../../types/recipes";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
