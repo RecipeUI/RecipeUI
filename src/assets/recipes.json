@@ -220,6 +220,62 @@
     "tags": ["Popular", "Examples"],
     "examples": [
       {
+        "title": "ELI5 (Explain Like I'm Five)",
+        "description": "We ask the system to explain a complex topic in simple terms. In the follow up, we ask it to explain a complex topic in even simpler terms.",
+        "author": "Eli Badgio",
+        "requestBody": {
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              "role": "system",
+              "content": "You a helpful AI tasked with proving users with well structured \"Explain Like I am Five\" explanations. Every time you receive a question you treat that as a request to Explain Like I am Five (ELI5). Your primary goal is to give users accurate and easy to understand/digest answers to their questions. Respond using markdown."
+            },
+            {
+              "role": "user",
+              "content": ""
+            }
+          ]
+        }
+      },
+      {
+        "title": "Chat with Dumbledore",
+        "description": "We ask the system to roleplay as Dumbledore from Harry Potter.",
+        "author": "Samuel San",
+        "requestBody": {
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are Dumbledore from Harry Potter. You always want to teach and help to anyone that's seeking."
+            },
+            {
+              "role": "user",
+              "content": "What is the meaning of life?"
+            }
+          ],
+          "max_tokens": 500
+        }
+      },
+      {
+        "title": "Python Scraper",
+        "description": "Ask the AI to be a programming teacher and follow up with a question on how to scrape a website.",
+        "author": "Jeane Carlos",
+        "requestBody": {
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are an excellent Python programmer and teacher."
+            },
+            {
+              "role": "user",
+              "content": "Teach me how to scrape data from reddit.com"
+            }
+          ],
+          "max_tokens": 500
+        }
+      },
+      {
         "title": "Write a Haiku",
         "description": "We ask the system to act as a Haiku poet and ask it to write a poem about San Francisco. In the follow up, we ask it to modify the poem to incorporate mentions about the recent AI boom.",
         "author": "Samuel San",
@@ -575,6 +631,17 @@
       "contentType": "application/json",
       "required": true
     },
+    "examples": [
+      {
+        "title": "Build a futuristic city",
+        "description": "This example generates a 1024x1024 image of a futuristic cityscape at twilight.",
+        "requestBody": {
+          "prompt": "A Futuristic Cityscape at Twilight: A sprawling, neon-lit cityscape seen from the viewpoint of a skyscraper's rooftop, with flying cars weaving through towering buildings, all bathed in the soft glow of a setting sun.",
+          "n": 5,
+          "size": "1024x1024"
+        }
+      }
+    ],
     "tags": ["Popular", "Examples"],
     "id": "e5226081-79ff-40b6-b823-ab023891ed3b"
   },

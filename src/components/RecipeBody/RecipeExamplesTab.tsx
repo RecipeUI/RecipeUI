@@ -24,13 +24,14 @@ export function RecipeExamplesTab() {
           {examples.map((example) => {
             return (
               <div
-                className="border rounded-sm p-4 space-y-2"
+                className="border rounded-sm p-4 space-y-2 flex flex-col"
                 key={`${example.title}${example.author}`}
               >
                 <h3 className="font-bold">{example.title}</h3>
                 <p className="text-sm line-clamp-3">{example.description}</p>
+                <div className="flex-1" />
                 <button
-                  className="btn btn-sm btn-neutral"
+                  className="btn btn-sm btn-neutral w-fit"
                   onClick={() => {
                     if (example.requestBody) {
                       setRequestBody(example.requestBody);
