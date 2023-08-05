@@ -142,10 +142,18 @@ export function RecipeSearchButton() {
 
       const res = await fetch(url, payload);
 
-      const json = await res.json();
+      let output: Record<string, unknown> = {};
+
+      const contentType = res.headers.get("content-type");
+
+      if (contentType?.includes("application/json")) {
+        output = await res.json();
+      } else if (contentType?.includes("text/plain")) {
+        output = { response: await res.text() };
+      }
 
       setOutput({
-        output: json,
+        output: output,
         outputType: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
       });
     } catch (e) {

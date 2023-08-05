@@ -39,15 +39,7 @@ export function RecipeBodySearch() {
     (state) => state.setCurrentSession
   );
 
-  const recipeSearch = useMemo(() => {
-    return new Fuse(recipeWithLabels, {
-      keys: ["summary", "path", "label"],
-      threshold: 0.4,
-    });
-  }, [recipeWithLabels]);
-
   const [recipes, setRecipes] = useState(recipeWithLabels);
-  const [localInputValue, setLocalInputValue] = useState("");
 
   const {
     isOpen,
@@ -58,16 +50,8 @@ export function RecipeBodySearch() {
     selectedItem: selectedRecipe,
     getItemProps,
     setInputValue,
+    inputValue,
   } = useCombobox({
-    onInputValueChange: ({ inputValue }) => {
-      if (!inputValue) return;
-      setLocalInputValue(inputValue);
-
-      const items = recipeSearch.search(inputValue).map((r) => {
-        return r.item;
-      });
-      setRecipes(items);
-    },
     items: recipes,
     itemToString(item) {
       return item ? item.path : "";
@@ -85,11 +69,13 @@ export function RecipeBodySearch() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
         event.preventDefault();
-        setCurrentSession(null);
-        // TODO: This is a bug, it won't let me initialize empty values
-        setInputValue("");
-        setLocalInputValue("");
-        openMenu();
+
+        if (currentSession !== null) {
+          setCurrentSession(null);
+          setInputValue("");
+        } else {
+          openMenu();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -98,7 +84,7 @@ export function RecipeBodySearch() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [openMenu]);
+  }, [openMenu, currentSession]);
 
   const deepActions = useRecipeSessionStore((state) => state.deepActions);
   const clearDeepAction = useRecipeSessionStore(
@@ -115,13 +101,28 @@ export function RecipeBodySearch() {
     }
   }, [clearDeepAction, deepActions, openMenu, setInputValue]);
 
-  const debouncedInputValue = useDebounce(localInputValue, 300);
+  const recipeSearch = useMemo(() => {
+    return new Fuse(recipeWithLabels, {
+      keys: ["summary", "path", "label"],
+      threshold: 0.4,
+      sortFn: (a, b) => {
+        const a_tags = (recipeWithLabels[a.idx].tags || []).length;
+        const b_tags = (recipeWithLabels[b.idx].tags || []).length;
+
+        if (a_tags > b_tags) return -1;
+        else if (a_tags < b_tags) return 1;
+
+        return a.score - b.score;
+      },
+    });
+  }, [recipeWithLabels]);
+
+  const debouncedInputValue = useDebounce(inputValue, 300);
   useEffect(() => {
     if (!debouncedInputValue) {
       setRecipes(recipeWithLabels);
       return;
     }
-
     const items = recipeSearch.search(debouncedInputValue).map((r) => {
       return r.item;
     });
@@ -133,8 +134,15 @@ export function RecipeBodySearch() {
       <div className="flex flex-col relative">
         <div className="flex sm:space-x-2 flex-col sm:flex-row">
           <div
-            className="input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0"
-            onClick={() => {}}
+            className={classNames(
+              "input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0"
+              // currentSession && "tooltip tooltip-top cursor-not-allowed"
+            )}
+            data-tip={
+              currentSession
+                ? "You cannot edit a recipe URL. Start a new session with CMD+K"
+                : ""
+            }
           >
             {selectedRecipe?.method && (
               <RouteTypeLabel recipeMethod={selectedRecipe.method} />
@@ -145,17 +153,21 @@ export function RecipeBodySearch() {
                 if (!isOpen) openMenu();
               }}
               placeholder="Start typing here to search.... (Shortcut: CMD+K)"
-              className="outline-none w-full dark:bg-transparent"
+              className={classNames(
+                "outline-none w-full dark:bg-transparent"
+                // currentSession && "pointer-events-none"
+              )}
               {...getInputProps()}
             />
           </div>
           <RecipeSearchButton />
         </div>
         <ul
-          className={`w-full mt-2 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10 
-          ${!isOpen && "hidden"}
-
-          `}
+          className={classNames(
+            "w-full mt-2 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10",
+            !isOpen && "hidden",
+            currentSession && "hidden"
+          )}
           {...getMenuProps()}
         >
           {isOpen && (

@@ -57,7 +57,7 @@
     "project": "GIPHY",
     "cors": true,
     "auth": "query=api_key",
-    "tags": ["Popular", "Fun"],
+    "tags": ["Popular"],
     "queryParams": {
       "q": {
         "type": "string",

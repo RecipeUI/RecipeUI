@@ -129,7 +129,7 @@ export function RecipeNeedsAuth({
             )}
             <span
               className="text-sm mt-1 text-gray-600 tooltip"
-              data-tip="We store no data online. Tokens are only stored locally."
+              data-tip="We store no tokens online. Tokens are only stored locally."
             >
               How are tokens stored?
             </span>

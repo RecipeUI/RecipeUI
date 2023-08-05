@@ -94,9 +94,13 @@ const RECIPE_INITIAL_MARKETPLACE = [
 export function RecipeHome() {
   return (
     <div className="flex-1 flex flex-col p-4">
-      <h1 className="text-2xl font-bold dark:text-white">Recipe Marketplace</h1>
+      <h1 className="text-2xl font-bold dark:text-white">
+        Popular API recipes
+      </h1>
       <p>
-        Discover recipes built from the community. More recipes will come soon.
+        Discover recipes built from the community that come preinstalled! More
+        recipes will come soon, if you want to contribute reach out here
+        (link)...
       </p>
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4">
         {RECIPE_INITIAL_MARKETPLACE.map((recipe) => {

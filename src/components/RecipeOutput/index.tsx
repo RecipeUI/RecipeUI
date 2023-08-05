@@ -122,7 +122,7 @@ export function RecipeOutputConsole() {
                       <img
                         src={imageUrl}
                         key={imageUrl + i}
-                        className="carousel-item rounded-md max-h-48 object-cover"
+                        className="carousel-item rounded-md max-h-48 object-contain"
                       />
                     );
                   })}
