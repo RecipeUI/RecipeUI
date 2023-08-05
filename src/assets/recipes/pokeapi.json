@@ -7,5 +7,21 @@
     "project": "Pokeapi",
     "id": "c0dcf70b-ea0e-45d9-ba3b-09e760765315",
     "tags": ["Popular"]
+  },
+  {
+    "title": "Pokemon",
+    "summary": "Pokémon are the creatures that inhabit the world of the Pokémon games. They can be caught using Pokéballs and trained by battling with other Pokémon. Each Pokémon belongs to a specific species but may take on a variant which makes it differ from other Pokémon of the same species, such as base stats, available abilities and typings. See [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_(species)) for greater detail.",
+    "method": "GET",
+    "path": "https://pokeapi.co/api/v2/pokemon/{name_or_id}",
+    "project": "Pokeapi",
+    "id": "81233dbe-15d1-48c7-b043-520cf528d669",
+    "tags": ["Popular"],
+    "urlParams": {
+      "name_or_id": {
+        "type": "string",
+        "description": "Provide the name of the Pokémon you want to look up or the National Pokédex number.",
+        "default": "pikachu"
+      }
+    }
   }
 ]

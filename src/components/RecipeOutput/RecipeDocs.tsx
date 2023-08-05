@@ -22,6 +22,9 @@ export function RecipeDocs() {
   const queryParams =
     "queryParams" in selectedRecipe ? selectedRecipe.queryParams : null;
 
+  const urlParams =
+    "urlParams" in selectedRecipe ? selectedRecipe.urlParams : null;
+
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
       <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
@@ -34,6 +37,7 @@ export function RecipeDocs() {
         <RecipeDocsContainer param={requestBody} paramPath="" />
       )}
       {queryParams && <RecipeQueryDocsContainer queryParams={queryParams} />}
+      {urlParams && <RecipeUrlDocsContainer urlParamsSchema={urlParams} />}
     </div>
   );
 }
@@ -193,7 +197,6 @@ function RecipeDocsParamContainer({
   );
 
   const isParamInState = paramState !== undefined;
-  console.log({ paramState });
 
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -377,7 +380,7 @@ function RecipeDocParamEdit({
     return (
       <textarea
         className="textarea textarea-bordered textarea-sm w-full"
-        defaultValue={paramSchema.default}
+        placeholder={paramSchema.default as string}
         rows={1}
         value={(paramState || "") as string}
         onChange={(e) => {
@@ -434,7 +437,9 @@ function RecipeDocParamEdit({
       <input
         type="number"
         className="input input-sm input-bordered"
-        defaultValue={paramState == undefined ? paramSchema.default : undefined}
+        placeholder={
+          paramSchema.default ? String(paramSchema.default) : undefined
+        }
         value={(paramState || 0) as number}
         onChange={(e) => {
           updateParams({
@@ -808,4 +813,61 @@ function RecipeDocVariedParamEdit({
 
   // paramSchema
   // We need to do something special here for model
+}
+
+// These docs are more simplified and don't need as much as queryParams or requestBody so opting to do it all here
+function RecipeUrlDocsContainer({
+  urlParamsSchema,
+}: {
+  urlParamsSchema: Record<string, RecipeParam>;
+}) {
+  const urlParams = useRecipeSessionStore((state) => state.urlParams);
+  const updateUrlParams = useRecipeSessionStore(
+    (state) => state.updateUrlParams
+  );
+
+  return (
+    <div className="my-4">
+      {Object.entries(urlParamsSchema).map(([paramName, paramSchema]) => {
+        const value = urlParams[paramName] as string | undefined;
+
+        return (
+          <div className="border rounded-sm p-4" key={paramName}>
+            <div className="flex justify-between items-center">
+              <RecipeDocObjectDefinition
+                paramName={paramName}
+                paramSchema={paramSchema}
+              />
+            </div>
+            {paramSchema.description && (
+              <ReactMarkdown
+                className="text-sm mt-2"
+                components={{
+                  a: (props) => (
+                    <a {...props} className="text-blue-600 underline" />
+                  ),
+                }}
+              >
+                {paramSchema.description}
+              </ReactMarkdown>
+            )}
+
+            <div className="mt-4">
+              <input
+                className="input input-bordered input-sm w-full"
+                placeholder={paramSchema.default as string}
+                value={(value || "") as string}
+                onChange={(e) => {
+                  updateUrlParams({
+                    param: paramName,
+                    value: e.target.value,
+                  });
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

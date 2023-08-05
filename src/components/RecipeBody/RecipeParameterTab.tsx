@@ -13,6 +13,7 @@ import { linter, lintGutter } from "@codemirror/lint";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
+import classNames from "classnames";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
@@ -27,10 +28,12 @@ export function RecipeParameterTab() {
   );
 
   const selectedRecipe = currentSession.recipe;
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const secret = useSecretFromSM(selectedRecipe.project);
+
+  const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
+
+  const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
 
   const {
@@ -39,6 +42,7 @@ export function RecipeParameterTab() {
     hasRequestBody,
     hasQueryParams,
     hasRequiredQueryParams,
+    hasUrlParams,
   } = useMemo(() => {
     const needsAuthSetup = selectedRecipe.auth != null && secret == null;
 
@@ -63,12 +67,16 @@ export function RecipeParameterTab() {
       hasQueryParams = true;
     }
 
+    const hasUrlParams =
+      "urlParams" in selectedRecipe && selectedRecipe.urlParams != null;
+
     return {
       needsAuthSetup,
       hasRequiredBodyParams,
       hasRequestBody,
       hasQueryParams,
       hasRequiredQueryParams,
+      hasUrlParams,
     };
   }, [secret, selectedRecipe]);
   const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
@@ -155,7 +163,7 @@ export function RecipeParameterTab() {
                         <button
                           className="btn btn-sm btn-neutral"
                           onClick={() => {
-                            setBodyRoute(RecipeBodyRoute.Examples);
+                            setBodyRoute(RecipeBodyRoute.Templates);
                           }}
                         >
                           View examples
@@ -175,10 +183,12 @@ export function RecipeParameterTab() {
       {(!showOnboarding || hasQueryParamPayload) && hasQueryParams && (
         <RecipeQueryParameters />
       )}
+      {!showOnboarding && hasUrlParams && <RecipeURLParams />}
 
-      {!showOnboarding && !hasRequestBody && !hasQueryParams && (
-        <NoEditorCopy />
-      )}
+      {!showOnboarding &&
+        !hasRequestBody &&
+        !hasQueryParams &&
+        !hasUrlParams && <NoEditorCopy />}
     </div>
   );
 }
@@ -256,22 +266,7 @@ function RecipeJsonEditor() {
 }
 
 function RecipeQueryParameters() {
-  // const selectedRecipe = useRecipeSessionStore(
-  //   (state) => state.currentSession!.recipe!
-  // );
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  // const url = useMemo(() => {
-  //   const _url = new URL(selectedRecipe.path);
-  //   Object.entries(queryParams).forEach(([key, value]) => {
-  //     if (typeof value !== "string") {
-  //       _url.searchParams.append(key, JSON.stringify(value));
-  //     } else {
-  //       _url.searchParams.append(key, value);
-  //     }
-  //   });
-
-  //   return _url;
-  // }, [queryParams, selectedRecipe.path]);
 
   const hasNoParams = Object.keys(queryParams).length === 0;
   return (
@@ -305,6 +300,42 @@ function RecipeQueryParameters() {
           in the doc pane.
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function RecipeURLParams() {
+  const urlParams = useRecipeSessionStore((state) => state.urlParams);
+  const recipe = useRecipeSessionStore((state) => state.currentSession!.recipe);
+
+  // This should never happen, just narrowing type
+  if (!("urlParams" in recipe && recipe.urlParams !== undefined)) {
+    return null;
+  }
+
+  return (
+    <div className="mx-4 my-6">
+      <div className="flex items-center space-x-1 mb-2">
+        <h3 className="text-lg font-bold">Url Parameters</h3>
+        <div
+          className="tooltip tooltip-right"
+          data-tip={`These are variables we replace in the url. Use parameters on the right or choose from examples.`}
+        >
+          <InformationCircleIcon className="h-4 w-4" />
+        </div>
+      </div>
+      <pre className="whitespace-pre-wrap">
+        {Object.keys(recipe.urlParams).map((key) => {
+          const value = urlParams[key] as string | undefined;
+
+          return (
+            <div key={key} className={classNames(!value && "text-error")}>
+              <span>{key}:</span>{" "}
+              <span>{value || "Setup this parameter in the docs pane"}</span>
+            </div>
+          );
+        })}
+      </pre>
     </div>
   );
 }

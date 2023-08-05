@@ -38,7 +38,7 @@ interface RecipeSessionSlice {
 
 export enum RecipeBodyRoute {
   Parameters = "Parameters",
-  Examples = "Examples",
+  Templates = "Templates",
   Config = "Config",
 }
 
@@ -54,11 +54,13 @@ export enum RecipeOutputTab {
 export type RecipeParameters = {
   requestBody: Record<string, unknown>;
   queryParams: Record<string, unknown>;
+  urlParams: Record<string, unknown>;
 };
 
 const getEmptyParameters = (): RecipeParameters => ({
   requestBody: {},
   queryParams: {},
+  urlParams: {},
 });
 
 interface RecipeOutputSlice {
@@ -91,6 +93,10 @@ interface RecipeBodySlice {
   queryParams: Record<string, unknown>;
   setQueryParams: (queryParams: Record<string, unknown>) => void;
   updateQueryParams: (updateProps: { path: string; value: unknown }) => void;
+
+  urlParams: Record<string, unknown>;
+  setUrlParams: (urlParams: Record<string, unknown>) => void;
+  updateUrlParams: (updateProps: { param: string; value: unknown }) => void;
 }
 
 interface FileManagerSlice {
@@ -142,12 +148,10 @@ const createDeepActionSlice: StateCreator<Slices, [], [], DeepActionsSlice> = (
   };
 };
 
-export interface LocalStorageState {
+export type LocalStorageState = {
   sessions: RecipeSession[];
   currentSession: RecipeSessionSlice["currentSession"];
-  requestBody: Record<string, unknown>;
-  queryParams: Record<string, unknown>;
-}
+} & RecipeParameters;
 
 const createRecipeSessionSlice: StateCreator<
   Slices,
@@ -170,6 +174,7 @@ const createRecipeSessionSlice: StateCreator<
             params: {
               requestBody: prevState.requestBody,
               queryParams: prevState.queryParams,
+              urlParams: prevState.urlParams,
             },
           });
         }
@@ -212,6 +217,7 @@ const createRecipeSessionSlice: StateCreator<
             params: {
               requestBody: prevState.requestBody,
               queryParams: prevState.queryParams,
+              urlParams: prevState.urlParams,
             },
           });
         }
@@ -333,6 +339,18 @@ const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
 
         return { queryParams: nextState };
       }),
+
+    urlParams: {},
+    updateUrlParams: ({ param, value }) =>
+      set((prevState) => {
+        return {
+          urlParams: {
+            ...prevState.urlParams,
+            [param]: value,
+          },
+        };
+      }),
+    setUrlParams: (urlParams) => set(() => ({ urlParams })),
   };
 };
 
@@ -395,6 +413,7 @@ const GLOBAL_POLLING_FACTOR = 10000;
 const SESSION_HYDRATION_KEY = "SESSION_HYDRATION_KEY";
 const RECIPE_BODY_PARAMS_KEY_PREFIX = "RECIPE_BODY_PARAMS_";
 const RECIPE_QUERY_PARAMS_KEY_PREFIX = "RECIPE_QUERY_PARAMS_";
+const RECIPE_URL_PARAMS_KEY_PREFIX = "RECIPE_URL_PARAMS_";
 
 function getRecipeBodyParamsKey(recipeId: string) {
   return RECIPE_BODY_PARAMS_KEY_PREFIX + recipeId;
@@ -402,6 +421,10 @@ function getRecipeBodyParamsKey(recipeId: string) {
 
 function getRecipeQueryParamsKey(recipeId: string) {
   return RECIPE_QUERY_PARAMS_KEY_PREFIX + recipeId;
+}
+
+function getRecipeUrlParamsKey(recipeId: string) {
+  return RECIPE_URL_PARAMS_KEY_PREFIX + recipeId;
 }
 
 /*
@@ -429,6 +452,8 @@ export function useSaveRecipeUI() {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
+  const urlParams = useRecipeSessionStore((state) => state.urlParams);
+  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
 
   // On mount, hydrate from local storage
   useEffect(() => {
@@ -439,6 +464,7 @@ export function useSaveRecipeUI() {
     if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);
+    if (localSave.urlParams) setUrlParams(localSave.urlParams);
   }, []);
 
   // Save changes every POLLING_FACTOR seconds
@@ -448,6 +474,7 @@ export function useSaveRecipeUI() {
       sessions,
       requestBody,
       queryParams,
+      urlParams,
     });
   }, GLOBAL_POLLING_FACTOR);
 }
@@ -455,7 +482,7 @@ export function useSaveRecipeUI() {
 // We only need to save the session when we change tabs
 function preserveSessionParamsToLocal({
   sessionId,
-  params: { requestBody, queryParams },
+  params: { requestBody, queryParams, urlParams },
 }: {
   sessionId: string;
   params: RecipeParameters;
@@ -467,6 +494,10 @@ function preserveSessionParamsToLocal({
   localStorage.setItem(
     getRecipeQueryParamsKey(sessionId),
     JSON.stringify(queryParams)
+  );
+  localStorage.setItem(
+    getRecipeUrlParamsKey(sessionId),
+    JSON.stringify(urlParams)
   );
 }
 
@@ -480,10 +511,14 @@ function retrieveParamsForSessionIdFromLocal(
     queryParams: JSON.parse(
       localStorage.getItem(getRecipeQueryParamsKey(sessionId)) || "{}"
     ),
+    urlParams: JSON.parse(
+      localStorage.getItem(getRecipeUrlParamsKey(sessionId)) || "{}"
+    ),
   };
 }
 
 function deleteParamsForSessionIdFromLocal(sessionId: string) {
   localStorage.removeItem(getRecipeBodyParamsKey(sessionId));
   localStorage.removeItem(getRecipeQueryParamsKey(sessionId));
+  localStorage.removeItem(getRecipeUrlParamsKey(sessionId));
 }

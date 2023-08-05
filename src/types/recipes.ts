@@ -100,6 +100,7 @@ interface RecipeCore {
   tags?: string[];
   deprecated?: boolean;
   queryParams?: Record<string, RecipeParam>;
+  urlParams?: Record<string, RecipeParam>;
 }
 
 export enum RecipeMutationContentType {

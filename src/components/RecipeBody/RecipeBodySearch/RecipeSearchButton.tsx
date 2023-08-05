@@ -19,6 +19,7 @@ export function RecipeSearchButton() {
   const isSending = useRecipeSessionStore((store) => store.isSending);
   const setIsSending = useRecipeSessionStore((store) => store.setIsSending);
   const queryParams = useRecipeSessionStore((store) => store.queryParams);
+  const urlParams = useRecipeSessionStore((store) => store.urlParams);
 
   const onSubmit = async () => {
     setIsSending(true);
@@ -37,7 +38,17 @@ export function RecipeSearchButton() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    let url = new URL(recipe.path);
+
+    let path = recipe.path;
+    Object.entries(urlParams).forEach(([key, value]) => {
+      if (!value) {
+        alert(`Please provide a value for ${key}`);
+        return;
+      }
+      path = path.replace(`{${key}}`, String(value));
+    });
+
+    let url = new URL(path);
     // TODO: Should we just make this the default so no one deals with this problem?
     if (recipe.cors) {
       headers["recipe-domain"] = url.origin;

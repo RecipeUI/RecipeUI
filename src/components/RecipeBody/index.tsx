@@ -4,7 +4,7 @@ import {
   RecipeBodyRoute,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeExamplesTab } from "./RecipeExamplesTab";
+import { RecipeTemplatesTab } from "./RecipeTemplates";
 import { RecipeConfigTab } from "./RecipeConfigTab";
 import { useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
@@ -29,7 +29,7 @@ export function RecipeBody() {
       selectedRecipe.examples &&
       selectedRecipe.examples?.length > 0
     ) {
-      parameters.push(RecipeBodyRoute.Examples);
+      parameters.push(RecipeBodyRoute.Templates);
     }
 
     if (selectedRecipe.auth !== null) {
@@ -64,7 +64,7 @@ export function RecipeBody() {
       </div>
       <div className="flex-1 border-t sm:grid sm:grid-cols-2 flex flex-col">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
-        {bodyRoute === RecipeBodyRoute.Examples && <RecipeExamplesTab />}
+        {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}
         <RecipeOutput />
       </div>

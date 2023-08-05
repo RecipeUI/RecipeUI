@@ -4,7 +4,7 @@ import {
 } from "../../state/recipeSession";
 import { RecipeMutationCore } from "../../types/recipes";
 
-export function RecipeExamplesTab() {
+export function RecipeTemplatesTab() {
   const selectedRecipe = useRecipeSessionStore(
     (state) => state.currentSession!.recipe as RecipeMutationCore
   );
@@ -16,9 +16,10 @@ export function RecipeExamplesTab() {
   return (
     <div className="flex-1 relative">
       <div className="sm:absolute inset-0 mx-4 my-6 overflow-y-auto">
-        <h1 className="text-xl font-bold">Examples</h1>
+        <h1 className="text-xl font-bold">Templates</h1>
         <p className="mt-2">
-          Use some of examples below to quickly prefill the editor.
+          Use some of these templates below to quickly prefill the editor. You
+          can also create your own!
         </p>
         <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
           {examples.map((example) => {

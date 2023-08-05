@@ -5,13 +5,33 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
   const output = useRecipeSessionStore((state) => state.output);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey) {
+        if (event.key === "d") {
+          event.preventDefault();
+          setCurrentTab(RecipeOutputTab.Docs);
+        } else if (event.key === "r") {
+          event.preventDefault();
+          setCurrentTab(RecipeOutputTab.Output);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Remove the keydown event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="flex-1 relative border-t sm:border-l sm:border-t-0">
@@ -26,11 +46,12 @@ export function RecipeOutput() {
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer",
+                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer tooltip",
                   currentTab === RecipeOutputTab.Docs
                     ? "bg-neutral-300 text-black  dark:bg-neutral-800 dark:text-white"
                     : "bg-neutral-900 text-white"
                 )}
+                data-tip={tab === RecipeOutputTab.Docs ? "CMD+D" : "CMD+R"}
               >
                 {tab}
               </div>
