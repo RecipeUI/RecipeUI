@@ -11,17 +11,20 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
-  const output = useRecipeSessionStore((state) => state.output);
+  const getOutput = useRecipeSessionStore((state) => state.getOutput);
+  const output = getOutput();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey) {
         if (event.key === "d") {
           event.preventDefault();
-          setCurrentTab(RecipeOutputTab.Docs);
-        } else if (event.key === "r") {
-          event.preventDefault();
-          setCurrentTab(RecipeOutputTab.Output);
+
+          if (currentTab === RecipeOutputTab.Docs) {
+            setCurrentTab(RecipeOutputTab.Output);
+          } else {
+            setCurrentTab(RecipeOutputTab.Docs);
+          }
         }
       }
     };
@@ -31,7 +34,7 @@ export function RecipeOutput() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [currentTab, setCurrentTab]);
 
   return (
     <div className="flex-1 relative border-t sm:border-l sm:border-t-0">
@@ -51,7 +54,7 @@ export function RecipeOutput() {
                     ? "bg-neutral-300 text-black  dark:bg-neutral-800 dark:text-white"
                     : "bg-neutral-900 text-white"
                 )}
-                data-tip={tab === RecipeOutputTab.Docs ? "CMD+D" : "CMD+R"}
+                data-tip={"CMD+D"}
               >
                 {tab}
               </div>
@@ -64,9 +67,10 @@ export function RecipeOutput() {
 }
 
 export function RecipeOutputConsole() {
-  const output = useRecipeSessionStore((state) => state.output);
+  const getOutput = useRecipeSessionStore((state) => state.getOutput);
+
+  const { output, type: outputType } = getOutput();
   const isSending = useRecipeSessionStore((state) => state.isSending);
-  const outputType = useRecipeSessionStore((state) => state.outputType);
 
   const { stringifiedOutput, imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
@@ -76,8 +80,6 @@ export function RecipeOutputConsole() {
     const imageRegex =
       /(https?:\/\/[^\s'"]+\.(png|jpg|jpeg|gif|bmp|webp)(\?[^\s'"]*)?)/g;
 
-    // const codeBlocks = stringifiedOutput.match(codeBlockRegex) || [];
-    // const imageBlocks = stringifiedOutput.match(imageRegex) || [];
     const codeBlocks: string[] = [];
     const imageBlocks: string[] = [];
 

@@ -11,7 +11,7 @@ import { RECIPE_PROXY } from "../../../utils/constants";
 export function RecipeSearchButton() {
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
   const requestBody = useRecipeSessionStore((store) => store.requestBody);
-  const setOutput = useRecipeSessionStore((store) => store.setOutput);
+  const setOutput = useRecipeSessionStore((store) => store.updateOutput);
   const clearOutput = useRecipeSessionStore((store) => store.clearOutput);
   const sm = useSecretManager();
   const fileManager = useRecipeSessionStore((store) => store.fileManager);
@@ -23,7 +23,8 @@ export function RecipeSearchButton() {
 
   const onSubmit = async () => {
     setIsSending(true);
-    clearOutput();
+
+    if (currentSession) clearOutput(currentSession.id);
 
     await _onSubmit();
     setTimeout(() => {
@@ -152,17 +153,17 @@ export function RecipeSearchButton() {
         output = { response: await res.text() };
       }
 
-      setOutput({
+      setOutput(currentSession.id, {
         output: output,
-        outputType: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
+        type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
       });
     } catch (e) {
-      setOutput({
+      setOutput(currentSession.id, {
         output: {
           error:
             "Something went wrong. Can you report this issue to us at team@recipeui.com",
         },
-        outputType: RecipeOutputType.Error,
+        type: RecipeOutputType.Error,
       });
     }
   };

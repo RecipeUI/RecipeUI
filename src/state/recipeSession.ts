@@ -48,7 +48,7 @@ export enum RecipeOutputType {
 }
 
 export enum RecipeOutputTab {
-  Output = "Response",
+  Output = "Output",
   Docs = "Docs",
 }
 export type RecipeParameters = {
@@ -63,22 +63,21 @@ const getEmptyParameters = (): RecipeParameters => ({
   urlParams: {},
 });
 
+interface SessionOutput {
+  output: Record<string, unknown>;
+  type: RecipeOutputType;
+}
 interface RecipeOutputSlice {
   isSending: boolean;
   setIsSending: (isSending: boolean) => void;
 
-  output: Record<string, unknown>;
-  outputType: RecipeOutputType;
-
-  setOutput: (params: {
-    output: Record<string, unknown>;
-    outputType: RecipeOutputType;
-  }) => void;
+  outputManager: Record<string, SessionOutput>;
+  getOutput: () => SessionOutput;
+  updateOutput: (sessionId: string, sessionOutput: SessionOutput) => void;
+  clearOutput: (sessionId: string) => void;
 
   outputTab: RecipeOutputTab;
   setOutputTab: (tab: RecipeOutputTab) => void;
-
-  clearOutput: () => void;
 }
 
 interface RecipeBodySlice {
@@ -183,12 +182,16 @@ const createRecipeSessionSlice: StateCreator<
           ? retrieveParamsForSessionIdFromLocal(session.id)
           : getEmptyParameters();
 
+        const hasOutput = session
+          ? prevState.outputManager[session.id] !== undefined
+          : false;
+
         return {
           currentSession: session,
           requestBody: oldParams.requestBody,
           queryParams: oldParams.queryParams,
           bodyRoute: RecipeBodyRoute.Parameters,
-          outputTab: RecipeOutputTab.Docs,
+          outputTab: hasOutput ? RecipeOutputTab.Output : RecipeOutputTab.Docs,
         };
       }),
 
@@ -359,24 +362,51 @@ const createRecipeOutputSlice: StateCreator<
   [],
   [],
   RecipeOutputSlice
-> = (set) => {
+> = (set, get) => {
   return {
     isSending: false,
     setIsSending: (isSending) =>
       set(() => ({ isSending, outputTab: RecipeOutputTab.Output })),
 
-    output: {},
-    setOutput: ({ output, outputType }) =>
-      set(() => {
-        return { output, outputTab: RecipeOutputTab.Output, outputType };
-      }),
+    outputManager: {},
+    getOutput: () => {
+      const state = get();
 
-    outputType: RecipeOutputType.Response,
+      return (
+        state.outputManager[state.currentSession?.id || ""] || {
+          output: {},
+          type: RecipeOutputType.Response,
+        }
+      );
+    },
+    updateOutput: (sessionId, output) => {
+      set((prevState) => {
+        const outputManager = {
+          ...prevState.outputManager,
+          [sessionId]: output,
+        };
+
+        return {
+          outputManager,
+        };
+      });
+    },
+    clearOutput: (sessionId) => {
+      set((prevState) => {
+        const outputManager = {
+          ...prevState.outputManager,
+        };
+
+        delete outputManager[sessionId];
+
+        return {
+          outputManager,
+        };
+      });
+    },
 
     outputTab: RecipeOutputTab.Docs,
     setOutputTab: (tab) => set(() => ({ outputTab: tab })),
-
-    clearOutput: () => set(() => ({ output: {} })),
   };
 };
 
