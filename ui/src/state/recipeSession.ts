@@ -3,19 +3,7 @@ import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
 
-import giphy_recipes from "../assets/recipes/giphy.json";
-import openai from "../assets/recipes/openai.json";
-import pokeapi from "../assets/recipes/pokeapi.json";
-import reddit from "../assets/recipes/reddit.json";
-import more from "../assets/recipes/more.json";
 import { Recipe } from "@/types/databaseExtended";
-
-const recipes: Recipe[] = [
-  ...giphy_recipes,
-  ...reddit,
-  ...pokeapi,
-  ...more,
-] as unknown[] as Recipe[];
 
 export interface RecipeSession {
   id: string;
@@ -82,7 +70,6 @@ interface RecipeOutputSlice {
 interface RecipeBodySlice {
   bodyRoute: RecipeBodyRoute;
   setBodyRoute: (route: RecipeBodyRoute) => void;
-  recipes: Recipe[];
 
   requestBody: Record<string, unknown>;
   setRequestBody: (requestBody: Record<string, unknown>) => void;
@@ -317,8 +304,6 @@ const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
   return {
     bodyRoute: RecipeBodyRoute.Parameters,
     setBodyRoute: (route) => set(() => ({ bodyRoute: route })),
-
-    recipes,
 
     requestBody: {},
     setRequestBody: (requestBody) => set(() => ({ requestBody })),

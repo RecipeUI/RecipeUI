@@ -56,11 +56,11 @@ export function getDefaultValue<T>(
     return [getDefaultValue(param.arraySchema)] as T;
   } else if (param.type === RecipeParamType.Object) {
     const obj = {} as T;
-    for (const key in param.objectSchema) {
-      const value = getDefaultValue(param.objectSchema[key], true);
+    for (const keySchema of param.objectSchema) {
+      const value = getDefaultValue(keySchema, true);
       if (value !== undefined) {
-        // @ts-expect-error TODO: Fix this
-        obj[key] = value;
+        // @ts-expect-error IDK what the type should be here
+        obj[keySchema.name] = value;
       }
     }
     return obj as T;

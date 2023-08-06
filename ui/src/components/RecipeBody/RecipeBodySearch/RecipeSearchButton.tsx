@@ -33,6 +33,7 @@ export function RecipeSearchButton() {
       );
     }, 500);
   };
+
   const _onSubmit = async () => {
     if (!currentSession) return;
 
@@ -44,11 +45,11 @@ export function RecipeSearchButton() {
 
     let path = recipe.path;
 
-    if ("urlParams" in recipe) {
-      for (const [key, schema] of Object.entries(recipe.urlParams!)) {
+    if ("urlParams" in recipe && recipe.urlParams != undefined) {
+      for (const { name: key, ...schema } of recipe.urlParams) {
         const value = urlParams[key];
         if (value === undefined) {
-          const isRequired = currentSession.recipe.urlParams?.[key]?.required;
+          const isRequired = schema.required;
           // By default URL params are usually required if someone forgot to define
           if (isRequired === undefined || isRequired) {
             alert(`Please provide a value for ${key}`);
@@ -91,11 +92,13 @@ export function RecipeSearchButton() {
     // TODO: We can have very strict validation eventually
     if (
       "requestBody" in currentSession.recipe &&
-      "objectSchema" in currentSession.recipe.requestBody
+      currentSession.recipe.requestBody &&
+      "objectSchema" in currentSession.recipe.requestBody &&
+      currentSession.recipe.requestBody.objectSchema
     ) {
       const { objectSchema } = currentSession.recipe.requestBody;
-      const requiredKeys = Object.keys(objectSchema).filter(
-        (key) => objectSchema[key].required
+      const requiredKeys = objectSchema.filter(
+        (schema) => schema.required === true
       );
 
       // TODO: Move this to terminal

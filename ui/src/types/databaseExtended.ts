@@ -51,9 +51,10 @@ export interface RecipeNumericalParam extends RecipeParamCore<number> {
   maximum?: number;
 }
 
+export type RecipeObjectSchemas = (RecipeParam & { name: string })[];
 export interface RecipeObjectParam extends RecipeParamCore {
   type: RecipeParamType.Object;
-  objectSchema: Record<string, RecipeParam>;
+  objectSchema: RecipeObjectSchemas;
   additionalProperties?: boolean;
 }
 
@@ -108,8 +109,8 @@ export type RecipeCore = Omit<
 > & {
   method: RecipeMethod;
   auth: RecipeAuthType.Bearer | string | null;
-  queryParams?: Record<string, RecipeParam>;
-  urlParams?: Record<string, RecipeParam>;
+  queryParams?: RecipeObjectSchemas;
+  urlParams?: RecipeObjectSchemas;
   examples?: RecipeExample[];
 };
 

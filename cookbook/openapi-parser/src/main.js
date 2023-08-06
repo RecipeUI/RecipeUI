@@ -37,18 +37,23 @@ function getComponentSchema(schema, processedSchemas) {
   const requiredFields = schema.required ?? [];
 
   if (type === "object") {
-    recipeSchema.objectSchema = {};
+    recipeSchema.objectSchema = [];
     const properties = Object.keys(schema.properties ?? {});
 
     for (const property of properties) {
-      recipeSchema.objectSchema[property] = getComponentSchema(
+      const newSchema = getComponentSchema(
         schema.properties[property],
         processedSchemas
       );
 
       if (requiredFields.includes(property)) {
-        recipeSchema.objectSchema[property].required = true;
+        newSchema.required = true;
       }
+
+      recipeSchema.objectSchema.push({
+        name: property,
+        ...newSchema,
+      });
     }
   }
 

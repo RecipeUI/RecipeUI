@@ -1,7 +1,9 @@
 import classNames from "classnames";
 import {
   RecipeArrayParam,
+  RecipeCore,
   RecipeObjectParam,
+  RecipeObjectSchemas,
   RecipeParam,
   RecipeParamType,
   RecipeVariedParam,
@@ -9,7 +11,7 @@ import {
 } from "@/types/databaseExtended";
 import ReactMarkdown from "react-markdown";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { getDefaultValue, getValueInObjPath } from "../../utils/main";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -17,6 +19,7 @@ export function RecipeDocs() {
   const selectedRecipe = useRecipeSessionStore(
     (state) => state.currentSession!.recipe
   );
+
   const requestBody =
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
   const queryParams =
@@ -45,11 +48,12 @@ export function RecipeDocs() {
 function RecipeQueryDocsContainer({
   queryParams,
 }: {
-  queryParams: Record<string, RecipeParam>;
+  queryParams: RecipeObjectSchemas;
 }) {
   return (
     <div className="my-4">
-      {Object.entries(queryParams).map(([paramName, paramSchema]) => {
+      {queryParams.map((paramSchema) => {
+        const paramName = paramSchema.name;
         return (
           <RecipeDocsParamContainer
             key={paramName}
@@ -75,13 +79,12 @@ function RecipeDocsContainer({
   const addedAlready: [string, RecipeParam][] = [];
   const remaining: [string, RecipeParam][] = [];
 
-  for (const [propertyName, paramSchema] of Object.entries(
-    param.objectSchema
-  )) {
-    if (requestBody[propertyName] !== undefined) {
-      addedAlready.push([propertyName, paramSchema]);
+  for (const paramSchema of param.objectSchema) {
+    const paramName = paramSchema.name;
+    if (requestBody[paramName] !== undefined) {
+      addedAlready.push([paramName, paramSchema]);
     } else {
-      remaining.push([propertyName, paramSchema]);
+      remaining.push([paramName, paramSchema]);
     }
   }
 
@@ -160,10 +163,7 @@ function RecipeDocObjectDefinition({
         )}
       </div>
       {paramSchema.type === RecipeParamType.Object && (
-        <ArrayParamDocs
-          objectSchema={paramSchema.objectSchema}
-          hasParamState={false}
-        />
+        <ArrayParamDocs objectSchema={paramSchema.objectSchema} />
       )}
     </>
   );
@@ -270,7 +270,6 @@ function RecipeDocsParamContainer({
             {showNestedDocs && (
               <ArrayParamDocs
                 objectSchema={paramSchema.arraySchema.objectSchema}
-                hasParamState={paramState !== undefined}
               />
             )}
           </>
@@ -291,17 +290,15 @@ function RecipeDocsParamContainer({
 
 function ArrayParamDocs({
   objectSchema,
-}: // hasParamState,
-{
-  objectSchema: Record<string, RecipeParam>;
-  hasParamState: boolean;
+}: {
+  objectSchema: RecipeObjectParam["objectSchema"];
 }) {
   // const [showArraySchema, setShowArraySchema] = useState(false);
 
   const definition = (
     <div className="my-2">
-      {Object.keys(objectSchema).map((innerParamName) => {
-        const innerParamSchema = objectSchema[innerParamName];
+      {objectSchema.map((innerParamSchema) => {
+        const innerParamName = innerParamSchema.name;
 
         return (
           <div className="border rounded-sm p-4" key={innerParamName}>
@@ -574,7 +571,6 @@ function EditInEditor() {
   );
 }
 
-// TODO: For RecipeObjectParma, we need a way to show hidden keys...
 function RecipeDocObjectParam({
   paramSchema,
   paramPath,
@@ -600,7 +596,9 @@ function RecipeDocObjectParam({
   return (
     <div className="border border-dashed rounded p-4 space-y-2 w-full">
       {Object.keys(paramState).map((innerParamName) => {
-        const innerParamSchema = paramSchema.objectSchema[innerParamName];
+        const innerParamSchema = paramSchema.objectSchema.find(
+          (param) => param.name === innerParamName
+        )!;
         return (
           <div
             key={innerParamName}
@@ -825,7 +823,7 @@ function RecipeDocVariedParamEdit({
 function RecipeUrlDocsContainer({
   urlParamsSchema,
 }: {
-  urlParamsSchema: Record<string, RecipeParam>;
+  urlParamsSchema: RecipeObjectSchemas;
 }) {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
   const updateUrlParams = useRecipeSessionStore(
@@ -834,7 +832,8 @@ function RecipeUrlDocsContainer({
 
   return (
     <div className="my-4">
-      {Object.entries(urlParamsSchema).map(([paramName, paramSchema]) => {
+      {urlParamsSchema.map((paramSchema) => {
+        const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
 
         return (

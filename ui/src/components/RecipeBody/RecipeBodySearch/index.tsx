@@ -26,7 +26,6 @@ export function RecipeBodySearch() {
     queryFn: async () => {
       const res = await supabase.from("recipe").select("*");
 
-      console.log(res.data);
       if (res.data) {
         _setRecipes(res.data as unknown[] as Recipe[]);
       }

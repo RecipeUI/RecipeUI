@@ -16,21 +16,23 @@
     "project": "{JSON} Placeholder",
     "id": "b1110979-3d87-49e3-879c-8bc2d9575b01",
     "tags": ["Free"],
-    "urlParams": {
-      "user_id": {
+    "urlParams": [
+      {
+        "name": "user_id",
         "type": "string",
         "description": "Provide the user_id",
         "default": "1",
         "required": true
       },
-      "resource": {
+      {
+        "name": "resource",
         "type": "string",
         "description": "Provide the resource. Leave blank to get general info.",
         "default": "",
         "enum": ["todos", "albums", "photos", ""],
         "required": false
       }
-    }
+    ]
   },
   {
     "title": "Fake posts",
@@ -49,21 +51,23 @@
     "project": "{JSON} Placeholder",
     "id": "38b011da-62ae-4441-9055-f71fc5665608",
     "tags": ["Free"],
-    "urlParams": {
-      "user_id": {
+    "urlParams": [
+      {
+        "name": "user_id",
         "type": "string",
         "description": "Provide the user_id",
         "default": "1",
         "required": true
       },
-      "resource": {
+      {
+        "name": "resource",
         "type": "string",
         "description": "Add comment if you want to see this posts comments. Otherwise leave blank.",
         "default": "comments",
         "required": false,
         "enum": ["comments", ""]
       }
-    }
+    ]
   },
   {
     "title": "Fake albums",
@@ -82,20 +86,22 @@
     "project": "{JSON} Placeholder",
     "id": "38b011da-62ae-4441-9055-f71fc5665608",
     "tags": ["Free"],
-    "urlParams": {
-      "user_id": {
+    "urlParams": [
+      {
+        "name": "user_id",
         "type": "string",
         "description": "Provide the user_id",
         "default": "1",
         "required": true
       },
-      "resource": {
+      {
+        "name": "resource",
         "type": "string",
         "description": "Add comment if you want to see this posts comments. Otherwise leave blank.",
         "default": "comments",
         "required": false,
         "enum": ["photos", ""]
       }
-    }
+    ]
   }
 ]

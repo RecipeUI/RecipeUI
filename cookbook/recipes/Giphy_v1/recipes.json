@@ -1,6 +1,6 @@
 [
   {
-    "summary": "GIPHY Trending returns a list of the most relevant and engaging content each and every day. Our feed of trending content is continuously updated, so you always have the latest and greatest at your fingertips",
+    "summary": "GIPHY Trending returns a list of the most relevant and engaging content each and every day. Our feed of trending content is continuously updated, so you always have the latest and greatest at your fingertips.",
     "title": "Trending GIFs",
     "method": "GET",
     "path": "https://api.giphy.com/v1/gifs/trending",
@@ -8,33 +8,38 @@
     "project": "GIPHY",
     "auth": "query=api_key",
     "id": "26a0397e-b8d6-4299-96b7-189405f7c2aa",
-    "queryParams": {
-      "limit": {
+    "queryParams": [
+      {
+        "name": "limit",
         "type": "integer",
         "description": "The maximum number of objects to return. (Default: “25”)",
         "default": 25,
         "minimum": 1,
         "maximum": 50
       },
-      "offset": {
+      {
+        "name": "offset",
         "description": "Specifies the starting position of the results.",
         "example": 5,
         "type": "integer",
         "default": 0,
         "maximum": 4999
       },
-      "rating": {
+      {
+        "name": "rating",
         "type": "string",
         "description": "Filters results by [specified rating](https://developers.giphy.com/docs/optional-settings/#rating). Acceptable values include g, pg, pg-13, r. If you do not specify a rating, you will receive results from all possible ratings. Note: This parameter is buggy.",
         "default": "g",
         "enum": ["g", "pg", "pg-13", "r"]
       },
-      "random_id": {
+      {
+        "name": "random_id",
         "type": "string",
         "description": "An ID/proxy for a specific user.",
         "example": "e826c9fc5c929e0d6c6d423841a282aa"
       },
-      "bundle": {
+      {
+        "name": "bundle",
         "type": "string",
         "description": "Returns only renditions that correspond to the named bundle. [Read more about renditions.](https://developers.giphy.com/docs/optional-settings/#renditions-on-demand)",
         "example": "messaging_non_clips",
@@ -45,7 +50,7 @@
           "low_bandwidth"
         ]
       }
-    },
+    ],
     "tags": ["Popular"]
   },
   {
@@ -58,39 +63,45 @@
     "cors": true,
     "auth": "query=api_key",
     "tags": ["Popular", "Fun"],
-    "queryParams": {
-      "q": {
+    "queryParams": [
+      {
+        "name": "q",
         "type": "string",
         "required": true,
         "example": "cheeseburgers",
         "description": "Search query term or phrase. Adding @<username> anywhere in the q parameter effectively changes the search query to be a search for a specific user’s GIFs (user has to be public and verified user by GIPHY.)\nIf the q parameter contains one of these words: sticker, stickers, or transparent, the search will return stickers content.\nMaximum length: 50 chars."
       },
-      "limit": {
+      {
+        "name": "limit",
         "type": "integer",
         "description": "The maximum number of objects to return. (Default: “25”)",
         "default": 25,
         "minimum": 1,
         "maximum": 50
       },
-      "offset": {
+      {
+        "name": "offset",
         "description": "Specifies the starting position of the results.",
         "example": 5,
         "type": "integer",
         "default": 0,
         "maximum": 4999
       },
-      "rating": {
+      {
+        "name": "rating",
         "type": "string",
         "description": "Filters results by [specified rating](https://developers.giphy.com/docs/optional-settings/#rating). Acceptable values include g, pg, pg-13, r. If you do not specify a rating, you will receive results from all possible ratings. Note: This parameter is buggy.",
         "default": "g",
         "enum": ["g", "pg", "pg-13", "r"]
       },
-      "random_id": {
+      {
+        "name": "random_id",
         "type": "string",
         "description": "An ID/proxy for a specific user.",
         "example": "e826c9fc5c929e0d6c6d423841a282aa"
       },
-      "bundle": {
+      {
+        "name": "bundle",
         "type": "string",
         "description": "Returns only renditions that correspond to the named bundle. [Read more about renditions.](https://developers.giphy.com/docs/optional-settings/#renditions-on-demand)",
         "example": "messaging_non_clips",
@@ -101,6 +112,6 @@
           "low_bandwidth"
         ]
       }
-    }
+    ]
   }
 ]

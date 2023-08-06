@@ -1,13 +1,13 @@
 "use client";
 
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { RecipeBody } from ".";
-import { RecipeBodySearch } from "./RecipeBodySearch";
+import { RecipeBody } from "../RecipeBody";
+import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
 import classNames from "classnames";
 import { RecipeProject } from "@/types/databaseExtended";
 
-export function RecipeBodyContainer({
+export function RecipeHomeContainer({
   recipeProjects,
 }: {
   recipeProjects: RecipeProject[];

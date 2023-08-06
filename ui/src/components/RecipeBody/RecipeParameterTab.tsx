@@ -50,7 +50,9 @@ export function RecipeParameterTab() {
     let hasRequestBody = false;
     if (
       "requestBody" in selectedRecipe &&
-      "objectSchema" in selectedRecipe["requestBody"]
+      selectedRecipe.requestBody != null &&
+      "objectSchema" in selectedRecipe["requestBody"] &&
+      selectedRecipe.requestBody.objectSchema != null
     ) {
       hasRequiredBodyParams = Object.values(
         selectedRecipe.requestBody.objectSchema
@@ -87,7 +89,7 @@ export function RecipeParameterTab() {
 
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
 
-  const hasExamples = "examples" in selectedRecipe;
+  const hasExamples = selectedRecipe.examples != null;
 
   return (
     <div className="flex-1">
@@ -267,8 +269,9 @@ function RecipeJsonEditor() {
 
 function RecipeQueryParameters() {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-
   const hasNoParams = Object.keys(queryParams).length === 0;
+  const recipe = useRecipeSessionStore((state) => state.currentSession!.recipe);
+
   return (
     <div className="mx-4 my-6">
       <div className="flex items-center space-x-1 mb-2">
@@ -282,14 +285,26 @@ function RecipeQueryParameters() {
       </div>
       <pre className="whitespace-pre-wrap">
         {Object.entries(queryParams).map(([key, value]) => {
+          const recipeSchema = recipe.queryParams!.find(
+            (param) => param.name === key
+          );
+
+          const isRequired = recipeSchema?.required ?? false;
+
           return (
             <div key={key}>
               <span className="">{key}:</span>{" "}
-              <span className="">
-                {typeof value !== "object"
-                  ? (value as unknown as string | number | boolean)
-                  : JSON.stringify(value)}
-              </span>
+              {isRequired && (value == undefined || value == "") ? (
+                <span className="text-error">
+                  This param is required, fill it out in the docs pane.
+                </span>
+              ) : (
+                <span className="">
+                  {typeof value !== "object"
+                    ? (value as unknown as string | number | boolean)
+                    : JSON.stringify(value)}
+                </span>
+              )}
             </div>
           );
         })}
@@ -326,10 +341,10 @@ function RecipeURLParams() {
         </div>
       </div>
       <pre className="whitespace-pre-wrap">
-        {Object.keys(recipe.urlParams).map((key) => {
+        {recipe.urlParams.map((paramSchema) => {
+          const key = paramSchema.name;
           const value = urlParams[key] as string | undefined;
-
-          const isRequired = recipe.urlParams?.[key]?.required;
+          const isRequired = paramSchema.required ?? true;
 
           return (
             <div
