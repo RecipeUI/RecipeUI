@@ -11,9 +11,30 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKeys } from "@/utils/constants";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/database.types";
+import { Recipe } from "@/types/databaseExtended";
 
 export function RecipeBodySearch() {
-  const _recipes = useRecipeSessionStore((state) => state.recipes);
+  const supabase = createClientComponentClient<Database>();
+  const [_recipes, _setRecipes] = useState<Recipe[]>([]);
+
+  useQuery({
+    queryKey: [QueryKeys.Recipes],
+    queryFn: async () => {
+      const res = await supabase.from("recipe").select("*");
+
+      console.log(res.data);
+      if (res.data) {
+        _setRecipes(res.data as unknown[] as Recipe[]);
+      }
+
+      return res.data;
+    },
+  });
+
   const recipeWithLabels = useMemo(() => {
     const newRecipes = _recipes
       .filter((recipe) => !recipe.deprecated)
