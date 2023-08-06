@@ -1,3 +1,4 @@
+"use client";
 import { useRecipeSessionStore } from "../state/recipeSession";
 
 export function Navbar() {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useSaveRecipeUI } from "../state/recipeSession";
 import { RecipeBodyContainer } from "./RecipeBody/RecipeBodyContainer";
 import { RecipeSidebar } from "./RecipeSidebar";

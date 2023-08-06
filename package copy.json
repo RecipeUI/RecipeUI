@@ -1,17 +1,16 @@
 {
-  "name": "test",
-  "version": "0.1.0",
+  "name": "recipeui",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "tsc": "tsc",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "next": "13.4.12",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lint": "^6.4.0",
     "@heroicons/react": "^2.0.18",
@@ -21,6 +20,8 @@
     "fuse.js": "^6.6.2",
     "immer": "^10.0.2",
     "lodash.debounce": "^4.0.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
     "usehooks-ts": "^2.9.1",
     "uuid": "^9.0.0",
@@ -28,20 +29,20 @@
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.7",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
     "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@types/node": "20.4.8",
-    "@types/react": "18.2.18",
-    "@types/react-dom": "18.2.7",
-    "autoprefixer": "10.4.14",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "autoprefixer": "^10.4.14",
     "daisyui": "^3.5.0",
-    "eslint": "8.46.0",
-    "eslint-config-next": "13.4.12",
+    "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   }
 }
