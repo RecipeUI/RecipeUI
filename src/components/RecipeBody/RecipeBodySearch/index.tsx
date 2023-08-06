@@ -174,6 +174,7 @@ export function RecipeBodySearch() {
             <>
               {recipes.map((recipe, index) => {
                 return (
+                  // eslint-disable-next-line react/jsx-key
                   <li
                     className={classNames(
                       selectedRecipe?.path === recipe.path &&
@@ -213,9 +214,9 @@ export function RecipeBodySearch() {
                   <div className="flex-1">
                     <div className="text-base">
                       <span className="">No recipes found for </span>
-                      <span>"{debouncedInputValue}". </span>
+                      <span>{`"${debouncedInputValue}". `}</span>
                       <span>
-                        We'll constantly add new recipes from the community!
+                        {"We'll constantly add new recipes from the community!"}
                       </span>
                     </div>
                   </div>

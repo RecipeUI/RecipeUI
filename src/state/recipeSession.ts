@@ -424,7 +424,6 @@ const createFileManagerSlice: StateCreator<Slices, [], [], FileManagerSlice> = (
       })),
     deleteFileManager: (path) =>
       set((prevState) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [path]: _, ...nextFileManager } = prevState.fileManager;
         return { fileManager: nextFileManager };
       }),

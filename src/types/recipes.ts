@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO: Remove this later
 export enum RecipeParamType {
   String = "string",
