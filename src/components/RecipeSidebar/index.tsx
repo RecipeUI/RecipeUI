@@ -17,9 +17,23 @@ export function RecipeSidebar() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        event.preventDefault();
-        setCurrentSession(null);
+      if (event.metaKey || event.ctrlKey) {
+        if (
+          ["ArrowDown", "ArrowUp"].includes(event.key) &&
+          sessions.length > 1
+        ) {
+          event.preventDefault();
+          if (!currentSession) return setCurrentSession(sessions[0]);
+
+          const currentIndex = sessions.findIndex(
+            (session) => session.id === currentSession.id
+          );
+
+          const changeFactor = event.key === "ArrowDown" ? 1 : -1;
+          const nextIndex = (currentIndex + changeFactor) % sessions.length;
+
+          setCurrentSession(sessions[nextIndex]);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -28,7 +42,7 @@ export function RecipeSidebar() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [currentSession, sessions, setCurrentSession]);
 
   if (sessions.length === 0) return null;
 
