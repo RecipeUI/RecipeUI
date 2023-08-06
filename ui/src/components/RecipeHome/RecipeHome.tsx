@@ -22,6 +22,8 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
         ycombinator.push(recipe);
       } else if (tags.includes("Soon")) {
         more.push(recipe);
+      } else {
+        more.push(recipe);
       }
     });
 
