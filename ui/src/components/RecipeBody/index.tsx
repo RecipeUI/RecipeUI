@@ -1,13 +1,10 @@
 import classNames from "classnames";
 import { RecipeParameterTab } from "./RecipeParameterTab";
-import {
-  RecipeBodyRoute,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
 import { RecipeTemplatesTab } from "./RecipeTemplates";
 import { RecipeConfigTab } from "./RecipeConfigTab";
 import { useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
+import { RecipeBodyRoute, useRecipeSessionStore } from "@/state/recipeSession";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);

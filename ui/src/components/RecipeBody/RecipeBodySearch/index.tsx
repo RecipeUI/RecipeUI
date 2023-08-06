@@ -52,6 +52,7 @@ export function RecipeBodySearch() {
     setInputValue,
     inputValue,
   } = useCombobox({
+    id: "recipe-search",
     items: recipes,
     itemToString(item) {
       return item ? item.path : "";
