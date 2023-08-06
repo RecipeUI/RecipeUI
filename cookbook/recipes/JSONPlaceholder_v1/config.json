@@ -1,0 +1,8 @@
+{
+  "id": "JSONPlaceholder_v1",
+  "project": "JSONPlaceholder",
+  "version": "1.0.0",
+  "server": "https://jsonplaceholder.typicode.com/",
+  "title": "{JSON} Placeholder",
+  "description": "Free fake API for testing and prototyping. Powered by JSON Server + LowDB. Tested with XV."
+}

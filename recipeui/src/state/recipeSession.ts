@@ -10,12 +10,14 @@ import giphy_recipes from "../assets/recipes/giphy.json";
 import openai from "../assets/recipes/openai.json";
 import pokeapi from "../assets/recipes/pokeapi.json";
 import reddit from "../assets/recipes/reddit.json";
+import more from "../assets/recipes/more.json";
 
 const recipes: Recipe[] = [
   ...openai,
   ...giphy_recipes,
   ...reddit,
   ...pokeapi,
+  ...more,
 ] as Recipe[];
 
 export interface RecipeSession {
@@ -69,7 +71,7 @@ interface SessionOutput {
 }
 interface RecipeOutputSlice {
   isSending: boolean;
-  setIsSending: (isSending: boolean) => void;
+  setIsSending: (isSending: boolean, outputTab: RecipeOutputTab) => void;
 
   outputManager: Record<string, SessionOutput>;
   getOutput: () => SessionOutput;
@@ -365,8 +367,11 @@ const createRecipeOutputSlice: StateCreator<
 > = (set, get) => {
   return {
     isSending: false,
-    setIsSending: (isSending) =>
-      set(() => ({ isSending, outputTab: RecipeOutputTab.Output })),
+    setIsSending: (isSending, outputTab) =>
+      set(() => ({
+        isSending,
+        outputTab,
+      })),
 
     outputManager: {},
     getOutput: () => {

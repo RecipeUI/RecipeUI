@@ -184,9 +184,8 @@ export function RecipeBodySearch() {
                         "bg-blue-300 dark:!bg-neutral-700",
                       "py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-800"
                     )}
+                    key={recipe.path + recipe.method}
                     {...getItemProps({
-                      // TODO: Fix this
-                      key: recipe.path + recipe.method,
                       index,
                       item: recipe,
                     })}

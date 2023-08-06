@@ -1,12 +1,13 @@
 import classNames from "classnames";
-import { RecipeAuthType } from "../../../types/recipes";
 import { useEffect, useRef } from "react";
+import { RECIPE_PROXY } from "@/utils/constants";
+import { useSecretManager } from "@/state/recipeAuth";
 import {
+  RecipeOutputTab,
   RecipeOutputType,
   useRecipeSessionStore,
-} from "../../../state/recipeSession";
-import { useSecretManager } from "../../../state/recipeAuth";
-import { RECIPE_PROXY } from "../../../utils/constants";
+} from "@/state/recipeSession";
+import { RecipeAuthType } from "@/types/recipes";
 
 export function RecipeSearchButton() {
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
@@ -22,13 +23,14 @@ export function RecipeSearchButton() {
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
 
   const onSubmit = async () => {
-    setIsSending(true);
-
     if (currentSession) clearOutput(currentSession.id);
 
-    await _onSubmit();
+    const success = await _onSubmit();
     setTimeout(() => {
-      setIsSending(false);
+      setIsSending(
+        false,
+        success === undefined ? RecipeOutputTab.Docs : RecipeOutputTab.Output
+      );
     }, 500);
   };
   const _onSubmit = async () => {
@@ -41,13 +43,26 @@ export function RecipeSearchButton() {
     };
 
     let path = recipe.path;
-    Object.entries(urlParams).forEach(([key, value]) => {
-      if (!value) {
-        alert(`Please provide a value for ${key}`);
-        return;
+
+    if ("urlParams" in recipe) {
+      for (const [key, schema] of Object.entries(recipe.urlParams!)) {
+        const value = urlParams[key];
+        if (value === undefined) {
+          const isRequired = currentSession.recipe.urlParams?.[key]?.required;
+          // By default URL params are usually required if someone forgot to define
+          if (isRequired === undefined || isRequired) {
+            alert(`Please provide a value for ${key}`);
+            return;
+          } else {
+            path = path.replace(`{${key}}`, "");
+          }
+        } else {
+          path = path.replace(`{${key}}`, String(value));
+        }
+
+        path = path.replace(`{${key}}`, String(value));
       }
-      path = path.replace(`{${key}}`, String(value));
-    });
+    }
 
     let url = new URL(path);
     // TODO: Should we just make this the default so no one deals with this problem?
@@ -135,6 +150,8 @@ export function RecipeSearchButton() {
     }
 
     try {
+      setIsSending(true, RecipeOutputTab.Output);
+
       const payload = {
         method: recipe.method,
         headers,
@@ -158,6 +175,7 @@ export function RecipeSearchButton() {
         type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
       });
     } catch (e) {
+      console.log(e);
       setOutput(currentSession.id, {
         output: {
           error:
@@ -166,6 +184,7 @@ export function RecipeSearchButton() {
         type: RecipeOutputType.Error,
       });
     }
+    return true;
   };
 
   const ref = useRef<HTMLButtonElement>(null);

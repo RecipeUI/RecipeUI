@@ -329,10 +329,20 @@ function RecipeURLParams() {
         {Object.keys(recipe.urlParams).map((key) => {
           const value = urlParams[key] as string | undefined;
 
+          const isRequired = recipe.urlParams?.[key]?.required;
+
           return (
-            <div key={key} className={classNames(!value && "text-error")}>
+            <div
+              key={key}
+              className={classNames(!value && isRequired && "text-error")}
+            >
               <span>{key}:</span>{" "}
-              <span>{value || "Setup this parameter in the docs pane"}</span>
+              <span>
+                {value ||
+                  (isRequired
+                    ? "Setup this parameter in the docs pane"
+                    : "Optional")}
+              </span>
             </div>
           );
         })}

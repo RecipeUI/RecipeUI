@@ -2,6 +2,14 @@
 
 We need your help in making recipes discoverable and easy to use. This doesn't require writing code, it just requires you telling us what the API of an endpoint looks. If we take your submission we'd love to add you as a contributor for anyone using that recipe to see!
 
+## API Cookbooks
+These are sorted from ones that are incomplete and need help!
+[] Starwars
+[] Pokemon
+[] Reddit
+[-] OpenAI
+[] GIPHY
+
 
 ## (WIP) Recipe Philosophy  
 

@@ -1,12 +1,15 @@
 import classNames from "classnames";
 import {
   RecipeOutputTab,
-  RecipeOutputType,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
 import { ReactNode, useEffect, useMemo } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+
+// This library is ridiculously large. We should try to replace it with something lightweight.
+import JsonView from "react18-json-view";
+import { useDarkMode } from "usehooks-ts";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
@@ -72,9 +75,8 @@ export function RecipeOutputConsole() {
   const { output, type: outputType } = getOutput();
   const isSending = useRecipeSessionStore((state) => state.isSending);
 
-  const { stringifiedOutput, imageBlocks, codeBlocks } = useMemo(() => {
+  const { imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
-    const stringifiedOutput = JSON.stringify(output, null, 2);
 
     const codeBlockRegex = /```(.*?)```/gs;
     const imageRegex =
@@ -100,8 +102,10 @@ export function RecipeOutputConsole() {
     }
     checkObjs(output);
 
-    return { codeBlocks, imageBlocks, stringifiedOutput };
+    return { codeBlocks, imageBlocks };
   }, [output]);
+
+  const { isDarkMode } = useDarkMode();
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white space-y-6">
@@ -157,38 +161,12 @@ export function RecipeOutputConsole() {
         <OutputModule
           title="Response"
           body={
-            <>
-              <div
-                className={classNames(
-                  outputType === RecipeOutputType.Error && "mockup-code"
-                )}
-              >
-                <pre
-                  className={classNames(
-                    "mt-2 whitespace-break-spaces",
-                    outputType === RecipeOutputType.Error &&
-                      "bg-warning text-warning-content px-2"
-                  )}
-                >
-                  {stringifiedOutput}
-                </pre>
-              </div>
-              {Object.keys(output).length > 0 && (
-                <button
-                  className="btn btn-neutral btn-sm mt-2"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(stringifiedOutput);
-                      alert("Copied to clipboard");
-                    } catch (error) {
-                      alert("Failed to copy to clipboard");
-                    }
-                  }}
-                >
-                  Copy Output
-                </button>
-              )}
-            </>
+            <JsonView
+              src={output}
+              collapsed={false}
+              collapseStringsAfterLength={1000}
+              collapseObjectsAfterLength={1000}
+            />
           }
         />
       ) : (

@@ -378,19 +378,23 @@ function RecipeDocParamEdit({
     }
 
     return (
-      <textarea
-        className="textarea textarea-bordered textarea-sm w-full"
-        placeholder={paramSchema.default as string}
-        rows={1}
-        value={(paramState || "") as string}
-        onChange={(e) => {
-          // TODO: This feels expensive
-          updateParams({
-            path: paramPath,
-            value: e.target.value,
-          });
-        }}
-      />
+      <>
+        <textarea
+          className="textarea textarea-bordered textarea-sm w-full"
+          placeholder={
+            paramSchema.default ? `example: ${paramSchema.default}` : undefined
+          }
+          rows={1}
+          value={(paramState || "") as string}
+          onChange={(e) => {
+            // TODO: This feels expensive
+            updateParams({
+              path: paramPath,
+              value: e.target.value,
+            });
+          }}
+        />
+      </>
     );
   } else if (paramSchema.type === RecipeParamType.Boolean) {
     return (
@@ -438,7 +442,9 @@ function RecipeDocParamEdit({
         type="number"
         className="input input-sm input-bordered"
         placeholder={
-          paramSchema.default ? String(paramSchema.default) : undefined
+          paramSchema.default
+            ? `example: ${String(paramSchema.default)}`
+            : undefined
         }
         value={(paramState || 0) as number}
         onChange={(e) => {
@@ -853,17 +859,38 @@ function RecipeUrlDocsContainer({
             )}
 
             <div className="mt-4">
-              <input
-                className="input input-bordered input-sm w-full"
-                placeholder={paramSchema.default as string}
-                value={(value || "") as string}
-                onChange={(e) => {
-                  updateUrlParams({
-                    param: paramName,
-                    value: e.target.value,
-                  });
-                }}
-              />
+              {!("enum" in paramSchema) ? (
+                <input
+                  className="input input-bordered input-sm w-full"
+                  placeholder={
+                    paramSchema.default
+                      ? `example: ${paramSchema.default}`
+                      : undefined
+                  }
+                  value={(value || "") as string}
+                  onChange={(e) => {
+                    updateUrlParams({
+                      param: paramName,
+                      value: e.target.value,
+                    });
+                  }}
+                />
+              ) : (
+                <select
+                  className="select select-bordered select-sm w-full max-w-xs"
+                  value={value || ""}
+                  onChange={(e) => {
+                    updateUrlParams({
+                      param: paramName,
+                      value: e.target.value,
+                    });
+                  }}
+                >
+                  {paramSchema.enum?.map((value) => {
+                    return <option key={value}>{value}</option>;
+                  })}
+                </select>
+              )}
             </div>
           </div>
         );

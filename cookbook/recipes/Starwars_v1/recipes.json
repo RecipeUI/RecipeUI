@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Star Wars People",
+    "summary": "Search people in the star wars universe. View the full [docs](https://swapi.dev/documentation#people)",
+    "method": "GET",
+    "path": "https://swapi.dev/api/people/",
+    "project": "SWAPI",
+    "id": "f7dc31e3-fce4-464d-a0d5-ea143c9810c6",
+    "tags": ["Free"],
+    "queryParams": {
+      "search": {
+        "type": "string",
+        "description": "Search for a star wars name. Leave blank to search for all.",
+        "default": "skywalker"
+      }
+    }
+  },
+  {
+    "title": "Star Wars Species",
+    "summary": "Search species in the star wars universe. View the full [docs](https://swapi.dev/documentation#species)",
+    "method": "GET",
+    "path": "https://swapi.dev/api/species/",
+    "project": "SWAPI",
+    "id": "864fbd79-9245-48fc-bc17-55df93cf1e81",
+    "tags": ["Free"],
+    "queryParams": {
+      "search": {
+        "type": "string",
+        "description": "Search for a star wars species. Leave blank to search for all.",
+        "default": "human"
+      }
+    }
+  }
+]

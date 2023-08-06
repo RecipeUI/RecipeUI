@@ -6,7 +6,7 @@ import {
 import { ReactNode, useMemo } from "react";
 
 enum RecipeMarketPlaceStatus {
-  Active = "Use",
+  Active = "View",
   ToInstall = "Install",
   Waitlist = "Waitlist",
   Soon = "Soon",
@@ -99,6 +99,26 @@ const RECIPE_INITIAL_MARKETPLACE: ProjectInfo[] = [
     tags: ["Free"],
   },
   {
+    title: "Star Wars",
+    project: "SWAPI",
+    subheader: "The Star Wars API",
+    description:
+      "All the Star Wars data you've ever wanted: Planets, Spaceships, Vehicles, People, Films and Species. From all SEVEN Star Wars films. Now with The Force Awakens data!",
+    status: RecipeMarketPlaceStatus.Active,
+    image:
+      "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/starwars.png",
+    tags: ["Free"],
+  },
+  {
+    title: "{JSON} Placeholder",
+    project: "JSONPlaceholder",
+    subheader: "Fake Data Generator",
+    description:
+      "Free fake API for testing and prototyping. Powered by JSON Server + LowDB. Tested with XV.",
+    status: RecipeMarketPlaceStatus.Active,
+    tags: ["Free"],
+  },
+  {
     title: "Deepgram (YC W16)",
     project: "Deepgram",
     subheader: "AI-powered speech recognition",
@@ -108,6 +128,7 @@ const RECIPE_INITIAL_MARKETPLACE: ProjectInfo[] = [
     tags: ["YCombinator"],
   },
 ];
+
 export function RecipeHome() {
   const { popular, free, ycombinator, more } = useMemo(() => {
     const popular: ProjectInfo[] = [];
@@ -151,7 +172,7 @@ export function RecipeHome() {
       />
       <MarketplaceSection
         header="YCombinator"
-        description="We joined YCombinator because we built the first recipes at our last companies. Checkout these APIs from the YC community!"
+        description="We joined YCombinator because we built recipes internally at Robinhood and Facebook. Checkout these APIs from the YC community!"
         projects={ycombinator}
       />
       {more.length > 0 && (
@@ -176,7 +197,7 @@ function MarketplaceSection({
 }) {
   return (
     <div>
-      <h1 className="text-2xl font-bold dark:text-white">{header}</h1>
+      <h1 className="text-2xl font-bold dark:text-gray-100">{header}</h1>
       {typeof description === "string" ? <p>{description}</p> : description}
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4">
         {projects.map((recipe) => {
@@ -218,7 +239,7 @@ function RecipeHomeBox({
       <div className="flex justify-between ">
         <div className="flex items-center">
           {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
-          <h2 className="font-bold text-xl dark:text-white">{title}</h2>
+          <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
         </div>
         <div
           className="tooltip"
@@ -244,7 +265,7 @@ function RecipeHomeBox({
           </button>
         </div>
       </div>
-      <h3 className="font-bold text-sm dark:text-gray-100">
+      <h3 className="font-bold text-sm dark:text-gray-300">
         {subheader ?? "Testing"}
       </h3>
       <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">

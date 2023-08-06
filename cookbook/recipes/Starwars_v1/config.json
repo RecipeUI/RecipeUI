@@ -1,0 +1,8 @@
+{
+  "id": "StarWars_v1",
+  "project": "SWAPI",
+  "version": "1.0.0",
+  "server": "https://swapi.dev/api/",
+  "title": "The Star Wars API",
+  "description": "All the Star Wars data you've ever wanted: Planets, Spaceships, Vehicles, People, Films and Species. From all SEVEN Star Wars films. Now with The Force Awakens data!"
+}
