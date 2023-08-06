@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 const metadataConstants = {
   title: "RecipeUI",
   description:
-    "Discover how to use APIS from ChatGPT, GIPHY, Reddit, PokeAPI, and more in under a minute.",
+    "Discover how to use APIs from ChatGPT, GIPHY, Reddit, PokeAPI, and more in under a minute.",
   image_url: "https://www.recipeui.com/opengraph-image.png",
 };
 export const metadata: Metadata = {

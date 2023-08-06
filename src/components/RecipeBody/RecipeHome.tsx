@@ -3,6 +3,7 @@ import {
   DeepActionType,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
+import { ReactNode, useMemo } from "react";
 
 enum RecipeMarketPlaceStatus {
   Active = "Use",
@@ -11,7 +12,16 @@ enum RecipeMarketPlaceStatus {
   Soon = "Soon",
 }
 
-const RECIPE_INITIAL_MARKETPLACE = [
+interface ProjectInfo {
+  title: string;
+  project: string;
+  subheader: string;
+  description: string;
+  status: RecipeMarketPlaceStatus;
+  image?: string;
+  tags?: string[];
+}
+const RECIPE_INITIAL_MARKETPLACE: ProjectInfo[] = [
   {
     title: "OpenAI",
     project: "OpenAI",
@@ -21,6 +31,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Active,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai.png",
+    tags: ["Popular"],
   },
   {
     title: "GIPHY",
@@ -31,6 +42,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Active,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/giphy.png",
+    tags: ["Popular"],
   },
   {
     title: "Reddit",
@@ -41,6 +53,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Active,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/reddit.png",
+    tags: ["Popular"],
   },
   {
     title: "Alpaca (YC W19)",
@@ -51,6 +64,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Soon,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/alpaca.png",
+    tags: ["YCombinator"],
   },
   {
     title: "Google Maps",
@@ -71,6 +85,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Soon,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/supabase.png",
+    tags: ["YCombinator"],
   },
   {
     title: "Pokéapi",
@@ -81,6 +96,7 @@ const RECIPE_INITIAL_MARKETPLACE = [
     status: RecipeMarketPlaceStatus.Active,
     image:
       "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/pokemon.png",
+    tags: ["Free"],
   },
   {
     title: "Deepgram (YC W16)",
@@ -89,21 +105,81 @@ const RECIPE_INITIAL_MARKETPLACE = [
     description:
       "Deepgram utilizes state-of-the-art AI technology for high accuracy speech recognition. Offering a suite of services, such as transcription, voice commands, and call analytics, Deepgram is a powerful tool for businesses seeking to harness the power of voice data. Its cutting-edge deep learning models deliver unparalleled performance, even in noisy environments or with complex multi-speaker conversations.",
     status: RecipeMarketPlaceStatus.Soon,
+    tags: ["YCombinator"],
   },
 ];
 export function RecipeHome() {
+  const { popular, free, ycombinator, more } = useMemo(() => {
+    const popular: ProjectInfo[] = [];
+    const free: ProjectInfo[] = [];
+    const ycombinator: ProjectInfo[] = [];
+    const more: ProjectInfo[] = [];
+
+    RECIPE_INITIAL_MARKETPLACE.forEach((recipe) => {
+      const tags = recipe.tags || [];
+
+      if (tags.includes("Popular")) {
+        popular.push(recipe);
+      } else if (tags.includes("Free")) {
+        free.push(recipe);
+      } else if (tags.includes("YCombinator")) {
+        ycombinator.push(recipe);
+      } else if (tags.includes("Soon")) {
+        more.push(recipe);
+      }
+    });
+
+    return {
+      popular,
+      free,
+      ycombinator,
+      more,
+    };
+  }, []);
+
   return (
-    <div className="flex-1 flex flex-col p-4">
-      <h1 className="text-2xl font-bold dark:text-white">
-        Popular API recipes
-      </h1>
-      <p>
-        Discover recipes built from the community that come preinstalled! More
-        recipes will come soon, if you want to contribute reach out here
-        (link)...
-      </p>
+    <div className="flex-1 flex flex-col p-4 space-y-12">
+      <MarketplaceSection
+        header="Popular"
+        description="Discover popular recipes built from the community! More recipes will come everyday."
+        projects={popular}
+      />
+      <MarketplaceSection
+        header="Free"
+        description="These APIs don't require any authentication! Use these in seconds..."
+        projects={free}
+      />
+      <MarketplaceSection
+        header="YCombinator"
+        description="We joined YCombinator because we built the first recipes at our last companies. Checkout these APIs from the YC community!"
+        projects={ycombinator}
+      />
+      {more.length > 0 && (
+        <MarketplaceSection
+          header="Discover"
+          description="Checkout these APIs and let us know what you think!"
+          projects={more}
+        />
+      )}
+    </div>
+  );
+}
+
+function MarketplaceSection({
+  header,
+  description,
+  projects,
+}: {
+  header: string;
+  description: string | ReactNode;
+  projects: ProjectInfo[];
+}) {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold dark:text-white">{header}</h1>
+      {typeof description === "string" ? <p>{description}</p> : description}
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4">
-        {RECIPE_INITIAL_MARKETPLACE.map((recipe) => {
+        {projects.map((recipe) => {
           return (
             <RecipeHomeBox
               key={recipe.title}
