@@ -1,3 +1,4 @@
+"use client";
 import classNames from "classnames";
 import { RecipeParameterTab } from "./RecipeParameterTab";
 import { RecipeTemplatesTab } from "./RecipeTemplates";

@@ -7,7 +7,7 @@ import {
   RecipeOutputType,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
-import { RecipeAuthType } from "@/types/recipes";
+import { RecipeAuthType } from "@/types/databaseExtended";
 
 export function RecipeSearchButton() {
   const currentSession = useRecipeSessionStore((store) => store.currentSession);

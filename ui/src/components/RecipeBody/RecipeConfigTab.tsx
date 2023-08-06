@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useSecretManager } from "../../state/recipeAuth";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { RecipeAuthType } from "../../types/recipes";
 import classNames from "classnames";
 
 import _docLinks from "../../assets/docLinks.json";
+import { RecipeAuthType } from "@/types/databaseExtended";
 const docLinks = _docLinks as Record<string, string>;
 
 export function RecipeConfigTab() {

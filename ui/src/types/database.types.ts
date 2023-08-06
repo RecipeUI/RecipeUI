@@ -48,6 +48,70 @@ export interface Database {
         }
         Relationships: []
       }
+      recipe: {
+        Row: {
+          auth: string | null
+          author: string | null
+          cors: boolean | null
+          created_at: string | null
+          deprecated: boolean | null
+          examples: Json[] | null
+          id: number
+          method: string
+          path: string
+          project: string
+          queryParams: Json | null
+          requestBody: Json | null
+          summary: string
+          tags: string[] | null
+          title: string
+          urlParams: Json | null
+        }
+        Insert: {
+          auth?: string | null
+          author?: string | null
+          cors?: boolean | null
+          created_at?: string | null
+          deprecated?: boolean | null
+          examples?: Json[] | null
+          id?: number
+          method?: string
+          path: string
+          project: string
+          queryParams?: Json | null
+          requestBody?: Json | null
+          summary: string
+          tags?: string[] | null
+          title: string
+          urlParams?: Json | null
+        }
+        Update: {
+          auth?: string | null
+          author?: string | null
+          cors?: boolean | null
+          created_at?: string | null
+          deprecated?: boolean | null
+          examples?: Json[] | null
+          id?: number
+          method?: string
+          path?: string
+          project?: string
+          queryParams?: Json | null
+          requestBody?: Json | null
+          summary?: string
+          tags?: string[] | null
+          title?: string
+          urlParams?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

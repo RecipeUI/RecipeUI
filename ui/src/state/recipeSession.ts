@@ -1,24 +1,21 @@
 import { StateCreator, create } from "zustand";
-import { Recipe } from "../types/recipes";
 import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
-import { useEffect } from "react";
-import { useInterval, useLocalStorage } from "usehooks-ts";
 
 import giphy_recipes from "../assets/recipes/giphy.json";
 import openai from "../assets/recipes/openai.json";
 import pokeapi from "../assets/recipes/pokeapi.json";
 import reddit from "../assets/recipes/reddit.json";
 import more from "../assets/recipes/more.json";
+import { Recipe } from "@/types/databaseExtended";
 
 const recipes: Recipe[] = [
-  ...openai,
   ...giphy_recipes,
   ...reddit,
   ...pokeapi,
   ...more,
-] as Recipe[];
+] as unknown[] as Recipe[];
 
 export interface RecipeSession {
   id: string;
@@ -59,7 +56,7 @@ export type RecipeParameters = {
   urlParams: Record<string, unknown>;
 };
 
-const getEmptyParameters = (): RecipeParameters => ({
+export const getEmptyParameters = (): RecipeParameters => ({
   requestBody: {},
   queryParams: {},
   urlParams: {},
@@ -443,8 +440,8 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createDeepActionSlice(...a),
 }));
 
-const GLOBAL_POLLING_FACTOR = 10000;
-const SESSION_HYDRATION_KEY = "SESSION_HYDRATION_KEY";
+export const GLOBAL_POLLING_FACTOR = 10000;
+export const SESSION_HYDRATION_KEY = "SESSION_HYDRATION_KEY";
 const RECIPE_BODY_PARAMS_KEY_PREFIX = "RECIPE_BODY_PARAMS_";
 const RECIPE_QUERY_PARAMS_KEY_PREFIX = "RECIPE_QUERY_PARAMS_";
 const RECIPE_URL_PARAMS_KEY_PREFIX = "RECIPE_URL_PARAMS_";
@@ -459,58 +456,6 @@ function getRecipeQueryParamsKey(recipeId: string) {
 
 function getRecipeUrlParamsKey(recipeId: string) {
   return RECIPE_URL_PARAMS_KEY_PREFIX + recipeId;
-}
-
-/*
-This is definitely a naive, unoptimized, approach to storing data locally.
-
-Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
-*/
-export function useSaveRecipeUI() {
-  const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
-    SESSION_HYDRATION_KEY,
-    {
-      currentSession: null,
-      sessions: [],
-      ...getEmptyParameters(),
-    }
-  );
-
-  const sessions = useRecipeSessionStore((state) => state.sessions);
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const setSessions = useRecipeSessionStore((state) => state.setSessions);
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
-  const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
-
-  // On mount, hydrate from local storage
-  useEffect(() => {
-    console.log("Hydrating from local storage");
-
-    if (!localSave) return;
-    if (localSave.currentSession) setCurrentSession(localSave.currentSession);
-    if (localSave.sessions) setSessions(localSave.sessions);
-    if (localSave.requestBody) setRequestBody(localSave.requestBody);
-    if (localSave.queryParams) setQueryParams(localSave.queryParams);
-    if (localSave.urlParams) setUrlParams(localSave.urlParams);
-  }, []);
-
-  // Save changes every POLLING_FACTOR seconds
-  useInterval(() => {
-    setLocalSave({
-      currentSession,
-      sessions,
-      requestBody,
-      queryParams,
-      urlParams,
-    });
-  }, GLOBAL_POLLING_FACTOR);
 }
 
 // We only need to save the session when we change tabs

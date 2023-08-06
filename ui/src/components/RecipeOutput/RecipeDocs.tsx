@@ -6,7 +6,7 @@ import {
   RecipeParamType,
   RecipeVariedParam,
   isVariedParam,
-} from "../../types/recipes";
+} from "@/types/databaseExtended";
 import ReactMarkdown from "react-markdown";
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { ChangeEvent, useEffect, useRef, useState } from "react";

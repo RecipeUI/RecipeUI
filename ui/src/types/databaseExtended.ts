@@ -1,4 +1,19 @@
-// TODO: Remove this later
+import { Database } from "@/types/database.types";
+
+export enum RecipeProjectStatus {
+  Active = "View",
+  ToInstall = "Install",
+  Waitlist = "Waitlist",
+  Soon = "Soon",
+}
+
+export type RecipeProject = Omit<
+  Database["public"]["Tables"]["project"]["Row"],
+  "status"
+> & {
+  status: RecipeProjectStatus;
+};
+
 export enum RecipeParamType {
   String = "string",
   Boolean = "boolean",
@@ -87,21 +102,16 @@ export enum RecipeAuthType {
   Bearer = "bearer",
 }
 
-interface RecipeCore {
-  title: string;
-  summary?: string;
+export type RecipeCore = Omit<
+  Database["public"]["Tables"]["recipe"]["Row"],
+  "auth" | "method" | "queryParams" | "urlParams" | "examples" | "requestBody"
+> & {
   method: RecipeMethod;
-  path: string;
-  project: string;
   auth: RecipeAuthType.Bearer | string | null;
-  cors?: boolean;
-  id: string;
-  tags?: string[];
-  deprecated?: boolean;
   queryParams?: Record<string, RecipeParam>;
   urlParams?: Record<string, RecipeParam>;
-  author?: string;
-}
+  examples?: RecipeExample[];
+};
 
 export enum RecipeMutationContentType {
   JSON = "application/json",
@@ -118,7 +128,6 @@ export interface RecipeMutationCore extends RecipeCore {
   requestBody: RecipeParam & {
     contentType: RecipeMutationContentType;
   };
-  examples?: RecipeExample[];
 }
 
 export type Recipe = RecipeCore | RecipeMutationCore;

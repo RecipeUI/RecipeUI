@@ -1,26 +1,10 @@
 import classNames from "classnames";
-import { ReactNode, useMemo, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
-import { useQuery } from "@tanstack/react-query";
-import { QueryKeys } from "@/utils/constants";
-import { RecipeProject, RecipeProjectStatus } from "@/types/database_extended";
+import { ReactNode, useMemo } from "react";
+import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
 import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
 
-export function RecipeHome() {
-  const supabase = createClientComponentClient<Database>();
-
-  const projectsQuery = useQuery({
-    queryKey: [QueryKeys.Projects],
-    queryFn: async () => {
-      const { data } = await supabase.from("project").select();
-      return (data || []) as RecipeProject[];
-    },
-  });
-
+export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const { popular, free, ycombinator, more } = useMemo(() => {
-    const projects = projectsQuery.data || [];
-
     const popular: RecipeProject[] = [];
     const free: RecipeProject[] = [];
     const ycombinator: RecipeProject[] = [];
@@ -47,7 +31,7 @@ export function RecipeHome() {
       ycombinator,
       more,
     };
-  }, [projectsQuery.data]);
+  }, [projects]);
 
   return (
     <div className="flex-1 flex flex-col p-4 space-y-12">

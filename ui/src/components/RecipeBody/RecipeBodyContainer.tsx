@@ -1,10 +1,17 @@
+"use client";
+
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { RecipeBody } from ".";
 import { RecipeBodySearch } from "./RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
 import classNames from "classnames";
+import { RecipeProject } from "@/types/databaseExtended";
 
-export function RecipeBodyContainer() {
+export function RecipeBodyContainer({
+  recipeProjects,
+}: {
+  recipeProjects: RecipeProject[];
+}) {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   return (
@@ -15,7 +22,11 @@ export function RecipeBodyContainer() {
       )}
     >
       <RecipeBodySearch />
-      {currentSession ? <RecipeBody /> : <RecipeHome />}
+      {currentSession ? (
+        <RecipeBody />
+      ) : (
+        <RecipeHome projects={recipeProjects} />
+      )}
     </div>
   );
 }

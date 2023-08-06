@@ -1,3 +1,4 @@
+"use client";
 import { useCombobox } from "downshift";
 import classNames from "classnames";
 import Fuse from "fuse.js";

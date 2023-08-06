@@ -1,5 +1,5 @@
+import { RecipeMethod } from "@/types/databaseExtended";
 import classNames from "classnames";
-import { RecipeMethod } from "../types/recipes";
 
 export function RouteTypeLabel({
   recipeMethod,

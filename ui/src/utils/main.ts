@@ -1,4 +1,4 @@
-import { RecipeParam, RecipeParamType } from "../types/recipes";
+import { RecipeParam, RecipeParamType } from "@/types/databaseExtended";
 
 export function isArrayPath(str: string): boolean {
   // Check to see if string in format of [number]

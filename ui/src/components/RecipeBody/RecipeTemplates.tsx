@@ -2,7 +2,7 @@ import {
   RecipeBodyRoute,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeMutationCore } from "../../types/recipes";
+import { RecipeMutationCore } from "@/types/databaseExtended";
 
 export function RecipeTemplatesTab() {
   const selectedRecipe = useRecipeSessionStore(
