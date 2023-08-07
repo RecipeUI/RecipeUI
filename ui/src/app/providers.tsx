@@ -8,7 +8,6 @@ import { PostHogProvider } from "posthog-js/react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 if (typeof window !== "undefined") {
-  console.log("here", window.origin);
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
     api_host: window.origin + "/ingest",
   });
