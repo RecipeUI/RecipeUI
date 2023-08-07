@@ -11,11 +11,6 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
-import { useQuery } from "@tanstack/react-query";
-import { QueryKeys } from "@/utils/constants";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
-import { Recipe } from "@/types/databaseExtended";
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -24,34 +19,7 @@ export function RecipeBodySearch() {
     (state) => state.setCurrentSession
   );
 
-  const supabase = createClientComponentClient<Database>();
-  const [_recipes, _setRecipes] = useState<Recipe[]>([]);
-
-  useQuery({
-    queryKey: [QueryKeys.Recipes],
-    queryFn: async () => {
-      const res = await supabase.from("recipe").select("*");
-      const newRecipes = res.data as unknown[] as Recipe[];
-      if (res.data) {
-        _setRecipes(newRecipes);
-      }
-
-      if (currentSession) {
-        const latestRecipe = newRecipes.find(
-          (_recipe) => _recipe.id === currentSession.recipe.id
-        );
-
-        if (latestRecipe) {
-          setCurrentSession({
-            ...currentSession,
-            recipe: latestRecipe,
-          });
-        }
-      }
-
-      return res.data;
-    },
-  });
+  const _recipes = useRecipeSessionStore((state) => state.recipes);
 
   const recipeWithLabels = useMemo(() => {
     const newRecipes = _recipes

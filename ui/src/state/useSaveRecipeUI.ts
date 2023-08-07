@@ -7,6 +7,11 @@ import {
   useRecipeSessionStore,
   GLOBAL_POLLING_FACTOR,
 } from "./recipeSession";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKeys } from "@/utils/constants";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/database.types";
+import { Recipe } from "@/types/databaseExtended";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -47,6 +52,55 @@ export function useSaveRecipeUI() {
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);
     if (localSave.urlParams) setUrlParams(localSave.urlParams);
+  }, []);
+
+  const supabase = createClientComponentClient<Database>();
+  const initializeRecipes = useRecipeSessionStore(
+    (state) => state.initializeRecipes
+  );
+  useEffect(() => {
+    async function fetchRecipes() {
+      const res = await supabase.from("recipe").select("*");
+      const newRecipes = res.data as unknown[] as Recipe[];
+      if (res.data) {
+        initializeRecipes(newRecipes);
+      }
+
+      if (!localSave) return null;
+      // Lets fix all the sessions and the current session
+      // This is not really ideal right now, we should really be referencing ids and then matching later
+
+      let _sessions = localSave.sessions.map((session) => {
+        const latestRecipe = newRecipes.find(
+          (_recipe) => _recipe.id === session.recipe.id
+        );
+
+        if (latestRecipe) {
+          return {
+            ...session,
+            recipe: latestRecipe,
+          };
+        }
+
+        return session;
+      });
+      setSessions(_sessions);
+
+      const localSession = localSave.currentSession;
+      if (localSession != null) {
+        const latestRecipe = newRecipes.find(
+          (_recipe) => _recipe.id === localSession.recipe.id
+        );
+
+        if (localSave.currentSession && latestRecipe) {
+          setCurrentSession({
+            ...localSession,
+            recipe: latestRecipe,
+          });
+        }
+      }
+    }
+    fetchRecipes();
   }, []);
 
   // Save changes every POLLING_FACTOR seconds

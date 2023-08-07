@@ -12,6 +12,9 @@ export interface RecipeSession {
 }
 
 interface RecipeSessionSlice {
+  recipes: Recipe[];
+  initializeRecipes: (recipes: Recipe[]) => void;
+
   currentSession: RecipeSession | null;
   sessions: RecipeSession[];
 
@@ -145,6 +148,10 @@ const createRecipeSessionSlice: StateCreator<
   RecipeSessionSlice
 > = (set) => {
   return {
+    recipes: [],
+    initializeRecipes: (recipes) => {
+      set(() => ({ recipes }));
+    },
     currentSession: null,
     sessions: [],
     setSessions: (sessions) => set(() => ({ sessions })),
