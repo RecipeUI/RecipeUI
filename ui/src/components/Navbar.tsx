@@ -7,8 +7,12 @@ export function Navbar() {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
+
+  const [showForm, setShowForm] = useState(true);
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   return (
-    <div className="py-2 sm:py-0 w-full flex justify-start min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
+    <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
       <button
         className="flex items-center cursor-pointer  tooltip tooltip-right"
         data-tip="Home (CMD+K)"
@@ -50,6 +54,105 @@ export function Navbar() {
         </svg>
         <h1 className="ml-2 dark:text-white">RecipeUI</h1>
       </button>
+      <div className="space-x-2">
+        {/* <button className="btn btn-accent btn-sm">Star Us!</button> */}
+        <button
+          className="btn bg-chefYellow text-slate-600 btn-sm"
+          onClick={() => {
+            setIsLoginModalOpen(true);
+          }}
+        >
+          Login
+        </button>
+      </div>
+      {showForm && (
+        <AuthForm
+          isModalOpen={isLoginModalOpen}
+          setIsModalOpen={setIsLoginModalOpen}
+        />
+      )}
     </div>
+  );
+}
+
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeMinimal, ThemeSupa } from "@supabase/auth-ui-shared";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/database.types";
+import { Fragment, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+
+export default function AuthForm({
+  isModalOpen,
+  setIsModalOpen,
+}: {
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
+}) {
+  const supabase = createClientComponentClient<Database>();
+
+  return (
+    <Dialog
+      open={isModalOpen}
+      onClose={setIsModalOpen}
+      className="relative z-50"
+    >
+      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+
+      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
+        <Dialog.Panel className="bg-base-100 p-12 rounded-lg">
+          <Dialog.Title className="text-2xl font-bold text-chefYellow">
+            This flow is WIP
+          </Dialog.Title>
+          <Dialog.Description>
+            Save your recipes and share them easily with others!
+          </Dialog.Description>
+          <Auth
+            supabaseClient={supabase}
+            view="sign_in"
+            showLinks={false}
+            appearance={{
+              theme: {
+                default: {
+                  ...ThemeSupa.default,
+                  colors: {
+                    brand: "#F0A500",
+                    brandButtonText: "white",
+                    brandAccent: "#21b2a5",
+                    // inputText: "#F0A500",
+                    // inputLabelText: "#F0A500",
+                    defaultButtonBorder: "0",
+                  },
+                  borderWidths: {
+                    buttonBorderWidth: "0",
+                  },
+                },
+                // brand?: string;
+                // brandAccent?: string;
+                // brandButtonText?: string;
+                // defaultButtonBackground?: string;
+                // defaultButtonBackgroundHover?: string;
+                // defaultButtonBorder?: string;
+                // defaultButtonText?: string;
+                // dividerBackground?: string;
+                // inputBackground?: string;
+                // inputBorder?: string;
+                // inputBorderFocus?: string;
+                // inputBorderHover?: string;
+                // inputLabelText?: string;
+                // inputPlaceholder?: string;
+                // messageText?: string;
+                // messageTextDanger?: string;
+                // anchorTextColor?: string;
+                // anchorTextHoverColor?: string;
+              },
+            }}
+            providers={[]}
+            redirectTo="http://localhost:3000/auth/callback"
+          />
+          {/* <button onClick={() => setIsModalOpen(false)}>Deactivate</button> */}
+        </Dialog.Panel>
+      </div>
+    </Dialog>
   );
 }
