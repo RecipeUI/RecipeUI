@@ -1,7 +1,7 @@
 import { Database } from "@/types/database.types";
 
 export enum RecipeProjectStatus {
-  Active = "View",
+  Active = "Active",
   ToInstall = "Install",
   Waitlist = "Waitlist",
   Soon = "Soon",
@@ -101,6 +101,7 @@ export enum RecipeMethod {
 
 export enum RecipeAuthType {
   Bearer = "bearer",
+  ClientID = "clientId",
 }
 
 export type RecipeCore = Omit<
@@ -108,7 +109,7 @@ export type RecipeCore = Omit<
   "auth" | "method" | "queryParams" | "urlParams" | "templates" | "requestBody"
 > & {
   method: RecipeMethod;
-  auth: RecipeAuthType.Bearer | string | null;
+  auth: string | null;
   queryParams?: RecipeObjectSchemas;
   urlParams?: RecipeObjectSchemas;
   templates?: RecipeTemplate[];

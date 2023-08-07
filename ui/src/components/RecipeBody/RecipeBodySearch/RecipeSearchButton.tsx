@@ -86,6 +86,10 @@ export function RecipeSearchButton() {
       if (recipe.auth.includes("query")) {
         url.searchParams.append(recipe.auth.split("=")[1], token);
       }
+
+      if (recipe.auth === RecipeAuthType.ClientID) {
+        headers["Authorization"] = `Client-ID ${token}`;
+      }
     }
     let body: undefined | string | FormData;
 

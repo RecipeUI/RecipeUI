@@ -90,12 +90,18 @@ export function RecipeOutputConsole() {
         if (typeof value === "object") {
           checkObjs((value || {}) as Record<string, unknown>);
         } else if (typeof value === "string") {
+          // We'll ocassionally hardcode edgecases. Unsplash doesn't have standardized image urls
+          if (value.includes("images.unsplash")) {
+            imageBlocks.push(value);
+          }
+
           const codeBlockMatch = value
             .match(codeBlockRegex)
             ?.map((match) => match.replace(/```/g, ""));
           if (codeBlockMatch) codeBlocks.push(...codeBlockMatch);
 
           const imageMatch = value.match(imageRegex);
+
           if (imageMatch) imageBlocks.push(...imageMatch);
         }
       });
@@ -129,6 +135,7 @@ export function RecipeOutputConsole() {
                         src={imageUrl}
                         key={imageUrl + i}
                         className="carousel-item rounded-md max-h-48 object-contain"
+                        alt={imageUrl}
                       />
                     );
                   })}

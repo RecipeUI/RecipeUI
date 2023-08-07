@@ -44,6 +44,7 @@ export function RecipeNeedsAuth({
     sm.getSecret(selectedRecipe.project) || ""
   );
 
+  const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
   const existingSecret = sm.getSecret(selectedRecipe.project);
   const hasChanged = apiKey !== sm.getSecret(selectedRecipe.project);
   const docLink = docLinks[selectedRecipe.project];
@@ -84,9 +85,13 @@ export function RecipeNeedsAuth({
         This recipe authorizes with a query param token that you can add below.
       </p>
     );
+  } else if (selectedRecipe.auth === RecipeAuthType.ClientID) {
+    authNote = (
+      <p>
+        This recipe authorizes with a Client ID token that you can add below.
+      </p>
+    );
   }
-
-  const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
 
   return (
     <>

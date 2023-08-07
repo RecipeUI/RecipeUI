@@ -310,9 +310,9 @@ function RecipeQueryParameters() {
         })}
       </pre>
       {hasNoParams ? (
-        <div className="alert">
+        <div className="alert alert-success">
           {
-            "This endpoint doesn't need params but you can easily configure params in the doc pane."
+            "You can run this endpoint now if you want! Play around with the docs pane to get different results after."
           }
         </div>
       ) : null}
