@@ -86,6 +86,7 @@ export function RecipeBodySearch() {
         if (currentSession !== null) {
           setCurrentSession(null);
           setInputValue("");
+          router.push("/");
         } else {
           openMenu();
         }
