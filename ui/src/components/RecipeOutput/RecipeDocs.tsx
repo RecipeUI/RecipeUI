@@ -789,7 +789,8 @@ function RecipeDocVariedParamEdit({
   // In most cases, the user should should choose from the list rather than do their own
   if (
     paramTypes.length === 1 &&
-    paramSchema.type === RecipeParamType.AnyOf &&
+    (paramSchema.type === RecipeParamType.AnyOf ||
+      paramSchema.type === RecipeParamType.OneOf) &&
     enumVariantIndex !== -1
   ) {
     const enumVariant = paramSchema.variants[enumVariantIndex];
@@ -865,7 +866,6 @@ function RecipeUrlDocsContainer({
       {urlParamsSchema.map((paramSchema) => {
         const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
-        console.log({ value });
 
         return (
           <div className="border rounded-sm p-4" key={paramName}>

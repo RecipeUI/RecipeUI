@@ -40,7 +40,7 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
     <div className="flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
         header="Popular"
-        description="Discover popular recipes built from the community! More recipes will come everyday."
+        description="Discover popular recipes built from the community! We are open sourced and need your help to build more recipes. (CTA to contribute here)"
         projects={popular}
       />
       <MarketplaceSection

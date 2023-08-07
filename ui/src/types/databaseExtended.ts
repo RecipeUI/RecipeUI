@@ -102,6 +102,7 @@ export enum RecipeMethod {
 export enum RecipeAuthType {
   Bearer = "bearer",
   ClientID = "clientId",
+  Token = "token",
 }
 
 export type RecipeCore = Omit<

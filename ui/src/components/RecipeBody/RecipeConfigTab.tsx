@@ -45,6 +45,7 @@ export function RecipeNeedsAuth({
   );
 
   const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
+
   const existingSecret = sm.getSecret(selectedRecipe.project);
   const hasChanged = apiKey !== sm.getSecret(selectedRecipe.project);
   const docLink = docLinks[selectedRecipe.project];
@@ -90,6 +91,10 @@ export function RecipeNeedsAuth({
       <p>
         This recipe authorizes with a Client ID token that you can add below.
       </p>
+    );
+  } else if (selectedRecipe.auth === RecipeAuthType.Token) {
+    authNote = (
+      <p>This recipe authorizes with a token that you can add below.</p>
     );
   }
 

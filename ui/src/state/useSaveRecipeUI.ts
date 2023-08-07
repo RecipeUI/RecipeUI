@@ -10,6 +10,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
+import { useParams, useRouter } from "next/navigation";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -99,6 +100,24 @@ export function useSaveRecipeUI() {
       }
     }
     fetchRecipes();
+  }, []);
+  const { sessionId: sessionIdParam } = useParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    if ((sessionIdParam as string) && localSave?.sessions) {
+      const session = localSave.sessions.find((s) => s.id === sessionIdParam);
+
+      if (!session) {
+        router.push("/");
+        return;
+      }
+
+      setCurrentSession(session);
+    } else if (!sessionIdParam && currentSession) {
+      setCurrentSession(null);
+      router.push("/");
+    }
   }, []);
 
   // Save changes every POLLING_FACTOR seconds

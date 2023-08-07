@@ -18,7 +18,6 @@ export function RecipeSidebar() {
     (state) => state.setCurrentSession
   );
   const router = useRouter();
-  const { sessionId } = useParams();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -53,23 +52,6 @@ export function RecipeSidebar() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [currentSession, sessions, setCurrentSession]);
-
-  console.log({ sessionId, currentSession });
-  useEffect(() => {
-    if (sessionId as string) {
-      const session = sessions.find((s) => s.id === sessionId);
-
-      if (!session) {
-        router.push("/");
-        return;
-      }
-
-      setCurrentSession(session);
-    } else if (!sessionId && currentSession) {
-      setCurrentSession(null);
-      router.push("/");
-    }
-  }, [sessionId]);
 
   if (sessions.length === 0) return null;
 

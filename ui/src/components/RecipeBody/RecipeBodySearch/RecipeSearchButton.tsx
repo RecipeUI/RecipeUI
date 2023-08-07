@@ -105,6 +105,10 @@ export function RecipeSearchButton() {
       if (recipe.auth === RecipeAuthType.ClientID) {
         headers["Authorization"] = `Client-ID ${token}`;
       }
+
+      if (recipe.auth === RecipeAuthType.Token) {
+        headers["Authorization"] = `Token ${token}`;
+      }
     }
     let body: undefined | string | FormData;
 
