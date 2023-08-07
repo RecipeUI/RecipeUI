@@ -38,7 +38,7 @@ export function ProjectHome({
 
   return (
     <div className="flex-1 px-4 ">
-      <div className="flex justify-start bg-base-200 rounded-md shadow-md border">
+      <div className="flex justify-start bg-base-200 rounded-md shadow-md border min-h-[250px]">
         <div className="p-4 flex flex-col space-y-8 lg:space-y-0   lg:flex-row lg:items-center lg:space-x-8">
           {project.image && (
             <img
@@ -49,7 +49,7 @@ export function ProjectHome({
           )}
           <div className="ml-4">
             <h1 className="text-5xl font-bold">{project.title}</h1>
-            <p className="py-6">{project.description}</p>
+            <p className="py-4">{project.description}</p>
           </div>
         </div>
       </div>

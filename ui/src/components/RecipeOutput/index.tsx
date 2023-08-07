@@ -52,10 +52,8 @@ export function RecipeOutput() {
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer tooltip",
-                  currentTab === RecipeOutputTab.Docs
-                    ? "bg-neutral-300 text-black  dark:bg-neutral-800 dark:text-white"
-                    : "bg-neutral-900 text-white"
+                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer tooltip bg-neutral-200 dark:text-gray-800",
+                  currentTab === RecipeOutputTab.Docs ? "" : "!bg-chefYellow "
                 )}
                 data-tip={"CMD+D"}
               >

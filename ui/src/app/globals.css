@@ -26,9 +26,8 @@
 }
 
 @layer utilities {
-  ::before,
-  ::after {
-    @apply border-red-300;
+  hr {
+    @apply h-0.5;
   }
 }
 

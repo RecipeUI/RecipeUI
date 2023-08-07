@@ -95,7 +95,7 @@ export function RecipeParameterTab() {
     <div className="flex-1">
       {showOnboarding && (
         <div className="space-y-4 mb-4 mx-4 mt-6">
-          <div className="alert w-full flex">
+          <div className="alert w-full flex bg-gray-400 dark:bg-base-200">
             <div className="space-y-4 w-full text-start">
               <h1 className="font-bold text-2xl">Get Started</h1>
               {needsAuthSetup && (
@@ -138,14 +138,12 @@ export function RecipeParameterTab() {
                           selectedRecipe.queryParams != null
                         ) {
                           const record: Record<string, unknown> = {};
-                          Object.entries(selectedRecipe.queryParams).forEach(
-                            ([key, value]) => {
-                              const defaultVal = getDefaultValue(value, true);
-                              if (defaultVal !== undefined) {
-                                record[key] = defaultVal;
-                              }
+                          selectedRecipe.queryParams.forEach((param) => {
+                            const defaultVal = getDefaultValue(param, true);
+                            if (defaultVal !== undefined) {
+                              record[param.name] = defaultVal;
                             }
-                          );
+                          });
                           setQueryParams(record);
                         }
 
@@ -269,8 +267,10 @@ function RecipeJsonEditor() {
 
 function RecipeQueryParameters() {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const hasNoParams = Object.keys(queryParams).length === 0;
   const recipe = useRecipeSessionStore((state) => state.currentSession!.recipe);
+  const hasNoParams = Object.values(recipe.queryParams!).every(
+    (param) => param.required === undefined || param.required === false
+  );
 
   return (
     <div className="mx-4 my-6">
@@ -301,7 +301,7 @@ function RecipeQueryParameters() {
               ) : (
                 <span className="">
                   {typeof value !== "object"
-                    ? (value as unknown as string | number | boolean)
+                    ? (String(value) as unknown as string | number | boolean)
                     : JSON.stringify(value)}
                 </span>
               )}
@@ -309,7 +309,7 @@ function RecipeQueryParameters() {
           );
         })}
       </pre>
-      {hasNoParams ? (
+      {hasNoParams && Object.keys(queryParams).length === 0 ? (
         <div className="alert alert-success">
           {
             "You can run this endpoint now if you want! Play around with the docs pane to get different results after."

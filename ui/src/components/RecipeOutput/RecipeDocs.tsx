@@ -36,11 +36,11 @@ export function RecipeDocs() {
           {selectedRecipe.summary}
         </ReactMarkdown>
       )}
+      {urlParams && <RecipeUrlDocsContainer urlParamsSchema={urlParams} />}
+      {queryParams && <RecipeQueryDocsContainer queryParams={queryParams} />}
       {requestBody && "objectSchema" in requestBody && (
         <RecipeDocsContainer param={requestBody} paramPath="" />
       )}
-      {queryParams && <RecipeQueryDocsContainer queryParams={queryParams} />}
-      {urlParams && <RecipeUrlDocsContainer urlParamsSchema={urlParams} />}
     </div>
   );
 }
@@ -216,7 +216,10 @@ function RecipeDocsParamContainer({
         <div>
           <button
             ref={buttonRef}
-            className={classNames("btn btn-sm", isParamInState && "btn-error")}
+            className={classNames(
+              "btn  dark:bg-base-200 btn-sm",
+              isParamInState ? "btn-error" : "bg-neutral-300"
+            )}
             onClick={() => {
               if (isParamInState) {
                 updateParams({ path: paramPath, value: undefined });
@@ -397,7 +400,7 @@ function RecipeDocParamEdit({
     return (
       <input
         type="checkbox"
-        className="toggle"
+        className="toggle toggle-accent"
         checked={(paramState || false) as boolean}
         onChange={(e) => {
           updateParams({
@@ -835,6 +838,7 @@ function RecipeUrlDocsContainer({
       {urlParamsSchema.map((paramSchema) => {
         const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
+        console.log({ value });
 
         return (
           <div className="border rounded-sm p-4" key={paramName}>
@@ -885,6 +889,7 @@ function RecipeUrlDocsContainer({
                     });
                   }}
                 >
+                  <option className="none"></option>
                   {paramSchema.enum?.map((value) => {
                     return <option key={value}>{value}</option>;
                   })}

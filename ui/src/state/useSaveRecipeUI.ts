@@ -7,8 +7,6 @@ import {
   useRecipeSessionStore,
   GLOBAL_POLLING_FACTOR,
 } from "./recipeSession";
-import { useQuery } from "@tanstack/react-query";
-import { QueryKeys } from "@/utils/constants";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
