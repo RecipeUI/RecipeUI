@@ -10,7 +10,8 @@ export function RecipeTemplatesTab() {
   );
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-
+  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
+  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
   const templates = selectedRecipe.templates || [];
 
   return (
@@ -36,6 +37,14 @@ export function RecipeTemplatesTab() {
                   onClick={() => {
                     if (template.requestBody) {
                       setRequestBody(template.requestBody);
+                    }
+
+                    if (template.queryParams) {
+                      setQueryParams(template.queryParams);
+                    }
+
+                    if (template.urlParams) {
+                      setUrlParams(template.urlParams);
                     }
 
                     setBodyRoute(RecipeBodyRoute.Parameters);

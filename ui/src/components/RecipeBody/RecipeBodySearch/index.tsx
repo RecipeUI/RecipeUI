@@ -18,6 +18,12 @@ import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
 
 export function RecipeBodySearch() {
+  const addSession = useRecipeSessionStore((state) => state.addSession);
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
+
   const supabase = createClientComponentClient<Database>();
   const [_recipes, _setRecipes] = useState<Recipe[]>([]);
 
@@ -25,9 +31,22 @@ export function RecipeBodySearch() {
     queryKey: [QueryKeys.Recipes],
     queryFn: async () => {
       const res = await supabase.from("recipe").select("*");
-
+      const newRecipes = res.data as unknown[] as Recipe[];
       if (res.data) {
-        _setRecipes(res.data as unknown[] as Recipe[]);
+        _setRecipes(newRecipes);
+      }
+
+      if (currentSession) {
+        const latestRecipe = newRecipes.find(
+          (_recipe) => _recipe.id === currentSession.recipe.id
+        );
+
+        if (latestRecipe) {
+          setCurrentSession({
+            ...currentSession,
+            recipe: latestRecipe,
+          });
+        }
       }
 
       return res.data;
@@ -53,12 +72,6 @@ export function RecipeBodySearch() {
 
     return newRecipes;
   }, [_recipes]);
-
-  const addSession = useRecipeSessionStore((state) => state.addSession);
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
 
   const [recipes, setRecipes] = useState(recipeWithLabels);
 

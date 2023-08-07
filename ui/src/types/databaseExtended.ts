@@ -123,6 +123,8 @@ export interface RecipeTemplate {
   description?: string;
   author: string;
   requestBody?: Record<string, unknown>;
+  queryParams?: Record<string, unknown>;
+  urlParams?: Record<string, unknown>;
 }
 export interface RecipeMutationCore extends RecipeCore {
   method: RecipeMethod.POST | RecipeMethod.PUT | RecipeMethod.DELETE;
