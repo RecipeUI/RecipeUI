@@ -28,6 +28,10 @@ export function RecipeDocs() {
   const urlParams =
     "urlParams" in selectedRecipe ? selectedRecipe.urlParams : null;
 
+  const hasMultipleParams =
+    [requestBody, queryParams, urlParams].filter((param) => param !== null)
+      .length > 1;
+
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
       <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
@@ -36,10 +40,24 @@ export function RecipeDocs() {
           {selectedRecipe.summary}
         </ReactMarkdown>
       )}
-      {urlParams && <RecipeUrlDocsContainer urlParamsSchema={urlParams} />}
-      {queryParams && <RecipeQueryDocsContainer queryParams={queryParams} />}
+      {urlParams && (
+        <RecipeUrlDocsContainer
+          urlParamsSchema={urlParams}
+          showHeader={hasMultipleParams}
+        />
+      )}
       {requestBody && "objectSchema" in requestBody && (
-        <RecipeDocsContainer param={requestBody} paramPath="" />
+        <RecipeDocsContainer
+          param={requestBody}
+          paramPath=""
+          showHeader={hasMultipleParams}
+        />
+      )}
+      {queryParams && (
+        <RecipeQueryDocsContainer
+          queryParams={queryParams}
+          showHeader={hasMultipleParams}
+        />
       )}
     </div>
   );
@@ -47,11 +65,14 @@ export function RecipeDocs() {
 
 function RecipeQueryDocsContainer({
   queryParams,
+  showHeader,
 }: {
   queryParams: RecipeObjectSchemas;
+  showHeader: boolean;
 }) {
   return (
     <div className="my-4">
+      {showHeader && <h3 className="mb-2 text-sm">Query Params</h3>}
       {queryParams.map((paramSchema) => {
         const paramName = paramSchema.name;
         return (
@@ -71,9 +92,11 @@ function RecipeQueryDocsContainer({
 function RecipeDocsContainer({
   param,
   paramPath,
+  showHeader,
 }: {
   param: RecipeObjectParam;
   paramPath: string;
+  showHeader: boolean;
 }) {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const addedAlready: [string, RecipeParam][] = [];
@@ -90,6 +113,7 @@ function RecipeDocsContainer({
 
   return (
     <div className="my-4">
+      {showHeader && <h3 className="mb-2 text-sm">Request Params</h3>}
       {addedAlready.length > 0 && (
         <div
           className={classNames(remaining.length > 0 ? "mb-4" : "")}
@@ -825,8 +849,10 @@ function RecipeDocVariedParamEdit({
 // These docs are more simplified and don't need as much as queryParams or requestBody so opting to do it all here
 function RecipeUrlDocsContainer({
   urlParamsSchema,
+  showHeader,
 }: {
   urlParamsSchema: RecipeObjectSchemas;
+  showHeader: boolean;
 }) {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
   const updateUrlParams = useRecipeSessionStore(
@@ -835,6 +861,7 @@ function RecipeUrlDocsContainer({
 
   return (
     <div className="my-4">
+      {showHeader && <h3 className="mb-2 text-sm">Url Params</h3>}
       {urlParamsSchema.map((paramSchema) => {
         const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
