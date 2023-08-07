@@ -9,8 +9,11 @@ import {
 } from "@/state/recipeSession";
 import { RecipeAuthType } from "@/types/databaseExtended";
 import { useHover } from "usehooks-ts";
+import { usePostHog } from "posthog-js/react";
+import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 
 export function RecipeSearchButton() {
+  const posthog = usePostHog();
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
   const requestBody = useRecipeSessionStore((store) => store.requestBody);
   const setOutput = useRecipeSessionStore((store) => store.updateOutput);
@@ -39,7 +42,15 @@ export function RecipeSearchButton() {
   const _onSubmit = async () => {
     if (!currentSession) return;
 
+    const recipeInfoLog = {
+      recipeId: currentSession.recipe.id,
+      path: currentSession.recipe.path,
+      project: currentSession.recipe.project,
+      title: currentSession.recipe.title,
+    };
+
     if (isSending) {
+      posthog.capture(POST_HOG_CONSTANTS.RECIPE_ABORT, recipeInfoLog);
       controllerRef.current?.abort();
       controllerRef.current = null;
       setOutput(currentSession.id, {
@@ -192,6 +203,8 @@ export function RecipeSearchButton() {
         signal: controllerRef.current.signal,
       };
 
+      posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
+
       const res = await fetch(url, payload);
 
       if (res.body && recipe.options?.streaming === true) {
@@ -228,6 +241,11 @@ export function RecipeSearchButton() {
           }
         }
 
+        posthog.capture(
+          POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS,
+          recipeInfoLog
+        );
+
         return true;
       }
 
@@ -262,6 +280,13 @@ export function RecipeSearchButton() {
         }
       }
 
+      posthog.capture(
+        res.ok
+          ? POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS
+          : POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE,
+        recipeInfoLog
+      );
+
       setOutput(currentSession.id, {
         output: output,
         type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
@@ -274,6 +299,8 @@ export function RecipeSearchButton() {
       if ("name" in (e as Error) && (e as Error).name === "AbortError") {
         output = "Request cancelled.";
       }
+
+      posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
 
       setOutput(currentSession.id, {
         output: {

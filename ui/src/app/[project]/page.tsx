@@ -17,6 +17,7 @@ export default async function ProjectPage({
   const supabase = createServerComponentClient<Database>({
     cookies,
   });
+
   const { data: projectInfo } = await supabase
     .from("project")
     .select()

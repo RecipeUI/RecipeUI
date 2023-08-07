@@ -1,9 +1,10 @@
-import { Providers } from "@/app/providers";
+import { PostHogPageview, Providers } from "@/app/providers";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { RecipeSidebar } from "@/components/RecipeSidebar";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,6 +53,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Suspense>
+        <PostHogPageview />
+      </Suspense>
       <body className={inter.className}>
         <Providers>
           <div className="w-full h-screen flex flex-col overflow-y-auto">
