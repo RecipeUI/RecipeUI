@@ -241,8 +241,8 @@ function RecipeDocsParamContainer({
           <button
             ref={buttonRef}
             className={classNames(
-              "btn  dark:bg-base-200 btn-sm",
-              isParamInState ? "btn-error" : "bg-neutral-300"
+              "btn btn-sm",
+              isParamInState ? "btn-error" : "bg-neutral-300 dark:bg-base-200"
             )}
             onClick={() => {
               if (isParamInState) {

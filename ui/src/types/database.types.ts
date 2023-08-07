@@ -52,11 +52,11 @@ export interface Database {
         Row: {
           auth: string | null
           author: string | null
-          cors: boolean | null
           created_at: string | null
           deprecated: boolean | null
           id: number
           method: string
+          options: Json | null
           path: string
           private: boolean | null
           project: string
@@ -71,11 +71,11 @@ export interface Database {
         Insert: {
           auth?: string | null
           author?: string | null
-          cors?: boolean | null
           created_at?: string | null
           deprecated?: boolean | null
           id?: number
           method?: string
+          options?: Json | null
           path: string
           private?: boolean | null
           project: string
@@ -90,11 +90,11 @@ export interface Database {
         Update: {
           auth?: string | null
           author?: string | null
-          cors?: boolean | null
           created_at?: string | null
           deprecated?: boolean | null
           id?: number
           method?: string
+          options?: Json | null
           path?: string
           private?: boolean | null
           project?: string

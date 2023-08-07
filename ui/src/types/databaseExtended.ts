@@ -106,13 +106,24 @@ export enum RecipeAuthType {
 
 export type RecipeCore = Omit<
   Database["public"]["Tables"]["recipe"]["Row"],
-  "auth" | "method" | "queryParams" | "urlParams" | "templates" | "requestBody"
+  | "auth"
+  | "method"
+  | "queryParams"
+  | "urlParams"
+  | "templates"
+  | "requestBody"
+  | "options"
 > & {
   method: RecipeMethod;
   auth: string | null;
   queryParams?: RecipeObjectSchemas;
   urlParams?: RecipeObjectSchemas;
   templates?: RecipeTemplate[];
+  options: null | {
+    cors: boolean;
+    deprecated: boolean;
+    streaming: boolean;
+  };
 };
 
 export enum RecipeMutationContentType {

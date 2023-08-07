@@ -4,7 +4,6 @@
     "title": "Trending GIFs",
     "method": "GET",
     "path": "https://api.giphy.com/v1/gifs/trending",
-    "cors": true,
     "project": "GIPHY",
     "auth": "query=api_key",
     "id": "26a0397e-b8d6-4299-96b7-189405f7c2aa",
@@ -51,7 +50,10 @@
         ]
       }
     ],
-    "tags": ["Popular"]
+    "tags": ["Popular"],
+    "options": {
+      "cors": true
+    }
   },
   {
     "title": "Search GIFs",
@@ -60,7 +62,9 @@
     "method": "GET",
     "path": "https://api.giphy.com/v1/gifs/search",
     "project": "GIPHY",
-    "cors": true,
+    "options": {
+      "cors": true
+    },
     "auth": "query=api_key",
     "tags": ["Popular", "Fun"],
     "queryParams": [

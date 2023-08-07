@@ -34,6 +34,7 @@ export enum RecipeBodyRoute {
 
 export enum RecipeOutputType {
   Response = "Response",
+  Streaming = "Streaming",
   Error = "Error",
 }
 

@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import {
   RecipeOutputTab,
+  RecipeOutputType,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
@@ -68,9 +69,8 @@ export function RecipeOutput() {
 }
 
 export function RecipeOutputConsole() {
-  const getOutput = useRecipeSessionStore((state) => state.getOutput);
+  const { output, type } = useRecipeSessionStore((state) => state.getOutput());
 
-  const { output } = getOutput();
   const isSending = useRecipeSessionStore((state) => state.isSending);
 
   const { imageBlocks, codeBlocks } = useMemo(() => {
@@ -108,8 +108,6 @@ export function RecipeOutputConsole() {
 
     return { codeBlocks, imageBlocks };
   }, [output]);
-
-  const { isDarkMode } = useDarkMode();
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-white space-y-6">
@@ -162,15 +160,15 @@ export function RecipeOutputConsole() {
           }
         />
       )}
-      {!isSending ? (
+      {!isSending || (isSending && type === RecipeOutputType.Streaming) ? (
         <OutputModule
           title="Response"
           body={
             <JsonView
               src={output}
               collapsed={false}
-              collapseStringsAfterLength={1000}
-              collapseObjectsAfterLength={1000}
+              collapseStringsAfterLength={50000}
+              collapseObjectsAfterLength={10000}
             />
           }
         />

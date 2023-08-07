@@ -8,6 +8,7 @@ import {
   useRecipeSessionStore,
 } from "@/state/recipeSession";
 import { RecipeAuthType } from "@/types/databaseExtended";
+import { useHover } from "usehooks-ts";
 
 export function RecipeSearchButton() {
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
@@ -21,6 +22,7 @@ export function RecipeSearchButton() {
   const setIsSending = useRecipeSessionStore((store) => store.setIsSending);
   const queryParams = useRecipeSessionStore((store) => store.queryParams);
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
+  const controllerRef = useRef<AbortController | null>(null);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -36,6 +38,19 @@ export function RecipeSearchButton() {
 
   const _onSubmit = async () => {
     if (!currentSession) return;
+
+    if (isSending) {
+      controllerRef.current?.abort();
+      controllerRef.current = null;
+      setOutput(currentSession.id, {
+        output: {
+          message: "Request aborted.",
+        },
+        type: RecipeOutputType.Response,
+      });
+
+      return;
+    }
 
     const { recipe } = currentSession;
 
@@ -67,7 +82,7 @@ export function RecipeSearchButton() {
 
     let url = new URL(path);
     // TODO: Should we just make this the default so no one deals with this problem?
-    if (recipe.cors) {
+    if (recipe.options?.cors === true) {
       headers["recipe-domain"] = url.origin;
       url = new URL(RECIPE_PROXY + url.pathname);
     }
@@ -111,18 +126,23 @@ export function RecipeSearchButton() {
         return;
       }
 
+      const _requestBody = { ...requestBody };
+      if (recipe.options?.streaming === true) {
+        _requestBody.stream = true;
+      }
+
       const contentType = currentSession.recipe.requestBody.contentType;
 
       if (contentType === "application/json") {
-        body = JSON.stringify(requestBody);
+        body = JSON.stringify(_requestBody);
       } else if (contentType === "multipart/form-data") {
         // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
         delete headers["Content-Type"];
 
         const formData = new FormData();
 
-        for (const key in requestBody) {
-          let payload = requestBody[key];
+        for (const key in _requestBody) {
+          let payload = _requestBody[key];
 
           if (typeof payload === "object" && payload !== null) {
             payload = JSON.stringify(payload);
@@ -157,17 +177,55 @@ export function RecipeSearchButton() {
     }
 
     try {
+      controllerRef.current = new AbortController();
+
       setIsSending(true, RecipeOutputTab.Output);
 
       const payload = {
         method: recipe.method,
         headers,
         body,
+        signal: controllerRef.current.signal,
       };
 
       const res = await fetch(url, payload);
 
-      console.log("here output", res, res.ok);
+      if (res.body && recipe.options?.streaming === true) {
+        let content = "";
+        const textDecoder = new TextDecoder("utf-8");
+
+        let reader = res.body.getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const decodedData = textDecoder.decode(value);
+          const lines = decodedData.split(/(\n){2}/);
+          const chunks = lines
+            .map((line) => line.replace(/(\n)?^data:\s*/, "").trim())
+            .filter((line) => line !== "" && line !== "[DONE]")
+            .map((line) => JSON.parse(line));
+
+          for (const chunk of chunks) {
+            // Avoid empty line after single backtick
+            const contentChunk = (chunk.choices[0].delta.content ?? "").replace(
+              /^`\s*/,
+              "`"
+            );
+
+            content = `${content}${contentChunk}`;
+
+            setOutput(currentSession.id, {
+              output: {
+                content,
+              },
+              type: RecipeOutputType.Streaming,
+            });
+          }
+        }
+
+        return true;
+      }
 
       let output: Record<string, unknown> = {};
 
@@ -205,11 +263,17 @@ export function RecipeSearchButton() {
         type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      let output =
+        "Something went wrong. Can you report this issue to us at team@recipeui.com";
+
+      if ("name" in (e as Error) && (e as Error).name === "AbortError") {
+        output = "Request cancelled.";
+      }
+
       setOutput(currentSession.id, {
         output: {
-          error:
-            "Something went wrong. Can you report this issue to us at team@recipeui.com",
+          error: output,
         },
         type: RecipeOutputType.Error,
       });
@@ -234,19 +298,26 @@ export function RecipeSearchButton() {
     };
   }, []);
 
+  const isHovering = useHover(ref);
+
   return (
     <div className="tooltip tooltip-bottom" data-tip="CMD+Enter">
       <button
         ref={ref}
         className={classNames(
           "btn btn-accent dark:text-white sm:w-24 w-full",
-          (!currentSession || isSending) && "btn-disabled"
+          !currentSession && "btn-disabled",
+          isSending && "hover:btn-error"
         )}
         type="button"
         onClick={onSubmit}
       >
         {isSending ? (
-          <span className="loading loading-infinity"></span>
+          isHovering ? (
+            <span>Stop</span>
+          ) : (
+            <span className="loading loading-infinity"></span>
+          )
         ) : (
           <span>Send</span>
         )}
