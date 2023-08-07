@@ -172,7 +172,7 @@ export function RecipeBodySearch() {
               {...getInputProps()}
             />
           </div>
-          {currentSession == null && <RecipeSearchButton />}
+          {currentSession != null && <RecipeSearchButton />}
         </div>
         <ul
           className={classNames(
