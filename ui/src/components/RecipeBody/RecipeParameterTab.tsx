@@ -89,7 +89,7 @@ export function RecipeParameterTab() {
 
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
 
-  const hasExamples = selectedRecipe.examples != null;
+  const hasTemplates = selectedRecipe.templates != null;
 
   return (
     <div className="flex-1">
@@ -156,19 +156,19 @@ export function RecipeParameterTab() {
                     </button>
                   </div>
 
-                  {hasExamples && (
+                  {hasTemplates && (
                     <>
                       <hr />
                       <div className="space-y-2">
-                        <h3 className="font-bold">Examples</h3>
-                        <p>Find some quick use cases or templates.</p>
+                        <h3 className="font-bold">Templates</h3>
+                        <p>Find some quick use cases or examples.</p>
                         <button
                           className="btn btn-sm btn-neutral"
                           onClick={() => {
                             setBodyRoute(RecipeBodyRoute.Templates);
                           }}
                         >
-                          View examples
+                          View templates
                         </button>
                       </div>
                     </>

@@ -105,20 +105,20 @@ export enum RecipeAuthType {
 
 export type RecipeCore = Omit<
   Database["public"]["Tables"]["recipe"]["Row"],
-  "auth" | "method" | "queryParams" | "urlParams" | "examples" | "requestBody"
+  "auth" | "method" | "queryParams" | "urlParams" | "templates" | "requestBody"
 > & {
   method: RecipeMethod;
   auth: RecipeAuthType.Bearer | string | null;
   queryParams?: RecipeObjectSchemas;
   urlParams?: RecipeObjectSchemas;
-  examples?: RecipeExample[];
+  templates?: RecipeTemplate[];
 };
 
 export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
 }
-export interface RecipeExample {
+export interface RecipeTemplate {
   title: string;
   description?: string;
   author: string;

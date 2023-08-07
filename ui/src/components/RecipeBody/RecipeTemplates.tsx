@@ -11,7 +11,7 @@ export function RecipeTemplatesTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
 
-  const examples = selectedRecipe.examples || [];
+  const templates = selectedRecipe.templates || [];
 
   return (
     <div className="flex-1 relative">
@@ -22,20 +22,20 @@ export function RecipeTemplatesTab() {
           can also create your own!
         </p>
         <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
-          {examples.map((example) => {
+          {templates.map((template) => {
             return (
               <div
                 className="border rounded-sm p-4 space-y-2 flex flex-col"
-                key={`${example.title}${example.author}`}
+                key={`${template.title}${template.author}`}
               >
-                <h3 className="font-bold">{example.title}</h3>
-                <p className="text-sm line-clamp-3">{example.description}</p>
+                <h3 className="font-bold">{template.title}</h3>
+                <p className="text-sm line-clamp-3">{template.description}</p>
                 <div className="flex-1" />
                 <button
                   className="btn btn-sm btn-neutral w-fit"
                   onClick={() => {
-                    if (example.requestBody) {
-                      setRequestBody(example.requestBody);
+                    if (template.requestBody) {
+                      setRequestBody(template.requestBody);
                     }
 
                     setBodyRoute(RecipeBodyRoute.Parameters);

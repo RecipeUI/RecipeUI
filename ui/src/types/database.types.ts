@@ -55,15 +55,16 @@ export interface Database {
           cors: boolean | null
           created_at: string | null
           deprecated: boolean | null
-          examples: Json[] | null
           id: number
           method: string
           path: string
+          private: boolean | null
           project: string
           queryParams: Json | null
           requestBody: Json | null
           summary: string
           tags: string[] | null
+          templates: Json[] | null
           title: string
           urlParams: Json | null
         }
@@ -73,15 +74,16 @@ export interface Database {
           cors?: boolean | null
           created_at?: string | null
           deprecated?: boolean | null
-          examples?: Json[] | null
           id?: number
           method?: string
           path: string
+          private?: boolean | null
           project: string
           queryParams?: Json | null
           requestBody?: Json | null
           summary: string
           tags?: string[] | null
+          templates?: Json[] | null
           title: string
           urlParams?: Json | null
         }
@@ -91,15 +93,16 @@ export interface Database {
           cors?: boolean | null
           created_at?: string | null
           deprecated?: boolean | null
-          examples?: Json[] | null
           id?: number
           method?: string
           path?: string
+          private?: boolean | null
           project?: string
           queryParams?: Json | null
           requestBody?: Json | null
           summary?: string
           tags?: string[] | null
+          templates?: Json[] | null
           title?: string
           urlParams?: Json | null
         }

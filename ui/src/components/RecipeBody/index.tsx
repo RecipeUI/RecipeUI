@@ -23,9 +23,8 @@ export function RecipeBody() {
 
     if (
       selectedRecipe &&
-      "examples" in selectedRecipe &&
-      selectedRecipe.examples &&
-      selectedRecipe.examples?.length > 0
+      selectedRecipe.templates &&
+      selectedRecipe.templates.length > 0
     ) {
       parameters.push(RecipeBodyRoute.Templates);
     }
