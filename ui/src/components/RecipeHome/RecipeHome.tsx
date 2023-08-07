@@ -37,20 +37,20 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   }, [projects]);
 
   return (
-    <div className="flex-1 flex flex-col p-4 space-y-12">
+    <div className="flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
         header="Popular"
         description="Discover popular recipes built from the community! More recipes will come everyday."
         projects={popular}
       />
       <MarketplaceSection
-        header="Free"
-        description="These APIs don't require any authentication! Use these in seconds..."
+        header="No API key needed"
+        description="These APIs have zero auth setup! Use these in seconds..."
         projects={free}
       />
       <MarketplaceSection
         header="YCombinator"
-        description="We joined YCombinator because we built recipes internally at Robinhood and Facebook. Checkout these APIs from the YC community!"
+        description="We joined YCombinator because we built recipes to help our teammates test things faster at Robinhood and Meta. Checkout these APIs from the YC community!"
         projects={ycombinator}
       />
       {more.length > 0 && (
@@ -111,8 +111,6 @@ export function RecipeHomeBox({
   status: RecipeProjectStatus;
   image?: string | null;
 }) {
-  const addDeepAction = useRecipeSessionStore((state) => state.addDeepAction);
-
   let status = String(_status);
 
   if (_status === RecipeProjectStatus.Active) {
@@ -120,13 +118,14 @@ export function RecipeHomeBox({
   }
 
   return (
-    <div className="border rounded-md shadow-sm p-4 space-y-1">
-      <div className="flex justify-between ">
-        <div className="flex items-center">
-          {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
-          <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
-        </div>
-        <Link href={`/${project}`}>
+    <Link href={`/${project}`}>
+      <div className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full">
+        <div className="flex justify-between ">
+          <div className="flex items-center">
+            {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
+            <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
+          </div>
+
           <div
             className="tooltip"
             data-tip={
@@ -144,12 +143,12 @@ export function RecipeHomeBox({
               {status}
             </button>
           </div>
-        </Link>
+        </div>
+        <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
+        <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
+          {description}
+        </p>
       </div>
-      <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
-      <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
-        {description}
-      </p>
-    </div>
+    </Link>
   );
 }

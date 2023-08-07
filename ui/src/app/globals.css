@@ -17,7 +17,14 @@
   }
 
   .projects-home-container {
-    @apply flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4;
+    @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-4;
+  }
+}
+
+@layer utilities {
+  ::before,
+  ::after {
+    @apply border-red-300;
   }
 }
 

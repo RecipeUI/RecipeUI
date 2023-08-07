@@ -135,7 +135,7 @@ export function RecipeOutputConsole() {
                         src={imageUrl}
                         key={imageUrl + i}
                         className="carousel-item rounded-md max-h-48 object-contain"
-                        alt={imageUrl}
+                        alt={""}
                       />
                     );
                   })}

@@ -167,6 +167,8 @@ export function RecipeSearchButton() {
 
       const res = await fetch(url, payload);
 
+      console.log("here output", res, res.ok);
+
       let output: Record<string, unknown> = {};
 
       const contentType = res.headers.get("content-type");
@@ -175,6 +177,27 @@ export function RecipeSearchButton() {
         output = await res.json();
       } else if (contentType?.includes("text/plain")) {
         output = { response: await res.text() };
+      } else {
+        const statusPrefix = `Error code ${res.status}.`;
+        if (!res.ok) {
+          if ([401, 403, 405, 406].includes(res.status)) {
+            output = {
+              error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
+            };
+          } else if (res.status === 400) {
+            output = {
+              error: `${statusPrefix} Something went wrong with the request, but we're unable to get more info.`,
+            };
+          } else if (res.status === 404) {
+            output = {
+              error: `${statusPrefix} No resource found here, double check you parameters.`,
+            };
+          } else {
+            output = {
+              error: `${statusPrefix} Unable to figure out what went wrong with this request.`,
+            };
+          }
+        }
       }
 
       setOutput(currentSession.id, {

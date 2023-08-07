@@ -56,7 +56,7 @@ export default function RootLayout({
         <Providers>
           <div className="w-full h-screen flex flex-col">
             <Navbar />
-            <div className="flex flex-1 border-t">
+            <div className="flex flex-1">
               <RecipeSidebar />
               {children}
             </div>

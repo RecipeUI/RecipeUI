@@ -8,7 +8,7 @@ export function Navbar() {
     (state) => state.setCurrentSession
   );
   return (
-    <div className="py-2 sm:py-0 w-full flex justify-start min-h-12 items-center font-bold shadow-sm px-4 text-black">
+    <div className="py-2 sm:py-0 w-full flex justify-start min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-100 border-b">
       <button
         className="flex items-center cursor-pointer  tooltip tooltip-right"
         data-tip="Home"

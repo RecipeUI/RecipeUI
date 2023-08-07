@@ -136,13 +136,12 @@ export function RecipeBodySearch() {
   }, [debouncedInputValue, recipeSearch]);
 
   return (
-    <div className="p-4">
+    <div className="md:p-4 pb-4">
       <div className="flex flex-col relative">
         <div className="flex sm:space-x-2 flex-col sm:flex-row">
           <div
             className={classNames(
-              "input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0"
-              // currentSession && "tooltip tooltip-top cursor-not-allowed"
+              "input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0 border-slate-600"
             )}
             data-tip={
               currentSession
@@ -198,17 +197,20 @@ export function RecipeBodySearch() {
                   >
                     <RouteTypeLabel recipeMethod={recipe.method} />
                     <div className="flex-1">
-                      <div className="text-base dark:text-gray-300 space-x-2">
+                      <div className="text-base dark:text-gray-300 line-clamp-1">
+                        {recipe.title}
+                        {recipe.summary && `: ${recipe.summary}`}
+                      </div>
+                      <div className="  space-x-2 text-sm text-gray-600  dark:text-gray-400">
                         <span>{recipe.path}</span>
                         {recipe.tags?.map((tag) => (
-                          <div className="badge badge-neutral" key={tag}>
+                          <div
+                            className="badge badge-neutral badge-sm"
+                            key={tag}
+                          >
                             {tag}
                           </div>
                         ))}
-                      </div>
-                      <div className="line-clamp-2 text-gray-600 text-sm dark:text-gray-400">
-                        {recipe.title}
-                        {recipe.summary && `: ${recipe.summary}`}
                       </div>
                     </div>
                   </li>

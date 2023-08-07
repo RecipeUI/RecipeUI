@@ -29,7 +29,7 @@ export function ProjectHome({
         } else if (!a.tags) {
           return 1;
         } else {
-          return a.tags.length - b.tags.length;
+          return b.tags.length - a.tags.length;
         }
       }
     });
@@ -38,7 +38,7 @@ export function ProjectHome({
 
   return (
     <div className="flex-1 px-4 ">
-      <div className="flex justify-start bg-base-200 rounded-md shadow-md border dark:border-neutral-600">
+      <div className="flex justify-start bg-base-200 rounded-md shadow-md border">
         <div className="p-4 flex flex-col space-y-8 lg:space-y-0   lg:flex-row lg:items-center lg:space-x-8">
           {project.image && (
             <img
@@ -53,7 +53,7 @@ export function ProjectHome({
           </div>
         </div>
       </div>
-      <div className="projects-home-container xl:grid-cols-3">
+      <div className="projects-home-container">
         {recipes.map((recipe) => {
           return (
             <ProjectHomeBox key={recipe.id} recipe={recipe} project={project} />
@@ -71,10 +71,17 @@ function ProjectHomeBox({
   recipe: Recipe;
   project: RecipeProject;
 }) {
-  const addDeepAction = useRecipeSessionStore((state) => state.addDeepAction);
+  const router = useRouter();
+  const addSession = useRecipeSessionStore((state) => state.addSession);
 
   return (
-    <div className="border dark:border-neutral-600 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38">
+    <div
+      className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer"
+      onClick={() => {
+        router.push("/");
+        addSession(recipe);
+      }}
+    >
       <div className="flex justify-between ">
         <div className="flex items-center">
           <h2 className="font-bold text-lg dark:text-gray-300">
@@ -87,12 +94,6 @@ function ProjectHomeBox({
             "btn btn-neutral btn-sm",
             project.status === RecipeProjectStatus.Soon && "!btn-accent"
           )}
-          onClick={() => {
-            addDeepAction({
-              type: DeepActionType.UpdateRecipeInput,
-              payload: recipe.summary,
-            });
-          }}
         >
           Use
         </button>
