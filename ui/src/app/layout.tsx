@@ -54,7 +54,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <div className="w-full h-screen flex flex-col">
+          <div className="w-full h-screen flex flex-col overflow-y-auto">
             <Navbar />
             <div className="flex flex-1">
               <RecipeSidebar />

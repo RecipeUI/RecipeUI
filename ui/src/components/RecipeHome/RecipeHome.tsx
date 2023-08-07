@@ -50,7 +50,7 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
       />
       <MarketplaceSection
         header="YCombinator"
-        description="We joined YCombinator because we built recipes to help our teammates test things faster at Robinhood and Meta. Checkout these APIs from the YC community!"
+        description="We're part of YC S23! The first few recipes were ones we built internally at Robinhood and Meta to help our teammates test stuff. Check out these API's from our friends at YC."
         projects={ycombinator}
       />
       {more.length > 0 && (

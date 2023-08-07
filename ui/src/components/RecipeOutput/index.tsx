@@ -114,7 +114,7 @@ export function RecipeOutputConsole() {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-600 text-white space-y-6">
+    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-white space-y-6">
       {imageBlocks.length > 0 && (
         <>
           <OutputModule

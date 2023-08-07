@@ -19,6 +19,10 @@
   .projects-home-container {
     @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-4;
   }
+
+  body {
+    @apply bg-base-200 dark:bg-base-100;
+  }
 }
 
 @layer utilities {

@@ -239,7 +239,7 @@ export function RecipeSearchButton() {
       <button
         ref={ref}
         className={classNames(
-          "btn dark:btn-accent dark:text-white sm:w-24 w-full",
+          "btn btn-accent dark:text-white sm:w-24 w-full",
           (!currentSession || isSending) && "btn-disabled"
         )}
         type="button"
