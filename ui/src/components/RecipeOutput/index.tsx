@@ -70,7 +70,7 @@ export function RecipeOutput() {
 export function RecipeOutputConsole() {
   const getOutput = useRecipeSessionStore((state) => state.getOutput);
 
-  const { output, type: outputType } = getOutput();
+  const { output } = getOutput();
   const isSending = useRecipeSessionStore((state) => state.isSending);
 
   const { imageBlocks, codeBlocks } = useMemo(() => {

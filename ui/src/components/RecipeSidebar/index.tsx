@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -18,6 +18,7 @@ export function RecipeSidebar() {
     (state) => state.setCurrentSession
   );
   const router = useRouter();
+  const { sessionId } = useParams();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -39,6 +40,8 @@ export function RecipeSidebar() {
           const changeFactor = event.key === "ArrowDown" ? 1 : -1;
           const nextIndex = (currentIndex + changeFactor) % sessions.length;
 
+          const nextSession = sessions[nextIndex];
+          router.push(`/s/${nextSession.id}`);
           setCurrentSession(sessions[nextIndex]);
         }
       }
@@ -50,6 +53,23 @@ export function RecipeSidebar() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [currentSession, sessions, setCurrentSession]);
+
+  console.log({ sessionId, currentSession });
+  useEffect(() => {
+    if (sessionId as string) {
+      const session = sessions.find((s) => s.id === sessionId);
+
+      if (!session) {
+        router.push("/");
+        return;
+      }
+
+      setCurrentSession(session);
+    } else if (!sessionId && currentSession) {
+      setCurrentSession(null);
+      router.push("/");
+    }
+  }, [sessionId]);
 
   if (sessions.length === 0) return null;
 
@@ -121,7 +141,7 @@ function SessionTab({
       )}
       onClick={() => {
         if (!isCurrentSession) {
-          router.push("/");
+          router.push(`/s/${session.id}`);
           setCurrentSession(session);
           return;
         }

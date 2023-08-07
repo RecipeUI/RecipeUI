@@ -22,7 +22,7 @@ interface RecipeSessionSlice {
   setCurrentSession: (session: RecipeSession | null) => void;
   updateSessionName: (session: RecipeSession, name: string) => void;
 
-  addSession: (selectedRecipe: Recipe) => void;
+  addSession: (selectedRecipe: Recipe) => RecipeSession;
   closeSession: (session: RecipeSession) => void;
 }
 
@@ -205,7 +205,12 @@ const createRecipeSessionSlice: StateCreator<
         };
       }),
 
-    addSession: (selectedRecipe) =>
+    addSession: (selectedRecipe) => {
+      const newSession: RecipeSession = {
+        id: uuidv4(),
+        name: selectedRecipe.title,
+        recipe: selectedRecipe,
+      };
       set((prevState) => {
         if (prevState.currentSession) {
           preserveSessionParamsToLocal({
@@ -218,12 +223,6 @@ const createRecipeSessionSlice: StateCreator<
           });
         }
 
-        const newSession: RecipeSession = {
-          id: uuidv4(),
-          name: selectedRecipe.title,
-          recipe: selectedRecipe,
-        };
-
         return {
           bodyRoute: RecipeBodyRoute.Parameters,
           currentSession: newSession,
@@ -231,7 +230,9 @@ const createRecipeSessionSlice: StateCreator<
           outputTab: RecipeOutputTab.Docs,
           ...getEmptyParameters(),
         };
-      }),
+      });
+      return newSession;
+    },
     closeSession: (session) =>
       set((prevState) => {
         deleteParamsForSessionIdFromLocal(session.id);
