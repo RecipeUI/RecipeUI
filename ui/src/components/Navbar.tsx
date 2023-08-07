@@ -1,16 +1,20 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useRecipeSessionStore } from "../state/recipeSession";
 
 export function Navbar() {
+  const router = useRouter();
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
   return (
     <div className="py-2 sm:py-0 w-full flex justify-start min-h-12 items-center font-bold shadow-sm px-4 text-black">
       <button
-        className="flex items-center cursor-pointer"
+        className="flex items-center cursor-pointer  tooltip tooltip-right"
+        data-tip="Home"
         onClick={() => {
           setCurrentSession(null);
+          router.push("/");
         }}
       >
         <svg

@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { ReactNode, useMemo } from "react";
 import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
 import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
+import Link from "next/link";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const { popular, free, ycombinator, more } = useMemo(() => {
@@ -76,7 +77,7 @@ function MarketplaceSection({
     <div>
       <h1 className="text-2xl font-bold dark:text-gray-100">{header}</h1>
       {typeof description === "string" ? <p>{description}</p> : description}
-      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4">
+      <div className="projects-home-container">
         {projects.map((recipe) => {
           return (
             <RecipeHomeBox
@@ -95,12 +96,12 @@ function MarketplaceSection({
   );
 }
 
-function RecipeHomeBox({
+export function RecipeHomeBox({
   title,
   subheader,
   project,
   description,
-  status,
+  status: _status,
   image,
 }: {
   title: string;
@@ -111,6 +112,13 @@ function RecipeHomeBox({
   image?: string | null;
 }) {
   const addDeepAction = useRecipeSessionStore((state) => state.addDeepAction);
+
+  let status = String(_status);
+
+  if (_status === RecipeProjectStatus.Active) {
+    status = "View";
+  }
+
   return (
     <div className="border rounded-md shadow-sm p-4 space-y-1">
       <div className="flex justify-between ">
@@ -118,33 +126,27 @@ function RecipeHomeBox({
           {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
           <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
         </div>
-        <div
-          className="tooltip"
-          data-tip={
-            status === RecipeProjectStatus.Soon
-              ? "Join the waitlist!"
-              : undefined
-          }
-        >
-          <button
-            className={classNames(
-              "btn btn-neutral btn-sm",
-              status === RecipeProjectStatus.Soon && "!btn-accent"
-            )}
-            onClick={() => {
-              addDeepAction({
-                type: DeepActionType.UpdateRecipeInput,
-                payload: project,
-              });
-            }}
+        <Link href={`/${project}`}>
+          <div
+            className="tooltip"
+            data-tip={
+              status === RecipeProjectStatus.Soon
+                ? "Join the waitlist!"
+                : undefined
+            }
           >
-            {status}
-          </button>
-        </div>
+            <button
+              className={classNames(
+                "btn btn-neutral btn-sm",
+                status === RecipeProjectStatus.Soon && "!btn-accent"
+              )}
+            >
+              {status}
+            </button>
+          </div>
+        </Link>
       </div>
-      <h3 className="font-bold text-sm dark:text-gray-300">
-        {subheader ?? "Testing"}
-      </h3>
+      <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
       <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
         {description}
       </p>

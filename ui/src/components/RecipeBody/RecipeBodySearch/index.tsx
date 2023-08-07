@@ -11,6 +11,7 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
+import { usePathname, useRouter } from "next/navigation";
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -42,6 +43,7 @@ export function RecipeBodySearch() {
   }, [_recipes]);
 
   const [recipes, setRecipes] = useState(recipeWithLabels);
+  const router = useRouter();
 
   const {
     isOpen,
@@ -62,6 +64,7 @@ export function RecipeBodySearch() {
     selectedItem: currentSession?.recipe || null,
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
+        router.push("/");
         addSession(selectedItem);
       }
     },

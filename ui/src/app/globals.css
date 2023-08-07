@@ -15,6 +15,10 @@
     list-style: disc outside none;
     @apply px-4 my-1;
   }
+
+  .projects-home-container {
+    @apply flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-4;
+  }
 }
 
 /* 

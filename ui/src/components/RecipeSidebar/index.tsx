@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
+import { useRouter } from "next/navigation";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -16,6 +17,7 @@ export function RecipeSidebar() {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -25,6 +27,9 @@ export function RecipeSidebar() {
           sessions.length > 1
         ) {
           event.preventDefault();
+
+          router.push("/");
+
           if (!currentSession) return setCurrentSession(sessions[0]);
 
           const currentIndex = sessions.findIndex(
@@ -56,6 +61,7 @@ export function RecipeSidebar() {
           className="hover:bg-blue-600 dark:hover:bg-blue-900 px-4 py-3 tooltip tooltip-bottom"
           data-tip="Add a new session (CMD+K)"
           onClick={() => {
+            router.push("/");
             setCurrentSession(null);
           }}
         >
@@ -103,6 +109,7 @@ function SessionTab({
     setIsEditing(false);
     updateSessionName(session, name);
   };
+  const router = useRouter();
 
   return (
     <button
@@ -114,6 +121,7 @@ function SessionTab({
       )}
       onClick={() => {
         if (!isCurrentSession) {
+          router.push("/");
           setCurrentSession(session);
           return;
         }
