@@ -11,6 +11,8 @@ if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
     api_host: window.origin + "/ingest",
     autocapture: false,
+    capture_pageleave: false,
+    capture_pageview: false,
   });
 }
 
