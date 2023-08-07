@@ -19,6 +19,8 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 */
 
 export function useSaveRecipeUI() {
+  const { sessionId: sessionIdParam, project: projectId } = useParams();
+
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
     {
@@ -42,11 +44,13 @@ export function useSaveRecipeUI() {
   const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
 
   // On mount, hydrate from local storage
+
   useEffect(() => {
     console.log("Hydrating from local storage");
 
     if (!localSave) return;
-    if (localSave.currentSession) setCurrentSession(localSave.currentSession);
+    if (localSave.currentSession && !projectId)
+      setCurrentSession(localSave.currentSession);
     if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);
@@ -85,6 +89,8 @@ export function useSaveRecipeUI() {
       });
       setSessions(_sessions);
 
+      if (projectId) return;
+
       const localSession = localSave.currentSession;
       if (localSession != null) {
         const latestRecipe = newRecipes.find(
@@ -101,7 +107,6 @@ export function useSaveRecipeUI() {
     }
     fetchRecipes();
   }, []);
-  const { sessionId: sessionIdParam } = useParams();
   const router = useRouter();
 
   useEffect(() => {

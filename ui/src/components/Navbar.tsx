@@ -11,7 +11,7 @@ export function Navbar() {
     <div className="py-2 sm:py-0 w-full flex justify-start min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
       <button
         className="flex items-center cursor-pointer  tooltip tooltip-right"
-        data-tip="Home"
+        data-tip="Home (CMD+K)"
         onClick={() => {
           setCurrentSession(null);
           router.push("/");

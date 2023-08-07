@@ -80,7 +80,7 @@ export interface RecipeVariedParam extends RecipeParamCore {
 
 export interface RecipeFileParam extends RecipeParamCore {
   type: RecipeParamType.File;
-  format: "binary" | "byte";
+  format: "binary" | "byte" | "audio";
 }
 
 export type RecipeParam =

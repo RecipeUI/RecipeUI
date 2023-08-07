@@ -34,9 +34,16 @@ export function RecipeBodySearch() {
         };
       });
     newRecipes.sort((a, b) => {
-      const lengthA = a.tags ? a.tags.length : 0;
-      const lengthB = b.tags ? b.tags.length : 0;
-      return lengthB - lengthA; // Sorting in descending order, so the item with the most tags comes first
+      if (!a.tags && !b.tags) return 0;
+      if (!b.tags) return -1;
+      if (!a.tags) return 1;
+
+      if (a.tags.length === b.tags.length) {
+        // We'll eventually want a better priority ranking here to feature recipes!
+        return a.id - b.id;
+      } else {
+        return b.tags.length - a.tags.length;
+      } // Sorting in descending order, so the item with the most tags comes first
     });
 
     return newRecipes;
