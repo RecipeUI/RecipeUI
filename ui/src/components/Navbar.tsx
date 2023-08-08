@@ -1,10 +1,13 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useRecipeSessionStore } from "../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
-import { Recipe } from "@/types/databaseExtended";
-import { useParams, useRouter } from "next/navigation";
+
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { useState } from "react";
+import { Dialog } from "@headlessui/react";
 
 export function Navbar() {
   const router = useRouter();
@@ -80,13 +83,6 @@ export function Navbar() {
   );
 }
 
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeMinimal, ThemeSupa, supabase } from "@supabase/auth-ui-shared";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
-import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-
 export default function AuthForm({
   isModalOpen,
   setIsModalOpen,
@@ -121,14 +117,16 @@ export default function AuthForm({
                 default: {
                   ...ThemeSupa.default,
                   colors: {
-                    brand: "#F0A500",
-                    brandButtonText: "white",
-                    brandAccent: "black",
+                    ...ThemeSupa.default.colors,
+                    // brand: "#F0A500",
+                    // brandButtonText: "white",
+                    // brandAccent: "black",
                     // inputText: "#F0A500",
                     // inputLabelText: "#F0A500",
                     // defaultButtonBorder: "0",
                   },
                   borderWidths: {
+                    ...ThemeSupa.default.borderWidths,
                     // buttonBorderWidth: "0",
                   },
                 },
@@ -153,7 +151,7 @@ export default function AuthForm({
               },
             }}
             providers={["github", "google"]}
-            redirectTo={window.origin + "/auth/callback"}
+            redirectTo={"/auth/callback"}
           />
           {/* <button onClick={() => setIsModalOpen(false)}>Deactivate</button> */}
         </Dialog.Panel>

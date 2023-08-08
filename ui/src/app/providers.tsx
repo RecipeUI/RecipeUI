@@ -18,18 +18,23 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_ENV === "prod") {
 
 export function PostHogPageview(): JSX.Element {
   const pathname = usePathname();
-  const urlParams = useParams();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (urlParams.sessionId) return;
-
     if (pathname) {
       let url = window.origin + pathname;
+      if (searchParams.toString()) {
+        url = url + `?${searchParams.toString()}`;
+      }
       posthog.capture("$pageview", {
         $current_url: url,
       });
     }
-  }, [pathname, urlParams]);
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    console.log("Initial load");
+  }, []);
 
   return <></>;
 }

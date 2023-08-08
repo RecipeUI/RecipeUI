@@ -40,7 +40,7 @@ export function RecipeSidebar() {
           const nextIndex = (currentIndex + changeFactor) % sessions.length;
 
           const nextSession = sessions[nextIndex];
-          router.push(`/s/${nextSession.id}`);
+          router.push(`/?s=${nextSession.id}`);
           setCurrentSession(sessions[nextIndex]);
         }
       }
@@ -54,8 +54,10 @@ export function RecipeSidebar() {
   }, [currentSession, sessions, setCurrentSession]);
 
   const pathname = usePathname();
+  const { project: projectId } = useParams();
   useEffect(() => {
-    if (sessions.length === 0 && pathname !== "/") router.push("/");
+    if (!projectId && sessions.length === 0 && pathname !== "/")
+      router.push("/");
   }, [sessions.length]);
 
   if (sessions.length === 0) return null;
@@ -128,7 +130,7 @@ function SessionTab({
       )}
       onClick={() => {
         if (!isCurrentSession) {
-          router.push(`/s/${session.id}`);
+          router.push(`/?s=${session.id}`);
           setCurrentSession(session);
           return;
         }

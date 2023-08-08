@@ -79,7 +79,7 @@ function ProjectHomeBox({
       className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer"
       onClick={() => {
         const session = addSession(recipe);
-        router.push(`/s/${session.id}`);
+        router.push(`/?s=${session.id}`);
       }}
     >
       <div className="flex justify-between ">

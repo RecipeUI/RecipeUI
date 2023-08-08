@@ -72,7 +72,7 @@ export function RecipeBodySearch() {
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
         const newSession = addSession(selectedItem);
-        router.push(`/s/${newSession.id}/`);
+        router.push(`/?s=${newSession.id}`);
       }
     },
   });

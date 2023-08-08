@@ -10,7 +10,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -19,7 +19,9 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 */
 
 export function useSaveRecipeUI() {
-  const { sessionId: sessionIdParam, project: projectId } = useParams();
+  const { project: projectId } = useParams();
+  const searchParams = useSearchParams();
+  const sessionIdParam = searchParams.get("s");
 
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
@@ -110,6 +112,8 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   useEffect(() => {
+    if (projectId) return;
+
     if ((sessionIdParam as string) && localSave?.sessions) {
       const session = localSave.sessions.find((s) => s.id === sessionIdParam);
 
