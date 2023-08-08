@@ -31,7 +31,7 @@ interface RecipeSessionSlice {
 
 export enum RecipeBodyRoute {
   Parameters = "Parameters",
-  Templates = "Templates",
+  Templates = "Recipes",
   Config = "Config",
 }
 
