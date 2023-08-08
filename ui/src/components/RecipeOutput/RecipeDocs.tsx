@@ -26,7 +26,7 @@ import { getDefaultValue, getValueInObjPath } from "../../utils/main";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export function RecipeDocs() {
-  const selectedRecipe = useContext(RecipeContext);
+  const selectedRecipe = useContext(RecipeContext)!;
 
   const requestBody =
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;

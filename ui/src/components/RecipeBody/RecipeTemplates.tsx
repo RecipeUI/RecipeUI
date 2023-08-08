@@ -7,7 +7,7 @@ import {
 import { RecipeMutationCore } from "@/types/databaseExtended";
 
 export function RecipeTemplatesTab() {
-  const selectedRecipe = useContext(RecipeContext);
+  const selectedRecipe = useContext(RecipeContext)!;
 
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);

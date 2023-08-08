@@ -6,7 +6,8 @@
     "dev": "next dev -p 5173",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "check-types": "tsc --noemit",
+    "lint": "pnpm run check-types && next lint",
     "types": "supabase gen types typescript --project-id nqtmsoehkjdrhcmzfjar > src/types/database.types.ts"
   },
   "dependencies": {

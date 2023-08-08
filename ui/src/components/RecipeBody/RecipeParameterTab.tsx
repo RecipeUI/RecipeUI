@@ -25,7 +25,7 @@ const codeMirrorSetup = {
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
-  const selectedRecipe = useContext(RecipeContext);
+  const selectedRecipe = useContext(RecipeContext)!;
   const secret = useSecretFromSM(selectedRecipe.project);
 
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
@@ -206,7 +206,7 @@ function NoEditorCopy() {
 function RecipeJsonEditor() {
   const _requestBody = useRecipeSessionStore((state) => state.requestBody);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const selectedRecipe = useContext(RecipeContext);
+  const selectedRecipe = useContext(RecipeContext)!;
 
   const [requestCode, setRequestCode] = useState("");
   const requestBody = useDebounce(_requestBody, 300);
@@ -263,7 +263,7 @@ function RecipeJsonEditor() {
 
 function RecipeQueryParameters() {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const recipe = useContext(RecipeContext);
+  const recipe = useContext(RecipeContext)!;
   const hasNoParams = Object.values(recipe.queryParams!).every(
     (param) => param.required === undefined || param.required === false
   );
@@ -318,7 +318,7 @@ function RecipeQueryParameters() {
 
 function RecipeURLParams() {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const recipe = useContext(RecipeContext);
+  const recipe = useContext(RecipeContext)!;
 
   // This should never happen, just narrowing type
   if (!("urlParams" in recipe && recipe.urlParams !== undefined)) {
