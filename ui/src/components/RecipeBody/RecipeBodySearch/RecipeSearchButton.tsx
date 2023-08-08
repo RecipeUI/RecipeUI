@@ -1,8 +1,9 @@
 import classNames from "classnames";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { RECIPE_PROXY } from "@/utils/constants";
 import { useSecretManager } from "@/state/recipeAuth";
 import {
+  RecipeContext,
   RecipeOutputTab,
   RecipeOutputType,
   useRecipeSessionStore,
@@ -26,6 +27,7 @@ export function RecipeSearchButton() {
   const queryParams = useRecipeSessionStore((store) => store.queryParams);
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
   const controllerRef = useRef<AbortController | null>(null);
+  const recipe = useContext(RecipeContext)!;
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -43,10 +45,10 @@ export function RecipeSearchButton() {
     if (!currentSession) return;
 
     const recipeInfoLog = {
-      recipeId: currentSession.recipe.id,
-      path: currentSession.recipe.path,
-      project: currentSession.recipe.project,
-      title: currentSession.recipe.title,
+      recipeId: recipe.id,
+      path: recipe.path,
+      project: recipe.project,
+      title: recipe.title,
     };
 
     if (isSending) {
@@ -62,8 +64,6 @@ export function RecipeSearchButton() {
 
       return;
     }
-
-    const { recipe } = currentSession;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -125,12 +125,12 @@ export function RecipeSearchButton() {
 
     // TODO: We can have very strict validation eventually
     if (
-      "requestBody" in currentSession.recipe &&
-      currentSession.recipe.requestBody &&
-      "objectSchema" in currentSession.recipe.requestBody &&
-      currentSession.recipe.requestBody.objectSchema
+      "requestBody" in recipe &&
+      recipe.requestBody &&
+      "objectSchema" in recipe.requestBody &&
+      recipe.requestBody.objectSchema
     ) {
-      const { objectSchema } = currentSession.recipe.requestBody;
+      const { objectSchema } = recipe.requestBody;
       const requiredKeys = objectSchema.filter(
         (schema) => schema.required === true
       );
@@ -146,7 +146,7 @@ export function RecipeSearchButton() {
         _requestBody.stream = true;
       }
 
-      const contentType = currentSession.recipe.requestBody.contentType;
+      const contentType = recipe.requestBody.contentType;
 
       if (contentType === "application/json") {
         body = JSON.stringify(_requestBody);

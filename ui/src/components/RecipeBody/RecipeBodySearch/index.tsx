@@ -2,12 +2,13 @@
 import { useCombobox } from "downshift";
 import classNames from "classnames";
 import Fuse from "fuse.js";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { RouteTypeLabel } from "../../RouteTypeLabel";
 
 import { useDebounce } from "usehooks-ts";
 import {
   DeepActionType,
+  RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
@@ -50,6 +51,7 @@ export function RecipeBodySearch() {
 
   const [recipes, setRecipes] = useState(recipeWithLabels);
   const router = useRouter();
+  const currentSessionRecipe = useContext(RecipeContext);
 
   const {
     isOpen,
@@ -67,11 +69,11 @@ export function RecipeBodySearch() {
     itemToString(item) {
       return item ? item.path : "";
     },
-    selectedItem: currentSession?.recipe || null,
+    selectedItem: currentSessionRecipe || null,
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
         const newSession = addSession(selectedItem);
-        router.push(`/?s=${getURLParamsForSession(newSession)}`);
+        router.push(`/?${getURLParamsForSession(newSession)}`);
       }
     },
   });
@@ -172,7 +174,9 @@ export function RecipeBodySearch() {
               {...getInputProps()}
             />
           </div>
-          {currentSession != null && <RecipeSearchButton />}
+          {currentSession != null && currentSessionRecipe != null && (
+            <RecipeSearchButton />
+          )}
         </div>
         <ul
           className={classNames(

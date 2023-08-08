@@ -30,6 +30,7 @@ export function RecipeHomeContainer({
     return sessions.find((session) => session.id === sessionId);
   }, [sessions, sessionId]);
 
+  console.log(sessions, currentSession, sessionId);
   useEffect(() => {
     // Lets make it so that the recipe is always correct. If there is no session active, we will create a new one.
     if (currentSession && recipe && currentSession.recipeId != recipe.id) {
@@ -45,14 +46,14 @@ export function RecipeHomeContainer({
         currentSession === null && "px-6 pb-6 pt-4"
       )}
     >
-      <RecipeBodySearch />
-      {recipe && currentSession ? (
-        <RecipeContext.Provider value={recipe}>
+      <RecipeContext.Provider value={recipe || null}>
+        <RecipeBodySearch />
+        {recipe && currentSession ? (
           <RecipeBody />
-        </RecipeContext.Provider>
-      ) : (
-        <RecipeHome projects={recipeProjects} />
-      )}
+        ) : (
+          <RecipeHome projects={recipeProjects} />
+        )}
+      </RecipeContext.Provider>
     </div>
   );
 }

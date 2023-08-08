@@ -528,4 +528,4 @@ function deleteParamsForSessionIdFromLocal(sessionId: string) {
   localStorage.removeItem(getRecipeUrlParamsKey(sessionId));
 }
 
-export const RecipeContext = createContext<Recipe>({} as Recipe);
+export const RecipeContext = createContext<Recipe | null>(null);
