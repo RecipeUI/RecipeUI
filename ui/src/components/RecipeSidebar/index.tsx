@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -52,6 +52,11 @@ export function RecipeSidebar() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [currentSession, sessions, setCurrentSession]);
+
+  const pathname = usePathname();
+  useEffect(() => {
+    if (sessions.length === 0 && pathname !== "/") router.push("/");
+  }, [sessions.length]);
 
   if (sessions.length === 0) return null;
 

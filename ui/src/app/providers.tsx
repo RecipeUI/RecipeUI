@@ -1,11 +1,11 @@
 "use client";
 import { useSaveRecipeUI } from "@/state/useSaveRecipeUI";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_ENV === "prod") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
@@ -18,19 +18,18 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_ENV === "prod") {
 
 export function PostHogPageview(): JSX.Element {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const urlParams = useParams();
 
   useEffect(() => {
+    if (urlParams.sessionId) return;
+
     if (pathname) {
       let url = window.origin + pathname;
-      if (searchParams && searchParams.toString()) {
-        url = url + `?${searchParams.toString()}`;
-      }
       posthog.capture("$pageview", {
         $current_url: url,
       });
     }
-  }, [pathname, searchParams]);
+  }, [pathname, urlParams]);
 
   return <></>;
 }

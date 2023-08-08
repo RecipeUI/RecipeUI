@@ -125,6 +125,12 @@ export function useSaveRecipeUI() {
     }
   }, []);
 
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log({ event, session });
+    });
+  }, []);
+
   // Save changes every POLLING_FACTOR seconds
   useInterval(() => {
     setLocalSave({

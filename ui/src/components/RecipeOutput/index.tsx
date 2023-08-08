@@ -53,8 +53,7 @@ export function RecipeOutput() {
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer tooltip bg-neutral-200 dark:text-gray-800",
-                  currentTab === RecipeOutputTab.Docs ? "" : "!bg-chefYellow "
+                  "first:!border-l-0 border-l px-2 py-2 cursor-pointer tooltip bg-chefYellow dark:text-gray-800"
                 )}
                 data-tip={"CMD+D"}
               >
@@ -121,11 +120,13 @@ export function RecipeOutputConsole() {
                 {imageBlocks.length > 1 && (
                   <p className="mb-2">
                     We found {imageBlocks.length} images. Scroll right to see
-                    them all.
+                    some of them.
                   </p>
                 )}
                 <div className="carousel rounded-box">
                   {imageBlocks.map((imageUrl, i) => {
+                    if (i > 30) return null;
+
                     return (
                       <img
                         src={imageUrl}
@@ -168,7 +169,7 @@ export function RecipeOutputConsole() {
               src={output}
               collapsed={false}
               collapseStringsAfterLength={50000}
-              collapseObjectsAfterLength={10000}
+              collapseObjectsAfterLength={100}
             />
           }
         />
