@@ -69,7 +69,6 @@ export function useSaveRecipeUI() {
     setOnboarding(false);
 
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth event", event, session);
       setUserSession(session);
 
       if (event === "INITIAL_SESSION" && session?.user) {

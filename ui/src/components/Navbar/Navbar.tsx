@@ -12,8 +12,9 @@ import { Database } from "@/types/database.types";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { ReactNode, useEffect, useState, useTransition } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { revalidatePath } from "next/cache";
+import { Menu } from "@headlessui/react";
 
 export function Navbar() {
   const router = useRouter();
@@ -24,8 +25,8 @@ export function Navbar() {
   const [showForm, setShowForm] = useState(true);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const supabase = createClientComponentClient<Database>();
   const userSession = useRecipeSessionStore((state) => state.userSession);
+  const user = useRecipeSessionStore((state) => state.user);
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
 
@@ -72,29 +73,26 @@ export function Navbar() {
         </svg>
         <h1 className="ml-2 dark:text-white">RecipeUI</h1>
       </button>
-      <div className="space-x-2">
+
+      <ul className="menu menu-horizontal px-1">
         {/* <button className="btn btn-accent btn-sm">Star Us!</button> */}
-        {!userSession?.user ? (
-          <button
-            className="btn bg-chefYellow text-black btn-sm"
-            onClick={() => {
-              setIsLoginModalOpen(true);
-            }}
-          >
-            Log in
-          </button>
+        {!user ? (
+          <li>
+            <button
+              className="btn bg-chefYellow text-black btn-sm"
+              onClick={() => {
+                setIsLoginModalOpen(true);
+              }}
+            >
+              Log in
+            </button>
+          </li>
         ) : (
-          <button
-            className="btn bg-chefYellow text-black btn-sm"
-            onClick={() => {
-              supabase.auth.signOut();
-              router.refresh();
-            }}
-          >
-            Log out
-          </button>
+          <>
+            <NavMenu user={user} />
+          </>
         )}
-      </div>
+      </ul>
       {showForm && (
         <AuthForm
           isModalOpen={isLoginModalOpen}
@@ -126,7 +124,7 @@ export default function AuthForm({
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-base-100 p-8 rounded-lg">
+        <Dialog.Panel className="bg-white dark:bg-base-100 p-8 rounded-lg ">
           <Dialog.Title className="text-2xl font-bold text-chefYellow">
             {view === "sign_in" ? "Sign in" : "Sign up"}
           </Dialog.Title>
@@ -141,12 +139,14 @@ export default function AuthForm({
               theme: {
                 default: {
                   ...ThemeSupa.default,
+
                   colors: {
                     ...ThemeSupa.default.colors,
                     brand: "#F0A500",
                     brandButtonText: "white",
                     brandAccent: "black",
-                    // inputText: "#F0A500",
+                    // inputText: "white",
+                    inputText: "#F0A500",
                     // inputLabelText: "#F0A500",
                     // defaultButtonBorder: "0",
                   },
@@ -179,14 +179,17 @@ export default function AuthForm({
             redirectTo={"/auth/callback"}
           />
           <button
-            className="text-sm text-end underline underline-offset-2"
+            className="text-sm text-end"
             onClick={() => {
               setView(view === "sign_in" ? "sign_up" : "sign_in");
             }}
           >
             {view === "sign_in"
-              ? "Need an account? Sign up."
-              : "Already have an account? Sign in."}
+              ? "Need an account? "
+              : "Already have an account? "}
+            <span className="underline underline-offset-2">
+              {view === "sign_in" ? "Sign up." : "Sign in."}
+            </span>
           </button>
           {/* <button onClick={() => setIsModalOpen(false)}>Deactivate</button> */}
         </Dialog.Panel>
@@ -366,6 +369,60 @@ function LabelWrapper({
     <div className="w-full">
       <label className="label">{label}</label>
       {children}
+    </div>
+  );
+}
+
+import { Fragment } from "react";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { User } from "@/types/databaseExtended";
+
+const links = [
+  { href: "/account-settings", label: "Account settings" },
+  { href: "/support", label: "Support" },
+  { href: "/license", label: "License" },
+  { href: "/sign-out", label: "Sign out" },
+];
+
+function NavMenu({ user }: { user: User }) {
+  const supabase = createClientComponentClient<Database>();
+  const router = useRouter();
+
+  // <button
+  //           className="btn bg-chefYellow text-black btn-sm"
+  //           onClick={() => {
+  //             supabase.auth.signOut();
+  //             router.refresh();
+  //           }}
+  //         >
+  //           Log out
+  //         </button>
+  return (
+    <div className="dropdown">
+      <label tabIndex={0} className="btn btn-ghost btn-circle">
+        <Bars3Icon className="w-6 h-6" />
+      </label>
+      <ul
+        tabIndex={0}
+        className="menu menu-sm dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 right-0 font-normal"
+      >
+        <li className="pointer-events-none">
+          <h3 className="font-bold">{user.username}</h3>
+          <p className="text-xs text-gray-600 -mt-1">{user.email}</p>
+        </li>
+        <div className="divider my-0 px-2" />
+
+        <li>
+          <button
+            onClick={() => {
+              supabase.auth.signOut();
+              router.refresh();
+            }}
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
     </div>
   );
 }
