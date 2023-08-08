@@ -39,8 +39,6 @@ export async function createUser(data: OnboardingFormData) {
     user_id: userRes.data.user?.id!,
   });
 
-  console.log("here", res);
-
   if (res.status === 409) {
     redirect(
       `/?${new URLSearchParams({

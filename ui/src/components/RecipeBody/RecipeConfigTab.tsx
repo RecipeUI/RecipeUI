@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useSecretManager } from "../../state/recipeAuth";
-import { useRecipeSessionStore } from "../../state/recipeSession";
 import classNames from "classnames";
 
 import _docLinks from "../../assets/docLinks.json";
 import { RecipeAuthType } from "@/types/databaseExtended";
+import { RecipeContext, useRecipeSessionStore } from "@/state/recipeSession";
 const docLinks = _docLinks as Record<string, string>;
 
 export function RecipeConfigTab() {
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe
-  );
+  const selectedRecipe = useContext(RecipeContext);
 
   const needsAuth = selectedRecipe.auth !== null;
 
@@ -36,9 +34,7 @@ export function RecipeNeedsAuth({
 }: {
   onboardingFlow?: boolean;
 }) {
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe
-  );
+  const selectedRecipe = useContext(RecipeContext);
   const sm = useSecretManager();
   const [apiKey, setAPIKey] = useState<string>(
     sm.getSecret(selectedRecipe.project) || ""

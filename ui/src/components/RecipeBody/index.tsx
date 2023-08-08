@@ -3,15 +3,19 @@ import classNames from "classnames";
 import { RecipeParameterTab } from "./RecipeParameterTab";
 import { RecipeTemplatesTab } from "./RecipeTemplates";
 import { RecipeConfigTab } from "./RecipeConfigTab";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
-import { RecipeBodyRoute, useRecipeSessionStore } from "@/state/recipeSession";
+import {
+  RecipeBodyRoute,
+  RecipeContext,
+  useRecipeSessionStore,
+} from "@/state/recipeSession";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe
-  );
+
+  // We should probably actually fetch the id here if possible?
+  const selectedRecipe = useContext(RecipeContext);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   const routes = useMemo(() => {

@@ -10,15 +10,23 @@ import {
   isVariedParam,
 } from "@/types/databaseExtended";
 import ReactMarkdown from "react-markdown";
-import { useRecipeSessionStore } from "../../state/recipeSession";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  RecipeContext,
+  useRecipeSessionStore,
+} from "../../state/recipeSession";
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getDefaultValue, getValueInObjPath } from "../../utils/main";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export function RecipeDocs() {
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe
-  );
+  const selectedRecipe = useContext(RecipeContext);
 
   const requestBody =
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;

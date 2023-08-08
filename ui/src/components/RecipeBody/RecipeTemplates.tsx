@@ -1,13 +1,14 @@
+import { useContext } from "react";
 import {
   RecipeBodyRoute,
+  RecipeContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeMutationCore } from "@/types/databaseExtended";
 
 export function RecipeTemplatesTab() {
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe as RecipeMutationCore
-  );
+  const selectedRecipe = useContext(RecipeContext);
+
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);

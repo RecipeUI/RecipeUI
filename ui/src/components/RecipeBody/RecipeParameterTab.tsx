@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSecretFromSM } from "../../state/recipeAuth";
 import {
   RecipeBodyRoute,
+  RecipeContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import CodeMirror from "@uiw/react-codemirror";
@@ -23,11 +24,8 @@ const codeMirrorSetup = {
 // TODO: Link to our guides for setting up auth
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const currentSession = useRecipeSessionStore(
-    (state) => state.currentSession!
-  );
 
-  const selectedRecipe = currentSession.recipe;
+  const selectedRecipe = useContext(RecipeContext);
   const secret = useSecretFromSM(selectedRecipe.project);
 
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
@@ -208,9 +206,7 @@ function NoEditorCopy() {
 function RecipeJsonEditor() {
   const _requestBody = useRecipeSessionStore((state) => state.requestBody);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const selectedRecipe = useRecipeSessionStore(
-    (state) => state.currentSession!.recipe!
-  );
+  const selectedRecipe = useContext(RecipeContext);
 
   const [requestCode, setRequestCode] = useState("");
   const requestBody = useDebounce(_requestBody, 300);
@@ -267,7 +263,7 @@ function RecipeJsonEditor() {
 
 function RecipeQueryParameters() {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const recipe = useRecipeSessionStore((state) => state.currentSession!.recipe);
+  const recipe = useContext(RecipeContext);
   const hasNoParams = Object.values(recipe.queryParams!).every(
     (param) => param.required === undefined || param.required === false
   );
@@ -322,7 +318,7 @@ function RecipeQueryParameters() {
 
 function RecipeURLParams() {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const recipe = useRecipeSessionStore((state) => state.currentSession!.recipe);
+  const recipe = useContext(RecipeContext);
 
   // This should never happen, just narrowing type
   if (!("urlParams" in recipe && recipe.urlParams !== undefined)) {

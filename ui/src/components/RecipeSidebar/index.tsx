@@ -10,6 +10,7 @@ import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { getURLParamsForSession } from "@/utils/main";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -40,7 +41,7 @@ export function RecipeSidebar() {
           const nextIndex = (currentIndex + changeFactor) % sessions.length;
 
           const nextSession = sessions[nextIndex];
-          router.push(`/?s=${nextSession.id}`);
+          router.push(`/?${getURLParamsForSession(nextSession)}`);
           setCurrentSession(sessions[nextIndex]);
         }
       }
@@ -56,8 +57,11 @@ export function RecipeSidebar() {
   const pathname = usePathname();
   const { project: projectId } = useParams();
   useEffect(() => {
-    if (!projectId && sessions.length === 0 && pathname !== "/")
+    if (!projectId && sessions.length === 0 && pathname !== "/") {
+      console.warn("Rerouting because no session");
+
       router.push("/");
+    }
   }, [sessions.length]);
 
   if (sessions.length === 0) return null;
@@ -130,7 +134,11 @@ function SessionTab({
       )}
       onClick={() => {
         if (!isCurrentSession) {
-          router.push(`/?s=${session.id}`);
+          router.push(
+            `/?${new URLSearchParams(
+              getURLParamsForSession(session)
+            ).toString()}`
+          );
           setCurrentSession(session);
           return;
         }
@@ -140,7 +148,7 @@ function SessionTab({
         }
       }}
     >
-      <RouteTypeLabel size="small" recipeMethod={session.recipe.method} />
+      <RouteTypeLabel size="small" recipeMethod={session.recipeMethod} />
       {isEditing ? (
         <input
           className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900"

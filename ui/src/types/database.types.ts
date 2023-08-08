@@ -112,6 +112,67 @@ export interface Database {
           }
         ]
       }
+      template: {
+        Row: {
+          author: string
+          created_at: string
+          description: string
+          id: number
+          project: string
+          queryParams: Json | null
+          recipe_id: number
+          requestBody: Json | null
+          title: string
+          urlParams: Json | null
+          visibility: string
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          description: string
+          id?: number
+          project: string
+          queryParams?: Json | null
+          recipe_id: number
+          requestBody?: Json | null
+          title: string
+          urlParams?: Json | null
+          visibility?: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          description?: string
+          id?: number
+          project?: string
+          queryParams?: Json | null
+          recipe_id?: number
+          requestBody?: Json | null
+          title?: string
+          urlParams?: Json | null
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_author_fkey"
+            columns: ["author"]
+            referencedRelation: "user"
+            referencedColumns: ["username"]
+          },
+          {
+            foreignKeyName: "template_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       user: {
         Row: {
           company: string | null

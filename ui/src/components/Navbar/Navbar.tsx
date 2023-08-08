@@ -74,7 +74,7 @@ export function Navbar() {
         <h1 className="ml-2 dark:text-white">RecipeUI</h1>
       </button>
 
-      <ul className="menu menu-horizontal px-1">
+      <ul className="menu menu-horizontal px-1 dark:text-white">
         <li className="">
           <Link
             href="https://github.com/RecipeUI/RecipeUI"
@@ -415,11 +415,13 @@ function NavMenu({ user }: { user: User }) {
       </label>
       <ul
         tabIndex={0}
-        className="menu menu-sm dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 right-0 font-normal"
+        className="menu menu-sm dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 right-0 font-normal dark:border"
       >
         <li className="pointer-events-none">
           <h3 className="font-bold">{user.username}</h3>
-          <p className="text-xs text-gray-600 -mt-1">{user.email}</p>
+          <p className="text-xs text-gray-600 -mt-1 dark:text-gray-300">
+            {user.email}
+          </p>
         </li>
         <div className="divider my-0 px-2" />
 

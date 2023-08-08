@@ -110,7 +110,7 @@ export function useSaveRecipeUI() {
 
       let _sessions = localSave.sessions.map((session) => {
         const latestRecipe = newRecipes.find(
-          (_recipe) => _recipe.id === session.recipe.id
+          (_recipe) => _recipe.id === session.recipeId
         );
 
         if (latestRecipe) {
@@ -129,13 +129,14 @@ export function useSaveRecipeUI() {
       const localSession = localSave.currentSession;
       if (localSession != null) {
         const latestRecipe = newRecipes.find(
-          (_recipe) => _recipe.id === localSession.recipe.id
+          (_recipe) => _recipe.id === localSession.recipeId
         );
 
         if (localSave.currentSession && latestRecipe) {
           setCurrentSession({
             ...localSession,
-            recipe: latestRecipe,
+            recipeId: latestRecipe.id,
+            recipeMethod: latestRecipe.method,
           });
         }
       }
@@ -151,12 +152,17 @@ export function useSaveRecipeUI() {
       const session = localSave.sessions.find((s) => s.id === sessionIdParam);
 
       if (!session) {
+        console.debug(
+          "URL has a session that no longer exists",
+          sessionIdParam
+        );
         router.push("/");
         return;
       }
 
       setCurrentSession(session);
     } else if (!sessionIdParam && currentSession) {
+      console.debug("URL has no session, but locally we should");
       setCurrentSession(null);
       router.push("/");
     }

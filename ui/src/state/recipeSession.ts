@@ -3,13 +3,15 @@ import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
 
-import { Recipe, User } from "@/types/databaseExtended";
+import { Recipe, RecipeMethod, User } from "@/types/databaseExtended";
 import { Session } from "@supabase/auth-helpers-nextjs";
+import { createContext } from "react";
 
 export interface RecipeSession {
   id: string;
   name: string;
-  recipe: Recipe;
+  recipeId: number;
+  recipeMethod: RecipeMethod;
 }
 
 interface RecipeSessionSlice {
@@ -212,7 +214,8 @@ const createRecipeSessionSlice: StateCreator<
       const newSession: RecipeSession = {
         id: uuidv4(),
         name: selectedRecipe.title,
-        recipe: selectedRecipe,
+        recipeId: selectedRecipe.id,
+        recipeMethod: selectedRecipe.method,
       };
       set((prevState) => {
         if (prevState.currentSession) {
@@ -524,3 +527,5 @@ function deleteParamsForSessionIdFromLocal(sessionId: string) {
   localStorage.removeItem(getRecipeQueryParamsKey(sessionId));
   localStorage.removeItem(getRecipeUrlParamsKey(sessionId));
 }
+
+export const RecipeContext = createContext<Recipe>({} as Recipe);

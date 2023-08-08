@@ -131,10 +131,24 @@ export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
 }
-export interface RecipeTemplate {
+export type RecipeTemplate = Omit<
+  UserTemplate,
+  "id" | "created_at" | "project" | "recipe_id" | "visibility"
+>;
+
+export interface UserTemplate {
+  id: number;
+  created_at: string;
+
   title: string;
-  description?: string;
+  description: string;
+
   author: string;
+  project: string;
+  recipe_id: number;
+
+  visibility: "public" | "private";
+
   requestBody?: Record<string, unknown>;
   queryParams?: Record<string, unknown>;
   urlParams?: Record<string, unknown>;

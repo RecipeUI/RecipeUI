@@ -1,18 +1,42 @@
 "use client";
 
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import {
+  RecipeContext,
+  useRecipeSessionStore,
+} from "../../state/recipeSession";
 import { RecipeBody } from "../RecipeBody";
 import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
 import classNames from "classnames";
-import { RecipeProject } from "@/types/databaseExtended";
+import { Recipe, RecipeProject } from "@/types/databaseExtended";
+import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { getURLParamsForSession } from "@/utils/main";
 
 export function RecipeHomeContainer({
   recipeProjects,
+  recipe,
+  sessionId,
 }: {
   recipeProjects: RecipeProject[];
+  recipe?: Recipe;
+  sessionId?: string;
 }) {
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const sessions = useRecipeSessionStore((state) => state.sessions);
+  const addSession = useRecipeSessionStore((state) => state.addSession);
+  const router = useRouter();
+
+  const currentSession = useMemo(() => {
+    return sessions.find((session) => session.id === sessionId);
+  }, [sessions, sessionId]);
+
+  useEffect(() => {
+    // Lets make it so that the recipe is always correct. If there is no session active, we will create a new one.
+    if (currentSession && recipe && currentSession.recipeId != recipe.id) {
+      const newSession = addSession(recipe);
+      router.push(`/?${getURLParamsForSession(newSession)}`);
+    }
+  }, [addSession, currentSession, recipe, router]);
 
   return (
     <div
@@ -22,8 +46,10 @@ export function RecipeHomeContainer({
       )}
     >
       <RecipeBodySearch />
-      {currentSession ? (
-        <RecipeBody />
+      {recipe && currentSession ? (
+        <RecipeContext.Provider value={recipe}>
+          <RecipeBody />
+        </RecipeContext.Provider>
       ) : (
         <RecipeHome projects={recipeProjects} />
       )}

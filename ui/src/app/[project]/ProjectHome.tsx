@@ -6,6 +6,7 @@ import {
   RecipeProject,
   RecipeProjectStatus,
 } from "@/types/databaseExtended";
+import { getURLParamsForSession } from "@/utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
@@ -79,7 +80,7 @@ function ProjectHomeBox({
       className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer"
       onClick={() => {
         const session = addSession(recipe);
-        router.push(`/?s=${session.id}`);
+        router.push(`/?s=${getURLParamsForSession(session)}`);
       }}
     >
       <div className="flex justify-between ">

@@ -1,3 +1,4 @@
+import { RecipeSession } from "@/state/recipeSession";
 import { RecipeParam, RecipeParamType } from "@/types/databaseExtended";
 
 export function isArrayPath(str: string): boolean {
@@ -85,4 +86,11 @@ export function getDefaultValue<T>(
   }
 
   return null;
+}
+
+export function getURLParamsForSession(session: RecipeSession) {
+  return new URLSearchParams({
+    sessionId: session.id,
+    recipeId: String(session.recipeId),
+  }).toString();
 }

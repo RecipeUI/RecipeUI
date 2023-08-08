@@ -12,6 +12,7 @@ import {
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { usePathname, useRouter } from "next/navigation";
+import { getURLParamsForSession } from "@/utils/main";
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -70,7 +71,7 @@ export function RecipeBodySearch() {
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
         const newSession = addSession(selectedItem);
-        router.push(`/?s=${newSession.id}`);
+        router.push(`/?s=${getURLParamsForSession(newSession)}`);
       }
     },
   });
