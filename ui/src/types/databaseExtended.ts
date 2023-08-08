@@ -156,3 +156,5 @@ export type RecipeBook = {
   server: string;
   recipes: Recipe[];
 };
+
+export type User = Database["public"]["Tables"]["user"]["Row"];

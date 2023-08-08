@@ -32,10 +32,6 @@ export function PostHogPageview(): JSX.Element {
     }
   }, [pathname, searchParams]);
 
-  useEffect(() => {
-    console.log("Initial load");
-  }, []);
-
   return <></>;
 }
 

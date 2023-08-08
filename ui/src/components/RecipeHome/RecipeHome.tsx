@@ -3,6 +3,8 @@ import { ReactNode, useMemo } from "react";
 import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
 import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
 import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
+import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const { popular, free, ycombinator, more } = useMemo(() => {
@@ -112,6 +114,7 @@ export function RecipeHomeBox({
   image?: string | null;
 }) {
   let status = String(_status);
+  const postHog = usePostHog();
 
   if (_status === RecipeProjectStatus.Active) {
     status = "View";
@@ -119,7 +122,14 @@ export function RecipeHomeBox({
 
   return (
     <Link href={`/${project}`}>
-      <div className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full">
+      <div
+        className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full"
+        onClick={() => {
+          postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
+            project,
+          });
+        }}
+      >
         <div className="flex justify-between ">
           <div className="flex items-center">
             {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}

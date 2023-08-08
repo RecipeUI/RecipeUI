@@ -3,7 +3,8 @@ import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
 
-import { Recipe } from "@/types/databaseExtended";
+import { Recipe, User } from "@/types/databaseExtended";
+import { Session } from "@supabase/auth-helpers-nextjs";
 
 export interface RecipeSession {
   id: string;
@@ -113,7 +114,8 @@ type Slices = RecipeSessionSlice &
   RecipeBodySlice &
   RecipeOutputSlice &
   FileManagerSlice &
-  DeepActionsSlice;
+  DeepActionsSlice &
+  UserSessionSlice;
 
 const createDeepActionSlice: StateCreator<Slices, [], [], DeepActionsSlice> = (
   set
@@ -426,12 +428,39 @@ const createFileManagerSlice: StateCreator<Slices, [], [], FileManagerSlice> = (
   };
 };
 
+interface UserSessionSlice {
+  userSession: Session | null;
+  setUserSession: (userSession: Session | null) => void;
+
+  user: User | null;
+  onboarding: boolean;
+
+  setUser: (user: User | null) => void;
+  setOnboarding: (onboarding: boolean) => void;
+}
+
+const createUserSessionSlice: StateCreator<Slices, [], [], UserSessionSlice> = (
+  set
+) => {
+  return {
+    userSession: null,
+    setUserSession: (userSession) => set(() => ({ userSession })),
+
+    onboarding: false,
+    user: null,
+
+    setUser: (user) => set(() => ({ user })),
+    setOnboarding: (onboarding) => set(() => ({ onboarding })),
+  };
+};
+
 export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeSessionSlice(...a),
   ...createRecipeBodySlice(...a),
   ...createRecipeOutputSlice(...a),
   ...createFileManagerSlice(...a),
   ...createDeepActionSlice(...a),
+  ...createUserSessionSlice(...a),
 }));
 
 export const GLOBAL_POLLING_FACTOR = 10000;

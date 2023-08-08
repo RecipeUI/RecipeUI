@@ -1,5 +1,5 @@
 import { Providers } from "@/app/providers";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar/Navbar";
 import { RecipeBody } from "@/components/RecipeBody";
 import { RecipeHomeContainer } from "@/components/RecipeHome/RecipeHomeContainer";
 import { RecipeSidebar } from "@/components/RecipeSidebar";

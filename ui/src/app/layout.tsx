@@ -2,7 +2,7 @@ import { PostHogPageview, Providers } from "@/app/providers";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar/Navbar";
 import { RecipeSidebar } from "@/components/RecipeSidebar";
 import { Suspense } from "react";
 

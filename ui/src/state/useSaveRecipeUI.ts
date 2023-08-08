@@ -60,6 +60,40 @@ export function useSaveRecipeUI() {
   }, []);
 
   const supabase = createClientComponentClient<Database>();
+  const setUserSession = useRecipeSessionStore((state) => state.setUserSession);
+
+  const setOnboarding = useRecipeSessionStore((state) => state.setOnboarding);
+  const setUser = useRecipeSessionStore((state) => state.setUser);
+
+  useEffect(() => {
+    setOnboarding(false);
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth event", event, session);
+      setUserSession(session);
+
+      if (event === "INITIAL_SESSION" && session?.user) {
+        // See if user just signed up
+        supabase
+          .from("user")
+          .select("*")
+          .eq("user_id", session?.user?.id)
+          .then((res) => {
+            const results = res.data || [];
+
+            const userInfo = results[0];
+            if (!userInfo) {
+              setOnboarding(true);
+            } else {
+              setUser(userInfo);
+            }
+          });
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+      }
+    });
+  }, []);
+
   const initializeRecipes = useRecipeSessionStore(
     (state) => state.initializeRecipes
   );
@@ -127,12 +161,6 @@ export function useSaveRecipeUI() {
       setCurrentSession(null);
       router.push("/");
     }
-  }, []);
-
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log({ event, session });
-    });
   }, []);
 
   // Save changes every POLLING_FACTOR seconds

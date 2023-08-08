@@ -336,7 +336,7 @@ export function RecipeSearchButton() {
       <button
         ref={ref}
         className={classNames(
-          "btn btn-accent dark:text-white sm:w-24 w-full",
+          "btn bg-chefYellow dark:text-white sm:w-24 w-full",
           !currentSession && "btn-disabled",
           isSending && "hover:btn-error"
         )}

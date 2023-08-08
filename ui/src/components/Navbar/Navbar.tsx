@@ -1,13 +1,19 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
-import { useRecipeSessionStore } from "../state/recipeSession";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { useRecipeSessionStore } from "../../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useState } from "react";
+import { ReactNode, useEffect, useState, useTransition } from "react";
 import { Dialog } from "@headlessui/react";
+import { revalidatePath } from "next/cache";
 
 export function Navbar() {
   const router = useRouter();
@@ -18,6 +24,10 @@ export function Navbar() {
   const [showForm, setShowForm] = useState(true);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const supabase = createClientComponentClient<Database>();
+  const userSession = useRecipeSessionStore((state) => state.userSession);
+
+  const onboarding = useRecipeSessionStore((state) => state.onboarding);
 
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
@@ -64,14 +74,26 @@ export function Navbar() {
       </button>
       <div className="space-x-2">
         {/* <button className="btn btn-accent btn-sm">Star Us!</button> */}
-        <button
-          className="btn bg-chefYellow text-black btn-sm"
-          onClick={() => {
-            setIsLoginModalOpen(true);
-          }}
-        >
-          Login
-        </button>
+        {!userSession?.user ? (
+          <button
+            className="btn bg-chefYellow text-black btn-sm"
+            onClick={() => {
+              setIsLoginModalOpen(true);
+            }}
+          >
+            Log in
+          </button>
+        ) : (
+          <button
+            className="btn bg-chefYellow text-black btn-sm"
+            onClick={() => {
+              supabase.auth.signOut();
+              router.refresh();
+            }}
+          >
+            Log out
+          </button>
+        )}
       </div>
       {showForm && (
         <AuthForm
@@ -79,6 +101,7 @@ export function Navbar() {
           setIsModalOpen={setIsLoginModalOpen}
         />
       )}
+      {onboarding && <OnboardingFlow />}
     </div>
   );
 }
@@ -92,6 +115,8 @@ export default function AuthForm({
 }) {
   const supabase = createClientComponentClient<Database>();
 
+  const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
+
   return (
     <Dialog
       open={isModalOpen}
@@ -103,14 +128,14 @@ export default function AuthForm({
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
         <Dialog.Panel className="bg-base-100 p-8 rounded-lg">
           <Dialog.Title className="text-2xl font-bold text-chefYellow">
-            Sign up
+            {view === "sign_in" ? "Sign in" : "Sign up"}
           </Dialog.Title>
           <Dialog.Description className="pb-4">
-            Save your recipes and share them easily with others!
+            Save your recipes and share templates with others!
           </Dialog.Description>
           <Auth
             supabaseClient={supabase}
-            view="sign_in"
+            view={view}
             showLinks={false}
             appearance={{
               theme: {
@@ -118,9 +143,9 @@ export default function AuthForm({
                   ...ThemeSupa.default,
                   colors: {
                     ...ThemeSupa.default.colors,
-                    // brand: "#F0A500",
-                    // brandButtonText: "white",
-                    // brandAccent: "black",
+                    brand: "#F0A500",
+                    brandButtonText: "white",
+                    brandAccent: "black",
                     // inputText: "#F0A500",
                     // inputLabelText: "#F0A500",
                     // defaultButtonBorder: "0",
@@ -150,12 +175,197 @@ export default function AuthForm({
                 // anchorTextHoverColor?: string;
               },
             }}
-            providers={["github", "google"]}
+            providers={["github"]}
             redirectTo={"/auth/callback"}
           />
+          <button
+            className="text-sm text-end underline underline-offset-2"
+            onClick={() => {
+              setView(view === "sign_in" ? "sign_up" : "sign_in");
+            }}
+          >
+            {view === "sign_in"
+              ? "Need an account? Sign up."
+              : "Already have an account? Sign in."}
+          </button>
           {/* <button onClick={() => setIsModalOpen(false)}>Deactivate</button> */}
         </Dialog.Panel>
       </div>
     </Dialog>
+  );
+}
+import { useForm } from "react-hook-form";
+import classNames from "classnames";
+import { OnboardingFormData, createUser } from "@/components/Navbar/actions";
+import { UserCreationError } from "@/components/Navbar/types";
+
+export function OnboardingFlow() {
+  const session = useRecipeSessionStore((state) => state.userSession);
+  const user = session?.user;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  let [isPending, startTransition] = useTransition();
+  let defaultFormData: Partial<OnboardingFormData> = {};
+  if (user?.app_metadata.provider === "github" && user.user_metadata) {
+    defaultFormData = {
+      first: user.user_metadata.name.split(" ")[0],
+      last: user.user_metadata.name.split(" ")[1],
+      username: user.user_metadata.user_name,
+      email: user.email,
+      profile_pic: user.user_metadata.avatar_url,
+    };
+  } else if (user?.app_metadata.provider === "google" && user.user_metadata) {
+    defaultFormData = {
+      first: user.user_metadata.full_name.split(" ")[0],
+      last: user.user_metadata.full_name.split(" ")[1],
+      email: user.email,
+      profile_pic: user.user_metadata.picture,
+    };
+  }
+
+  const searchParams = useSearchParams();
+  const userError = searchParams.get(UserCreationError.UserAlreadyExists);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OnboardingFormData>({
+    defaultValues: {
+      email: user?.email,
+      username: userError || undefined,
+      ...defaultFormData,
+    },
+  });
+
+  const onSubmit = handleSubmit(async (data) => {
+    setLoading(true);
+
+    if (stage === "User Info") {
+      setStage("Survey");
+    } else {
+      startTransition(async () => createUser(data));
+    }
+
+    setLoading(false);
+  });
+
+  const [stage, setStage] = useState<"User Info" | "Survey">("User Info");
+
+  useEffect(() => {
+    if (!user) router.push("/");
+  }, []);
+
+  return (
+    <Dialog open={true} onClose={() => {}} className="relative z-50">
+      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+
+      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
+        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
+          <Dialog.Title className="text-2xl font-bold text-chefYellow">
+            Welcome to RecipeUI!
+          </Dialog.Title>
+          <Dialog.Description className="pb-4">
+            {stage === "User Info"
+              ? "We can't wait to see what recipes you build! First things first, lets set up your profile."
+              : "Just a few quick q's. This will help us a lot!"}
+          </Dialog.Description>
+
+          <form className="flex flex-col space-y-2" onSubmit={onSubmit}>
+            {stage === "User Info" && (
+              <>
+                <LabelWrapper label="Username">
+                  <input
+                    className="input input-bordered w-full"
+                    {...register("username", {
+                      required: true,
+                      pattern: /^\S+$/i,
+                    })}
+                  />
+                </LabelWrapper>
+                <LabelWrapper label="Company (Optional)">
+                  <input
+                    className="input input-bordered w-full"
+                    {...register("company")}
+                  />
+                </LabelWrapper>
+                <div className="grid grid-cols-2 gap-x-8">
+                  <LabelWrapper label="First Name">
+                    <input
+                      className="input input-bordered w-full"
+                      {...register("first", { required: true })}
+                    />
+                  </LabelWrapper>
+                  <LabelWrapper label="Last Name">
+                    <input
+                      className="input input-bordered w-full"
+                      {...register("last", { required: true })}
+                    />
+                  </LabelWrapper>
+                </div>
+                {(errors.first ||
+                  errors.last ||
+                  errors.username?.type === "required") && (
+                  <p className="alert alert-error !mt-4">
+                    Please fill out all required fields.
+                  </p>
+                )}
+                {errors.username?.type === "pattern !mt-4" && (
+                  <p className="alert alert-error">Username must be one word</p>
+                )}
+                {userError && (
+                  <p className="alert alert-error !mt-4">
+                    Username already exists. Please choose another.
+                  </p>
+                )}
+              </>
+            )}
+
+            {stage === "Survey" && (
+              <>
+                <LabelWrapper label="How did you hear about us?">
+                  <input
+                    className="input input-bordered w-full"
+                    {...register("hear_about")}
+                  />
+                </LabelWrapper>
+                <LabelWrapper label="What are you looking forward to do?">
+                  <input
+                    className="input input-bordered w-full"
+                    {...register("use_case")}
+                  />
+                </LabelWrapper>
+              </>
+            )}
+
+            <button
+              type="submit"
+              className={classNames(
+                "btn  bg-chefYellow !mt-8",
+                loading && "btn-disabled"
+              )}
+            >
+              {stage === "User Info" ? "Next" : "Submit"}
+              {loading && <span className="loading loading-bars"></span>}
+            </button>
+          </form>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  );
+}
+
+function LabelWrapper({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="w-full">
+      <label className="label">{label}</label>
+      {children}
+    </div>
   );
 }

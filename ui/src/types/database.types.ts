@@ -53,7 +53,6 @@ export interface Database {
           auth: string | null
           author: string | null
           created_at: string | null
-          deprecated: boolean | null
           id: number
           method: string
           options: Json | null
@@ -72,7 +71,6 @@ export interface Database {
           auth?: string | null
           author?: string | null
           created_at?: string | null
-          deprecated?: boolean | null
           id?: number
           method?: string
           options?: Json | null
@@ -91,7 +89,6 @@ export interface Database {
           auth?: string | null
           author?: string | null
           created_at?: string | null
-          deprecated?: boolean | null
           id?: number
           method?: string
           options?: Json | null
@@ -112,6 +109,61 @@ export interface Database {
             columns: ["project"]
             referencedRelation: "project"
             referencedColumns: ["project"]
+          }
+        ]
+      }
+      user: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          first: string
+          hear_about: string | null
+          last: string
+          onboarded: boolean
+          place: number
+          profile_pic: string | null
+          tier: string
+          use_case: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          first: string
+          hear_about?: string | null
+          last: string
+          onboarded?: boolean
+          place?: number
+          profile_pic?: string | null
+          tier?: string
+          use_case?: string | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          first?: string
+          hear_about?: string | null
+          last?: string
+          onboarded?: boolean
+          place?: number
+          profile_pic?: string | null
+          tier?: string
+          use_case?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           }
         ]
       }
