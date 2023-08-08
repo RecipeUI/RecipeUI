@@ -75,7 +75,17 @@ export function Navbar() {
       </button>
 
       <ul className="menu menu-horizontal px-1">
-        {/* <button className="btn btn-accent btn-sm">Star Us!</button> */}
+        <li className="">
+          <Link
+            href="https://github.com/RecipeUI/RecipeUI"
+            className="btn btn-ghost btn-sm font-sm text-xs"
+            target="_blank"
+            as=""
+          >
+            <StarIcon className="w-3 h-3" />
+            Star us on Github!
+          </Link>
+        </li>
         {!user ? (
           <li>
             <button
@@ -374,8 +384,9 @@ function LabelWrapper({
 }
 
 import { Fragment } from "react";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "@/types/databaseExtended";
+import Link from "next/link";
 
 const links = [
   { href: "/account-settings", label: "Account settings" },
@@ -398,8 +409,8 @@ function NavMenu({ user }: { user: User }) {
   //           Log out
   //         </button>
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="btn btn-ghost btn-circle">
+    <div className="dropdown ">
+      <label tabIndex={0} className="btn btn-sm btn-ghost btn-circle">
         <Bars3Icon className="w-6 h-6" />
       </label>
       <ul

@@ -23,16 +23,14 @@ export function RecipeBodySearch() {
   const _recipes = useRecipeSessionStore((state) => state.recipes);
 
   const recipeWithLabels = useMemo(() => {
-    const newRecipes = _recipes
-      .filter((recipe) => !recipe.deprecated)
-      .map((recipe) => {
-        const optionLabel = `${recipe.project} ${recipe.title}`;
+    const newRecipes = _recipes.map((recipe) => {
+      const optionLabel = `${recipe.project} ${recipe.title}`;
 
-        return {
-          ...recipe,
-          label: optionLabel,
-        };
-      });
+      return {
+        ...recipe,
+        label: optionLabel,
+      };
+    });
     newRecipes.sort((a, b) => {
       if (!a.tags && !b.tags) return 0;
       if (!b.tags) return -1;
