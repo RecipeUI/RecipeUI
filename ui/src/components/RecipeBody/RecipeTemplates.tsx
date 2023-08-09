@@ -366,7 +366,7 @@ function TemplateMockCode({ template }: { template: UserTemplatePreview }) {
           {template.recipe.project} | {template.recipe.title}
         </p>
         <p className="text-xs font-bold">
-          Forked by @{template.original_author.username}
+          Created by @{template.original_author.username}
         </p>
 
         <div className="flex-1 mt-8">
