@@ -9,6 +9,7 @@ export enum QueryKeys {
 
 export const UNIQUE_ELEMENT_IDS = {
   SIGN_IN: "recipeSignIn",
+  FORK_REGISTER_ID: "recipeForkId",
 };
 
 export const DB_FUNC_ERRORS = {

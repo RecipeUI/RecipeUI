@@ -26,18 +26,9 @@ import {
   UNIQUE_ELEMENT_IDS,
 } from "@/utils/constants";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { useLocalStorage } from "usehooks-ts";
 
 export function RecipeTemplatesTab() {
-  const selectedRecipe = useContext(RecipeContext)!;
-
-  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
-  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
-  const templates = selectedRecipe.templates || [];
-
-  const userTemplates = selectedRecipe.userTemplates || [];
-
   return (
     <div className="flex-1 relative">
       <div className="sm:absolute inset-0 mx-4 my-6 overflow-y-auto space-y-8">
@@ -297,8 +288,12 @@ export function ShareInviteModal({
   const user = useRecipeSessionStore((state) => state.user);
 
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
-
   const [limitedForks, setLimitedForks] = useState(false);
+
+  const [registerFork, setRegisterFork] = useLocalStorage(
+    UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
+    ""
+  );
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
@@ -317,6 +312,7 @@ export function ShareInviteModal({
                     template_project: template.recipe.project,
                     recipe_title: template.recipe.title,
                   });
+                  setRegisterFork(template.alias);
                   document.getElementById(UNIQUE_ELEMENT_IDS.SIGN_IN)?.click();
                   onClose();
                 } else {

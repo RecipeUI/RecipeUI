@@ -14,12 +14,14 @@ import {
   UserTemplatePreview,
 } from "@/types/databaseExtended";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "@/utils/main";
 import {
   ShareInviteModal,
   ShareModal,
 } from "@/components/RecipeBody/RecipeTemplates";
+import { useLocalStorage } from "usehooks-ts";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 
 export function RecipeHomeContainer({
   recipeProjects,
@@ -48,6 +50,24 @@ export function RecipeHomeContainer({
       router.push(`/?${getURLParamsForSession(newSession)}`);
     }
   }, [addSession, currentSession, recipe, router]);
+
+  const [localForked, setLocalForked] = useLocalStorage(
+    UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
+    ""
+  );
+
+  const user = useRecipeSessionStore((state) => state.user);
+  useEffect(() => {
+    if (user && localForked) {
+      if (localForked === sharedTemplate?.alias) {
+        location.reload();
+      } else {
+        router.push(`/r/${localForked}`);
+      }
+
+      setLocalForked("");
+    }
+  }, [localForked, router, setLocalForked, user]);
 
   return (
     <div

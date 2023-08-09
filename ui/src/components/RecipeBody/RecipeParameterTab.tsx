@@ -142,7 +142,7 @@ export function RecipeParameterTab() {
         )
       ) : null}
 
-      <div className="mb-4 mx-4 mt-6">
+      <div className="mb-4 mx-4 mt-6 space-y-8">
         {!needsAuthSetup &&
           (needsBodyParams || needsQueryParams || needsUrlParams) && (
             <UserTemplates />
