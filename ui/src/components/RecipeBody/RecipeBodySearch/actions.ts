@@ -95,11 +95,10 @@ export async function cloneTemplate(templateId: number) {
     };
   }
 
-  await supabase.from("template_fork").insert({
+  const res = await supabase.from("template_fork").insert({
     new_author_id: userData.user?.id!,
     new_template: newTemplate.id,
     original_template: templateId,
-    orginal_auth: oldTemplateData.author_id,
     original_author_id: oldTemplateData.author_id,
   });
 
