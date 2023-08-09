@@ -9,7 +9,6 @@ export enum QueryKeys {
 
 export const UNIQUE_ELEMENT_IDS = {
   SIGN_IN: "recipeSignIn",
-  FORK_HOOK_REGISTER: "forkHookRegister",
 };
 
 export const DB_FUNC_ERRORS = {

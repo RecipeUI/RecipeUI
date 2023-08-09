@@ -20,8 +20,6 @@ import {
   ShareInviteModal,
   ShareModal,
 } from "@/components/RecipeBody/RecipeTemplates";
-import { useLocalStorage } from "usehooks-ts";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 
 export function RecipeHomeContainer({
   recipeProjects,
@@ -50,18 +48,6 @@ export function RecipeHomeContainer({
       router.push(`/?${getURLParamsForSession(newSession)}`);
     }
   }, [addSession, currentSession, recipe, router]);
-
-  const [forkedTemplate, setForkedTemplate] = useLocalStorage<null | string>(
-    UNIQUE_ELEMENT_IDS.FORK_HOOK_REGISTER,
-    null
-  );
-
-  useEffect(() => {
-    if (forkedTemplate) {
-      setForkedTemplate(null);
-      router.push(`/r/${forkedTemplate}`);
-    }
-  }, []);
 
   return (
     <div
