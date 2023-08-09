@@ -88,47 +88,53 @@ export function RecipeParameterTab() {
   const needsUrlParams = hasUrlParams && !hasUrlParamPayload;
 
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
-
   const hasTemplates = selectedRecipe.templates != null;
 
   return (
     <div className="flex-1">
-      {showOnboarding && (
-        <div className="space-y-4 mb-4 mx-4 mt-6">
-          <div className="alert w-full flex bg-gray-400 dark:bg-base-200">
-            <div className="space-y-4 w-full text-start">
-              <h1 className="font-bold text-2xl">Get Started</h1>
-              {needsAuthSetup && (
-                <>
-                  <hr />
-                  <RecipeNeedsAuth onboardingFlow />
-                </>
-              )}
-              {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
-                <>
-                  {hasTemplates && (
-                    <>
-                      <hr />
-                      <div className="space-y-2">
-                        <h3 className="font-bold">Recipes</h3>
-                        <p>Find some quick use cases or examples.</p>
-                        <button
-                          className="btn btn-sm btn-neutral"
-                          onClick={() => {
-                            setBodyRoute(RecipeBodyRoute.Templates);
-                          }}
-                        >
-                          View recipes
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
+      {showOnboarding &&
+        (hasTemplates ? (
+          <div className="space-y-4 mb-4 mx-4 mt-6">
+            <div className="alert w-full flex bg-gray-400 dark:bg-base-200">
+              <div className="space-y-4 w-full text-start">
+                <h1 className="font-bold text-2xl">Get Started</h1>
+                {needsAuthSetup && (
+                  <>
+                    <hr />
+                    <RecipeNeedsAuth onboardingFlow />
+                  </>
+                )}
+                {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
+                  <>
+                    {hasTemplates && (
+                      <>
+                        <hr />
+                        <div className="space-y-2">
+                          <h3 className="font-bold">Recipes</h3>
+                          <p>Find some quick use cases or examples.</p>
+                          <button
+                            className="btn btn-sm btn-neutral"
+                            onClick={() => {
+                              setBodyRoute(RecipeBodyRoute.Templates);
+                            }}
+                          >
+                            View recipes
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="mb-4 mx-4 mt-6">
+            <div className="alert alert-info">
+              Get started by using the docs pane on the right!
+            </div>
+          </div>
+        ))}
 
       <div className="mb-4 mx-4 mt-6">
         {!needsAuthSetup &&
