@@ -51,7 +51,7 @@ export function useSecretsFromSM() {
   const selectedRecipe = useContext(RecipeContext);
   const sm = useSecretManager();
 
-  if (!selectedRecipe) return null;
+  if (!selectedRecipe || selectedRecipe.auth == null) return null;
 
   const secretRecord: Record<string, string | null> = {};
   if (selectedRecipe.auth !== RecipeAuthType.Custom) {
