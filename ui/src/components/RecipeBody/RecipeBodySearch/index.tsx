@@ -146,8 +146,13 @@ export function RecipeBodySearch() {
   }, [debouncedInputValue, recipeSearch]);
 
   return (
-    <div className="md:p-4 pb-4">
-      <div className="flex flex-col relative">
+    <div className="md:p-4 pb-4 p-4 sm:p-0">
+      <div
+        className={classNames(
+          "flex flex-col relative",
+          currentSession == null && "hidden sm:block"
+        )}
+      >
         <div className="flex sm:space-x-2 flex-col sm:flex-row">
           <div
             className={classNames(

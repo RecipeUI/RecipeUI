@@ -93,7 +93,7 @@ export function RecipeParameterTab() {
   const needsParams = needsBodyParams || needsUrlParams || needsQueryParams;
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 overflow-x-auto sm:block hidden">
       {showOnboarding ? (
         hasTemplates || needsAuthSetup ? (
           <div className="space-y-4 mb-4 mx-4 mt-6">
@@ -207,7 +207,7 @@ function RecipeJsonEditor() {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className="mx-4 my-6">
+    <div className="mx-4 my-6 overflow-x-auto">
       <div className="flex items-center space-x-1 mb-2">
         <h3 className="text-lg font-bold">Request Body</h3>
         <div
@@ -218,7 +218,7 @@ function RecipeJsonEditor() {
         </div>
       </div>
       <CodeMirror
-        className="h-full !outline-none border-none"
+        className="h-full !outline-none border-none whitespace-nowrap  max-w-sm sm:max-w-none"
         value={requestCode}
         basicSetup={codeMirrorSetup}
         theme={isDarkMode ? "dark" : "light"}

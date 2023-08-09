@@ -64,7 +64,7 @@ export function RecipeBody() {
           );
         })}
       </div>
-      <div className="flex-1 border-t sm:grid sm:grid-cols-2 flex flex-col">
+      <div className="flex-1 border-t sm:grid sm:grid-cols-2 flex flex-col overflow-x-auto">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}

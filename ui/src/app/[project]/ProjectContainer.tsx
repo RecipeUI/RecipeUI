@@ -36,7 +36,7 @@ export function ProjectContainer({
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession === null && "px-6 pb-6 pt-4"
+        currentSession === null && "sm:px-6 sm:pb-6 sm:pt-4"
       )}
     >
       <RecipeBodySearch />

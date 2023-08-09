@@ -41,7 +41,7 @@ export function RecipeOutput() {
   }, [currentTab, setCurrentTab]);
 
   return (
-    <div className="flex-1 relative border-t sm:border-l sm:border-t-0">
+    <div className="flex-1 relative border-t sm:border-l sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {(Object.keys(output).length > 0 ||
