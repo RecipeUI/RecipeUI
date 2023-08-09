@@ -1,15 +1,9 @@
 "use server";
 
-import { UserCreationError } from "@/components/Navbar/types";
 import { Database } from "@/types/database.types";
 import { UserTemplate } from "@/types/databaseExtended";
-import {
-  createServerActionClient,
-  createServerComponentClient,
-} from "@supabase/auth-helpers-nextjs";
-import { revalidatePath } from "next/cache";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export async function getTemplate(templateId: number) {
   const supabase = createServerActionClient<Database>({ cookies: cookies });

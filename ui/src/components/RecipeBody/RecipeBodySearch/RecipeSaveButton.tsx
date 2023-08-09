@@ -6,7 +6,11 @@ import {
   useRecipeSessionStore,
 } from "@/state/recipeSession";
 import { Recipe } from "@/types/databaseExtended";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import {
+  DB_FUNC_ERRORS,
+  FORM_LINKS,
+  UNIQUE_ELEMENT_IDS,
+} from "@/utils/constants";
 import { getURLParamsForSession } from "@/utils/main";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 import { Dialog } from "@headlessui/react";
@@ -95,11 +99,13 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
   const posthog = usePostHog();
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const onSubmit = handleSubmit(async (data) => {
     setLoading(true);
 
     try {
-      const newTemplate = await createTemplate({
+      const { newTemplate, error } = await createTemplate({
         author_id: user.user_id,
         original_author_id: user.user_id,
         project: recipe.project,
@@ -119,6 +125,10 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
           recipe_path: recipe.path,
         });
         setNewTemplateId(newTemplate.id);
+      } else if (error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
+        setErrorMsg(
+          "We love that you're making so many recipes but we're currently limiting users to 10 recipes right now to scale properly. Please delete some recipes and try again."
+        );
       }
     } catch (e) {
       alert("Recipe failed to make");
@@ -167,10 +177,25 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
                       {...register("description", { required: true })}
                     />
                   </LabelWrapper>
+
                   {(errors.title || errors.description) && (
                     <p className="alert alert-error !mt-4">
                       Please fill out all required fields.
                     </p>
+                  )}
+
+                  {errorMsg && (
+                    <div className="alert alert-error !mt-4 flex flex-col items-start">
+                      <p>{errorMsg}</p>
+                      <p>Want to be an early RecipeUI power user?</p>
+                      <a
+                        href={FORM_LINKS.RECIPEUI_PRO}
+                        target="_blank"
+                        className="underline underline-offset-2 -mt-4"
+                      >
+                        Sign up here.
+                      </a>
+                    </div>
                   )}
                 </>
 

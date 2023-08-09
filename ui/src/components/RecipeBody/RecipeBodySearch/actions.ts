@@ -4,6 +4,7 @@ import { UserCreationError } from "@/components/Navbar/types";
 import { RecipeParameters } from "@/state/recipeSession";
 import { Database } from "@/types/database.types";
 import { UserTemplate } from "@/types/databaseExtended";
+import { DB_FUNC_ERRORS } from "@/utils/constants";
 import {
   createServerActionClient,
   createServerComponentClient,
@@ -23,7 +24,7 @@ export async function createTemplate(
   const supabase = createServerActionClient<Database>({ cookies: cookies });
 
   //   This should already have RLS
-  const { data: templateData } = await supabase
+  const { data: templateData, error } = await supabase
     .from("template")
     // @ts-expect-error Should be right
     .insert({
@@ -32,7 +33,10 @@ export async function createTemplate(
     })
     .select();
 
-  return templateData ? templateData[0] : null;
+  return {
+    newTemplate: templateData ? templateData[0] : null,
+    error: error?.message || null,
+  };
 }
 
 export async function deleteTemplate(templateId: number) {
@@ -56,14 +60,17 @@ export async function cloneTemplate(templateId: number) {
     .single();
 
   if (!oldTemplateData) {
-    return null;
+    return {
+      newTemplate: null,
+      error: "Template not found",
+    };
   }
 
   const { data: userData } = await supabase.auth.getUser();
 
   const { id, alias, ...oldProps } = oldTemplateData;
 
-  const { data: templateData } = await supabase
+  const { data: templateData, error } = await supabase
     .from("template")
     .insert({
       ...oldProps,
@@ -72,10 +79,20 @@ export async function cloneTemplate(templateId: number) {
     })
     .select();
 
+  if (error && error.message === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
+    return {
+      newTemplate: null,
+      error: error.message,
+    };
+  }
+
   const newTemplate = templateData ? templateData[0] : null;
 
   if (!newTemplate || !userData.user?.id) {
-    return null;
+    return {
+      newTemplate: null,
+      error: "Something went wrong",
+    };
   }
 
   await supabase.from("template_fork").insert({
@@ -86,5 +103,5 @@ export async function cloneTemplate(templateId: number) {
     original_author_id: oldTemplateData.author_id,
   });
 
-  return newTemplate;
+  return { newTemplate, error: null };
 }

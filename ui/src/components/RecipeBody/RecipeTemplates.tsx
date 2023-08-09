@@ -20,7 +20,11 @@ import { revalidatePath } from "next/cache";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 import { Dialog } from "@headlessui/react";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import {
+  DB_FUNC_ERRORS,
+  FORM_LINKS,
+  UNIQUE_ELEMENT_IDS,
+} from "@/utils/constants";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 
 export function RecipeTemplatesTab() {
@@ -281,6 +285,8 @@ export function ShareInviteModal({
 
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
 
+  const [limitedForks, setLimitedForks] = useState(false);
+
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
@@ -302,7 +308,9 @@ export function ShareInviteModal({
                   onClose();
                 } else {
                   setIsForking(true);
-                  const newTemplate = await cloneTemplate(template.id);
+                  const { newTemplate, error } = await cloneTemplate(
+                    template.id
+                  );
 
                   if (newTemplate) {
                     posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_FORKED, {
@@ -313,6 +321,8 @@ export function ShareInviteModal({
                     });
 
                     setNewTemplateId(newTemplate.id);
+                  } else if (error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
+                    setLimitedForks(true);
                   }
                   setIsForking(false);
                 }
@@ -327,6 +337,20 @@ export function ShareInviteModal({
               newTemplateId={newTemplateId}
               passiveRecipe={template.recipe}
             />
+          )}
+
+          {limitedForks && (
+            <div className="alert alert-error !mt-4 flex flex-col items-start">
+              <p>{`We love that you're making so many recipes but we're currently limiting users to 10 recipes right now to scale properly. Please delete some recipes and try again.`}</p>
+              <p>Want to be an early RecipeUI power user?</p>
+              <a
+                href={FORM_LINKS.RECIPEUI_PRO}
+                target="_blank"
+                className="underline underline-offset-2 -mt-4"
+              >
+                Sign up here.
+              </a>
+            </div>
           )}
         </Dialog.Panel>
       </div>

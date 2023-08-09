@@ -10,3 +10,11 @@ export enum QueryKeys {
 export const UNIQUE_ELEMENT_IDS = {
   SIGN_IN: "recipeSignIn",
 };
+
+export const DB_FUNC_ERRORS = {
+  TEMPLATE_LIMIT_REACHED: "TEMPLATE_LIMIT_REACHED",
+};
+
+export const FORM_LINKS = {
+  RECIPEUI_PRO: "https://forms.gle/qVbwVWEtk6RPhuP46",
+};
