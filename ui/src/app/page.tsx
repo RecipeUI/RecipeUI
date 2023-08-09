@@ -7,7 +7,11 @@ import { RecipeSidebar } from "@/components/RecipeSidebar";
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
-import { Recipe, RecipeProject } from "@/types/databaseExtended";
+import {
+  Recipe,
+  RecipeProject,
+  UserTemplatePreview,
+} from "@/types/databaseExtended";
 import { RecipeProjectsContext } from "@/state/pageContexts";
 import { redirect } from "next/navigation";
 
@@ -35,21 +39,47 @@ export default async function Home({
 
   const projects = (projectsResponse.data || []) as RecipeProject[];
 
-  // TODO: Future todo list
-  const recipe = recipeId
-    ? await supabase.from("recipe").select().eq("id", recipeId).single()
-    : null;
+  //
+  let recipe: null | Recipe = null;
 
-  if (recipe && recipe.error) {
-    redirect("/");
+  if (recipeId) {
+    const response = recipeId
+      ? await supabase.from("recipe").select().eq("id", recipeId).single()
+      : null;
+
+    if ((response && response.error) || !response?.data) {
+      redirect("/");
+      return;
+    }
+
+    recipe = response.data as unknown as Recipe;
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (userData.user) {
+      const {
+        data: templateRes,
+        error,
+        statusText,
+      } = await supabase
+        .from("template_public_view")
+        .select(
+          "id, created_at, title, description, original_author, recipe, visibility"
+        )
+        .eq("author_id", userData.user.id)
+        .eq("recipe_id", recipeId);
+
+      if (!error && templateRes && templateRes.length > 0) {
+        recipe.userTemplates = templateRes.reverse() as UserTemplatePreview[];
+      }
+    }
   }
 
-  console.log("refetched", recipe);
+  console.log("revalidating", recipe?.userTemplates?.length);
 
   return (
     <RecipeHomeContainer
       recipeProjects={projects}
-      recipe={recipe?.data as unknown as Recipe}
+      recipe={recipe || undefined}
       sessionId={sessionId}
     />
   );

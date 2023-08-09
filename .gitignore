@@ -34,3 +34,6 @@ yarn-error.log*
 next-env.d.ts
 
 script.ts
+
+/supabase
+.vscode

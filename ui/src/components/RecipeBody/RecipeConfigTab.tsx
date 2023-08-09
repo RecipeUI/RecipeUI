@@ -53,7 +53,7 @@ export function RecipeNeedsAuth({
         <p>
           This recipe authorizes with a Bearer token that you{" "}
           {existingSecret ? "can edit below" : "need to add below"}.{" "}
-          <a className="link tooltip" href={docLink}>
+          <a className="link tooltip" href={docLink} target="_blank">
             {selectedRecipe.project} docs
           </a>
           .

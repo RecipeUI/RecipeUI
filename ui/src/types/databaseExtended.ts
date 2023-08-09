@@ -125,34 +125,45 @@ export type RecipeCore = Omit<
     deprecated: boolean;
     streaming: boolean;
   };
+
+  // Added on later
+  userTemplates?: UserTemplatePreview[];
 };
 
 export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
 }
+
 export type RecipeTemplate = Omit<
   UserTemplate,
   "id" | "created_at" | "project" | "recipe_id" | "visibility"
 >;
 
-export interface UserTemplate {
+export interface UserTemplatePreview {
   id: number;
   created_at: string;
-
   title: string;
   description: string;
+  original_author: {
+    user_id: string;
+    username: string;
+    avatar: string;
+  };
 
-  author: string;
+  recipe: Pick<Recipe, "id" | "project" | "title" | "method">;
+  visibility: "public" | "private";
+}
+
+export type UserTemplate = UserTemplatePreview & {
+  author_id: string;
   project: string;
   recipe_id: number;
-
-  visibility: "public" | "private";
 
   requestBody?: Record<string, unknown>;
   queryParams?: Record<string, unknown>;
   urlParams?: Record<string, unknown>;
-}
+};
 export interface RecipeMutationCore extends RecipeCore {
   method: RecipeMethod.POST | RecipeMethod.PUT | RecipeMethod.DELETE;
   requestBody: RecipeParam & {

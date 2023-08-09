@@ -241,6 +241,13 @@ export function RecipeSearchButton() {
           }
         }
 
+        setOutput(currentSession.id, {
+          output: {
+            content,
+          },
+          type: RecipeOutputType.Response,
+        });
+
         posthog.capture(
           POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS,
           recipeInfoLog
@@ -336,7 +343,7 @@ export function RecipeSearchButton() {
       <button
         ref={ref}
         className={classNames(
-          "btn btn-accent dark:text-white sm:w-24 w-full",
+          "btn btn-accent dark:text-white sm:w-24 w-full !text-black",
           !currentSession && "btn-disabled",
           isSending && "hover:btn-error"
         )}

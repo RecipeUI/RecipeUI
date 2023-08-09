@@ -88,9 +88,13 @@ export function getDefaultValue<T>(
   return null;
 }
 
-export function getURLParamsForSession(session: RecipeSession) {
+export function getURLParamsForSession(
+  session: RecipeSession,
+  moreParams?: Record<string, string>
+) {
   return new URLSearchParams({
     sessionId: session.id,
     recipeId: String(session.recipeId),
+    ...moreParams,
   }).toString();
 }

@@ -11,6 +11,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { getURLParamsForSession } from "@/utils/main";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -51,8 +52,10 @@ export function useSaveRecipeUI() {
     console.log("Hydrating from local storage");
 
     if (!localSave) return;
-    if (localSave.currentSession && !projectId)
+    if (localSave.currentSession && !projectId) {
+      router.push(`/?${getURLParamsForSession(localSave.currentSession)}`);
       setCurrentSession(localSave.currentSession);
+    }
     if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);

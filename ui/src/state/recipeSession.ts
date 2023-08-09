@@ -36,6 +36,7 @@ export enum RecipeBodyRoute {
 }
 
 export enum RecipeOutputType {
+  Void = "Void",
   Response = "Response",
   Streaming = "Streaming",
   Error = "Error",
@@ -376,7 +377,7 @@ const createRecipeOutputSlice: StateCreator<
       return (
         state.outputManager[state.currentSession?.id || ""] || {
           output: {},
-          type: RecipeOutputType.Response,
+          type: RecipeOutputType.Void,
         }
       );
     },
@@ -389,6 +390,9 @@ const createRecipeOutputSlice: StateCreator<
 
         return {
           outputManager,
+          ...(output.type === RecipeOutputType.Response && {
+            isSending: false,
+          }),
         };
       });
     },

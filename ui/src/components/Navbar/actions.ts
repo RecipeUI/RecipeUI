@@ -51,8 +51,26 @@ export async function createUser(data: OnboardingFormData) {
         userError: UserCreationError.General,
       }).toString()}`
     );
+  } else {
+    redirect("/");
+  }
+}
+
+export async function testCloud() {
+  const supabase = createServerActionClient<Database>({ cookies: cookies });
+
+  const user = await supabase.auth.getUser();
+
+  if (user.data.user) {
+    const res = await supabase
+      .from("user")
+      .update({ first: "JeaneD" })
+      .eq("user_id", user.data.user.id);
   }
 
-  redirect("/");
-  return;
+  const res = await supabase.functions.invoke("hello-world", {
+    body: {
+      name: "RecipeUI",
+    },
+  });
 }

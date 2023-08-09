@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { ReactNode, useMemo } from "react";
 import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
-import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { GITHUB_REPO } from "@/utils/constants";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const { popular, free, ycombinator, more } = useMemo(() => {
@@ -41,8 +41,20 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   return (
     <div className="flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
-        header="Popular"
-        description="Discover popular recipes built from the community! We are open sourced and need your help to build more recipes. (CTA to contribute here)"
+        header="Popular APIs"
+        description={
+          <p>
+            Discover popular recipes built from popular APIs! We are open
+            sourced and need your help to build more recipes.{" "}
+            <a
+              href={GITHUB_REPO}
+              target="_blank"
+              className="underline underline-offset-2"
+            >
+              Star and figure out here.
+            </a>
+          </p>
+        }
         projects={popular}
       />
       <MarketplaceSection

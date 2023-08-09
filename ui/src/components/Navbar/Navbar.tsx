@@ -25,7 +25,6 @@ export function Navbar() {
   const [showForm, setShowForm] = useState(true);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const userSession = useRecipeSessionStore((state) => state.userSession);
   const user = useRecipeSessionStore((state) => state.user);
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
@@ -89,6 +88,7 @@ export function Navbar() {
         {!user ? (
           <li>
             <button
+              id={UNIQUE_ELEMENT_IDS.SIGN_IN}
               className="btn bg-chefYellow text-black btn-sm"
               onClick={() => {
                 setIsLoginModalOpen(true);
@@ -186,7 +186,7 @@ export default function AuthForm({
               },
             }}
             providers={["github"]}
-            redirectTo={"/auth/callback"}
+            redirectTo={process.env.NEXT_PUBLIC_ENV + "/auth/callback"}
           />
           <button
             className="text-sm text-end"
@@ -209,7 +209,11 @@ export default function AuthForm({
 }
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
-import { OnboardingFormData, createUser } from "@/components/Navbar/actions";
+import {
+  OnboardingFormData,
+  createUser,
+  testCloud,
+} from "@/components/Navbar/actions";
 import { UserCreationError } from "@/components/Navbar/types";
 
 export function OnboardingFlow() {
@@ -387,6 +391,7 @@ import { Fragment } from "react";
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "@/types/databaseExtended";
 import Link from "next/link";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 
 const links = [
   { href: "/account-settings", label: "Account settings" },

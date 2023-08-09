@@ -14,6 +14,7 @@ import {
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { usePathname, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "@/utils/main";
+import { RecipeSaveButton } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -175,7 +176,10 @@ export function RecipeBodySearch() {
             />
           </div>
           {currentSession != null && currentSessionRecipe != null && (
-            <RecipeSearchButton />
+            <>
+              <RecipeSearchButton />
+              <RecipeSaveButton />
+            </>
           )}
         </div>
         <ul

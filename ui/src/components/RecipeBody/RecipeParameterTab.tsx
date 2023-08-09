@@ -15,6 +15,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
 import classNames from "classnames";
+import { UserTemplates } from "@/components/RecipeBody/RecipeTemplates";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
@@ -104,59 +105,11 @@ export function RecipeParameterTab() {
               )}
               {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
                 <>
-                  <hr />
-                  <div className="space-y-2">
-                    <h3 className="font-bold">Parameters</h3>
-                    <p>
-                      Use the docs panel to the right
-                      {!needsBodyParams
-                        ? " to start adding params"
-                        : " or hit below to open the editor"}
-                      .
-                    </p>
-                    <button
-                      className="btn btn-sm btn-neutral"
-                      onClick={() => {
-                        if (
-                          needsBodyParams &&
-                          "requestBody" in selectedRecipe &&
-                          "objectSchema" in selectedRecipe["requestBody"]
-                        ) {
-                          setRequestBody(
-                            getDefaultValue(
-                              selectedRecipe.requestBody,
-                              true
-                            ) as Record<string, unknown>
-                          );
-                        }
-
-                        if (
-                          needsQueryParams &&
-                          "queryParams" in selectedRecipe &&
-                          selectedRecipe.queryParams != null
-                        ) {
-                          const record: Record<string, unknown> = {};
-                          selectedRecipe.queryParams.forEach((param) => {
-                            const defaultVal = getDefaultValue(param, true);
-                            if (defaultVal !== undefined) {
-                              record[param.name] = defaultVal;
-                            }
-                          });
-                          setQueryParams(record);
-                        }
-
-                        // TODO: Got to make this work for query params
-                      }}
-                    >
-                      {needsBodyParams ? "Open editor" : "Initialize params"}
-                    </button>
-                  </div>
-
                   {hasTemplates && (
                     <>
                       <hr />
                       <div className="space-y-2">
-                        <h3 className="font-bold">Templates</h3>
+                        <h3 className="font-bold">Recipes</h3>
                         <p>Find some quick use cases or examples.</p>
                         <button
                           className="btn btn-sm btn-neutral"
@@ -164,7 +117,7 @@ export function RecipeParameterTab() {
                             setBodyRoute(RecipeBodyRoute.Templates);
                           }}
                         >
-                          View templates
+                          View recipes
                         </button>
                       </div>
                     </>
@@ -173,8 +126,12 @@ export function RecipeParameterTab() {
               )}
             </div>
           </div>
+          {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
+            <UserTemplates />
+          )}
         </div>
       )}
+
       {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
         <RecipeJsonEditor />
       )}
