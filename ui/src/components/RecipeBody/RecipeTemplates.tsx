@@ -96,6 +96,7 @@ export function UserTemplates() {
   const searchParams = useSearchParams();
 
   const newTemplateId = searchParams.get("newTemplateId");
+  const user = useRecipeSessionStore((state) => state.user);
 
   const router = useRouter();
   const posthog = usePostHog();
@@ -118,8 +119,15 @@ export function UserTemplates() {
               )}
               key={`${template.id}`}
             >
+              {user && template.original_author.user_id !== user?.user_id && (
+                <p className="text-xs">
+                  Forked from @{template.original_author.username}
+                </p>
+              )}
               <h3 className="font-bold">{template.title}</h3>
+
               <p className="text-sm line-clamp-3">{template.description}</p>
+
               <div className="flex-1" />
               <div className="space-x-2">
                 <button
