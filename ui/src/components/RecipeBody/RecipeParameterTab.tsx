@@ -15,7 +15,10 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
 import classNames from "classnames";
-import { UserTemplates } from "@/components/RecipeBody/RecipeTemplates";
+import {
+  StarterTemplates,
+  UserTemplates,
+} from "@/components/RecipeBody/RecipeTemplates";
 
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
@@ -144,6 +147,10 @@ export function RecipeParameterTab() {
           (needsBodyParams || needsQueryParams || needsUrlParams) && (
             <UserTemplates />
           )}
+
+        {(needsBodyParams || needsQueryParams || needsUrlParams) && (
+          <StarterTemplates />
+        )}
       </div>
 
       {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
