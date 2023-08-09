@@ -25,7 +25,7 @@ export function RecipeBody() {
       return [];
     }
 
-    const parameters = [];
+    const parameters = [RecipeBodyRoute.Parameters];
 
     if (
       (selectedRecipe &&
@@ -35,8 +35,6 @@ export function RecipeBody() {
     ) {
       parameters.push(RecipeBodyRoute.Templates);
     }
-
-    parameters.push(RecipeBodyRoute.Parameters);
 
     if (selectedRecipe.auth !== null) {
       parameters.push(RecipeBodyRoute.Config);
