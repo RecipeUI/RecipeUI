@@ -566,10 +566,10 @@ function RecipeFileParamEdit({ paramPath }: { paramPath: string }) {
   return (
     <div className="flex space-x-2 items-center">
       {fileInfo && paramState ? (
-        <div>
-          <span className="mr-2 text-sm border border-dashed rounded-md p-2">
+        <div className="">
+          <div className="mr-2 text-sm border border-dashed rounded-md p-2">
             {fileInfo.name}
-          </span>
+          </div>
           <button
             className="btn btn-sm"
             onClick={() => {
