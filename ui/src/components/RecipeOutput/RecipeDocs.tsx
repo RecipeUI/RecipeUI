@@ -23,7 +23,7 @@ import {
   useState,
 } from "react";
 import { getDefaultValue, getValueInObjPath } from "../../utils/main";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export function RecipeDocs() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -680,6 +680,12 @@ function RecipeDocArrayParam({
 
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
 
+  let objectParams: RecipeParam[] = [];
+
+  if ("objectSchema" in paramSchema.arraySchema) {
+    objectParams = paramSchema.arraySchema.objectSchema;
+  }
+
   return (
     <div className="">
       <div
@@ -687,62 +693,66 @@ function RecipeDocArrayParam({
           paramState.length > 0 && "mb-2 space-y-2 border rounded-sm p-2"
         )}
       >
-        {paramState?.map((_, index) => {
-          // TODO: Not good for nested I think?
-          return (
-            <div key={index} className="flex items-center space-x-2 w-full">
-              <RecipeDocParamEdit
-                paramSchema={paramSchema.arraySchema}
-                paramPath={`${paramPath}.[${index}]`}
-                isQueryParam={isQueryParam}
-              />
-              <button
-                className="btn btn-xs"
-                onClick={() => {
-                  const newParamState = [...paramState];
-                  newParamState.splice(index, 1);
+        {paramState?.map((paramInfo, index) => {
+          const currentParams = Object.keys(
+            paramInfo as Record<string, unknown>
+          );
 
-                  updateParams({
-                    path: paramPath,
-                    value: newParamState.length > 0 ? newParamState : undefined,
-                  });
-                }}
-              >
-                <XMarkIcon className="w-3 h-3" />
-              </button>
-              {/* I have a feeling that these re-arrange buttons do more harm than good */}
-              {/* {index !== paramState.length - 1 && (
-                <button
-                  className="btn btn-xs"
-                  onClick={() => {
-                    const newParamState = [...paramState];
-                    const itemToMove = newParamState.splice(index, 1)[0];
-                    newParamState.splice(index + 1, 0, itemToMove);
-                    updateRequestBody({
-                      path: paramPath,
-                      value: newParamState,
-                    });
-                  }}
-                >
-                  <ArrowDownIcon className="w-3 h-3" />
-                </button>
-              )}
-              {index !== 0 && (
-                <button
-                  className="btn btn-xs"
-                  onClick={() => {
-                    const newParamState = [...paramState];
-                    const itemToMove = newParamState.splice(index, 1)[0];
-                    newParamState.splice(index - 1, 0, itemToMove);
-                    updateRequestBody({
-                      path: paramPath,
-                      value: newParamState,
-                    });
-                  }}
-                >
-                  <ArrowUpIcon className="w-3 h-3" />
-                </button>
-              )} */}
+          const missingParams = objectParams.filter((param) => {
+            if (!("name" in param)) return false;
+
+            return !currentParams.includes(param.name as string);
+          });
+
+          return (
+            <div key={index}>
+              <div className="flex items-center space-x-2 w-full">
+                <RecipeDocParamEdit
+                  paramSchema={paramSchema.arraySchema}
+                  paramPath={`${paramPath}.[${index}]`}
+                  isQueryParam={isQueryParam}
+                />
+                <div className="flex flex-col">
+                  <button
+                    className="btn btn-xs"
+                    onClick={() => {
+                      const newParamState = [...paramState];
+                      newParamState.splice(index, 1);
+
+                      updateParams({
+                        path: paramPath,
+                        value:
+                          newParamState.length > 0 ? newParamState : undefined,
+                      });
+                    }}
+                  >
+                    <XMarkIcon className="w-3 h-3" />
+                  </button>
+                  {missingParams.length > 0 && (
+                    <>
+                      {missingParams.map((param) => {
+                        if (!("name" in param)) return null;
+
+                        return (
+                          <button
+                            key={param.name as string}
+                            className="btn btn-xs tooltip tooltip-left"
+                            data-tip={`"${param.name}" was optional. Want to add it?`}
+                            onClick={() => {
+                              updateParams({
+                                path: `${paramPath}.[${index}].${param.name}`,
+                                value: getDefaultValue(param),
+                              });
+                            }}
+                          >
+                            <EyeSlashIcon className="w-h h-3" />
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}
