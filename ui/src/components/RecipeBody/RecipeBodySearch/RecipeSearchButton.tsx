@@ -12,7 +12,6 @@ import { RecipeAuthType } from "@/types/databaseExtended";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
-import { sendReq } from "@/components/RecipeBody/RecipeBodySearch/actions";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -30,10 +29,6 @@ export function RecipeSearchButton() {
   const recipe = useContext(RecipeContext)!;
 
   const secretInfo = useSecretsFromSM();
-
-  useEffect(() => {
-    sendReq();
-  }, []);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
