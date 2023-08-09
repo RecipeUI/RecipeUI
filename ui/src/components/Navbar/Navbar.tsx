@@ -18,11 +18,19 @@ import { Menu } from "@headlessui/react";
 
 export function Navbar() {
   const router = useRouter();
+
+  const userSession = useRecipeSessionStore((state) => state.userSession);
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
 
   const [showForm, setShowForm] = useState(true);
+
+  useEffect(() => {
+    if (userSession) {
+      setShowForm(false);
+    }
+  }, [userSession]);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const user = useRecipeSessionStore((state) => state.user);
@@ -186,7 +194,7 @@ export default function AuthForm({
               },
             }}
             providers={["github"]}
-            redirectTo={process.env.NEXT_PUBLIC_ENV + "/auth/callback"}
+            redirectTo={`${getUrl()}/auth/callback`}
           />
           <button
             className="text-sm text-end"
@@ -280,7 +288,7 @@ export function OnboardingFlow() {
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
           <Dialog.Title className="text-2xl font-bold text-chefYellow">
-            Welcome to RecipeUI!
+            Welcome to RecipeUI
           </Dialog.Title>
           <Dialog.Description className="pb-4">
             {stage === "User Info"
@@ -392,13 +400,7 @@ import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "@/types/databaseExtended";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
-
-const links = [
-  { href: "/account-settings", label: "Account settings" },
-  { href: "/support", label: "Support" },
-  { href: "/license", label: "License" },
-  { href: "/sign-out", label: "Sign out" },
-];
+import { getUrl } from "@/utils/main";
 
 function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();

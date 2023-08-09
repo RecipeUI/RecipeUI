@@ -74,8 +74,6 @@ export default async function Home({
     }
   }
 
-  console.log("revalidating", recipe?.userTemplates?.length);
-
   return (
     <RecipeHomeContainer
       recipeProjects={projects}
