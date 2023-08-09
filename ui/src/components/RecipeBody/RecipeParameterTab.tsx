@@ -90,6 +90,8 @@ export function RecipeParameterTab() {
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
   const hasTemplates = selectedRecipe.templates != null;
 
+  const needsParams = needsBodyParams || needsUrlParams || needsQueryParams;
+
   return (
     <div className="flex-1">
       {showOnboarding ? (
@@ -148,7 +150,7 @@ export function RecipeParameterTab() {
         <RecipeJsonEditor />
       )}
       {(!showOnboarding || hasQueryParamPayload) && hasQueryParams && (
-        <RecipeQueryParameters />
+        <RecipeQueryParameters needsParams={needsParams} />
       )}
       {!showOnboarding && hasUrlParams && <RecipeURLParams />}
 
@@ -230,7 +232,7 @@ function RecipeJsonEditor() {
   );
 }
 
-function RecipeQueryParameters() {
+function RecipeQueryParameters({ needsParams }: { needsParams: boolean }) {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const recipe = useContext(RecipeContext)!;
   const hasNoParams = Object.values(recipe.queryParams!).every(
@@ -274,7 +276,7 @@ function RecipeQueryParameters() {
           );
         })}
       </pre>
-      {hasNoParams && Object.keys(queryParams).length === 0 ? (
+      {hasNoParams && !needsParams && Object.keys(queryParams).length === 0 ? (
         <div className="alert alert-success">
           {
             "You can run this endpoint now if you want! Play around with the docs pane to get different results after."

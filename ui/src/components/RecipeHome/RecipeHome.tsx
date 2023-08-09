@@ -23,8 +23,6 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
         free.push(recipe);
       } else if (tags.includes("YCombinator")) {
         ycombinator.push(recipe);
-      } else if (tags.includes("Soon")) {
-        more.push(recipe);
       } else {
         more.push(recipe);
       }
@@ -151,9 +149,7 @@ export function RecipeHomeBox({
           <div
             className="tooltip"
             data-tip={
-              status === RecipeProjectStatus.Soon
-                ? "Join the waitlist!"
-                : undefined
+              status === RecipeProjectStatus.Soon ? "Stay tuned!" : undefined
             }
           >
             <button
