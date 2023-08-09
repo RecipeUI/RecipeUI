@@ -93,7 +93,7 @@ export function RecipeParameterTab() {
   return (
     <div className="flex-1">
       {showOnboarding ? (
-        hasTemplates ? (
+        hasTemplates || needsAuthSetup ? (
           <div className="space-y-4 mb-4 mx-4 mt-6">
             <div className="alert w-full flex bg-gray-400 dark:bg-base-200">
               <div className="space-y-4 w-full text-start">
@@ -128,13 +128,13 @@ export function RecipeParameterTab() {
               </div>
             </div>
           </div>
-        ) : !needsAuthSetup ? (
+        ) : (
           <div className="mb-4 mx-4 mt-6">
             <div className="alert alert-info">
               Get started by using the docs pane on the right!
             </div>
           </div>
-        ) : null
+        )
       ) : null}
 
       <div className="mb-4 mx-4 mt-6">

@@ -137,42 +137,42 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
           {!newTemplateId ? (
             <>
               <Dialog.Title className="text-2xl font-bold ">
-                New {recipe.project} Recipe
+                New {recipe.title} Recipe
               </Dialog.Title>
               <Dialog.Description
                 as="div"
-                className="p-2 text-sm border rounded-md my-2"
+                className="p-4 text-sm border rounded-md my-2"
               >
-                <h3 className="font-bold text-base">{recipe.title}</h3>
+                <h3 className="font-bold text-base">
+                  {`Recipe fork of "${recipe.title}"`}
+                </h3>
                 <h3 className="">{recipe.path}</h3>
-                <p className="line-clamp-2">{recipe.summary}</p>
+                <p className="line-clamp-2 text-xs mt-1">{recipe.summary}</p>
               </Dialog.Description>
 
               <form
-                className="flex flex-col space-y-2 border rounded-md p-8"
+                className="flex flex-col space-y-2  rounded-md mt-4"
                 onSubmit={onSubmit}
               >
-                {!newTemplateId && (
-                  <>
-                    <LabelWrapper label="Recipe Title">
-                      <input
-                        className="input input-bordered w-full"
-                        {...register("title", { required: true })}
-                      />
-                    </LabelWrapper>
-                    <LabelWrapper label="Recipe Description">
-                      <input
-                        className="input  input-bordered w-full"
-                        {...register("description", { required: true })}
-                      />
-                    </LabelWrapper>
-                    {(errors.title || errors.description) && (
-                      <p className="alert alert-error !mt-4">
-                        Please fill out all required fields.
-                      </p>
-                    )}
-                  </>
-                )}
+                <>
+                  <LabelWrapper label="Recipe Title">
+                    <input
+                      className="input input-bordered w-full"
+                      {...register("title", { required: true })}
+                    />
+                  </LabelWrapper>
+                  <LabelWrapper label="Recipe Description">
+                    <input
+                      className="input  input-bordered w-full"
+                      {...register("description", { required: true })}
+                    />
+                  </LabelWrapper>
+                  {(errors.title || errors.description) && (
+                    <p className="alert alert-error !mt-4">
+                      Please fill out all required fields.
+                    </p>
+                  )}
+                </>
 
                 <button
                   type="submit"
