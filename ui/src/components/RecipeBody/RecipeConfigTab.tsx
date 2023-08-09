@@ -14,7 +14,7 @@ export function RecipeConfigTab() {
 
   return (
     <div className="flex-1 relative px-4 py-6">
-      <div className="alert flex flex-col items-start w-full">
+      <div className="alert flex flex-col items-start w-full bg-gray-400 dark:bg-base-200">
         <div className="w-full space-y-4 text-start">
           <h1 className="text-xl font-bold">Config</h1>
           {needsAuth && (

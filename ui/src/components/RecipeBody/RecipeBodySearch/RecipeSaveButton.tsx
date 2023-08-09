@@ -136,25 +136,33 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[500px]">
           {!newTemplateId ? (
             <>
-              <Dialog.Title className="text-2xl font-bold text-chefYellow">
+              <Dialog.Title className="text-2xl font-bold ">
                 New {recipe.project} Recipe
               </Dialog.Title>
-              <Dialog.Description className="pb-4 text-sm">
-                {recipe.title}: {recipe.summary}
+              <Dialog.Description
+                as="div"
+                className="p-2 text-sm border rounded-md my-2"
+              >
+                <h3 className="font-bold text-base">{recipe.title}</h3>
+                <h3 className="">{recipe.path}</h3>
+                <p className="line-clamp-2">{recipe.summary}</p>
               </Dialog.Description>
 
-              <form className="flex flex-col space-y-2" onSubmit={onSubmit}>
+              <form
+                className="flex flex-col space-y-2 border rounded-md p-8"
+                onSubmit={onSubmit}
+              >
                 {!newTemplateId && (
                   <>
-                    <LabelWrapper label="Title">
+                    <LabelWrapper label="Recipe Title">
                       <input
                         className="input input-bordered w-full"
                         {...register("title", { required: true })}
                       />
                     </LabelWrapper>
-                    <LabelWrapper label="Description">
+                    <LabelWrapper label="Recipe Description">
                       <input
-                        className="input input-bordered w-full"
+                        className="input  input-bordered w-full"
                         {...register("description", { required: true })}
                       />
                     </LabelWrapper>
@@ -224,7 +232,7 @@ function LabelWrapper({
 }) {
   return (
     <div className="w-full">
-      <label className="label">{label}</label>
+      <label className="label text-sm">{label}</label>
       {children}
     </div>
   );
