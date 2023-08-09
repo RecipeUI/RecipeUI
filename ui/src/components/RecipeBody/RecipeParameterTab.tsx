@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSecretFromSM } from "../../state/recipeAuth";
+import { useSecretManager, useSecretsFromSM } from "../../state/recipeAuth";
 import {
   RecipeBodyRoute,
   RecipeContext,
@@ -27,7 +27,7 @@ export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   const selectedRecipe = useContext(RecipeContext)!;
-  const secret = useSecretFromSM(selectedRecipe.project);
+  const secretInfo = useSecretsFromSM();
 
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
@@ -41,7 +41,7 @@ export function RecipeParameterTab() {
     hasRequiredQueryParams,
     hasUrlParams,
   } = useMemo(() => {
-    const needsAuthSetup = selectedRecipe.auth != null && secret == null;
+    const needsAuthSetup = secretInfo ? !secretInfo.hasAllSecrets : false;
 
     let hasRequiredBodyParams = false;
     let hasRequestBody = false;
@@ -77,7 +77,7 @@ export function RecipeParameterTab() {
       hasRequiredQueryParams,
       hasUrlParams,
     };
-  }, [secret, selectedRecipe]);
+  }, [secretInfo, selectedRecipe]);
   const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
   const needsBodyParams = hasRequiredBodyParams && !hasRequestBodyPayload;
 

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useContext, useEffect, useRef } from "react";
 import { RECIPE_PROXY } from "@/utils/constants";
-import { useSecretManager } from "@/state/recipeAuth";
+import { useSecretManager, useSecretsFromSM } from "@/state/recipeAuth";
 import {
   RecipeContext,
   RecipeOutputTab,
@@ -12,6 +12,7 @@ import { RecipeAuthType } from "@/types/databaseExtended";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { sendReq } from "@/components/RecipeBody/RecipeBodySearch/actions";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -19,7 +20,6 @@ export function RecipeSearchButton() {
   const requestBody = useRecipeSessionStore((store) => store.requestBody);
   const setOutput = useRecipeSessionStore((store) => store.updateOutput);
   const clearOutput = useRecipeSessionStore((store) => store.clearOutput);
-  const sm = useSecretManager();
   const fileManager = useRecipeSessionStore((store) => store.fileManager);
 
   const isSending = useRecipeSessionStore((store) => store.isSending);
@@ -28,6 +28,12 @@ export function RecipeSearchButton() {
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
   const controllerRef = useRef<AbortController | null>(null);
   const recipe = useContext(RecipeContext)!;
+
+  const secretInfo = useSecretsFromSM();
+
+  useEffect(() => {
+    sendReq();
+  }, []);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -99,26 +105,33 @@ export function RecipeSearchButton() {
     }
 
     if (recipe.auth) {
-      const token = sm.getSecret(recipe.project);
-      if (!token) {
+      if (!secretInfo?.hasAllSecrets) {
         alert("Please setup authentication first.");
         return;
       }
 
+      const primaryToken = secretInfo.secrets[recipe.auth];
+
       if (recipe.auth === RecipeAuthType.Bearer) {
-        headers["Authorization"] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${primaryToken}`;
       }
 
       if (recipe.auth.includes("query")) {
-        url.searchParams.append(recipe.auth.split("=")[1], token);
+        url.searchParams.append(recipe.auth.split("=")[1], primaryToken!);
       }
 
       if (recipe.auth === RecipeAuthType.ClientID) {
-        headers["Authorization"] = `Client-ID ${token}`;
+        headers["Authorization"] = `Client-ID ${primaryToken}`;
       }
 
       if (recipe.auth === RecipeAuthType.Token) {
-        headers["Authorization"] = `Token ${token}`;
+        headers["Authorization"] = `Token ${primaryToken}`;
+      }
+
+      if (recipe.auth === RecipeAuthType.Custom) {
+        for (const simpleHeader of secretInfo.simpleHeaders) {
+          headers[simpleHeader] = secretInfo.secrets[simpleHeader]!;
+        }
       }
     }
     let body: undefined | string | FormData;

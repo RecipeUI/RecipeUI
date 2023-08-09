@@ -103,6 +103,7 @@ export enum RecipeAuthType {
   Bearer = "bearer",
   ClientID = "clientId",
   Token = "token",
+  Custom = "custom",
 }
 
 export type RecipeCore = Omit<
@@ -124,6 +125,7 @@ export type RecipeCore = Omit<
     cors: boolean;
     deprecated: boolean;
     streaming: boolean;
+    auth: string[];
   };
 
   // Added on later
