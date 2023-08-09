@@ -20,6 +20,7 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 */
 
 export function useSaveRecipeUI() {
+  const { username } = useParams();
   const { project: projectId } = useParams();
   const searchParams = useSearchParams();
   const sessionIdParam = searchParams.get("s");
@@ -53,7 +54,12 @@ export function useSaveRecipeUI() {
     console.log("Hydrating from local storage");
 
     if (!localSave) return;
-    if (localSave.currentSession && !projectId && !shareTemplateIdParam) {
+    if (
+      localSave.currentSession &&
+      !projectId &&
+      !shareTemplateIdParam &&
+      !username
+    ) {
       router.push(`/?${getURLParamsForSession(localSave.currentSession)}`);
       setCurrentSession(localSave.currentSession);
     }
@@ -135,7 +141,7 @@ export function useSaveRecipeUI() {
       });
       setSessions(_sessions);
 
-      if (projectId || shareTemplateIdParam) return;
+      if (projectId || shareTemplateIdParam || username) return;
 
       const localSession = localSave.currentSession;
       if (localSession != null) {
@@ -157,7 +163,7 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   useEffect(() => {
-    if (projectId || shareTemplateIdParam) return;
+    if (projectId || shareTemplateIdParam || username) return;
 
     if ((sessionIdParam as string) && localSave?.sessions) {
       const session = localSave.sessions.find((s) => s.id === sessionIdParam);

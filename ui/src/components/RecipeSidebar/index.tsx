@@ -56,8 +56,9 @@ export function RecipeSidebar() {
 
   const pathname = usePathname();
   const { project: projectId } = useParams();
+  const { username } = useParams();
   useEffect(() => {
-    if (!projectId && sessions.length === 0 && pathname !== "/") {
+    if (!projectId && !username && sessions.length === 0 && pathname !== "/") {
       console.warn("Rerouting because no session");
 
       router.push("/");

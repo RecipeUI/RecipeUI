@@ -358,9 +358,13 @@ export function ShareInviteModal({
   );
 }
 
-function TemplateMockCode({ template }: { template: UserTemplatePreview }) {
+export function TemplateMockCode({
+  template,
+}: {
+  template: UserTemplatePreview;
+}) {
   return (
-    <div className="mockup-code ">
+    <div className="mockup-code">
       <pre className="px-4 py-2 whitespace-pre-wrap">
         <p className="text-xs font-bold">
           {template.recipe.project} | {template.recipe.title}

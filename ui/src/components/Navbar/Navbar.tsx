@@ -441,6 +441,15 @@ function NavMenu({ user }: { user: User }) {
         <li>
           <button
             onClick={() => {
+              router.push(`/u/${user.username}`);
+            }}
+          >
+            Recipes
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={() => {
               supabase.auth.signOut();
               router.refresh();
             }}

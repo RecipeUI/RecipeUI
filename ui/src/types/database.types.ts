@@ -166,9 +166,21 @@ export interface Database {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "template_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
           {
@@ -218,6 +230,12 @@ export interface Database {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "template_fork_new_author_id_fkey"
+            columns: ["new_author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "template_fork_new_template_fkey"
             columns: ["new_template"]
             referencedRelation: "template"
@@ -233,6 +251,12 @@ export interface Database {
             foreignKeyName: "template_fork_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_fork_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
           {
@@ -332,9 +356,21 @@ export interface Database {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "template_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
           {
@@ -351,9 +387,43 @@ export interface Database {
           }
         ]
       }
+      user_view: {
+        Row: {
+          first: string | null
+          last: string | null
+          profile_pic: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          first?: string | null
+          last?: string | null
+          profile_pic?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          first?: string | null
+          last?: string | null
+          profile_pic?: string | null
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      is_limited: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
