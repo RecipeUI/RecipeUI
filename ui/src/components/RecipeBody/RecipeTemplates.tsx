@@ -10,6 +10,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 import { deleteTemplate } from "@/components/RecipeBody/RecipeBodySearch/actions";
 import { revalidatePath } from "next/cache";
+import { usePostHog } from "posthog-js/react";
+import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 
 export function RecipeTemplatesTab() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -86,6 +88,7 @@ export function UserTemplates() {
   const newTemplateId = searchParams.get("newTemplateId");
 
   const router = useRouter();
+  const posthog = usePostHog();
 
   if (userTemplates.length === 0) {
     return null;
@@ -99,9 +102,9 @@ export function UserTemplates() {
           return (
             <div
               className={classNames(
-                "border rounded-sm p-4 space-y-2 flex flex-col",
+                "border rounded-sm p-4 space-y-2 flex flex-col ",
                 newTemplateId === String(template.id) &&
-                  "bg-chefYellow text-black"
+                  "border-chefYellow border-4 border-dashed"
               )}
               key={`${template.title}`}
             >
@@ -132,6 +135,13 @@ export function UserTemplates() {
                     }
 
                     setBodyRoute(RecipeBodyRoute.Parameters);
+
+                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_USE, {
+                      template_id: template.id,
+                      template_project: selectedRecipe.project,
+                      recipe_id: selectedRecipe.id,
+                      recipe_path: selectedRecipe.path,
+                    });
                   }}
                 >
                   Use
@@ -150,6 +160,13 @@ export function UserTemplates() {
                     //   setUrlParams(template.urlParams);
                     // }
                     // setBodyRoute(RecipeBodyRoute.Parameters);
+
+                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
+                      template_id: template.id,
+                      template_project: selectedRecipe.project,
+                      recipe_id: selectedRecipe.id,
+                      recipe_path: selectedRecipe.path,
+                    });
                   }}
                 >
                   Share
@@ -163,6 +180,13 @@ export function UserTemplates() {
 
                     const deletedTemplate = await deleteTemplate(template.id);
                     if (deletedTemplate) {
+                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
+                        template_id: template.id,
+                        template_project: selectedRecipe.project,
+                        recipe_id: selectedRecipe.id,
+                        recipe_path: selectedRecipe.path,
+                      });
+
                       router.refresh();
                       alert("Template deleted");
                       return;

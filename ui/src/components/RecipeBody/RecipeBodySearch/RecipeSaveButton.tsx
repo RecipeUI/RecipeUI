@@ -7,10 +7,12 @@ import {
 } from "@/state/recipeSession";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 import { getURLParamsForSession } from "@/utils/main";
+import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import {
   ReactNode,
   startTransition,
@@ -90,6 +92,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
 
   const [loading, setLoading] = useState(false);
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
+  const posthog = usePostHog();
 
   const onSubmit = handleSubmit(async (data) => {
     setLoading(true);
@@ -108,6 +111,12 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
       });
 
       if (newTemplate) {
+        posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
+          template_id: newTemplate.id,
+          template_project: newTemplate.project,
+          recipe_id: recipe.id,
+          recipe_path: recipe.path,
+        });
         setNewTemplateId(newTemplate.id);
       }
     } catch (e) {
