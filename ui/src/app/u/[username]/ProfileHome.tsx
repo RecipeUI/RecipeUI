@@ -1,6 +1,9 @@
 "use client";
 
-import { TemplateMockCode } from "@/components/RecipeBody/RecipeTemplates";
+import {
+  ShareInviteModal,
+  TemplateMockCode,
+} from "@/components/RecipeBody/RecipeTemplates";
 import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
 import {
   Recipe,
@@ -12,7 +15,7 @@ import {
 import { getURLParamsForSession } from "@/utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export function ProfileHome({
   profile,
@@ -24,6 +27,10 @@ export function ProfileHome({
   projects: RecipeProject[];
 }) {
   const router = useRouter();
+
+  const [shareTemplate, setShareTemplate] =
+    useState<UserTemplatePreview | null>(null);
+
   if (templates.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center space-x-2 justify-center">
@@ -77,10 +84,28 @@ export function ProfileHome({
         </h2>
         <div className="projects-home-container">
           {templates.map((template) => {
-            return <TemplateMockCode key={template.id} template={template} />;
+            return (
+              <div
+                key={template.id}
+                className="cursor-pointer h-full"
+                onClick={() => {
+                  setShareTemplate(template);
+                }}
+              >
+                <TemplateMockCode key={template.id} template={template} />
+              </div>
+            );
           })}
         </div>
       </div>
+      {shareTemplate && (
+        <ShareInviteModal
+          template={shareTemplate}
+          onClose={() => {
+            setShareTemplate(null);
+          }}
+        />
+      )}
     </div>
   );
 }

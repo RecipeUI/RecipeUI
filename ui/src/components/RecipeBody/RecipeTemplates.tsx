@@ -364,7 +364,7 @@ export function TemplateMockCode({
   template: UserTemplatePreview;
 }) {
   return (
-    <div className="mockup-code">
+    <div className="mockup-code h-full w-full">
       <pre className="px-4 py-2 whitespace-pre-wrap">
         <p className="text-xs font-bold">
           {template.recipe.project} | {template.recipe.title}
