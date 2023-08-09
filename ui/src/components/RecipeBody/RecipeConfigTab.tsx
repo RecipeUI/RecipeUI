@@ -53,6 +53,15 @@ export function RecipeNeedsAuth({
   if (selectedRecipe.auth === RecipeAuthType.Custom) {
     return <CustomAuthConfig onboardingFlow={onboardingFlow} />;
   }
+  const generalDocLink = docLink ? (
+    <>
+      Read{" "}
+      <a className="link tooltip" href={docLink} target="_blank">
+        our guide
+      </a>{" "}
+      on getting auth for {selectedRecipe.project}.
+    </>
+  ) : null;
   if (selectedRecipe.auth === RecipeAuthType.Bearer) {
     if (docLink) {
       authNote = (
@@ -85,18 +94,23 @@ export function RecipeNeedsAuth({
   } else if (selectedRecipe.auth && selectedRecipe.auth.includes("query")) {
     authNote = (
       <p>
-        This recipe authorizes with a query param token that you can add below.
+        This recipe authorizes with a query param token that you can add below.{" "}
+        {generalDocLink}
       </p>
     );
   } else if (selectedRecipe.auth === RecipeAuthType.ClientID) {
     authNote = (
       <p>
-        This recipe authorizes with a Client ID token that you can add below.
+        This recipe authorizes with a Client ID token that you can add below.{" "}
+        {generalDocLink}
       </p>
     );
   } else if (selectedRecipe.auth === RecipeAuthType.Token) {
     authNote = (
-      <p>This recipe authorizes with a token that you can add below.</p>
+      <p>
+        This recipe authorizes with a token that you can add below.{" "}
+        {generalDocLink}
+      </p>
     );
   }
 
@@ -169,6 +183,8 @@ function CustomAuthConfig({ onboardingFlow }: { onboardingFlow: boolean }) {
 
   const docLink = DOC_LINKS[selectedRecipe.project];
 
+  const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
+
   return (
     <div className="text-start">
       <h3 className="font-bold mb-2">Setup</h3>
@@ -183,15 +199,32 @@ function CustomAuthConfig({ onboardingFlow }: { onboardingFlow: boolean }) {
         </a>{" "}
         on getting setup with {selectedRecipe.project}.
       </p>
-      {simpleHeaders.map((h, i) => {
-        return <AuthInput header={h} onboardingFlow={onboardingFlow} key={i} />;
-      })}
-      <span
-        className="text-sm mt-2 text-gray-600 tooltip"
-        data-tip="We store no tokens online. Tokens are only stored locally."
-      >
-        How are tokens stored?
-      </span>
+      {showAuthFlow ? (
+        <div>
+          {simpleHeaders.map((h, i) => {
+            return (
+              <AuthInput header={h} onboardingFlow={onboardingFlow} key={i} />
+            );
+          })}
+          <span
+            className="text-sm mt-2 text-gray-600 tooltip"
+            data-tip="We store no tokens online. Tokens are only stored locally."
+          >
+            How are tokens stored?
+          </span>
+        </div>
+      ) : (
+        <div className="mt-2">
+          <button
+            className="btn btn-sm btn-neutral"
+            onClick={() => {
+              setShowAuthFlow(true);
+            }}
+          >
+            Configure
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -51,7 +51,7 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
               target="_blank"
               className="underline underline-offset-2"
             >
-              Star and figure out here.
+              Star and find out more here.
             </a>
           </p>
         }

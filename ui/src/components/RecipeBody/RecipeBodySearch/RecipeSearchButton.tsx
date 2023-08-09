@@ -94,6 +94,7 @@ export function RecipeSearchButton() {
 
     let url = new URL(path);
     // TODO: Should we just make this the default so no one deals with this problem?
+    // TODO: We actually don't need this anymore with server actions. Kinda insane...
     if (recipe.options?.cors === true) {
       headers["recipe-domain"] = url.origin;
       url = new URL(RECIPE_PROXY + url.pathname);
