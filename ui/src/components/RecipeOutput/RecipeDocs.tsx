@@ -134,6 +134,7 @@ function RecipeDocsContainer({
                 paramName={propertyName}
                 paramSchema={paramSchema}
                 paramPath={paramPath + "." + propertyName}
+                isQueryParam={false}
               />
             );
           })}
@@ -148,6 +149,7 @@ function RecipeDocsContainer({
                 paramName={propertyName}
                 paramSchema={paramSchema}
                 paramPath={paramPath + "." + propertyName}
+                isQueryParam={false}
               />
             );
           })}
@@ -211,7 +213,7 @@ function RecipeDocsParamContainer({
   paramSchema: RecipeParam;
   paramName: string;
   paramPath: string;
-  isQueryParam?: boolean;
+  isQueryParam: boolean;
 }) {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
@@ -692,6 +694,7 @@ function RecipeDocArrayParam({
               <RecipeDocParamEdit
                 paramSchema={paramSchema.arraySchema}
                 paramPath={`${paramPath}.[${index}]`}
+                isQueryParam={isQueryParam}
               />
               <button
                 className="btn btn-xs"
@@ -810,6 +813,7 @@ function RecipeDocVariedParamEdit({
           type: paramTypes[0] as unknown as RecipeParamType,
           enum: "enum" in enumVariant ? enumVariant.enum : undefined,
         }}
+        isQueryParam={isQueryParam}
         paramPath={paramPath}
       />
     );
@@ -821,7 +825,11 @@ function RecipeDocVariedParamEdit({
 
   return (
     <div className="">
-      <RecipeDocParamEdit paramPath={paramPath} paramSchema={primaryVariant} />
+      <RecipeDocParamEdit
+        paramPath={paramPath}
+        paramSchema={primaryVariant}
+        isQueryParam={isQueryParam}
+      />
       <div
         className={classNames(
           "tooltip tooltip-right",
