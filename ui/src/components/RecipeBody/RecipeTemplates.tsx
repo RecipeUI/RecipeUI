@@ -253,7 +253,7 @@ export function ShareModal({
             className="btn btn-accent w-full mt-4"
             onClick={async () => {
               await navigator.clipboard.writeText(
-                `${window.location.origin}/?shareTemplate=${template.alias}`
+                `${window.location.origin}/r/${template.alias}`
               );
 
               posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {

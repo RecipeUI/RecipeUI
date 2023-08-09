@@ -21,10 +21,9 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 
 export function useSaveRecipeUI() {
   const { username } = useParams();
-  const { project: projectId } = useParams();
+  const { project: projectId, recipe: shareTemplateIdParam } = useParams();
   const searchParams = useSearchParams();
   const sessionIdParam = searchParams.get("s");
-  const shareTemplateIdParam = searchParams.get("shareTemplate");
 
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,

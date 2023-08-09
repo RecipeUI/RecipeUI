@@ -50,13 +50,11 @@ export function ProfileHome({
   }
 
   return (
-    <div className="flex-1 px-4 space-y-16">
+    <div className="flex-1 px-4">
       <div className="rounded-md ">
         <h2 className="font-bold text-3xl">{`@${profile.username}`}</h2>
-
-        <div className="mt-4"></div>
       </div>
-      <div className="">
+      <div className="mt-12">
         <h3 className="font-bold text-2xl mb-4">
           Recipes built in {projects.length} different APIs.
         </h3>
@@ -78,7 +76,7 @@ export function ProfileHome({
           })}
         </div>
       </div>
-      <div>
+      <div className="mt-12">
         <h2 className="text-2xl font-bold">
           Cookbook with {templates.length} recipes!
         </h2>
