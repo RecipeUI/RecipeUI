@@ -1,5 +1,29 @@
 # RecipeUI
-Will make this better soon
+RecipeUI is an open source playground for testing APIs. Our mission is to make it stupidly simple for developers to load an API and then share their API templates as "Recipes." 
+
+Try us out [www.recipeui.com](https://recipeui.com/)
+
+
+## Getting this to run
+Promise we'll have this out by the end of the week. We've been focused on building because there's a really awesome roadmap ahead.
+
+## Tech Stack
+Couldn't have built this app without some really amazing packages
+- 🐻 Zustand + immer for global state management
+- Tailwind + DaisyUI for making me build pretty and native html components
+- NextJS + Vercel for a seamless frontend framework and deployment package
+- Supabase for a seamless backend service that has many cool features. 
+- Codemirror for the easy code editor plugin
+- Other fun stuff: pnpm, downshift, fuse, react18-json-view
+
+
+
+## Contributing
+We need help in three ways and they don't require coding!
+1. Play around with our platform! We're less than 1 month old, but we want to naively redefine the API testing experience.
+2. We need recipes! Start making some and sharing them with people.
+3. We need API suggestions for our platform. Bonus if you can help write the schemas (we'll have more docs on this soon).
+
 
 
 ## Open Source Philisophy
