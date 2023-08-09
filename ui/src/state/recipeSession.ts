@@ -233,7 +233,7 @@ const createRecipeSessionSlice: StateCreator<
         }
 
         return {
-          bodyRoute: RecipeBodyRoute.Parameters,
+          bodyRoute: RecipeBodyRoute.Templates,
           currentSession: newSession,
           sessions: [...prevState.sessions, newSession],
           outputTab: RecipeOutputTab.Docs,
@@ -319,7 +319,7 @@ const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
   }
 
   return {
-    bodyRoute: RecipeBodyRoute.Parameters,
+    bodyRoute: RecipeBodyRoute.Templates,
     setBodyRoute: (route) => set(() => ({ bodyRoute: route })),
 
     requestBody: {},
