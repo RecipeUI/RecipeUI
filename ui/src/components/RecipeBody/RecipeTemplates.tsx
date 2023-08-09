@@ -26,6 +26,7 @@ import {
   UNIQUE_ELEMENT_IDS,
 } from "@/utils/constants";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { useLocalStorage } from "usehooks-ts";
 
 export function RecipeTemplatesTab() {
   return (
@@ -290,6 +291,10 @@ export function ShareInviteModal({
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
 
   const [limitedForks, setLimitedForks] = useState(false);
+  const [, setForkedTemplate] = useLocalStorage<null | string>(
+    UNIQUE_ELEMENT_IDS.FORK_HOOK_REGISTER,
+    null
+  );
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
@@ -308,6 +313,7 @@ export function ShareInviteModal({
                     template_project: template.recipe.project,
                     recipe_title: template.recipe.title,
                   });
+                  setForkedTemplate(template.alias);
                   document.getElementById(UNIQUE_ELEMENT_IDS.SIGN_IN)?.click();
                   onClose();
                 } else {
