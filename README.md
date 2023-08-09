@@ -21,7 +21,7 @@ Couldn't have built this app without some really amazing packages
 
 ## Contributing
 We need help in three ways and they don't require coding!
-1. Play around with our platform! We're less than 1 month old, but we want to naively redefine the API testing experience.
+1. Play around with our platform! We're less than 1 month old, but we want to redefine the API testing experience.
 2. We need recipes! Start making some and sharing them with people.
 3. We need API suggestions for our platform. Bonus if you can help write the schemas (we'll have more docs on this soon).
 
