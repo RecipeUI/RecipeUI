@@ -55,7 +55,6 @@ export async function cloneTemplate(templateId: number) {
     .eq("id", templateId)
     .single();
 
-  console.log({ oldTemplateData });
   if (!oldTemplateData) {
     return null;
   }

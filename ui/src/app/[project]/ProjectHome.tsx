@@ -110,7 +110,7 @@ function ProjectHomeBox({
             {recipe.tags.map((tag) => {
               return (
                 <span
-                  className="badge badge-ghost p-2 py-3"
+                  className="badge badge-info p-2 py-3"
                   key={recipe.id + tag}
                 >
                   {tag}

@@ -26,9 +26,10 @@ export function RecipeBody() {
     const parameters = [RecipeBodyRoute.Parameters];
 
     if (
-      selectedRecipe &&
-      selectedRecipe.templates &&
-      selectedRecipe.templates.length > 0
+      (selectedRecipe &&
+        selectedRecipe.templates &&
+        selectedRecipe.templates.length > 0) ||
+      (selectedRecipe.userTemplates && selectedRecipe.userTemplates.length > 0)
     ) {
       parameters.push(RecipeBodyRoute.Templates);
     }

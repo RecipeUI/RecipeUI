@@ -30,10 +30,8 @@ export function RecipeParameterTab() {
   const secret = useSecretFromSM(selectedRecipe.project);
 
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
+  const urlParams = useRecipeSessionStore((state) => state.urlParams);
 
   const {
     needsAuthSetup,
@@ -86,6 +84,9 @@ export function RecipeParameterTab() {
   const hasQueryParamPayload = Object.keys(queryParams).length > 0;
   const needsQueryParams = hasRequiredQueryParams && !hasQueryParamPayload;
 
+  const hasUrlParamPayload = Object.keys(urlParams).length > 0;
+  const needsUrlParams = hasUrlParams && !hasUrlParamPayload;
+
   const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
 
   const hasTemplates = selectedRecipe.templates != null;
@@ -126,11 +127,15 @@ export function RecipeParameterTab() {
               )}
             </div>
           </div>
-          {!needsAuthSetup && (needsBodyParams || needsQueryParams) && (
-            <UserTemplates />
-          )}
         </div>
       )}
+
+      <div className="mb-4 mx-4 mt-6">
+        {!needsAuthSetup &&
+          (needsBodyParams || needsQueryParams || needsUrlParams) && (
+            <UserTemplates />
+          )}
+      </div>
 
       {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
         <RecipeJsonEditor />
