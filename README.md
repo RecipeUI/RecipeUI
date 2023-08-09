@@ -27,7 +27,7 @@ We need help in three ways and they don't require coding!
 
 
 
-## Open Source Philisophy
+## Open Source Philosophy
 We are open sourced and anyone can build on top of us. We also desperately want your help in building new recipes so everyone can build more tools! These don't actually require much coding experience, you just have to be able to write JSON and we'll happily give you a shout out.
 
 To be upfront, we want our product to be free for most use cases, but we do have a plan to charge for enterprise teams. Our history of building recipes started internally because we wanted to make the lives of our teammates at Meta and Robinhood easier. Nothing made my teammates happier when they stopped sending me scripts on slack and started using this ugly internal UI tool I built for them. Eventually, we want to help teams build private recipes that they can easily share in seconds internally.
