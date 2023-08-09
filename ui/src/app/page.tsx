@@ -23,6 +23,7 @@ export default async function Home({
   searchParams: {
     sessionId?: string;
     recipeId?: string;
+    shareTemplate?: string;
   };
 }) {
   const { sessionId, recipeId } = searchParams;
@@ -63,7 +64,7 @@ export default async function Home({
       } = await supabase
         .from("template_public_view")
         .select(
-          "id, created_at, title, description, original_author, recipe, visibility"
+          "id, created_at, title, description, original_author, recipe, visibility, alias"
         )
         .eq("author_id", userData.user.id)
         .eq("recipe_id", recipeId);
@@ -74,11 +75,26 @@ export default async function Home({
     }
   }
 
+  let sharedTemplateInfo: null | UserTemplatePreview = null;
+  if (searchParams.shareTemplate) {
+    const { data: templateData } = await supabase
+      .from("template_public_view")
+      .select(
+        "id, created_at, title, description, original_author, recipe, visibility, alias"
+      )
+      .eq("alias", searchParams.shareTemplate);
+
+    if (templateData && templateData.length > 0) {
+      sharedTemplateInfo = templateData[0] as UserTemplatePreview;
+    }
+  }
+
   return (
     <RecipeHomeContainer
       recipeProjects={projects}
       recipe={recipe || undefined}
       sessionId={sessionId}
+      sharedTemplate={sharedTemplateInfo || undefined}
     />
   );
 }

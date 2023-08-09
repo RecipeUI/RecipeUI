@@ -141,6 +141,7 @@ export type RecipeTemplate = Omit<
 >;
 
 export interface UserTemplatePreview {
+  alias: string;
   id: number;
   created_at: string;
   title: string;

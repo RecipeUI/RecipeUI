@@ -130,7 +130,6 @@ export default function AuthForm({
   setIsModalOpen: (isOpen: boolean) => void;
 }) {
   const supabase = createClientComponentClient<Database>();
-
   const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
 
   return (
@@ -250,6 +249,7 @@ export function OnboardingFlow() {
 
   const searchParams = useSearchParams();
   const userError = searchParams.get(UserCreationError.UserAlreadyExists);
+  const posthog = usePostHog();
 
   const {
     register,
@@ -269,6 +269,10 @@ export function OnboardingFlow() {
     if (stage === "User Info") {
       setStage("Survey");
     } else {
+      posthog.capture(POST_HOG_CONSTANTS.SIGN_UP, {
+        hear_about: data.hear_about,
+        use_case: data.use_case,
+      });
       startTransition(async () => createUser(data));
     }
 
@@ -401,6 +405,8 @@ import { User } from "@/types/databaseExtended";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 import { getUrl } from "@/utils/main";
+import { usePostHog } from "posthog-js/react";
+import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 
 function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();

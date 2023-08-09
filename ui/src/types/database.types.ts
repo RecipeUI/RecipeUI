@@ -4,358 +4,362 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export interface Database {
   public: {
     Tables: {
       project: {
         Row: {
-          created_at: string | null;
-          description: string;
-          id: number;
-          image: string | null;
-          project: string;
-          public: boolean;
-          status: string;
-          subheader: string;
-          tags: string[] | null;
-          title: string;
-        };
+          created_at: string | null
+          description: string
+          id: number
+          image: string | null
+          project: string
+          public: boolean
+          status: string
+          subheader: string
+          tags: string[] | null
+          title: string
+        }
         Insert: {
-          created_at?: string | null;
-          description: string;
-          id?: number;
-          image?: string | null;
-          project: string;
-          public?: boolean;
-          status: string;
-          subheader: string;
-          tags?: string[] | null;
-          title: string;
-        };
+          created_at?: string | null
+          description: string
+          id?: number
+          image?: string | null
+          project: string
+          public?: boolean
+          status: string
+          subheader: string
+          tags?: string[] | null
+          title: string
+        }
         Update: {
-          created_at?: string | null;
-          description?: string;
-          id?: number;
-          image?: string | null;
-          project?: string;
-          public?: boolean;
-          status?: string;
-          subheader?: string;
-          tags?: string[] | null;
-          title?: string;
-        };
-        Relationships: [];
-      };
+          created_at?: string | null
+          description?: string
+          id?: number
+          image?: string | null
+          project?: string
+          public?: boolean
+          status?: string
+          subheader?: string
+          tags?: string[] | null
+          title?: string
+        }
+        Relationships: []
+      }
       recipe: {
         Row: {
-          auth: string | null;
-          author: string | null;
-          created_at: string | null;
-          id: number;
-          method: string;
-          options: Json | null;
-          path: string;
-          private: boolean | null;
-          project: string;
-          queryParams: Json | null;
-          requestBody: Json | null;
-          summary: string;
-          tags: string[] | null;
-          templates: Json[] | null;
-          title: string;
-          urlParams: Json | null;
-        };
+          auth: string | null
+          author: string | null
+          created_at: string | null
+          id: number
+          method: string
+          options: Json | null
+          path: string
+          private: boolean | null
+          project: string
+          queryParams: Json | null
+          requestBody: Json | null
+          summary: string
+          tags: string[] | null
+          templates: Json[] | null
+          title: string
+          urlParams: Json | null
+        }
         Insert: {
-          auth?: string | null;
-          author?: string | null;
-          created_at?: string | null;
-          id?: number;
-          method?: string;
-          options?: Json | null;
-          path: string;
-          private?: boolean | null;
-          project: string;
-          queryParams?: Json | null;
-          requestBody?: Json | null;
-          summary: string;
-          tags?: string[] | null;
-          templates?: Json[] | null;
-          title: string;
-          urlParams?: Json | null;
-        };
+          auth?: string | null
+          author?: string | null
+          created_at?: string | null
+          id?: number
+          method?: string
+          options?: Json | null
+          path: string
+          private?: boolean | null
+          project: string
+          queryParams?: Json | null
+          requestBody?: Json | null
+          summary: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title: string
+          urlParams?: Json | null
+        }
         Update: {
-          auth?: string | null;
-          author?: string | null;
-          created_at?: string | null;
-          id?: number;
-          method?: string;
-          options?: Json | null;
-          path?: string;
-          private?: boolean | null;
-          project?: string;
-          queryParams?: Json | null;
-          requestBody?: Json | null;
-          summary?: string;
-          tags?: string[] | null;
-          templates?: Json[] | null;
-          title?: string;
-          urlParams?: Json | null;
-        };
+          auth?: string | null
+          author?: string | null
+          created_at?: string | null
+          id?: number
+          method?: string
+          options?: Json | null
+          path?: string
+          private?: boolean | null
+          project?: string
+          queryParams?: Json | null
+          requestBody?: Json | null
+          summary?: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title?: string
+          urlParams?: Json | null
+        }
         Relationships: [
           {
-            foreignKeyName: "recipe_project_fkey";
-            columns: ["project"];
-            referencedRelation: "project";
-            referencedColumns: ["project"];
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
           }
-        ];
-      };
+        ]
+      }
       template: {
         Row: {
-          author_id: string;
-          created_at: string;
-          description: string;
-          id: number;
-          original_author_id: string | null;
-          project: string;
-          recipe_id: number;
-          queryParams: Json | null;
-          requestBody: Json | null;
-          urlParams: Json | null;
-          title: string;
-          visibility: string;
-        };
+          alias: string
+          author_id: string
+          created_at: string
+          description: string
+          id: number
+          original_author_id: string | null
+          project: string
+          queryParams: Json | null
+          recipe_id: number
+          requestBody: Json | null
+          title: string
+          urlParams: Json | null
+          visibility: string
+        }
         Insert: {
-          author_id: string;
-          created_at?: string;
-          description: string;
-          id?: number;
-          original_author_id?: string | null;
-          project: string;
-          queryParams?: Json | null;
-          recipe_id: number;
-          requestBody?: Json | null;
-          title: string;
-          urlParams?: Json | null;
-          visibility?: string;
-        };
+          alias: string
+          author_id: string
+          created_at?: string
+          description: string
+          id?: number
+          original_author_id?: string | null
+          project: string
+          queryParams?: Json | null
+          recipe_id: number
+          requestBody?: Json | null
+          title: string
+          urlParams?: Json | null
+          visibility?: string
+        }
         Update: {
-          author_id?: string;
-          created_at?: string;
-          description?: string;
-          id?: number;
-          original_author_id?: string | null;
-          project?: string;
-          queryParams?: Json | null;
-          recipe_id?: number;
-          requestBody?: Json | null;
-          title?: string;
-          urlParams?: Json | null;
-          visibility?: string;
-        };
+          alias?: string
+          author_id?: string
+          created_at?: string
+          description?: string
+          id?: number
+          original_author_id?: string | null
+          project?: string
+          queryParams?: Json | null
+          recipe_id?: number
+          requestBody?: Json | null
+          title?: string
+          urlParams?: Json | null
+          visibility?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "template_author_id_fkey";
-            columns: ["author_id"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_original_author_id_fkey";
-            columns: ["original_author_id"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_project_fkey";
-            columns: ["project"];
-            referencedRelation: "project";
-            referencedColumns: ["project"];
+            foreignKeyName: "template_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
           },
           {
-            foreignKeyName: "template_recipe_id_fkey";
-            columns: ["recipe_id"];
-            referencedRelation: "recipe";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe"
+            referencedColumns: ["id"]
           }
-        ];
-      };
+        ]
+      }
       template_fork: {
         Row: {
-          created_at: string;
-          id: number;
-          new_author: string;
-          new_template: number;
-          original_author: string;
-          original_template: number;
-        };
+          created_at: string
+          id: number
+          new_author_id: string
+          new_template: number
+          original_author_id: string
+          original_template: number
+        }
         Insert: {
-          created_at?: string;
-          id?: number;
-          new_author: string;
-          new_template: number;
-          original_author: string;
-          original_template: number;
-        };
+          created_at?: string
+          id?: number
+          new_author_id: string
+          new_template: number
+          original_author_id: string
+          original_template: number
+        }
         Update: {
-          created_at?: string;
-          id?: number;
-          new_author?: string;
-          new_template?: number;
-          original_author?: string;
-          original_template?: number;
-        };
+          created_at?: string
+          id?: number
+          new_author_id?: string
+          new_template?: number
+          original_author_id?: string
+          original_template?: number
+        }
         Relationships: [
           {
-            foreignKeyName: "template_fork_new_author_fkey";
-            columns: ["new_author"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_fork_new_author_id_fkey"
+            columns: ["new_author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_fork_new_template_fkey";
-            columns: ["new_template"];
-            referencedRelation: "template";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_fork_new_template_fkey"
+            columns: ["new_template"]
+            referencedRelation: "template"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "template_fork_new_template_fkey";
-            columns: ["new_template"];
-            referencedRelation: "template_public_view";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_fork_new_template_fkey"
+            columns: ["new_template"]
+            referencedRelation: "template_public_view"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "template_fork_original_author_fkey";
-            columns: ["original_author"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_fork_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_fork_original_template_fkey";
-            columns: ["original_template"];
-            referencedRelation: "template";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_fork_original_template_fkey"
+            columns: ["original_template"]
+            referencedRelation: "template"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "template_fork_original_template_fkey";
-            columns: ["original_template"];
-            referencedRelation: "template_public_view";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_fork_original_template_fkey"
+            columns: ["original_template"]
+            referencedRelation: "template_public_view"
+            referencedColumns: ["id"]
           }
-        ];
-      };
+        ]
+      }
       user: {
         Row: {
-          company: string | null;
-          created_at: string;
-          email: string;
-          first: string;
-          hear_about: string | null;
-          last: string;
-          onboarded: boolean;
-          place: number;
-          profile_pic: string | null;
-          tier: string;
-          use_case: string | null;
-          user_id: string;
-          username: string;
-        };
+          company: string | null
+          created_at: string
+          email: string
+          first: string
+          hear_about: string | null
+          last: string
+          onboarded: boolean
+          place: number
+          profile_pic: string | null
+          tier: string
+          use_case: string | null
+          user_id: string
+          username: string
+        }
         Insert: {
-          company?: string | null;
-          created_at?: string;
-          email: string;
-          first: string;
-          hear_about?: string | null;
-          last: string;
-          onboarded?: boolean;
-          place?: number;
-          profile_pic?: string | null;
-          tier?: string;
-          use_case?: string | null;
-          user_id: string;
-          username: string;
-        };
+          company?: string | null
+          created_at?: string
+          email: string
+          first: string
+          hear_about?: string | null
+          last: string
+          onboarded?: boolean
+          place?: number
+          profile_pic?: string | null
+          tier?: string
+          use_case?: string | null
+          user_id: string
+          username: string
+        }
         Update: {
-          company?: string | null;
-          created_at?: string;
-          email?: string;
-          first?: string;
-          hear_about?: string | null;
-          last?: string;
-          onboarded?: boolean;
-          place?: number;
-          profile_pic?: string | null;
-          tier?: string;
-          use_case?: string | null;
-          user_id?: string;
-          username?: string;
-        };
+          company?: string | null
+          created_at?: string
+          email?: string
+          first?: string
+          hear_about?: string | null
+          last?: string
+          onboarded?: boolean
+          place?: number
+          profile_pic?: string | null
+          tier?: string
+          use_case?: string | null
+          user_id?: string
+          username?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "user_user_id_fkey";
-            columns: ["user_id"];
-            referencedRelation: "users";
-            referencedColumns: ["id"];
+            foreignKeyName: "user_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           }
-        ];
-      };
-    };
+        ]
+      }
+    }
     Views: {
       template_public_view: {
         Row: {
-          author_id: string | null;
-          created_at: string | null;
-          description: string | null;
-          id: number | null;
-          original_author: Json | null;
-          original_author_id: string | null;
-          project: string | null;
-          queryParams: Json | null;
-          recipe: Json | null;
-          recipe_id: number | null;
-          requestBody: Json | null;
-          title: string | null;
-          urlParams: Json | null;
-          visibility: string | null;
-        };
+          alias: string | null
+          author_id: string | null
+          created_at: string | null
+          description: string | null
+          id: number | null
+          original_author: Json | null
+          original_author_id: string | null
+          project: string | null
+          queryParams: Json | null
+          recipe: Json | null
+          recipe_id: number | null
+          requestBody: Json | null
+          title: string | null
+          urlParams: Json | null
+          visibility: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "template_author_id_fkey";
-            columns: ["author_id"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_original_author_id_fkey";
-            columns: ["original_author_id"];
-            referencedRelation: "user";
-            referencedColumns: ["user_id"];
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_project_fkey";
-            columns: ["project"];
-            referencedRelation: "project";
-            referencedColumns: ["project"];
+            foreignKeyName: "template_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
           },
           {
-            foreignKeyName: "template_recipe_id_fkey";
-            columns: ["recipe_id"];
-            referencedRelation: "recipe";
-            referencedColumns: ["id"];
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe"
+            referencedColumns: ["id"]
           }
-        ];
-      };
-    };
+        ]
+      }
+    }
     Functions: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
+      [_ in never]: never
+    }
+  }
 }

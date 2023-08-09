@@ -5,6 +5,7 @@ import {
   RecipeParameters,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
+import { Recipe } from "@/types/databaseExtended";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
 import { getURLParamsForSession } from "@/utils/main";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
@@ -186,15 +187,17 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
   );
 }
 
-function SucessAnimation({
+export function SucessAnimation({
   onClose,
   newTemplateId,
+  passiveRecipe,
 }: {
   onClose: () => void;
   newTemplateId: number;
+  passiveRecipe?: Pick<Recipe, "title" | "id" | "method">;
 }) {
   const router = useRouter();
-  const recipe = useContext(RecipeContext)!;
+  const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
   const addSession = useRecipeSessionStore((state) => state.addSession);
 
   useEffect(() => {

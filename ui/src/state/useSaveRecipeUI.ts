@@ -23,6 +23,7 @@ export function useSaveRecipeUI() {
   const { project: projectId } = useParams();
   const searchParams = useSearchParams();
   const sessionIdParam = searchParams.get("s");
+  const shareTemplateIdParam = searchParams.get("shareTemplate");
 
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
@@ -52,7 +53,7 @@ export function useSaveRecipeUI() {
     console.log("Hydrating from local storage");
 
     if (!localSave) return;
-    if (localSave.currentSession && !projectId) {
+    if (localSave.currentSession && !projectId && !shareTemplateIdParam) {
       router.push(`/?${getURLParamsForSession(localSave.currentSession)}`);
       setCurrentSession(localSave.currentSession);
     }
@@ -134,7 +135,7 @@ export function useSaveRecipeUI() {
       });
       setSessions(_sessions);
 
-      if (projectId) return;
+      if (projectId || shareTemplateIdParam) return;
 
       const localSession = localSave.currentSession;
       if (localSession != null) {
@@ -156,7 +157,7 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   useEffect(() => {
-    if (projectId) return;
+    if (projectId || shareTemplateIdParam) return;
 
     if ((sessionIdParam as string) && localSave?.sessions) {
       const session = localSave.sessions.find((s) => s.id === sessionIdParam);

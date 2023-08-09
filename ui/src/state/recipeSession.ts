@@ -25,7 +25,9 @@ interface RecipeSessionSlice {
   setCurrentSession: (session: RecipeSession | null) => void;
   updateSessionName: (session: RecipeSession, name: string) => void;
 
-  addSession: (selectedRecipe: Recipe) => RecipeSession;
+  addSession: (
+    selectedRecipe: Pick<Recipe, "title" | "id" | "method">
+  ) => RecipeSession;
   closeSession: (session: RecipeSession) => void;
 }
 

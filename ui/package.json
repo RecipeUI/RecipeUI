@@ -28,6 +28,7 @@
     "lodash.debounce": "^4.0.8",
     "next": "13.4.12",
     "posthog-js": "^1.75.3",
+    "random-word-slugs": "^0.1.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.4",
