@@ -10,6 +10,7 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
+import { useScreen } from "usehooks-ts";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -17,6 +18,7 @@ export function RecipeBody() {
   // We should probably actually fetch the id here if possible?
   const selectedRecipe = useContext(RecipeContext);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
+  const screen = useScreen();
 
   const routes = useMemo(() => {
     if (selectedRecipe === null) {
@@ -36,6 +38,24 @@ export function RecipeBody() {
 
     if (selectedRecipe.auth !== null) {
       parameters.push(RecipeBodyRoute.Config);
+    }
+
+    if (
+      screen?.width &&
+      screen.width < 640 &&
+      parameters.includes(RecipeBodyRoute.Templates)
+    ) {
+      setBodyRoute(RecipeBodyRoute.Templates);
+      // Make sure Templates is first on mobile
+      parameters.sort((a, b) => {
+        if (a === RecipeBodyRoute.Templates) {
+          return -1;
+        } else if (b === RecipeBodyRoute.Templates) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
     }
 
     return parameters;
