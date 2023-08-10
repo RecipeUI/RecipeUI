@@ -2,6 +2,7 @@ import { startTransition, useContext, useState } from "react";
 import {
   RecipeBodyRoute,
   RecipeContext,
+  RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import {
@@ -47,6 +48,7 @@ export function StarterTemplates() {
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
   const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
   const templates = selectedRecipe.templates || [];
+  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   if (templates.length === 0) {
     return null;
@@ -85,6 +87,7 @@ export function StarterTemplates() {
                   }
 
                   setBodyRoute(RecipeBodyRoute.Parameters);
+                  setCurrentTab(RecipeOutputTab.Docs);
                 }}
               >
                 Use
@@ -112,6 +115,8 @@ export function UserTemplates() {
 
   const router = useRouter();
   const posthog = usePostHog();
+
+  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   if (userTemplates.length === 0) {
     return null;
@@ -164,6 +169,7 @@ export function UserTemplates() {
                       setUrlParams(templateInfo.urlParams);
                     }
 
+                    setCurrentTab(RecipeOutputTab.Docs);
                     setBodyRoute(RecipeBodyRoute.Parameters);
 
                     posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_USE, {

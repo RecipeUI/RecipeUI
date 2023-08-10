@@ -119,8 +119,8 @@ export function RecipeOutputConsole() {
               <>
                 {imageBlocks.length > 1 && (
                   <p className="mb-2">
-                    We found {imageBlocks.length} images. Scroll right to see
-                    some of them.
+                    We found {imageBlocks.length} images. Scroll left and right
+                    to see some of them.
                   </p>
                 )}
                 <div className="carousel rounded-box">
