@@ -77,7 +77,7 @@ function ProjectHomeBox({
 
   return (
     <div
-      className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer"
+      className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer bg-white dark:bg-slate-800"
       onClick={() => {
         const session = addSession(recipe);
         router.push(`/?${getURLParamsForSession(session)}`);

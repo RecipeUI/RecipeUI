@@ -14,8 +14,10 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
     const more: RecipeProject[] = [];
 
     projects.forEach((recipe) => {
+      // TODO: We have an RLS policy on this but will disable temp until we get roles.
+      if (!recipe.public) return;
+
       const tags = recipe.tags || [];
-      console;
 
       if (tags.includes("Popular")) {
         popular.push(recipe);
@@ -39,16 +41,16 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   return (
     <div className="flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
-        header="No API key needed"
-        description="These APIs have zero auth setup! Use these in seconds..."
+        header="Use Right Away"
+        description="No API key required -> these APIs have zero auth setup! "
         projects={free}
       />
       <MarketplaceSection
         header="Popular APIs"
         description={
           <p>
-            Discover popular recipes built from popular APIs! We are open
-            sourced and need your help to build more recipes.{" "}
+            Discover recipes built from popular APIs! We are open source and
+            need your help to build more recipes.{" "}
             <a
               href={GITHUB_REPO}
               target="_blank"
@@ -133,7 +135,7 @@ export function RecipeHomeBox({
   return (
     <Link href={`/${project}`}>
       <div
-        className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full"
+        className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full bg-white dark:bg-slate-800"
         onClick={() => {
           postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
             project,
