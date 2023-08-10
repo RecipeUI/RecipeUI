@@ -38,13 +38,13 @@ export function ProjectHome({
   }, [_recipes]);
 
   return (
-    <div className="flex-1 px-4 ">
-      <div className="flex justify-start bg-base-200 rounded-md shadow-md border min-h-[250px]">
+    <div className="flex-1 px-4">
+      <div className="flex justify-start rounded-md border min-h-[250px] bg-white dark:bg-slate-800">
         <div className="p-4 flex flex-col space-y-8 lg:space-y-0   lg:flex-row lg:items-center lg:space-x-8">
           {project.image && (
             <img
               src={project.image}
-              className="max-w-[10rem] lg:max-w-xs rounded-lg shadow-2xl"
+              className="max-w-[10rem] lg:max-w-xs rounded-lg"
               alt={project.title}
             />
           )}
@@ -77,7 +77,7 @@ function ProjectHomeBox({
 
   return (
     <div
-      className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 flex flex-col h-38 cursor-pointer bg-white dark:bg-slate-800"
+      className="border border-slate-700 rounded-md p-4 space-y-1 flex flex-col h-38 cursor-pointer bg-white dark:bg-slate-800"
       onClick={() => {
         const session = addSession(recipe);
         router.push(`/?${getURLParamsForSession(session)}`);
@@ -96,7 +96,7 @@ function ProjectHomeBox({
             project.status === RecipeProjectStatus.Soon && "!btn-accent"
           )}
         >
-          Use
+          Run
         </button>
       </div>
 

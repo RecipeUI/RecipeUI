@@ -135,14 +135,14 @@ export function RecipeHomeBox({
   return (
     <Link href={`/${project}`}>
       <div
-        className="border border-slate-700 rounded-md shadow-sm p-4 space-y-1 cursor-pointer h-full bg-white dark:bg-slate-800"
+        className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full bg-white dark:bg-slate-800"
         onClick={() => {
           postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
             project,
           });
         }}
       >
-        <div className="flex justify-between ">
+        <div className="flex justify-between">
           <div className="flex items-center">
             {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
             <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
