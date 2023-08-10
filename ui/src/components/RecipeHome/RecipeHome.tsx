@@ -14,8 +14,10 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
     const more: RecipeProject[] = [];
 
     projects.forEach((recipe) => {
+      // TODO: We have an RLS policy on this but will disable temp until we get roles.
+      if (!recipe.public) return;
+
       const tags = recipe.tags || [];
-      console;
 
       if (tags.includes("Popular")) {
         popular.push(recipe);
