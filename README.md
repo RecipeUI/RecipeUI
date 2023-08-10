@@ -8,7 +8,7 @@ Try us out [www.recipeui.com](https://recipeui.com/)
 ## Getting this to run
 Promise we'll have this out by the end of the week. We've been focused on building because there's a really awesome roadmap ahead.
 
-## Tech Stack
+## Built with
 Couldn't have built this app without some really amazing packages
 - 🐻 Zustand + immer for global state management
 - Tailwind + DaisyUI for making me build pretty and native html components
@@ -16,7 +16,6 @@ Couldn't have built this app without some really amazing packages
 - Supabase for a seamless backend service that has many cool features. 
 - Codemirror for the easy code editor plugin
 - Other fun stuff: pnpm, downshift, fuse, react18-json-view
-
 
 
 ## Contributing

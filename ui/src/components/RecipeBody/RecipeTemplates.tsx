@@ -1,4 +1,4 @@
-import { startTransition, useContext, useState } from "react";
+import { startTransition, useContext, useEffect, useState } from "react";
 import {
   RecipeBodyRoute,
   RecipeContext,
@@ -28,6 +28,7 @@ import {
 } from "@/utils/constants";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
+import { useSessionStorage } from "usehooks-ts";
 
 export function RecipeTemplatesTab() {
   return (
@@ -102,7 +103,6 @@ export function StarterTemplates() {
 
 export function UserTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
-  const userTemplates = selectedRecipe.userTemplates || [];
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
@@ -116,6 +116,17 @@ export function UserTemplates() {
   const router = useRouter();
   const posthog = usePostHog();
 
+  const [forkedTemplate, setForkedTemplate] =
+    useLocalStorage<UserTemplatePreview | null>(
+      UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
+      null
+    );
+
+  const userTemplates = [
+    ...(forkedTemplate ? [forkedTemplate] : []),
+    ...(selectedRecipe.userTemplates || []),
+  ];
+
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   if (userTemplates.length === 0) {
@@ -127,6 +138,8 @@ export function UserTemplates() {
       <h1 className="text-xl font-bold">Your Recipes</h1>
       <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
         {userTemplates.map((template) => {
+          const isLocalFork = forkedTemplate?.id === template.id;
+
           return (
             <div
               className={classNames(
@@ -187,6 +200,10 @@ export function UserTemplates() {
                   className="btn btn-xs btn-neutral w-fit"
                   onClick={async () => {
                     if (!confirm("Are you sure you want to delete this?")) {
+                      return;
+                    }
+                    if (isLocalFork) {
+                      setForkedTemplate(null);
                       return;
                     }
 
@@ -296,9 +313,9 @@ export function ShareInviteModal({
   const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
   const [limitedForks, setLimitedForks] = useState(false);
 
-  const [registerFork, setRegisterFork] = useLocalStorage(
+  const [_, setForkedTemplate] = useLocalStorage<UserTemplatePreview | null>(
     UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
-    ""
+    null
   );
 
   return (
@@ -318,9 +335,9 @@ export function ShareInviteModal({
                     template_project: template.recipe.project,
                     recipe_title: template.recipe.title,
                   });
-                  setRegisterFork(template.alias);
-                  document.getElementById(UNIQUE_ELEMENT_IDS.SIGN_IN)?.click();
-                  onClose();
+
+                  setForkedTemplate(template);
+                  setNewTemplateId(template.id);
                 } else {
                   setIsForking(true);
                   const { newTemplate, error } = await cloneTemplate(
@@ -343,7 +360,7 @@ export function ShareInviteModal({
                 }
               }}
             >
-              {!user ? "Login to fork" : "Fork this recipe"}
+              Fork this Recipe!
               {isForking && <span className="loading loading-bars" />}
             </button>
           ) : (

@@ -162,17 +162,19 @@ export function RecipeOutputConsole() {
         />
       )}
       {!isSending || (isSending && type === RecipeOutputType.Streaming) ? (
-        <OutputModule
-          title="Response"
-          body={
-            <JsonView
-              src={output}
-              collapsed={false}
-              collapseStringsAfterLength={50000}
-              collapseObjectsAfterLength={100}
-            />
-          }
-        />
+        <>
+          <OutputModule
+            title="Response"
+            body={
+              <JsonView
+                src={output}
+                collapsed={false}
+                collapseStringsAfterLength={50000}
+                collapseObjectsAfterLength={50}
+              />
+            }
+          />
+        </>
       ) : (
         <div className="flex items-end mb-2">
           <h1 className="text-xl font-bold">Fetching response</h1>
