@@ -63,6 +63,7 @@ export const getEmptyParameters = (): RecipeParameters => ({
 interface SessionOutput {
   output: Record<string, unknown>;
   type: RecipeOutputType;
+  duration?: number;
 }
 interface RecipeOutputSlice {
   isSending: boolean;
@@ -387,7 +388,10 @@ const createRecipeOutputSlice: StateCreator<
       set((prevState) => {
         const outputManager = {
           ...prevState.outputManager,
-          [sessionId]: output,
+          [sessionId]: {
+            ...prevState.outputManager[sessionId],
+            ...output,
+          },
         };
 
         return {

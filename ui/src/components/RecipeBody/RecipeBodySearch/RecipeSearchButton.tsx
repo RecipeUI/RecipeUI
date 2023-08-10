@@ -45,6 +45,8 @@ export function RecipeSearchButton() {
   const _onSubmit = async () => {
     if (!currentSession) return;
 
+    const startTime = performance.now();
+
     const recipeInfoLog = {
       recipeId: recipe.id,
       path: recipe.path,
@@ -255,6 +257,7 @@ export function RecipeSearchButton() {
             content,
           },
           type: RecipeOutputType.Response,
+          duration: performance.now() - startTime,
         });
 
         posthog.capture(
@@ -306,6 +309,7 @@ export function RecipeSearchButton() {
       setOutput(currentSession.id, {
         output: output,
         type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
+        duration: performance.now() - startTime,
       });
     } catch (e) {
       console.error(e);
@@ -323,6 +327,7 @@ export function RecipeSearchButton() {
           error: output,
         },
         type: RecipeOutputType.Error,
+        duration: performance.now() - startTime,
       });
     }
     return true;
@@ -348,7 +353,7 @@ export function RecipeSearchButton() {
   const isHovering = useHover(ref);
 
   return (
-    <div className="tooltip tooltip-bottom" data-tip="CMD+Enter">
+    <div className="tooltip tooltip-bottom">
       <button
         ref={ref}
         className={classNames(

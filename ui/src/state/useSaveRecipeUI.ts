@@ -23,7 +23,7 @@ export function useSaveRecipeUI() {
   const { username } = useParams();
   const { project: projectId, recipe: shareTemplateIdParam } = useParams();
   const searchParams = useSearchParams();
-  const sessionIdParam = searchParams.get("s");
+  const sessionIdParam = searchParams.get("sessionId");
 
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
