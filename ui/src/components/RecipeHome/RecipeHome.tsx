@@ -41,11 +41,6 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   return (
     <div className="flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
-        header="Use Right Away"
-        description="No API key required -> these APIs have zero auth setup! "
-        projects={free}
-      />
-      <MarketplaceSection
         header="Popular APIs"
         description={
           <p>
@@ -61,6 +56,11 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
           </p>
         }
         projects={popular}
+      />
+      <MarketplaceSection
+        header="Use Right Away"
+        description="No API key required -> these APIs have zero auth setup! "
+        projects={free}
       />
       <MarketplaceSection
         header="YCombinator"
