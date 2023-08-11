@@ -134,7 +134,7 @@ function RecipeDocsContainer({
         <div
           className={classNames(
             remaining.length > 0 ? "mb-4" : "",
-            loadingTemplate && "animate-pulse bg-chefYellow"
+            loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
           )}
           id="recipe-added"
         >
