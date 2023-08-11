@@ -135,8 +135,8 @@ export function RecipeParameterTab() {
                     <h3 className="font-bold mb-2">Recipe Playground</h3>
                     <p>
                       You can continue using recipes, but to truly enjoy the
-                      most of this API with your own parameters then get an auth
-                      key.
+                      most of this API with your own parameters then setup auth
+                      below.
                     </p>
                     <button
                       className="btn btn-sm btn-neutral"

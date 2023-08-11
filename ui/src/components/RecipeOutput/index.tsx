@@ -10,7 +10,6 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 // This library is ridiculously large. We should try to replace it with something lightweight.
 import JsonView from "react18-json-view";
-import { useDarkMode } from "usehooks-ts";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);

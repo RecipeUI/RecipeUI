@@ -111,21 +111,17 @@ function RecipeDocsContainer({
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
-  const _addedAlready: [string, RecipeParam][] = [];
+  const addedAlready: [string, RecipeParam][] = [];
   const remaining: [string, RecipeParam][] = [];
 
   for (const paramSchema of param.objectSchema) {
     const paramName = paramSchema.name;
     if (requestBody[paramName] !== undefined) {
-      _addedAlready.push([paramName, paramSchema]);
+      addedAlready.push([paramName, paramSchema]);
     } else {
       remaining.push([paramName, paramSchema]);
     }
   }
-
-  const addedAlready = loadingTemplate
-    ? _addedAlready.reverse()
-    : _addedAlready;
 
   return (
     <div className="my-4">
@@ -134,7 +130,8 @@ function RecipeDocsContainer({
         <div
           className={classNames(
             remaining.length > 0 ? "mb-4" : "",
-            loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
+            loadingTemplate &&
+              "animate-pulse bg-chefYellow dark:text-white flex flex-col-reverse"
           )}
           id="recipe-added"
         >
@@ -697,6 +694,9 @@ function RecipeDocArrayParam({
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
 
   let objectParams: RecipeParam[] = [];
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
   if ("objectSchema" in paramSchema.arraySchema) {
     objectParams = paramSchema.arraySchema.objectSchema;
@@ -706,7 +706,8 @@ function RecipeDocArrayParam({
     <div className="">
       <div
         className={classNames(
-          paramState.length > 0 && "mb-2 space-y-2 border rounded-sm p-2"
+          paramState.length > 0 && "mb-2 space-y-2 border rounded-sm p-2",
+          loadingTemplate && "flex flex-col-reverse"
         )}
       >
         {paramState?.map((paramInfo, index) => {
