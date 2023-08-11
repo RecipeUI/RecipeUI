@@ -93,7 +93,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
       <div className="flex-1" />
       <div className="flex justify-between">
         <button
-          className="btn btn-xs btn-neutral w-fit"
+          className="btn btn-sm btn-neutral w-fit"
           onClick={async () => {
             posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
               template_id: "Core" + template.title,
@@ -178,7 +178,7 @@ export function UserTemplates() {
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
                 <button
-                  className="btn btn-xs w-fit"
+                  className="btn btn-sm btn-neutral w-fit"
                   onClick={async () => {
                     posthog.capture(
                       POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
@@ -202,7 +202,7 @@ export function UserTemplates() {
                 </button>
 
                 <div className="dropdown hidden sm:inline-block">
-                  <label tabIndex={0} className="btn btn-xs btn-neutral">
+                  <label tabIndex={0} className="btn btn-sm btn-neutral">
                     Options
                   </label>
                   <ul
@@ -211,7 +211,7 @@ export function UserTemplates() {
                   >
                     <li>
                       <button
-                        className="btn btn-xs btn-neutral w-fit"
+                        className="btn btn-sm btn-neutral w-full"
                         onClick={async () => {
                           const templateInfo = await getTemplate(template.id);
 
@@ -251,7 +251,7 @@ export function UserTemplates() {
                     </li>
                     <li>
                       <button
-                        className="btn btn-xs btn-neutral w-full"
+                        className="btn btn-sm btn-neutral w-full"
                         onClick={async () => {
                           if (
                             !confirm("Are you sure you want to delete this?")
@@ -303,7 +303,7 @@ function ShareRecipeButton({ template }: { template: UserTemplatePreview }) {
   return (
     <>
       <button
-        className="btn btn-xs btn-neutral w-full"
+        className="btn btn-sm btn-neutral w-full"
         onClick={() => {
           setShowModal(true);
         }}
