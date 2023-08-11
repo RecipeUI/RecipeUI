@@ -43,7 +43,7 @@ export function RecipeDocs() {
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
-      <h1 className="text-xl font-bold">{selectedRecipe.title}</h1>
+      <h1 className="text-lg sm:text-xl font-bold">{selectedRecipe.title}</h1>
       {selectedRecipe.summary && (
         <ReactMarkdown className="mt-2 recipe-md">
           {selectedRecipe.summary}
@@ -79,21 +79,60 @@ function RecipeQueryDocsContainer({
   queryParams: RecipeObjectSchemas;
   showHeader: boolean;
 }) {
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+  const queryParamsPayload = useRecipeSessionStore(
+    (state) => state.queryParams
+  );
+
+  const addedAlready: RecipeObjectSchemas[number][] = [];
+  const remaining: RecipeObjectSchemas[number][] = [];
+
+  for (const paramSchema of queryParams) {
+    const paramName = paramSchema.name;
+    if (queryParamsPayload[paramName] !== undefined) {
+      addedAlready.push(paramSchema);
+    } else {
+      remaining.push(paramSchema);
+    }
+  }
+
   return (
     <div className="my-4">
       {showHeader && <h3 className="mb-2 text-sm">Query Params</h3>}
-      {queryParams.map((paramSchema) => {
-        const paramName = paramSchema.name;
-        return (
-          <RecipeDocsParamContainer
-            key={paramName}
-            paramName={paramName}
-            paramSchema={paramSchema}
-            paramPath={"." + paramName}
-            isQueryParam
-          />
-        );
-      })}
+      <div
+        className={classNames(
+          loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
+        )}
+      >
+        {addedAlready.map((paramSchema) => {
+          const paramName = paramSchema.name;
+          return (
+            <RecipeDocsParamContainer
+              key={paramName}
+              paramName={paramName}
+              paramSchema={paramSchema}
+              paramPath={"." + paramName}
+              isQueryParam
+            />
+          );
+        })}
+      </div>
+      <div>
+        {remaining.map((paramSchema) => {
+          const paramName = paramSchema.name;
+          return (
+            <RecipeDocsParamContainer
+              key={paramName}
+              paramName={paramName}
+              paramSchema={paramSchema}
+              paramPath={"." + paramName}
+              isQueryParam
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -271,16 +310,15 @@ function RecipeDocsParamContainer({
                   value: getDefaultValue(paramSchema),
                 });
 
-                if (!isQueryParam) {
-                  setTimeout(() => {
-                    document
-                      .getElementById(paramPath)
-                      ?.lastElementChild?.scrollIntoView({
-                        behavior: "instant" as ScrollBehavior,
-                        block: "center",
-                      });
-                  }, 0); // Trick to wait for the DOM to update
-                }
+                setTimeout(() => {
+                  console.log(paramPath);
+                  document
+                    .getElementById(paramPath)
+                    ?.lastElementChild?.scrollIntoView({
+                      behavior: "instant" as ScrollBehavior,
+                      block: "center",
+                    });
+                }, 0); // Trick to wait for the DOM to update
               }
             }}
           >
@@ -915,15 +953,25 @@ function RecipeUrlDocsContainer({
     (state) => state.updateUrlParams
   );
 
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+
   return (
-    <div className="my-4">
+    <div className={classNames("my-4")}>
       {showHeader && <h3 className="mb-2 text-sm">Url Params</h3>}
       {urlParamsSchema.map((paramSchema) => {
         const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
 
         return (
-          <div className="border rounded-sm p-4" key={paramName}>
+          <div
+            className={classNames(
+              "border rounded-sm p-4",
+              loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
+            )}
+            key={paramName}
+          >
             <div className="flex justify-between items-center">
               <RecipeDocObjectDefinition
                 paramName={paramName}

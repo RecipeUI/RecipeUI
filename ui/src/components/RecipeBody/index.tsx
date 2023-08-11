@@ -10,7 +10,9 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
-import { useScreen } from "usehooks-ts";
+import { useLocalStorage, useScreen } from "usehooks-ts";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import { UserTemplatePreview } from "@/types/databaseExtended";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -19,7 +21,11 @@ export function RecipeBody() {
   const selectedRecipe = useContext(RecipeContext);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const screen = useScreen();
-
+  const [forkedTemplate, setForkedTemplate] =
+    useLocalStorage<UserTemplatePreview | null>(
+      UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
+      null
+    );
   const routes = useMemo(() => {
     if (selectedRecipe === null) {
       return [];
@@ -31,7 +37,9 @@ export function RecipeBody() {
       (selectedRecipe &&
         selectedRecipe.templates &&
         selectedRecipe.templates.length > 0) ||
-      (selectedRecipe.userTemplates && selectedRecipe.userTemplates.length > 0)
+      (selectedRecipe.userTemplates &&
+        selectedRecipe.userTemplates.length > 0) ||
+      forkedTemplate
     ) {
       parameters.push(RecipeBodyRoute.Templates);
     }

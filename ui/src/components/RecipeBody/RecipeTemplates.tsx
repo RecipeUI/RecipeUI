@@ -178,7 +178,7 @@ export function UserTemplates() {
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
                 <button
-                  className="btn btn-xs w-fit btn-accent"
+                  className="btn btn-xs w-fit"
                   onClick={async () => {
                     posthog.capture(
                       POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
@@ -198,53 +198,54 @@ export function UserTemplates() {
                     }
                   }}
                 >
-                  Play
-                </button>
-
-                <button
-                  className="btn btn-xs btn-neutral w-fit"
-                  onClick={async () => {
-                    const templateInfo = await getTemplate(template.id);
-
-                    if (!templateInfo) {
-                      alert("Failed to find template");
-                      return;
-                    }
-
-                    if (templateInfo.requestBody) {
-                      setRequestBody(templateInfo.requestBody);
-                    }
-
-                    if (templateInfo.queryParams) {
-                      setQueryParams(templateInfo.queryParams);
-                    }
-
-                    if (templateInfo.urlParams) {
-                      setUrlParams(templateInfo.urlParams);
-                    }
-
-                    setCurrentTab(RecipeOutputTab.Docs);
-                    setBodyRoute(RecipeBodyRoute.Parameters);
-
-                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-                      template_id: template.id,
-                      template_project: selectedRecipe.project,
-                      recipe_id: selectedRecipe.id,
-                      recipe_path: selectedRecipe.path,
-                    });
-                  }}
-                >
                   Use
                 </button>
 
-                <div className="dropdown">
+                <div className="dropdown hidden sm:inline-block">
                   <label tabIndex={0} className="btn btn-xs btn-neutral">
                     Options
                   </label>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content z-[1] menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
+                    className="dropdown-content z-20 menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
                   >
+                    <li>
+                      <button
+                        className="btn btn-xs btn-neutral w-fit"
+                        onClick={async () => {
+                          const templateInfo = await getTemplate(template.id);
+
+                          if (!templateInfo) {
+                            alert("Failed to find template");
+                            return;
+                          }
+
+                          if (templateInfo.requestBody) {
+                            setRequestBody(templateInfo.requestBody);
+                          }
+
+                          if (templateInfo.queryParams) {
+                            setQueryParams(templateInfo.queryParams);
+                          }
+
+                          if (templateInfo.urlParams) {
+                            setUrlParams(templateInfo.urlParams);
+                          }
+
+                          setCurrentTab(RecipeOutputTab.Docs);
+                          setBodyRoute(RecipeBodyRoute.Parameters);
+
+                          posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+                            template_id: template.id,
+                            template_project: selectedRecipe.project,
+                            recipe_id: selectedRecipe.id,
+                            recipe_path: selectedRecipe.path,
+                          });
+                        }}
+                      >
+                        Prefill
+                      </button>
+                    </li>
                     <li>
                       <ShareRecipeButton template={template} />
                     </li>
@@ -302,7 +303,7 @@ function ShareRecipeButton({ template }: { template: UserTemplatePreview }) {
   return (
     <>
       <button
-        className="btn btn-xs btn-neutral w-fit"
+        className="btn btn-xs btn-neutral w-full"
         onClick={() => {
           setShowModal(true);
         }}

@@ -15,18 +15,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateSlug } from "random-word-slugs";
 
-export async function getTemplate(templateId: number) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
-
-  const { data } = await supabase
-    .from("template")
-    .select()
-    .eq("id", templateId)
-    .single();
-
-  return data;
-}
-
 export async function createTemplate(
   payload: Omit<
     Database["public"]["Tables"]["template"]["Insert"],

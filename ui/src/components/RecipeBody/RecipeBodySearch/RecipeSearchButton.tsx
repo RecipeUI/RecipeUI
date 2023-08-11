@@ -474,7 +474,7 @@ function useLoadingTemplate() {
         ) {
           // This is literally overkill but makes it look really cool!
           if (paramSchema.enum) {
-            let speed = (paramSchema.enum.length > 5 ? 1 : 5) * speedFactor;
+            let speed = (paramSchema.enum.length > 5 ? 1 : 2) * speedFactor;
             for (const enumValue of paramSchema.enum) {
               setTimeout(() => {
                 updateFunction({
@@ -551,7 +551,7 @@ function useLoadingTemplate() {
           innerVariantSchema.enum
         ) {
           let speed =
-            (innerVariantSchema.enum.length > 5 ? 1 : 5) * speedFactor;
+            (innerVariantSchema.enum.length > 5 ? 1 : 2) * speedFactor;
 
           for (const enumValue of innerVariantSchema.enum) {
             setTimeout(() => {
