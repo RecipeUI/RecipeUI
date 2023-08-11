@@ -81,7 +81,7 @@ export function RecipeOutputConsole() {
 
     const codeBlockRegex = /```(.*?)```/gs;
     const imageRegex =
-      /(https?:\/\/[^\s'"]+\.(png|jpg|jpeg|gif|bmp|webp)(\?[^\s'"]*)?)/g;
+      /(https?:\/\/[^\s'"]+\.(png|jpg|jpeg|gif|bmp|webp)(\?[^\s'"]*)?)/gi;
 
     const codeBlocks: string[] = [];
     const imageBlocks: string[] = [];
