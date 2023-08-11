@@ -78,6 +78,9 @@ export function RecipeOutputConsole() {
   // });
 
   const isSending = useRecipeSessionStore((state) => state.isSending);
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
   const { imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
@@ -154,7 +157,11 @@ export function RecipeOutputConsole() {
           title="Code Blocks Found"
           tooltip="We found these code snippets from the response."
           body={
-            <div className="space-y-4">
+            <div
+              className={classNames(
+                loadingTemplate ? "flex flex-col-reverse gap-y-4" : "space-y-4"
+              )}
+            >
               {codeBlocks.map((codeBlock, i) => {
                 return (
                   <div className="mockup-code text-sm" key={i}>

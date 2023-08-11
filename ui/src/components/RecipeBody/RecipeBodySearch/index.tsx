@@ -128,7 +128,7 @@ export function RecipeBodySearch() {
           currentSession == null && "hidden sm:block"
         )}
       >
-        <div className="flex sm:space-x-2 flex-col sm:flex-row">
+        <div className="flex space-x-2 sm:flex sm:space-x-2 sm:flex-row">
           <div
             className={classNames(
               "input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0 border-slate-600"
