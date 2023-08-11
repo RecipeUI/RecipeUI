@@ -3,7 +3,11 @@ import { getHeaderTypes, useSecretManager } from "../../state/recipeAuth";
 import classNames from "classnames";
 
 import { RecipeAuthType } from "@/types/databaseExtended";
-import { RecipeContext } from "@/state/recipeSession";
+import {
+  RecipeContext,
+  RecipeOutputTab,
+  useRecipeSessionStore,
+} from "@/state/recipeSession";
 import { DOC_LINKS } from "@/utils/docLinks";
 
 export function RecipeConfigTab() {
@@ -47,6 +51,8 @@ export function RecipeNeedsAuth({
   const existingSecret = sm.getSecret(authConfig);
   const hasChanged = apiKey !== sm.getSecret(authConfig);
   const docLink = DOC_LINKS[selectedRecipe.project];
+
+  const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   let authNote = <></>;
 
@@ -135,6 +141,7 @@ export function RecipeNeedsAuth({
               )}
               onClick={() => {
                 sm.updateSecret(authConfig, apiKey);
+                setOutputTab(RecipeOutputTab.Docs);
               }}
             >
               Submit
@@ -246,6 +253,7 @@ function AuthInput({
 
   const existingSecret = sm.getSecret(authConfig);
   const hasChanged = apiKey !== sm.getSecret(authConfig);
+  const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   return (
     <div className="mt-4">
@@ -265,6 +273,7 @@ function AuthInput({
           )}
           onClick={() => {
             sm.updateSecret(authConfig, apiKey);
+            setOutputTab(RecipeOutputTab.Docs);
           }}
         >
           Submit

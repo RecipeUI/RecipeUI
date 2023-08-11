@@ -114,7 +114,7 @@ export function useSaveRecipeUI() {
   );
   useEffect(() => {
     async function fetchRecipes() {
-      const res = await supabase.from("recipe").select("*");
+      const res = await supabase.from("recipe_view").select("*");
       const newRecipes = res.data as unknown[] as Recipe[];
       if (res.data) {
         initializeRecipes(newRecipes);

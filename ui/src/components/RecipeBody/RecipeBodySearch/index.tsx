@@ -25,32 +25,7 @@ export function RecipeBodySearch() {
 
   const _recipes = useRecipeSessionStore((state) => state.recipes);
 
-  const recipeWithLabels = useMemo(() => {
-    const newRecipes = _recipes.map((recipe) => {
-      const optionLabel = `${recipe.project} ${recipe.title}`;
-
-      return {
-        ...recipe,
-        label: optionLabel,
-      };
-    });
-    newRecipes.sort((a, b) => {
-      if (!a.tags && !b.tags) return 0;
-      if (!b.tags) return -1;
-      if (!a.tags) return 1;
-
-      if (a.tags.length === b.tags.length) {
-        // We'll eventually want a better priority ranking here to feature recipes!
-        return a.id - b.id;
-      } else {
-        return b.tags.length - a.tags.length;
-      } // Sorting in descending order, so the item with the most tags comes first
-    });
-
-    return newRecipes;
-  }, [_recipes]);
-
-  const [recipes, setRecipes] = useState(recipeWithLabels);
+  const [recipes, setRecipes] = useState(_recipes);
   const router = useRouter();
   const currentSessionRecipe = useContext(RecipeContext);
 
@@ -118,12 +93,12 @@ export function RecipeBodySearch() {
   }, [clearDeepAction, deepActions, openMenu, setInputValue]);
 
   const recipeSearch = useMemo(() => {
-    return new Fuse(recipeWithLabels, {
+    return new Fuse(_recipes, {
       keys: ["summary", "path", "label"],
       threshold: 0.4,
       sortFn: (a, b) => {
-        const a_tags = (recipeWithLabels[a.idx].tags || []).length;
-        const b_tags = (recipeWithLabels[b.idx].tags || []).length;
+        const a_tags = (_recipes[a.idx].tags || []).length;
+        const b_tags = (_recipes[b.idx].tags || []).length;
 
         if (a_tags > b_tags) return -1;
         else if (a_tags < b_tags) return 1;
@@ -131,12 +106,12 @@ export function RecipeBodySearch() {
         return a.score - b.score;
       },
     });
-  }, [recipeWithLabels]);
+  }, [_recipes]);
 
   const debouncedInputValue = useDebounce(inputValue, 300);
   useEffect(() => {
     if (!debouncedInputValue) {
-      setRecipes(recipeWithLabels);
+      setRecipes(_recipes);
       return;
     }
     const items = recipeSearch.search(debouncedInputValue).map((r) => {

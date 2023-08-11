@@ -116,6 +116,7 @@ export type RecipeCore = Omit<
   | "requestBody"
   | "options"
 > & {
+  label: string;
   method: RecipeMethod;
   auth: string | null;
   queryParams?: RecipeObjectSchemas;

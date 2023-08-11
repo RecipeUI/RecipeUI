@@ -60,6 +60,7 @@ export interface Database {
           private: boolean | null
           project: string
           queryParams: Json | null
+          rank: number | null
           requestBody: Json | null
           summary: string
           tags: string[] | null
@@ -78,6 +79,7 @@ export interface Database {
           private?: boolean | null
           project: string
           queryParams?: Json | null
+          rank?: number | null
           requestBody?: Json | null
           summary: string
           tags?: string[] | null
@@ -96,6 +98,7 @@ export interface Database {
           private?: boolean | null
           project?: string
           queryParams?: Json | null
+          rank?: number | null
           requestBody?: Json | null
           summary?: string
           tags?: string[] | null
@@ -123,6 +126,7 @@ export interface Database {
           project: string
           queryParams: Json | null
           recipe_id: number
+          replay: Json | null
           requestBody: Json | null
           title: string
           urlParams: Json | null
@@ -138,6 +142,7 @@ export interface Database {
           project: string
           queryParams?: Json | null
           recipe_id: number
+          replay?: Json | null
           requestBody?: Json | null
           title: string
           urlParams?: Json | null
@@ -153,6 +158,7 @@ export interface Database {
           project?: string
           queryParams?: Json | null
           recipe_id?: number
+          replay?: Json | null
           requestBody?: Json | null
           title?: string
           urlParams?: Json | null
@@ -193,6 +199,12 @@ export interface Database {
             foreignKeyName: "template_recipe_id_fkey"
             columns: ["recipe_id"]
             referencedRelation: "recipe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe_view"
             referencedColumns: ["id"]
           }
         ]
@@ -236,18 +248,6 @@ export interface Database {
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "template_fork_new_template_fkey"
-            columns: ["new_template"]
-            referencedRelation: "template"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_fork_new_template_fkey"
-            columns: ["new_template"]
-            referencedRelation: "template_public_view"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "template_fork_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
@@ -258,18 +258,6 @@ export interface Database {
             columns: ["original_author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_fork_original_template_fkey"
-            columns: ["original_template"]
-            referencedRelation: "template"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_fork_original_template_fkey"
-            columns: ["original_template"]
-            referencedRelation: "template_public_view"
-            referencedColumns: ["id"]
           }
         ]
       }
@@ -330,6 +318,79 @@ export interface Database {
       }
     }
     Views: {
+      recipe_view: {
+        Row: {
+          auth: string | null
+          author: string | null
+          created_at: string | null
+          id: number | null
+          label: string | null
+          method: string | null
+          options: Json | null
+          path: string | null
+          private: boolean | null
+          project: string | null
+          queryParams: Json | null
+          rank: number | null
+          requestBody: Json | null
+          summary: string | null
+          tags: string[] | null
+          tags_count: number | null
+          templates: Json[] | null
+          title: string | null
+          urlParams: Json | null
+        }
+        Insert: {
+          auth?: string | null
+          author?: string | null
+          created_at?: string | null
+          id?: number | null
+          label?: never
+          method?: string | null
+          options?: Json | null
+          path?: string | null
+          private?: boolean | null
+          project?: string | null
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary?: string | null
+          tags?: string[] | null
+          tags_count?: never
+          templates?: Json[] | null
+          title?: string | null
+          urlParams?: Json | null
+        }
+        Update: {
+          auth?: string | null
+          author?: string | null
+          created_at?: string | null
+          id?: number | null
+          label?: never
+          method?: string | null
+          options?: Json | null
+          path?: string | null
+          private?: boolean | null
+          project?: string | null
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary?: string | null
+          tags?: string[] | null
+          tags_count?: never
+          templates?: Json[] | null
+          title?: string | null
+          urlParams?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
+          }
+        ]
+      }
       template_public_view: {
         Row: {
           alias: string | null
@@ -383,6 +444,12 @@ export interface Database {
             foreignKeyName: "template_recipe_id_fkey"
             columns: ["recipe_id"]
             referencedRelation: "recipe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe_view"
             referencedColumns: ["id"]
           }
         ]
