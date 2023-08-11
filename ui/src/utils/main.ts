@@ -114,3 +114,10 @@ export function getUrl() {
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+import { useScreen } from "usehooks-ts";
+
+export function useIsMobile() {
+  const screen = useScreen();
+  return screen && screen.width < 640;
+}

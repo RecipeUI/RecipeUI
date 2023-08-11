@@ -10,10 +10,11 @@ import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { getURLParamsForSession } from "@/utils/main";
+import { getURLParamsForSession, useIsMobile } from "@/utils/main";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
+  const setSessions = useRecipeSessionStore((state) => state.setSessions);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
@@ -70,6 +71,13 @@ export function RecipeSidebar() {
       router.push("/");
     }
   }, [sessions.length]);
+
+  const isMobile = useIsMobile();
+  useEffect(() => {
+    if (isMobile && currentSession && sessions.length > 1) {
+      setSessions([currentSession]);
+    }
+  }, [currentSession, isMobile, sessions, setCurrentSession, setSessions]);
 
   if (sessions.length === 0) return null;
 
