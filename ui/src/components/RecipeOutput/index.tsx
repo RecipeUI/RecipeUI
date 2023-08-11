@@ -71,12 +71,6 @@ export function RecipeOutputConsole() {
     state.getOutput()
   );
 
-  // console.log({
-  //   output,
-  //   streaming: true,
-  //   duration: duration ? Math.floor(duration) : null,
-  // });
-
   const isSending = useRecipeSessionStore((state) => state.isSending);
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate

@@ -165,6 +165,7 @@ export interface UserTemplatePreview {
   visibility: "public" | "private";
 
   replay?: RecipeTemplateOutput | null;
+  author_id: string;
 }
 
 export type UserTemplate = UserTemplatePreview & {

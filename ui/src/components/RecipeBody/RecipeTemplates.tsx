@@ -93,7 +93,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
       <div className="flex-1" />
       <div className="flex justify-between">
         <button
-          className="btn btn-sm btn-neutral w-fit"
+          className="btn btn-xs btn-neutral w-fit"
           onClick={async () => {
             posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
               template_id: "Core" + template.title,
@@ -142,6 +142,9 @@ export function UserTemplates() {
   ];
 
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
+  const setLoadingTemplate = useRecipeSessionStore(
+    (state) => state.setLoadingTemplate
+  );
 
   if (userTemplates.length === 0) {
     return null;
@@ -174,6 +177,30 @@ export function UserTemplates() {
 
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
+                <button
+                  className="btn btn-xs w-fit btn-accent"
+                  onClick={async () => {
+                    posthog.capture(
+                      POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
+                      {
+                        template_id: template.id,
+                        template_project: selectedRecipe.project,
+                        recipe_id: selectedRecipe.id,
+                        recipe_path: selectedRecipe.path,
+                      }
+                    );
+
+                    const templateInfo = await getTemplate(template.id);
+                    if (templateInfo) {
+                      setLoadingTemplate(templateInfo);
+                    } else {
+                      alert("Failed to find template");
+                    }
+                  }}
+                >
+                  Play
+                </button>
+
                 <button
                   className="btn btn-xs btn-neutral w-fit"
                   onClick={async () => {
@@ -209,35 +236,57 @@ export function UserTemplates() {
                 >
                   Use
                 </button>
-                <ShareRecipeButton template={template} />
-                <button
-                  className="btn btn-xs btn-neutral w-fit"
-                  onClick={async () => {
-                    if (!confirm("Are you sure you want to delete this?")) {
-                      return;
-                    }
-                    if (isLocalFork) {
-                      setForkedTemplate(null);
-                      return;
-                    }
 
-                    const deletedTemplate = await deleteTemplate(template.id);
-                    if (deletedTemplate) {
-                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
-                        template_id: template.id,
-                        template_project: selectedRecipe.project,
-                        recipe_id: selectedRecipe.id,
-                        recipe_path: selectedRecipe.path,
-                      });
+                <div className="dropdown">
+                  <label tabIndex={0} className="btn btn-xs btn-neutral">
+                    Options
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content z-[1] menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
+                  >
+                    <li>
+                      <ShareRecipeButton template={template} />
+                    </li>
+                    <li>
+                      <button
+                        className="btn btn-xs btn-neutral w-full"
+                        onClick={async () => {
+                          if (
+                            !confirm("Are you sure you want to delete this?")
+                          ) {
+                            return;
+                          }
+                          if (isLocalFork) {
+                            setForkedTemplate(null);
+                            return;
+                          }
 
-                      router.refresh();
-                      alert("Template deleted");
-                      return;
-                    }
-                  }}
-                >
-                  Del
-                </button>
+                          const deletedTemplate = await deleteTemplate(
+                            template.id
+                          );
+                          if (deletedTemplate) {
+                            posthog.capture(
+                              POST_HOG_CONSTANTS.TEMPLATE_CREATE,
+                              {
+                                template_id: template.id,
+                                template_project: selectedRecipe.project,
+                                recipe_id: selectedRecipe.id,
+                                recipe_path: selectedRecipe.path,
+                              }
+                            );
+
+                            router.refresh();
+                            alert("Template deleted");
+                            return;
+                          }
+                        }}
+                      >
+                        Del
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           );

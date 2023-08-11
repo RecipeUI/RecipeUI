@@ -9,17 +9,32 @@ import {
   createServerActionClient,
   createServerComponentClient,
 } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@supabase/auth-ui-shared";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateSlug } from "random-word-slugs";
 
+export async function getTemplate(templateId: number) {
+  const supabase = createServerActionClient<Database>({ cookies: cookies });
+
+  const { data } = await supabase
+    .from("template")
+    .select()
+    .eq("id", templateId)
+    .single();
+
+  return data;
+}
+
 export async function createTemplate(
   payload: Omit<
     Database["public"]["Tables"]["template"]["Insert"],
-    "requestBody" | "queryParams " | "urlParams"
+    "requestBody" | "queryParams " | "urlParams" | "replay"
   > &
-    RecipeParameters
+    RecipeParameters & {
+      replay: Record<string, unknown>;
+    }
 ) {
   const supabase = createServerActionClient<Database>({ cookies: cookies });
 
