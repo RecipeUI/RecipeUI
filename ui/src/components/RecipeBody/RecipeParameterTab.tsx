@@ -112,7 +112,7 @@ export function RecipeParameterTab() {
       {showOnboarding ? (
         needsAuthSetup ? (
           <div className="space-y-4 mb-4 mx-4 mt-6">
-            <div className="alert w-full flex bg-gray-400 dark:bg-base-200">
+            <div className="alert w-full flex bg-gray-300 dark:bg-base-200">
               <div className="space-y-4 w-full text-start">
                 <h1 className="font-bold text-2xl">Get Started</h1>
                 {needsAuthSetup && (
@@ -124,15 +124,13 @@ export function RecipeParameterTab() {
               </div>
             </div>
           </div>
-        ) : (
+        ) : !hasTemplates ? (
           <div className="mb-4 mx-4 mt-6">
             <div className="alert alert-info">
-              {hasTemplates
-                ? "Use recipes above or the docs pane to the right to get started!"
-                : "Get started by using the docs pane on the right!"}
+              Get started by using the docs pane on the right!
             </div>
           </div>
-        )
+        ) : null
       ) : null}
 
       {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (

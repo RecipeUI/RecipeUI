@@ -3,7 +3,12 @@ import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
 
-import { Recipe, RecipeMethod, User } from "@/types/databaseExtended";
+import {
+  Recipe,
+  RecipeMethod,
+  RecipeTemplate,
+  User,
+} from "@/types/databaseExtended";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { createContext } from "react";
 
@@ -76,6 +81,9 @@ interface RecipeOutputSlice {
 
   outputTab: RecipeOutputTab;
   setOutputTab: (tab: RecipeOutputTab) => void;
+
+  loadingTemplate: RecipeTemplate | null;
+  setLoadingTemplate: (template: RecipeTemplate | null) => void;
 }
 
 interface RecipeBodySlice {
@@ -92,7 +100,7 @@ interface RecipeBodySlice {
 
   urlParams: Record<string, unknown>;
   setUrlParams: (urlParams: Record<string, unknown>) => void;
-  updateUrlParams: (updateProps: { param: string; value: unknown }) => void;
+  updateUrlParams: (updateProps: { path: string; value: unknown }) => void;
 }
 
 interface FileManagerSlice {
@@ -346,12 +354,12 @@ const createRecipeBodySlice: StateCreator<Slices, [], [], RecipeBodySlice> = (
       }),
 
     urlParams: {},
-    updateUrlParams: ({ param, value }) =>
+    updateUrlParams: ({ path, value }) =>
       set((prevState) => {
         return {
           urlParams: {
             ...prevState.urlParams,
-            [param]: value,
+            [path]: value,
           },
         };
       }),
@@ -418,6 +426,15 @@ const createRecipeOutputSlice: StateCreator<
 
     outputTab: RecipeOutputTab.Docs,
     setOutputTab: (tab) => set(() => ({ outputTab: tab })),
+
+    loadingTemplate: null,
+    setLoadingTemplate: (template) =>
+      set(() => ({
+        loadingTemplate: template,
+        ...(template && {
+          outputTab: RecipeOutputTab.Docs,
+        }),
+      })),
   };
 };
 

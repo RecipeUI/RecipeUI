@@ -110,3 +110,7 @@ export function getUrl() {
   url = url.charAt(url.length - 1) === "/" ? url : `${url}/`;
   return url;
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

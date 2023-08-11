@@ -6,6 +6,7 @@ import {
   RecipeObjectSchemas,
   RecipeParam,
   RecipeParamType,
+  RecipeStringParam,
   RecipeVariedParam,
   isVariedParam,
 } from "@/types/databaseExtended";
@@ -107,24 +108,34 @@ function RecipeDocsContainer({
   showHeader: boolean;
 }) {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const addedAlready: [string, RecipeParam][] = [];
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+  const _addedAlready: [string, RecipeParam][] = [];
   const remaining: [string, RecipeParam][] = [];
 
   for (const paramSchema of param.objectSchema) {
     const paramName = paramSchema.name;
     if (requestBody[paramName] !== undefined) {
-      addedAlready.push([paramName, paramSchema]);
+      _addedAlready.push([paramName, paramSchema]);
     } else {
       remaining.push([paramName, paramSchema]);
     }
   }
+
+  const addedAlready = loadingTemplate
+    ? _addedAlready.reverse()
+    : _addedAlready;
 
   return (
     <div className="my-4">
       {showHeader && <h3 className="mb-2 text-sm">Request Params</h3>}
       {addedAlready.length > 0 && (
         <div
-          className={classNames(remaining.length > 0 ? "mb-4" : "")}
+          className={classNames(
+            remaining.length > 0 ? "mb-4" : "",
+            loadingTemplate && "animate-pulse bg-chefYellow"
+          )}
           id="recipe-added"
         >
           {addedAlready.map(([propertyName, paramSchema]) => {
@@ -395,6 +406,7 @@ function RecipeDocParamEdit({
     if (paramSchema.enum) {
       return (
         <select
+          id={`${paramPath}`}
           className="select select-bordered select-sm w-full max-w-xs"
           value={paramState as string}
           onChange={(e) => {
@@ -414,6 +426,7 @@ function RecipeDocParamEdit({
     return (
       <>
         <textarea
+          id={`${paramPath}`}
           className="textarea textarea-bordered textarea-sm w-full"
           placeholder={
             paramSchema.default ? `example: ${paramSchema.default}` : undefined
@@ -433,6 +446,7 @@ function RecipeDocParamEdit({
   } else if (paramSchema.type === RecipeParamType.Boolean) {
     return (
       <input
+        id={`${paramPath}`}
         type="checkbox"
         className="toggle toggle-accent"
         checked={(paramState || false) as boolean}
@@ -453,6 +467,7 @@ function RecipeDocParamEdit({
       return (
         <div className="space-x-4 flex items-center">
           <input
+            id={`${paramPath}`}
             type="range"
             min={paramSchema.minimum}
             max={paramSchema.maximum}
@@ -473,6 +488,7 @@ function RecipeDocParamEdit({
 
     return (
       <input
+        id={`${paramPath}`}
         type="number"
         className="input input-sm input-bordered"
         placeholder={
@@ -704,12 +720,14 @@ function RecipeDocArrayParam({
             return !currentParams.includes(param.name as string);
           });
 
+          const innerParamPath = `${paramPath}.[${index}]`;
+
           return (
             <div key={index}>
               <div className="flex items-center space-x-2 w-full">
                 <RecipeDocParamEdit
                   paramSchema={paramSchema.arraySchema}
-                  paramPath={`${paramPath}.[${index}]`}
+                  paramPath={innerParamPath}
                   isQueryParam={isQueryParam}
                 />
                 <div className="flex flex-col">
@@ -779,6 +797,25 @@ function RecipeDocArrayParam({
   );
 }
 
+export function getVariedParamInfo(paramSchema: RecipeVariedParam) {
+  const paramTypes = getParamTypes(paramSchema);
+
+  // This is the best index to use for the enum
+  const enumVariantIndex = paramSchema.variants.findIndex(
+    (variant) => "enum" in variant
+  );
+
+  return {
+    isEnumButSingleType:
+      paramTypes.length === 1 &&
+      (paramSchema.type === RecipeParamType.AnyOf ||
+        paramSchema.type === RecipeParamType.OneOf) &&
+      enumVariantIndex !== -1,
+    paramTypes,
+    enumVariantIndex,
+  };
+}
+
 function RecipeDocVariedParamEdit({
   paramSchema,
   paramPath,
@@ -798,22 +835,13 @@ function RecipeDocVariedParamEdit({
 
   const [primaryVariantIndex, setPrimaryVariantIndex] = useState(0);
 
-  const paramTypes = getParamTypes(paramSchema);
-
-  // This is the best index to use for the enum
-  const enumVariantIndex = paramSchema.variants.findIndex(
-    (variant) => "enum" in variant
-  );
+  const { isEnumButSingleType, paramTypes, enumVariantIndex } =
+    getVariedParamInfo(paramSchema);
 
   // This edge case is very overkill UX optimization. Essentially this covers the case where the user can select
   // a list of options ["a", "b", "c", "d"] or put in their own option.
   // In most cases, the user should should choose from the list rather than do their own
-  if (
-    paramTypes.length === 1 &&
-    (paramSchema.type === RecipeParamType.AnyOf ||
-      paramSchema.type === RecipeParamType.OneOf) &&
-    enumVariantIndex !== -1
-  ) {
+  if (isEnumButSingleType) {
     const enumVariant = paramSchema.variants[enumVariantIndex];
     return (
       <RecipeDocParamEdit
@@ -926,7 +954,7 @@ function RecipeUrlDocsContainer({
                   value={(value || "") as string}
                   onChange={(e) => {
                     updateUrlParams({
-                      param: paramName,
+                      path: paramName,
                       value: e.target.value,
                     });
                   }}
@@ -937,7 +965,7 @@ function RecipeUrlDocsContainer({
                   value={value || ""}
                   onChange={(e) => {
                     updateUrlParams({
-                      param: paramName,
+                      path: paramName,
                       value: e.target.value,
                     });
                   }}

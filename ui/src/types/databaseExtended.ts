@@ -142,6 +142,12 @@ export type RecipeTemplate = Omit<
   "id" | "created_at" | "project" | "recipe_id" | "visibility"
 >;
 
+interface RecipeTemplateOutput {
+  output: Record<string, unknown>;
+  duration: number;
+  streaming?: boolean;
+}
+
 export interface UserTemplatePreview {
   alias: string;
   id: number;
@@ -156,6 +162,8 @@ export interface UserTemplatePreview {
 
   recipe: Pick<Recipe, "id" | "project" | "title" | "method">;
   visibility: "public" | "private";
+
+  replay?: RecipeTemplateOutput | null;
 }
 
 export type UserTemplate = UserTemplatePreview & {
@@ -169,7 +177,7 @@ export type UserTemplate = UserTemplatePreview & {
 };
 export interface RecipeMutationCore extends RecipeCore {
   method: RecipeMethod.POST | RecipeMethod.PUT | RecipeMethod.DELETE;
-  requestBody: RecipeParam & {
+  requestBody: RecipeObjectParam & {
     contentType: RecipeMutationContentType;
   };
 }

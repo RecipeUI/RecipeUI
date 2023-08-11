@@ -1,4 +1,10 @@
-import { startTransition, useContext, useEffect, useState } from "react";
+import {
+  startTransition,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   RecipeBodyRoute,
   RecipeContext,
@@ -7,6 +13,7 @@ import {
 } from "../../state/recipeSession";
 import {
   RecipeMutationCore,
+  RecipeTemplate,
   UserTemplatePreview,
 } from "@/types/databaseExtended";
 import { getTemplate } from "@/components/RecipeBody/actions";
@@ -29,6 +36,7 @@ import {
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import { useSessionStorage } from "usehooks-ts";
+import { sleep } from "@/utils/main";
 
 export function RecipeTemplatesTab() {
   return (
@@ -43,13 +51,7 @@ export function RecipeTemplatesTab() {
 
 export function StarterTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
-
-  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
-  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
   const templates = selectedRecipe.templates || [];
-  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   if (templates.length === 0) {
     return null;
@@ -63,39 +65,51 @@ export function StarterTemplates() {
         also create your own later!
       </p>
       <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
-        {templates.map((template) => {
-          return (
-            <div
-              className="border rounded-sm p-4 space-y-2 flex flex-col"
-              key={`${template.title}`}
-            >
-              <h3 className="font-bold">{template.title}</h3>
-              <p className="text-sm line-clamp-3">{template.description}</p>
-              <div className="flex-1" />
-              <button
-                className="btn btn-sm btn-neutral w-fit"
-                onClick={() => {
-                  if (template.requestBody) {
-                    setRequestBody(template.requestBody);
-                  }
+        {templates.map((template) => (
+          <StarterTemplateItem key={template.title} template={template} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-                  if (template.queryParams) {
-                    setQueryParams(template.queryParams);
-                  }
+function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+  const setLoadingTemplate = useRecipeSessionStore(
+    (state) => state.setLoadingTemplate
+  );
+  const selectedRecipe = useContext(RecipeContext)!;
+  const posthog = usePostHog();
 
-                  if (template.urlParams) {
-                    setUrlParams(template.urlParams);
-                  }
-
-                  setBodyRoute(RecipeBodyRoute.Parameters);
-                  setCurrentTab(RecipeOutputTab.Docs);
-                }}
-              >
-                Use
-              </button>
-            </div>
-          );
-        })}
+  return (
+    <div
+      className="border rounded-sm p-4 space-y-2 flex flex-col"
+      key={`${template.title}`}
+    >
+      <h3 className="font-bold">{template.title}</h3>
+      <p className="text-sm line-clamp-3">{template.description}</p>
+      <div className="flex-1" />
+      <div className="flex justify-between">
+        <button
+          className="btn btn-sm btn-neutral w-fit"
+          onClick={async () => {
+            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+              template_id: "Core" + template.title,
+              template_project: selectedRecipe.project,
+              recipe_id: selectedRecipe.id,
+              recipe_path: selectedRecipe.path,
+            });
+            setLoadingTemplate(template);
+          }}
+        >
+          {loadingTemplate ? (
+            <span className="loading loading-infinity"></span>
+          ) : (
+            "Use"
+          )}
+        </button>
       </div>
     </div>
   );
@@ -159,7 +173,7 @@ export function UserTemplates() {
               <p className="text-sm line-clamp-3">{template.description}</p>
 
               <div className="flex-1" />
-              <div className="space-x-2">
+              <div className="flex space-x-1  sm:block sm:space-x-2">
                 <button
                   className="btn btn-xs btn-neutral w-fit"
                   onClick={async () => {
@@ -185,7 +199,7 @@ export function UserTemplates() {
                     setCurrentTab(RecipeOutputTab.Docs);
                     setBodyRoute(RecipeBodyRoute.Parameters);
 
-                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_USE, {
+                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
                       template_id: template.id,
                       template_project: selectedRecipe.project,
                       recipe_id: selectedRecipe.id,

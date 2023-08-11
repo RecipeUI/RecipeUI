@@ -5,7 +5,7 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useContext, useEffect, useMemo } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 // This library is ridiculously large. We should try to replace it with something lightweight.
@@ -68,7 +68,15 @@ export function RecipeOutput() {
 }
 
 export function RecipeOutputConsole() {
-  const { output, type } = useRecipeSessionStore((state) => state.getOutput());
+  const { output, type, duration } = useRecipeSessionStore((state) =>
+    state.getOutput()
+  );
+
+  // console.log({
+  //   output,
+  //   streaming: true,
+  //   duration: duration ? Math.floor(duration) : null,
+  // });
 
   const isSending = useRecipeSessionStore((state) => state.isSending);
 
