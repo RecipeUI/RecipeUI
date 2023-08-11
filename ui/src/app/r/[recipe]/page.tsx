@@ -1,19 +1,9 @@
-import { Providers } from "@/app/providers";
-import { Navbar } from "@/components/Navbar/Navbar";
-import { RecipeBody } from "@/components/RecipeBody";
 import { RecipeHomeContainer } from "@/components/RecipeHome/RecipeHomeContainer";
-import { RecipeSidebar } from "@/components/RecipeSidebar";
 
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
-import {
-  Recipe,
-  RecipeProject,
-  UserTemplatePreview,
-} from "@/types/databaseExtended";
-import { RecipeProjectsContext } from "@/state/pageContexts";
-import { redirect } from "next/navigation";
+import { RecipeProject, UserTemplatePreview } from "@/types/databaseExtended";
 
 export const dynamic = "force-dynamic";
 
