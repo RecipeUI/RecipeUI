@@ -17,6 +17,9 @@ Couldn't have built this app without some really amazing packages
 - Codemirror for the easy code editor plugin
 - Other fun stuff: pnpm, downshift, fuse, react18-json-view
 
+Contributors
+- @dvtng for the feedback on system design and ux of the overall project
+
 
 ## Contributing
 We need help in three ways and they don't require coding!

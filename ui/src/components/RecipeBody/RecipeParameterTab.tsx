@@ -23,9 +23,9 @@ import {
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
   lineNumbers: true,
+  highlightActiveLine: false,
 };
 
-// TODO: Link to our guides for setting up auth
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
@@ -91,23 +91,37 @@ export function RecipeParameterTab() {
   const needsUrlParams = hasUrlParams && !hasUrlParamPayload;
 
   const hasTemplates = selectedRecipe.templates != null;
-
-  const showOnboarding = needsAuthSetup || needsBodyParams || needsQueryParams;
-
   const needsParams = needsBodyParams || needsUrlParams || needsQueryParams;
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+
+  const showingRecipes = hasTemplates && needsParams;
+  const showOnboarding = !loadingTemplate && needsAuthSetup && !showingRecipes;
 
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
-      <div className="mb-4 mx-4 mt-6 space-y-8">
-        {!needsAuthSetup &&
-          (needsBodyParams || needsQueryParams || needsUrlParams) && (
-            <UserTemplates />
-          )}
-
-        {(needsBodyParams || needsQueryParams || needsUrlParams) && (
+      {showingRecipes && (
+        <div className="mb-4 mx-4 mt-6 space-y-8">
+          <UserTemplates />
           <StarterTemplates />
-        )}
-      </div>
+        </div>
+      )}
+
+      {!showOnboarding && !showingRecipes && hasRequestBody && (
+        <RecipeJsonEditor />
+      )}
+      {!showOnboarding && !showingRecipes && hasQueryParams && (
+        <RecipeQueryParameters needsParams={needsParams} />
+      )}
+      {!showOnboarding && !showingRecipes && hasUrlParams && (
+        <RecipeURLParams />
+      )}
+
+      {!showOnboarding &&
+        !hasRequestBody &&
+        !hasQueryParams &&
+        !hasUrlParams && <NoEditorCopy />}
 
       {showOnboarding ? (
         needsAuthSetup ? (
@@ -115,6 +129,25 @@ export function RecipeParameterTab() {
             <div className="alert w-full flex bg-gray-300 dark:bg-base-200">
               <div className="space-y-4 w-full text-start">
                 <h1 className="font-bold text-2xl">Get Started</h1>
+                {hasTemplates && needsAuthSetup && (
+                  <>
+                    <hr />
+                    <h3 className="font-bold mb-2">Recipe Playground</h3>
+                    <p>
+                      You can continue using recipes, but to truly enjoy the
+                      most of this API with your own parameters then get an auth
+                      key.
+                    </p>
+                    <button
+                      className="btn btn-sm btn-neutral"
+                      onClick={() => {
+                        setBodyRoute(RecipeBodyRoute.Templates);
+                      }}
+                    >
+                      Test more recipes
+                    </button>
+                  </>
+                )}
                 {needsAuthSetup && (
                   <>
                     <hr />
@@ -132,19 +165,6 @@ export function RecipeParameterTab() {
           </div>
         ) : null
       ) : null}
-
-      {(!showOnboarding || hasRequestBodyPayload) && hasRequestBody && (
-        <RecipeJsonEditor />
-      )}
-      {(!showOnboarding || hasQueryParamPayload) && hasQueryParams && (
-        <RecipeQueryParameters needsParams={needsParams} />
-      )}
-      {!showOnboarding && hasUrlParams && <RecipeURLParams />}
-
-      {!showOnboarding &&
-        !hasRequestBody &&
-        !hasQueryParams &&
-        !hasUrlParams && <NoEditorCopy />}
     </div>
   );
 }
