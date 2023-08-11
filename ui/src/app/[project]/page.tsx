@@ -25,7 +25,7 @@ export default async function ProjectPage({
     .single();
 
   const { data: projectRecipes } = await supabase
-    .from("recipe")
+    .from("recipe_view")
     .select()
     .ilike("project", `%${projectName}%`);
 

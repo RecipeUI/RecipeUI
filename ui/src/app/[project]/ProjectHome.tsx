@@ -13,30 +13,11 @@ import { useEffect, useMemo } from "react";
 
 export function ProjectHome({
   project,
-  recipes: _recipes,
+  recipes,
 }: {
   project: RecipeProject;
   recipes: Recipe[];
 }) {
-  const recipes = useMemo(() => {
-    const sortedRecipesByTags = [..._recipes];
-
-    sortedRecipesByTags.sort((a, b) => {
-      if (!a.tags && !b.tags) {
-        return a.title.localeCompare(b.title);
-      } else {
-        if (!b.tags) {
-          return -1;
-        } else if (!a.tags) {
-          return 1;
-        } else {
-          return b.tags.length - a.tags.length;
-        }
-      }
-    });
-    return sortedRecipesByTags;
-  }, [_recipes]);
-
   return (
     <div className="flex-1 px-4">
       <div className="flex justify-start rounded-md border min-h-[250px] bg-white dark:bg-slate-800">
