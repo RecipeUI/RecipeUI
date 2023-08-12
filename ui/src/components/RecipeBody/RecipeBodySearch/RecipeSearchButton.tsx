@@ -531,7 +531,7 @@ function useLoadingTemplate() {
               value: paramSchema.maximum,
             });
           }, getTime(t));
-          t += 5 * speedFactor;
+          t += 2.5 * speedFactor;
 
           setTimeout(() => {
             updateFunction({
@@ -539,7 +539,7 @@ function useLoadingTemplate() {
               value: paramSchema.minimum,
             });
           }, getTime(t));
-          t += 5 * speedFactor;
+          t += 2.5 * speedFactor;
         }
 
         setTimeout(() => {

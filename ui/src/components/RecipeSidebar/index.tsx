@@ -88,6 +88,13 @@ export function RecipeSidebar() {
         </button>
       </div>
       <div>
+        {sessions.length >= 10 && (
+          <div className="px-4 py-2 text-xs w-full text-start relative flex bg-warning dark:text-black animate-pulse">
+            Having 10 or more sessions is not recommended. Consider closing some
+            and take advantage of recipes instead.
+          </div>
+        )}
+
         {sessions.map((session) => {
           const isCurrentSession = currentSession?.id === session.id;
 
@@ -99,13 +106,6 @@ export function RecipeSidebar() {
             />
           );
         })}
-
-        {sessions.length >= 10 && (
-          <div className="px-4 py-2 text-xs w-full text-start relative flex bg-warning">
-            Having too many sessions is not recommended. Consider closing some
-            and building recipes instead.
-          </div>
-        )}
       </div>
     </div>
   );

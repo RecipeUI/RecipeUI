@@ -412,15 +412,6 @@ function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
-  // <button
-  //           className="btn bg-chefYellow text-black btn-sm"
-  //           onClick={() => {
-  //             supabase.auth.signOut();
-  //             router.refresh();
-  //           }}
-  //         >
-  //           Log out
-  //         </button>
   return (
     <div className="dropdown ">
       <label tabIndex={0} className="btn btn-sm btn-ghost btn-circle">
