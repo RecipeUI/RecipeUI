@@ -39,7 +39,7 @@ export default async function ProfilePage({
     } = await supabase
       .from("template_public_view")
       .select(
-        "id, created_at, title, description, original_author, recipe, visibility, alias"
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
       )
       .eq("author_id", profileData.user_id);
     userTemplates = (templateRes as UserTemplatePreview[]) || [];

@@ -27,7 +27,7 @@ export default async function Home({
     const { data: templateData } = await supabase
       .from("template_public_view")
       .select(
-        "id, created_at, title, description, original_author, recipe, visibility, alias"
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
       )
       .eq("alias", recipeName);
 

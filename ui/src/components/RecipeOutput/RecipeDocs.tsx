@@ -311,7 +311,6 @@ function RecipeDocsParamContainer({
                 });
 
                 setTimeout(() => {
-                  console.log(paramPath);
                   document
                     .getElementById(paramPath)
                     ?.lastElementChild?.scrollIntoView({

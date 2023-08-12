@@ -1,30 +1,18 @@
-import {
-  startTransition,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useContext, useState } from "react";
 import {
   RecipeBodyRoute,
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import {
-  RecipeMutationCore,
-  RecipeTemplate,
-  UserTemplatePreview,
-} from "@/types/databaseExtended";
+import { RecipeTemplate, UserTemplatePreview } from "@/types/databaseExtended";
 import { getTemplate } from "@/components/RecipeBody/actions";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 import {
   cloneTemplate,
-  createTemplate,
   deleteTemplate,
 } from "@/components/RecipeBody/RecipeBodySearch/actions";
-import { revalidatePath } from "next/cache";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
 import { Dialog } from "@headlessui/react";
@@ -35,8 +23,6 @@ import {
 } from "@/utils/constants";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
-import { useSessionStorage } from "usehooks-ts";
-import { sleep } from "@/utils/main";
 
 export function RecipeTemplatesTab() {
   return (
@@ -382,6 +368,8 @@ export function ShareInviteModal({
     null
   );
 
+  const isCurrentUserTemplate = template.author_id === user?.user_id;
+
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
@@ -390,43 +378,64 @@ export function ShareInviteModal({
         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
           <TemplateMockCode template={template} />
           {newTemplateId === null ? (
-            <button
-              className="btn btn-accent w-full mt-4"
-              onClick={async () => {
-                if (!user) {
-                  posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
-                    template_id: template.id,
-                    template_project: template.recipe.project,
-                    recipe_title: template.recipe.title,
-                  });
-
-                  setForkedTemplate(template);
-                  setNewTemplateId(template.id);
-                } else {
-                  setIsForking(true);
-                  const { newTemplate, error } = await cloneTemplate(
-                    template.id
+            <>
+              <button
+                className="btn btn-accent w-full mt-4"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    `${window.location.origin}/r/${template.alias}`
                   );
 
-                  if (newTemplate) {
-                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_FORKED, {
-                      new_template_id: newTemplate.id,
-                      old_template_id: template.id,
+                  alert("Copied to clipboard");
+                }}
+              >
+                Share
+              </button>
+              <button
+                className="btn btn-accent w-full mt-4"
+                onClick={async () => {
+                  if (isCurrentUserTemplate) {
+                    setNewTemplateId(template.id);
+                    return;
+                  }
+
+                  if (!user) {
+                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
+                      template_id: template.id,
                       template_project: template.recipe.project,
                       recipe_title: template.recipe.title,
                     });
 
-                    setNewTemplateId(newTemplate.id);
-                  } else if (error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
-                    setLimitedForks(true);
+                    setForkedTemplate(template);
+                    setNewTemplateId(template.id);
+                  } else {
+                    setIsForking(true);
+                    const { newTemplate, error } = await cloneTemplate(
+                      template.id
+                    );
+
+                    if (newTemplate) {
+                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_FORKED, {
+                        new_template_id: newTemplate.id,
+                        old_template_id: template.id,
+                        template_project: template.recipe.project,
+                        recipe_title: template.recipe.title,
+                      });
+
+                      setNewTemplateId(newTemplate.id);
+                    } else if (
+                      error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED
+                    ) {
+                      setLimitedForks(true);
+                    }
+                    setIsForking(false);
                   }
-                  setIsForking(false);
-                }
-              }}
-            >
-              Fork this Recipe!
-              {isForking && <span className="loading loading-bars" />}
-            </button>
+                }}
+              >
+                {isCurrentUserTemplate ? "Use template" : "Fork this Recipe!"}
+                {isForking && <span className="loading loading-bars" />}
+              </button>
+            </>
           ) : (
             <SucessAnimation
               onClose={onClose}

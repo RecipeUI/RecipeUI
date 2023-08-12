@@ -108,6 +108,13 @@ export function RecipeSidebar() {
             />
           );
         })}
+
+        {sessions.length >= 10 && (
+          <div className="px-4 py-2 text-xs w-full text-start relative flex bg-warning">
+            Having too many sessions is not recommended. Consider closing some
+            and building recipes instead.
+          </div>
+        )}
       </div>
     </div>
   );

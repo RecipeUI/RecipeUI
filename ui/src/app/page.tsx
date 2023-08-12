@@ -63,7 +63,7 @@ export default async function Home({
       } = await supabase
         .from("template_public_view")
         .select(
-          "id, created_at, title, description, original_author, recipe, visibility, alias"
+          "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
         )
         .eq("author_id", userData.user.id)
         .eq("recipe_id", recipeId);

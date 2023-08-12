@@ -36,6 +36,9 @@ export function RecipeSearchButton() {
   const recipe = useContext(RecipeContext)!;
 
   const secretInfo = useSecretsFromSM();
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -51,6 +54,11 @@ export function RecipeSearchButton() {
 
   const _onSubmit = async () => {
     if (!currentSession) return;
+
+    if (loadingTemplate) {
+      alert("Please wait for the template to finish loading.");
+      return;
+    }
 
     const startTime = performance.now();
 
@@ -225,7 +233,7 @@ export function RecipeSearchButton() {
 
       const res = await fetch(url, payload);
 
-      if (res.body && recipe.options?.streaming === true) {
+      if (res.body && recipe.options?.streaming === true && res.ok) {
         let content = "";
         const textDecoder = new TextDecoder("utf-8");
 
@@ -422,6 +430,11 @@ function useLoadingTemplate() {
     if (!loadingTemplate) return;
 
     const { replay, requestBody, queryParams, urlParams } = loadingTemplate;
+    if (replay?.duration) {
+      let replayCap = replay.streaming ? 10000 : 5000;
+
+      replay.duration = Math.min(replay.duration, replayCap);
+    }
 
     let t = 0;
 
