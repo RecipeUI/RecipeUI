@@ -9,7 +9,12 @@ import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RouteTypeLabel } from "../RouteTypeLabel";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { getURLParamsForSession, useIsMobile } from "@/utils/main";
 
 export function RecipeSidebar() {
@@ -56,21 +61,7 @@ export function RecipeSidebar() {
   }, [currentSession, sessions, setCurrentSession]);
 
   const pathname = usePathname();
-  const { project: projectId, recipe: recipeAlias } = useParams();
-  const { username } = useParams();
-  useEffect(() => {
-    if (
-      !projectId &&
-      !username &&
-      !recipeAlias &&
-      sessions.length === 0 &&
-      pathname !== "/"
-    ) {
-      console.warn("Rerouting because no session");
-
-      router.push("/");
-    }
-  }, [sessions.length]);
+  const { project: projectId, recipe: recipeAlias, username } = useParams();
 
   const isMobile = useIsMobile();
   useEffect(() => {

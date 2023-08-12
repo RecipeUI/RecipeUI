@@ -1,0 +1,31 @@
+.privacy h1,
+.privacy h2,
+.privacy h3 {
+  font-weight: bold;
+}
+
+.privacy h1 {
+  font-size: 3rem;
+}
+
+.privacy h2 {
+  font-size: 2rem;
+  margin-bottom: 0.2em;
+}
+
+.privacy h3 {
+  font-size: 1.5rem;
+}
+
+.privacy p {
+  margin-bottom: 1em;
+}
+
+.privacy ul {
+  list-style-type: disc;
+  padding-left: 1em;
+}
+
+.privacy ol {
+  padding-left: 1em;
+}

@@ -22,6 +22,7 @@ import {
 } from "@/components/RecipeBody/RecipeTemplates";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import Link from "next/link";
 
 export function RecipeHomeContainer({
   recipeProjects,
@@ -94,6 +95,9 @@ export function RecipeHomeContainer({
           </>
         )}
       </RecipeContext.Provider>
+      <footer className="mt-16 text-right -mx-6 -mb-6 border-t py-2  flex justify-end items-center px-8">
+        <Link href="/privacy">Privacy Policy</Link>
+      </footer>
     </div>
   );
 }
