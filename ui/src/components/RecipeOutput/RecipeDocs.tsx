@@ -103,7 +103,8 @@ function RecipeQueryDocsContainer({
       {showHeader && <h3 className="mb-2 text-sm">Query Params</h3>}
       <div
         className={classNames(
-          loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
+          loadingTemplate &&
+            "animate-pulse bg-chefYellow dark:text-white flex flex-col-reverse"
         )}
       >
         {addedAlready.map((paramSchema) => {
