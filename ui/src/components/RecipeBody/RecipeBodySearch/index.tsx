@@ -8,6 +8,7 @@ import { RouteTypeLabel } from "../../RouteTypeLabel";
 import { useDebounce } from "usehooks-ts";
 import {
   DeepActionType,
+  RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
@@ -23,6 +24,11 @@ export function RecipeBodySearch() {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
+
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+  const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
 
   const _recipes = useRecipeSessionStore((state) => state.recipes);
 
@@ -124,11 +130,20 @@ export function RecipeBodySearch() {
   useLoadingTemplate();
 
   return (
-    <div className="p-4">
+    <div
+      className={classNames(
+        "p-4",
+        (bodyRoute === RecipeBodyRoute.Templates || loadingTemplate) &&
+          "py-2 sm:py-4"
+      )}
+    >
       <div
         className={classNames(
           "flex flex-col relative",
-          currentSession == null && "hidden sm:block"
+          (currentSession == null ||
+            bodyRoute === RecipeBodyRoute.Templates ||
+            loadingTemplate) &&
+            "hidden sm:block"
         )}
       >
         <div className="flex space-x-2 sm:flex sm:space-x-2 sm:flex-row">

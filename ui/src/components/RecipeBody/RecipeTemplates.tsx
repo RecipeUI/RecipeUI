@@ -47,7 +47,7 @@ export function StarterTemplates() {
     <div>
       <h1 className="text-xl font-bold">Starter Recipes</h1>
       <p className="mt-2">Use the recipes below to see how to use this API!</p>
-      <div className="flex-1 grid grid-cols-2 gap-4 mt-4">
+      <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
         {templates.map((template) => (
           <StarterTemplateItem key={template.title} template={template} />
         ))}
@@ -134,7 +134,7 @@ export function UserTemplates() {
   return (
     <div>
       <h1 className="text-xl font-bold">Your Recipes</h1>
-      <div className="flex-1 grid grid-cols-2 gap-4 mt-4">
+      <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
         {userTemplates.map((template) => {
           const isLocalFork = forkedTemplate?.id === template.id;
 

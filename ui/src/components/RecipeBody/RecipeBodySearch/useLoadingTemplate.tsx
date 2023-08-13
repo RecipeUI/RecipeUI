@@ -298,14 +298,14 @@ export function useLoadingTemplate() {
     }
 
     let requestInfo: RecipeRequestInfo = {
-      url: new URL(selectedRecipe.path),
+      url: requestUrl,
       payload: {
         method: selectedRecipe.method,
         headers:
           selectedRecipe.auth === null
             ? {}
             : {
-                Authorizaiton: "Configure Auth Token",
+                Authorization: "Configure Auth Token",
               },
         body: requestBody,
       },

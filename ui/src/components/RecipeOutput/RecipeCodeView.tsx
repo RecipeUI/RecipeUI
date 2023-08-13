@@ -93,14 +93,16 @@ function getJavaScriptFetchCode({
   if (_body) {
     if (typeof _body === "string") {
       bodyString = `body: "${_body}"`;
-    } else {
+    } else if (_body instanceof FormData) {
+      // TODO
+    } else if (Object.keys(_body).length > 0) {
       bodyString = `body: JSON.stringify(${JSON.stringify(_body, null, 2)
         .split("\n")
         .join("\n    ")})`;
     }
   }
 
-  const strings = [methodString, headersString, bodyString];
+  const strings = [methodString, headersString, bodyString].filter(Boolean);
 
   const postJsonProcess =
     headers["Content-Type"] === "application/json"
@@ -136,7 +138,9 @@ function getCurlCode({
   if (body) {
     if (typeof body === "string") {
       lines.push(`\t-d '${body}'`);
-    } else {
+    } else if (body instanceof FormData) {
+      // TODO: Support files
+    } else if (Object.keys(body).length > 0) {
       lines.push(
         `\t-d '${JSON.stringify(body, null, 2).split("\n").join("\n    ")}'`
       );
