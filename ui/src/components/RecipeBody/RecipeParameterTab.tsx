@@ -19,7 +19,7 @@ import {
   StarterTemplates,
   UserTemplates,
 } from "@/components/RecipeBody/RecipeTemplates";
-
+const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
   lineNumbers: true,
   highlightActiveLine: false,
@@ -100,12 +100,14 @@ export function RecipeParameterTab() {
 
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
-      {!showOnboarding && !loadingTemplate && needsAuthSetup && (
-        <div className="mb-4 mx-4 mt-6 space-y-8">
-          <UserTemplates />
-          <StarterTemplates />
-        </div>
-      )}
+      {/* This logic is pretty confusing */}
+      {(!showOnboarding && !loadingTemplate && needsAuthSetup) ||
+        (!needsAuthSetup && needsParams && (
+          <div className="mb-4 mx-4 mt-6 space-y-8">
+            <UserTemplates />
+            <StarterTemplates />
+          </div>
+        ))}
       {!showOnboarding && !showingRecipes && hasRequestBody && (
         <RecipeJsonEditor />
       )}
@@ -227,6 +229,7 @@ function RecipeJsonEditor() {
         value={requestCode}
         basicSetup={codeMirrorSetup}
         theme={isDarkMode ? "dark" : "light"}
+        extensions={extensions}
         onChange={(newCode) => {
           setRequestCode(newCode);
           debouncedSetRequestBody(newCode);

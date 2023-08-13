@@ -1,22 +1,35 @@
 import classNames from "classnames";
 import {
+  RecipeContext,
   RecipeOutputType,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useContext, useMemo, useRef } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import JsonView from "react18-json-view";
+import CodeMirror, {
+  BasicSetupOptions,
+  ReactCodeMirrorRef,
+} from "@uiw/react-codemirror";
+import { useDarkMode } from "usehooks-ts";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+
+const codeMirrorSetup = {
+  lineNumbers: true,
+};
 
 export function RecipeOutputConsole() {
   const { output, type, duration } = useRecipeSessionStore((state) =>
     state.getOutput()
   );
 
+  const { isDarkMode } = useDarkMode();
   const isSending = useRecipeSessionStore((state) => state.isSending);
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
 
+  const selectedRecipe = useContext(RecipeContext);
   const { imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
     const codeBlockRegex = /```(.*?)```/gs;
@@ -51,6 +64,14 @@ export function RecipeOutputConsole() {
 
     return { codeBlocks, imageBlocks };
   }, [output]);
+
+  const extensions = useMemo(() => {
+    if (selectedRecipe?.options?.streaming) {
+      return [markdown()];
+    } else {
+      return [json()];
+    }
+  }, [selectedRecipe?.options?.streaming]);
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-white space-y-6">
@@ -114,11 +135,17 @@ export function RecipeOutputConsole() {
           <OutputModule
             title="Response"
             body={
-              <JsonView
-                src={output}
-                collapsed={false}
-                collapseStringsAfterLength={50000}
-                collapseObjectsAfterLength={50}
+              <CodeMirror
+                readOnly={true}
+                value={
+                  selectedRecipe?.options?.streaming
+                    ? (output["content"] as string) || ""
+                    : JSON.stringify(output, null, 2)
+                }
+                className="h-full !outline-none border-none max-w-sm sm:max-w-none"
+                basicSetup={codeMirrorSetup}
+                theme={isDarkMode ? "dark" : "light"}
+                extensions={extensions}
               />
             }
           />

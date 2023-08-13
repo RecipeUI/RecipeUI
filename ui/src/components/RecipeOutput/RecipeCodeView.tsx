@@ -3,9 +3,7 @@ import {
   useRecipeSessionStore,
 } from "@/state/recipeSession";
 import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
-import { useCopyToClipboard, useDarkMode } from "usehooks-ts";
-import { json, jsonParseLinter } from "@codemirror/lang-json";
-import { linter, lintGutter } from "@codemirror/lint";
+import { useDarkMode } from "usehooks-ts";
 import { useEffect, useState } from "react";
 
 const codeMirrorSetup: BasicSetupOptions = {

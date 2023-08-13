@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-markdown": "^6.2.0",
     "@codemirror/lint": "^6.4.0",
     "@headlessui/react": "^1.7.16",
     "@heroicons/react": "^2.0.18",
