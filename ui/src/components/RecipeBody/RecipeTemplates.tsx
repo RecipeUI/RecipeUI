@@ -177,7 +177,12 @@ export function UserTemplates() {
               <div className="flex space-x-1  sm:block sm:space-x-2">
                 <button className="btn btn-sm btn-neutral w-fit">Use</button>
 
-                <div className="dropdown hidden sm:inline-block">
+                <div
+                  className="dropdown hidden sm:inline-block"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
                   <label tabIndex={0} className="btn btn-sm btn-neutral">
                     Options
                   </label>

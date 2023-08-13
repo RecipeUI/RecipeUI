@@ -1,5 +1,6 @@
 import { createTemplate } from "@/components/RecipeBody/RecipeBodySearch/actions";
 import {
+  RecipeBodyRoute,
   RecipeContext,
   RecipeOutputType,
   RecipeParameters,
@@ -155,7 +156,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
           {!newTemplateId ? (
             <>
               <Dialog.Title className="text-2xl font-bold ">
-                New {recipe.title} Recipe
+                {`New "${recipe.title}" Recipe`}
               </Dialog.Title>
               <Dialog.Description
                 as="div"
@@ -240,11 +241,13 @@ export function SucessAnimation({
   const router = useRouter();
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
   const addSession = useRecipeSessionStore((state) => state.addSession);
+  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   useEffect(() => {
     setTimeout(() => {
       const newSession = addSession(recipe);
       onClose();
+      setBodyRoute(RecipeBodyRoute.Templates);
       router.push(
         `/?${getURLParamsForSession(newSession, {
           newTemplateId: String(newTemplateId),

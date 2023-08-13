@@ -31,7 +31,7 @@
   }
 
   .recipe-container-box {
-    @apply bg-white dark:bg-slate-800;
+    @apply bg-white dark:bg-slate-800 cursor-pointer;
   }
 }
 
