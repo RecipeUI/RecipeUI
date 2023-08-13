@@ -49,7 +49,7 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
       />
       <MarketplaceSection
         header="No Auth"
-        description="No API key required -> these APIs can be run right away!"
+        description="API key not required -> these APIs can be run right away!"
         projects={free}
       />
       <MarketplaceSection

@@ -48,7 +48,7 @@ export function RecipeBody() {
       parameters.push(RecipeBodyRoute.Templates);
     }
 
-    if (selectedRecipe.auth !== null && !isMobile) {
+    if (selectedRecipe.auth !== null) {
       parameters.push(RecipeBodyRoute.Config);
     }
 
