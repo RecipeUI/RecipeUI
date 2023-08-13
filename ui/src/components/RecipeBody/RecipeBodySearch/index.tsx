@@ -15,6 +15,7 @@ import { RecipeSearchButton } from "./RecipeSearchButton";
 import { usePathname, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "@/utils/main";
 import { RecipeSaveButton } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { useLoadingTemplate } from "@/components/RecipeBody/RecipeBodySearch/useLoadingTemplate";
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -120,8 +121,10 @@ export function RecipeBodySearch() {
     setRecipes(items);
   }, [debouncedInputValue, recipeSearch]);
 
+  useLoadingTemplate();
+
   return (
-    <div className="md:p-4 pb-4 p-4 sm:p-0">
+    <div className="p-4">
       <div
         className={classNames(
           "flex flex-col relative",
@@ -131,7 +134,7 @@ export function RecipeBodySearch() {
         <div className="flex space-x-2 sm:flex sm:space-x-2 sm:flex-row">
           <div
             className={classNames(
-              "input input-bordered flex-1 flex items-center space-x-2 py-4 mb-2 sm:mb-0 border-slate-600"
+              "input input-bordered flex-1 flex items-center space-x-2 py-4 sm:mb-0 border-slate-600"
             )}
             data-tip={
               currentSession

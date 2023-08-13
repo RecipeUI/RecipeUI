@@ -50,7 +50,7 @@ export function StarterTemplates() {
         Use some of these recipes below to quickly prefill the editor. You can
         also create your own later!
       </p>
-      <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
+      <div className="flex-1 grid grid-cols-2 gap-4 mt-4">
         {templates.map((template) => (
           <StarterTemplateItem key={template.title} template={template} />
         ))}
@@ -71,25 +71,23 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
 
   return (
     <div
-      className="border rounded-sm p-4 space-y-2 flex flex-col"
+      className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box"
       key={`${template.title}`}
+      onClick={async () => {
+        posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+          template_id: "Core" + template.title,
+          template_project: selectedRecipe.project,
+          recipe_id: selectedRecipe.id,
+          recipe_path: selectedRecipe.path,
+        });
+        setLoadingTemplate(template);
+      }}
     >
       <h3 className="font-bold">{template.title}</h3>
       <p className="text-sm line-clamp-3">{template.description}</p>
       <div className="flex-1" />
       <div className="flex justify-between">
-        <button
-          className="btn btn-sm btn-neutral w-fit"
-          onClick={async () => {
-            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-              template_id: "Core" + template.title,
-              template_project: selectedRecipe.project,
-              recipe_id: selectedRecipe.id,
-              recipe_path: selectedRecipe.path,
-            });
-            setLoadingTemplate(template);
-          }}
-        >
+        <button className="btn btn-sm btn-neutral w-fit">
           {loadingTemplate ? (
             <span className="loading loading-infinity"></span>
           ) : (
@@ -139,18 +137,33 @@ export function UserTemplates() {
   return (
     <div>
       <h1 className="text-xl font-bold">Your Recipes</h1>
-      <div className="flex-1 grid grid-cols-2 gap-2 mt-4">
+      <div className="flex-1 grid grid-cols-2 gap-4 mt-4">
         {userTemplates.map((template) => {
           const isLocalFork = forkedTemplate?.id === template.id;
 
           return (
             <div
               className={classNames(
-                "border rounded-sm p-4 space-y-2 flex flex-col ",
+                "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box",
                 newTemplateId === String(template.id) &&
                   "border-chefYellow border-4 border-dashed"
               )}
               key={`${template.id}`}
+              onClick={async () => {
+                posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
+                  template_id: template.id,
+                  template_project: selectedRecipe.project,
+                  recipe_id: selectedRecipe.id,
+                  recipe_path: selectedRecipe.path,
+                });
+
+                const templateInfo = await getTemplate(template.id);
+                if (templateInfo) {
+                  setLoadingTemplate(templateInfo);
+                } else {
+                  alert("Failed to find template");
+                }
+              }}
             >
               {user && template.original_author.user_id !== user?.user_id && (
                 <p className="text-xs">
@@ -163,29 +176,7 @@ export function UserTemplates() {
 
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
-                <button
-                  className="btn btn-sm btn-neutral w-fit"
-                  onClick={async () => {
-                    posthog.capture(
-                      POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
-                      {
-                        template_id: template.id,
-                        template_project: selectedRecipe.project,
-                        recipe_id: selectedRecipe.id,
-                        recipe_path: selectedRecipe.path,
-                      }
-                    );
-
-                    const templateInfo = await getTemplate(template.id);
-                    if (templateInfo) {
-                      setLoadingTemplate(templateInfo);
-                    } else {
-                      alert("Failed to find template");
-                    }
-                  }}
-                >
-                  Use
-                </button>
+                <button className="btn btn-sm btn-neutral w-fit">Use</button>
 
                 <div className="dropdown hidden sm:inline-block">
                   <label tabIndex={0} className="btn btn-sm btn-neutral">

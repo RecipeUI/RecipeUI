@@ -39,27 +39,17 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   }, [projects]);
 
   return (
-    <div className="flex-1 flex flex-col sm:p-4 space-y-12">
+    <div className="-mt-6 sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
         header="Popular APIs"
         description={
-          <p>
-            Discover recipes built from popular APIs! We are open source and
-            need your help to build more recipes.{" "}
-            <a
-              href={GITHUB_REPO}
-              target="_blank"
-              className="underline underline-offset-2"
-            >
-              Star and find out more here.
-            </a>
-          </p>
+          <p>{"Discover people's recipes for building with popular APIs. "}</p>
         }
         projects={popular}
       />
       <MarketplaceSection
-        header="Use Right Away"
-        description="No API key required -> these APIs have zero auth setup! "
+        header="No Auth"
+        description="No API key required -> these APIs can be run right away!"
         projects={free}
       />
       <MarketplaceSection
@@ -135,7 +125,7 @@ export function RecipeHomeBox({
   return (
     <Link href={`/${project}`}>
       <div
-        className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full bg-white dark:bg-slate-800"
+        className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
         onClick={() => {
           postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
             project,

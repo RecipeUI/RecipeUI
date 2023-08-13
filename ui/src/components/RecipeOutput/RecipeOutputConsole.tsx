@@ -16,12 +16,15 @@ import { markdown } from "@codemirror/lang-markdown";
 
 const codeMirrorSetup = {
   lineNumbers: true,
+  highlightActiveLine: false,
 };
 
 export function RecipeOutputConsole() {
   const { output, type, duration } = useRecipeSessionStore((state) =>
     state.getOutput()
   );
+
+  console.log({ type });
 
   const { isDarkMode } = useDarkMode();
   const isSending = useRecipeSessionStore((state) => state.isSending);
@@ -80,6 +83,7 @@ export function RecipeOutputConsole() {
           <OutputModule
             title="Images Found"
             tooltip="We found these image URLs from the response."
+            loading={!!loadingTemplate}
             body={
               <>
                 {imageBlocks.length > 1 && (
@@ -110,6 +114,7 @@ export function RecipeOutputConsole() {
       {codeBlocks.length > 0 && (
         <OutputModule
           title="Code Blocks Found"
+          loading={!!loadingTemplate}
           tooltip="We found these code snippets from the response."
           body={
             <div
@@ -144,7 +149,7 @@ export function RecipeOutputConsole() {
                 }
                 className="h-full !outline-none border-none max-w-sm sm:max-w-none"
                 basicSetup={codeMirrorSetup}
-                theme={isDarkMode ? "dark" : "light"}
+                theme={"dark"}
                 extensions={extensions}
               />
             }
@@ -163,10 +168,12 @@ function OutputModule({
   title,
   body,
   tooltip,
+  loading,
 }: {
   title: string;
   body: ReactNode;
   tooltip?: string;
+  loading?: boolean;
 }) {
   return (
     <div className="">
@@ -180,6 +187,7 @@ function OutputModule({
             <InformationCircleIcon className="w-5 h-5" />
           </span>
         )}
+        {loading && <span className="loading loading-bars ml-2"></span>}
       </div>
       {body}
     </div>

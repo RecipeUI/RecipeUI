@@ -13,6 +13,7 @@ import {
 import { useLocalStorage, useScreen } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { UserTemplatePreview } from "@/types/databaseExtended";
+import { useIsMobile } from "@/utils/main";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -20,12 +21,14 @@ export function RecipeBody() {
   // We should probably actually fetch the id here if possible?
   const selectedRecipe = useContext(RecipeContext);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const screen = useScreen();
+
+  const isMobile = useIsMobile();
   const [forkedTemplate, setForkedTemplate] =
     useLocalStorage<UserTemplatePreview | null>(
       UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
       null
     );
+
   const routes = useMemo(() => {
     if (selectedRecipe === null) {
       return [];
@@ -44,15 +47,11 @@ export function RecipeBody() {
       parameters.push(RecipeBodyRoute.Templates);
     }
 
-    if (selectedRecipe.auth !== null) {
+    if (selectedRecipe.auth !== null && !isMobile) {
       parameters.push(RecipeBodyRoute.Config);
     }
 
-    if (
-      screen?.width &&
-      screen.width < 640 &&
-      parameters.includes(RecipeBodyRoute.Templates)
-    ) {
+    if (isMobile && parameters.includes(RecipeBodyRoute.Templates)) {
       setBodyRoute(RecipeBodyRoute.Templates);
       // Make sure Templates is first on mobile
       parameters.sort((a, b) => {
@@ -67,7 +66,7 @@ export function RecipeBody() {
     }
 
     return parameters;
-  }, [selectedRecipe]);
+  }, [forkedTemplate, isMobile, selectedRecipe, setBodyRoute]);
 
   if (routes.length === 0) {
     return null;
@@ -75,7 +74,7 @@ export function RecipeBody() {
 
   return (
     <>
-      <div className="flex space-x-6 p-4 pt-2">
+      <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
         {routes.map((route) => {
           return (
             <div

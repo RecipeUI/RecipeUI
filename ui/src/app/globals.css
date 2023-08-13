@@ -29,6 +29,10 @@
   hr {
     @apply h-0.5;
   }
+
+  .recipe-container-box {
+    @apply bg-white dark:bg-slate-800;
+  }
 }
 
 /* 
@@ -99,4 +103,12 @@ JSON view changer
 }
 .json-view .cursor-pointer {
   cursor: pointer;
+}
+
+/* Code mirror */
+
+.cm-content {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  max-width: fit-content;
 }

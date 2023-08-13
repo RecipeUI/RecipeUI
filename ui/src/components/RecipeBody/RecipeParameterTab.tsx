@@ -101,13 +101,14 @@ export function RecipeParameterTab() {
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
       {/* This logic is pretty confusing */}
-      {((!showOnboarding && !loadingTemplate && needsAuthSetup) ||
-        (!needsAuthSetup && needsParams)) && (
-        <div className="mb-4 mx-4 mt-6 space-y-8">
-          <UserTemplates />
-          <StarterTemplates />
-        </div>
-      )}
+      {!loadingTemplate &&
+        ((!showOnboarding && needsAuthSetup) ||
+          (!needsAuthSetup && needsParams)) && (
+          <div className="mb-4 mx-4 mt-6 space-y-8">
+            <UserTemplates />
+            <StarterTemplates />
+          </div>
+        )}
       {!showOnboarding && !showingRecipes && hasRequestBody && (
         <RecipeJsonEditor />
       )}

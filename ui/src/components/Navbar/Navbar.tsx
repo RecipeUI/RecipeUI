@@ -36,11 +36,15 @@ export function Navbar() {
   const user = useRecipeSessionStore((state) => state.user);
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
+  const isMobile = useIsMobile();
 
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
       <button
-        className="flex items-center cursor-pointer  tooltip tooltip-right"
+        className={classNames(
+          "flex items-center cursor-pointer",
+          !isMobile && "tooltip tooltip-right"
+        )}
         data-tip="Home (CMD+K)"
         onClick={() => {
           setCurrentSession(null);
@@ -404,7 +408,7 @@ import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "@/types/databaseExtended";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
-import { getUrl } from "@/utils/main";
+import { getUrl, useIsMobile } from "@/utils/main";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 

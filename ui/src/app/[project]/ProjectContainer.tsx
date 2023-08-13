@@ -39,9 +39,8 @@ export function ProjectContainer({
         currentSession === null && "sm:px-6 sm:pb-6 sm:pt-4"
       )}
     >
-      <RecipeBodySearch />
       {hasNoProject ? (
-        <div className="flex items-center space-x-4 px-4">
+        <div className="flex items-center space-x-4 px-4 pt-4">
           <span className="text-xl font-bold">
             No project {projectName}, redirecting back to home page.
           </span>

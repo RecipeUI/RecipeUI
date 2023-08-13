@@ -4,7 +4,7 @@ import {
 } from "@/state/recipeSession";
 import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
@@ -19,7 +19,9 @@ enum CodeView {
 const CodeViews = Object.values(CodeView);
 
 export function RecipeCodeView() {
-  const requestInfo = useRecipeSessionStore((state) => state.requestInfo);
+  const requestInfo = useRecipeSessionStore(
+    (state) => state.getOutput().requestInfo
+  );
   const { isDarkMode } = useDarkMode();
   const [codeView, setCodeView] = useState(CodeView.CURL);
   const [output, setOutput] = useState("Make a request first!");
@@ -41,7 +43,7 @@ export function RecipeCodeView() {
       <h1 className="text-xl font-bold mb-4">Code</h1>
       <div className="space-x-2 flex items-center mb-4">
         <select
-          className="select select-bordered max-w-xs select-sm w-64 h-full"
+          className="select select-bordered max-w-xs select-sm w-64 h-full bg-slate-700 text-white"
           value={codeView}
           onChange={(event) => {
             setCodeView(event.target.value as CodeView);
@@ -66,7 +68,7 @@ export function RecipeCodeView() {
         value={output}
         basicSetup={codeMirrorSetup}
         readOnly={true}
-        theme={isDarkMode ? "dark" : "light"}
+        theme={"dark"}
         extensions={[]}
       />
     </div>

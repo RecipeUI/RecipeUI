@@ -4,7 +4,7 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 
 // This library is ridiculously large. We should try to replace it with something lightweight.
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
@@ -15,6 +15,9 @@ export function RecipeOutput() {
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
   const getOutput = useRecipeSessionStore((state) => state.getOutput);
   const output = getOutput();
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -38,19 +41,29 @@ export function RecipeOutput() {
     };
   }, [currentTab, setCurrentTab]);
 
+  const tabs = useMemo(() => {
+    if (
+      Object.keys(output).length === 0 &&
+      currentTab !== RecipeOutputTab.Output
+    ) {
+      return [];
+    }
+
+    const _tabs = [RecipeOutputTab.Docs, RecipeOutputTab.Output];
+
+    _tabs.push(RecipeOutputTab.Code);
+
+    return _tabs;
+  }, [output, currentTab]);
+
   return (
     <div className="flex-1 relative border-t sm:border-l sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {currentTab === RecipeOutputTab.Code && <RecipeCodeView />}
-      {(Object.keys(output).length > 0 ||
-        currentTab === RecipeOutputTab.Output) && (
+      {!loadingTemplate && tabs.length && (
         <div className="absolute right-0 top-0 flex border-l border-b">
-          {[
-            RecipeOutputTab.Docs,
-            RecipeOutputTab.Output,
-            RecipeOutputTab.Code,
-          ].map((tab) => {
+          {tabs.map((tab) => {
             return (
               <div
                 key={tab}

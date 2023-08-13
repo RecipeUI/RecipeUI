@@ -70,6 +70,7 @@ interface SessionOutput {
   output: Record<string, unknown>;
   type: RecipeOutputType;
   duration?: number;
+  requestInfo?: RecipeRequestInfo;
 }
 
 export interface RecipeRequestInfo {
@@ -96,9 +97,6 @@ interface RecipeOutputSlice {
 
   loadingTemplate: RecipeTemplate | null;
   setLoadingTemplate: (template: RecipeTemplate | null) => void;
-
-  requestInfo: RecipeRequestInfo | null;
-  setRequestInfo: (requestInfo: RecipeRequestInfo) => void;
 }
 
 interface RecipeBodySlice {
@@ -217,6 +215,7 @@ const createRecipeSessionSlice: StateCreator<
           queryParams: oldParams.queryParams,
           bodyRoute: RecipeBodyRoute.Parameters,
           outputTab: hasOutput ? RecipeOutputTab.Output : RecipeOutputTab.Docs,
+          requestInfo: null,
         };
       }),
 
@@ -261,6 +260,7 @@ const createRecipeSessionSlice: StateCreator<
           currentSession: newSession,
           sessions: [...prevState.sessions, newSession],
           outputTab: RecipeOutputTab.Docs,
+          requestInfo: null,
           ...getEmptyParameters(),
         };
       });
@@ -450,9 +450,6 @@ const createRecipeOutputSlice: StateCreator<
           outputTab: RecipeOutputTab.Docs,
         }),
       })),
-
-    requestInfo: null,
-    setRequestInfo: (requestInfo) => set(() => ({ requestInfo })),
   };
 };
 

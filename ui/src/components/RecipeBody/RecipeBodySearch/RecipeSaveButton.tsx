@@ -43,7 +43,7 @@ export function RecipeSaveButton() {
   return (
     <>
       <div
-        className="tooltip tooltip-left tooltip-info"
+        className="hidden sm:block tooltip tooltip-left tooltip-info"
         data-tip="Convert to a reusable recipe and share with people!"
       >
         <button

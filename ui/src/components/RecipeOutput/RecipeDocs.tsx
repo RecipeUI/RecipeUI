@@ -41,14 +41,32 @@ export function RecipeDocs() {
     [requestBody, queryParams, urlParams].filter((param) => param !== null)
       .length > 1;
 
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
-      <h1 className="text-lg sm:text-xl font-bold">{selectedRecipe.title}</h1>
-      {selectedRecipe.summary && (
-        <ReactMarkdown className="mt-2 recipe-md">
-          {selectedRecipe.summary}
-        </ReactMarkdown>
+      {loadingTemplate ? (
+        <>
+          <h1 className="text-md sm:text-lg font-bold flex items-center">
+            Generating parameters{" "}
+            <span className="loading loading-bars ml-2"></span>
+          </h1>
+        </>
+      ) : (
+        <>
+          <h1 className="text-lg sm:text-xl font-bold">
+            {selectedRecipe.title}
+          </h1>
+          {selectedRecipe.summary && (
+            <ReactMarkdown className="mt-2 recipe-md">
+              {selectedRecipe.summary}
+            </ReactMarkdown>
+          )}
+        </>
       )}
+
       {urlParams && (
         <RecipeUrlDocsContainer
           urlParamsSchema={urlParams}
@@ -104,7 +122,7 @@ function RecipeQueryDocsContainer({
       <div
         className={classNames(
           loadingTemplate &&
-            "animate-pulse bg-chefYellow dark:text-white flex flex-col-reverse"
+            "animate-pulse dark:text-white flex flex-col-reverse"
         )}
       >
         {addedAlready.map((paramSchema) => {
@@ -120,20 +138,22 @@ function RecipeQueryDocsContainer({
           );
         })}
       </div>
-      <div>
-        {remaining.map((paramSchema) => {
-          const paramName = paramSchema.name;
-          return (
-            <RecipeDocsParamContainer
-              key={paramName}
-              paramName={paramName}
-              paramSchema={paramSchema}
-              paramPath={"." + paramName}
-              isQueryParam
-            />
-          );
-        })}
-      </div>
+      {!loadingTemplate && (
+        <div>
+          {remaining.map((paramSchema) => {
+            const paramName = paramSchema.name;
+            return (
+              <RecipeDocsParamContainer
+                key={paramName}
+                paramName={paramName}
+                paramSchema={paramSchema}
+                paramPath={"." + paramName}
+                isQueryParam
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -171,7 +191,7 @@ function RecipeDocsContainer({
           className={classNames(
             remaining.length > 0 ? "mb-4" : "",
             loadingTemplate &&
-              "animate-pulse bg-chefYellow dark:text-white flex flex-col-reverse"
+              "animate-pulse  dark:text-white flex flex-col-reverse"
           )}
           id="recipe-added"
         >
@@ -188,7 +208,7 @@ function RecipeDocsContainer({
           })}
         </div>
       )}
-      {remaining.length > 0 && (
+      {!loadingTemplate && remaining.length > 0 && (
         <div>
           {remaining.map(([propertyName, paramSchema]) => {
             return (
@@ -964,11 +984,15 @@ function RecipeUrlDocsContainer({
         const paramName = paramSchema.name;
         const value = urlParams[paramName] as string | undefined;
 
+        if (loadingTemplate && value === undefined) {
+          return null;
+        }
+
         return (
           <div
             className={classNames(
               "border rounded-sm p-4",
-              loadingTemplate && "animate-pulse bg-chefYellow dark:text-white"
+              loadingTemplate && "animate-pulse dark:text-white"
             )}
             key={paramName}
           >
