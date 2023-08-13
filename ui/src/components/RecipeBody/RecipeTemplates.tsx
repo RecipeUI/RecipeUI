@@ -46,10 +46,7 @@ export function StarterTemplates() {
   return (
     <div>
       <h1 className="text-xl font-bold">Starter Recipes</h1>
-      <p className="mt-2">
-        Use some of these recipes below to quickly prefill the editor. You can
-        also create your own later!
-      </p>
+      <p className="mt-2">Use the recipes below to see how to use this API!</p>
       <div className="flex-1 grid grid-cols-2 gap-4 mt-4">
         {templates.map((template) => (
           <StarterTemplateItem key={template.title} template={template} />

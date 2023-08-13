@@ -46,7 +46,12 @@ export function RecipeDocs() {
   );
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto">
+    <div
+      className={classNames(
+        "sm:absolute inset-0 px-4 py-6 overflow-y-auto",
+        loadingTemplate && "cursor-wait pointer-events-none"
+      )}
+    >
       {loadingTemplate ? (
         <>
           <h1 className="text-md sm:text-lg font-bold flex items-center">

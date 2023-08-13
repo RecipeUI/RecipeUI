@@ -16,6 +16,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { getURLParamsForSession, useIsMobile } from "@/utils/main";
+import Link from "next/link";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -74,18 +75,17 @@ export function RecipeSidebar() {
 
   return (
     <div className="hidden sm:block w-56 border-r">
-      <div className="flex justify-between items-center">
-        <h3 className="font-bold text-sm ml-4 ">Sessions</h3>
-        <button
-          className="hover:bg-blue-600 dark:hover:bg-blue-900 px-4 py-3 tooltip tooltip-bottom"
-          data-tip="Add a new session (CMD+K)"
-          onClick={() => {
-            router.push("/");
-            setCurrentSession(null);
-          }}
-        >
-          <PlusCircleIcon className="w-4 h-4" />
-        </button>
+      <button
+        className="text-start py-2 pt-3 w-full"
+        onClick={() => {
+          setCurrentSession(null);
+          router.push("/");
+        }}
+      >
+        <h3 className="font-bold text-sm ml-4 cursor-pointer w-full">Home</h3>
+      </button>
+      <div className="text-start py-2 w-full">
+        <h3 className="font-bold text-sm ml-4">Sessions</h3>
       </div>
       <div>
         {sessions.length >= 10 && (

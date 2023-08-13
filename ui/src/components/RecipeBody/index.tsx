@@ -14,6 +14,7 @@ import { useLocalStorage, useScreen } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { UserTemplatePreview } from "@/types/databaseExtended";
 import { useIsMobile } from "@/utils/main";
+import { useRouter } from "next/navigation";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -68,6 +69,11 @@ export function RecipeBody() {
     return parameters;
   }, [forkedTemplate, isMobile, selectedRecipe, setBodyRoute]);
 
+  const router = useRouter();
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
+
   if (routes.length === 0) {
     return null;
   }
@@ -90,6 +96,15 @@ export function RecipeBody() {
             </div>
           );
         })}
+        <div
+          className={"font-bold text-sm cursor-pointer sm:hidden"}
+          onClick={() => {
+            setCurrentSession(null);
+            router.push("/");
+          }}
+        >
+          {"Home"}
+        </div>
       </div>
       <div className="flex-1 border-t sm:grid sm:grid-cols-2 flex flex-col overflow-x-auto">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
