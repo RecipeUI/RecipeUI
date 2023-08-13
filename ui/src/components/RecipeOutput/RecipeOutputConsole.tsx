@@ -24,8 +24,6 @@ export function RecipeOutputConsole() {
     state.getOutput()
   );
 
-  console.log({ type });
-
   const { isDarkMode } = useDarkMode();
   const isSending = useRecipeSessionStore((state) => state.isSending);
   const loadingTemplate = useRecipeSessionStore(

@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { RecipeParameterTab } from "./RecipeParameterTab";
 import { RecipeTemplatesTab } from "./RecipeTemplates";
 import { RecipeConfigTab } from "./RecipeConfigTab";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
 import {
   RecipeBodyRoute,
@@ -53,7 +53,6 @@ export function RecipeBody() {
     }
 
     if (isMobile && parameters.includes(RecipeBodyRoute.Templates)) {
-      setBodyRoute(RecipeBodyRoute.Templates);
       // Make sure Templates is first on mobile
       parameters.sort((a, b) => {
         if (a === RecipeBodyRoute.Templates) {
@@ -68,6 +67,12 @@ export function RecipeBody() {
 
     return parameters;
   }, [forkedTemplate, isMobile, selectedRecipe, setBodyRoute]);
+
+  useEffect(() => {
+    if (isMobile) {
+      setBodyRoute(RecipeBodyRoute.Templates);
+    }
+  }, [isMobile, setBodyRoute]);
 
   const router = useRouter();
   const setCurrentSession = useRecipeSessionStore(

@@ -11,7 +11,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database.types";
 import { Recipe } from "@/types/databaseExtended";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { getURLParamsForSession } from "@/utils/main";
+import { getURLParamsForSession, useIsMobile } from "@/utils/main";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -46,13 +46,13 @@ export function useSaveRecipeUI() {
   const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
   const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
-
+  const isMobile = useIsMobile();
   // On mount, hydrate from local storage
 
   useEffect(() => {
     console.log("Hydrating from local storage");
 
-    if (!localSave) return;
+    if (!localSave || isMobile) return;
     if (
       localSave.currentSession &&
       !projectId &&
@@ -126,7 +126,7 @@ export function useSaveRecipeUI() {
         initializeRecipes(newRecipes);
       }
 
-      if (!localSave) return null;
+      if (!localSave || isMobile) return null;
       // Lets fix all the sessions and the current session
       // This is not really ideal right now, we should really be referencing ids and then matching later
 

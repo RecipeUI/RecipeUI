@@ -118,7 +118,9 @@ export function UserTemplates() {
     );
 
   const userTemplates = [
-    ...(forkedTemplate ? [forkedTemplate] : []),
+    ...(forkedTemplate && forkedTemplate.recipe.id === selectedRecipe.id
+      ? [forkedTemplate]
+      : []),
     ...(selectedRecipe.userTemplates || []),
   ];
 
@@ -162,7 +164,7 @@ export function UserTemplates() {
                 }
               }}
             >
-              {user && template.original_author.user_id !== user?.user_id && (
+              {(!user || template.original_author.user_id !== user.user_id) && (
                 <p className="text-xs">
                   Forked from @{template.original_author.username}
                 </p>
@@ -367,18 +369,20 @@ export function ShareInviteModal({
           <TemplateMockCode template={template} />
           {newTemplateId === null ? (
             <>
-              <button
-                className="btn btn-accent w-full mt-4"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    `${window.location.origin}/r/${template.alias}`
-                  );
+              {isCurrentUserTemplate && (
+                <button
+                  className="btn btn-accent w-full mt-4"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}/r/${template.alias}`
+                    );
 
-                  alert("Copied to clipboard");
-                }}
-              >
-                Share
-              </button>
+                    alert("Copied to clipboard");
+                  }}
+                >
+                  Share
+                </button>
+              )}
               <button
                 className="btn btn-accent w-full mt-4"
                 onClick={async () => {
