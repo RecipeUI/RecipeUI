@@ -10,9 +10,9 @@ import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
-} from "@/utils/constants";
+} from "@/utils/constants/main";
 import { getURLParamsForSession } from "@/utils/main";
-import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";

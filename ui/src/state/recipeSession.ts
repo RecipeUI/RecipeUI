@@ -52,6 +52,7 @@ export enum RecipeOutputType {
 export enum RecipeOutputTab {
   Output = "Output",
   Docs = "Docs",
+  Code = "Code",
 }
 export type RecipeParameters = {
   requestBody: Record<string, unknown>;
@@ -70,6 +71,17 @@ interface SessionOutput {
   type: RecipeOutputType;
   duration?: number;
 }
+
+export interface RecipeRequestInfo {
+  url: URL;
+  payload: {
+    method: RecipeMethod;
+    headers: Record<string, string>;
+    body: Record<string, unknown> | FormData | undefined;
+  };
+  options: Record<string, unknown>;
+}
+
 interface RecipeOutputSlice {
   isSending: boolean;
   setIsSending: (isSending: boolean, outputTab: RecipeOutputTab) => void;
@@ -84,6 +96,9 @@ interface RecipeOutputSlice {
 
   loadingTemplate: RecipeTemplate | null;
   setLoadingTemplate: (template: RecipeTemplate | null) => void;
+
+  requestInfo: RecipeRequestInfo | null;
+  setRequestInfo: (requestInfo: RecipeRequestInfo) => void;
 }
 
 interface RecipeBodySlice {
@@ -435,6 +450,9 @@ const createRecipeOutputSlice: StateCreator<
           outputTab: RecipeOutputTab.Docs,
         }),
       })),
+
+    requestInfo: null,
+    setRequestInfo: (requestInfo) => set(() => ({ requestInfo })),
   };
 };
 

@@ -9,8 +9,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import debounce from "lodash.debounce";
 
 import { json, jsonParseLinter } from "@codemirror/lang-json";
-import { useDarkMode, useDebounce } from "usehooks-ts";
 import { linter, lintGutter } from "@codemirror/lint";
+import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import { getDefaultValue } from "../../utils/main";
@@ -20,7 +20,6 @@ import {
   UserTemplates,
 } from "@/components/RecipeBody/RecipeTemplates";
 
-const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
   lineNumbers: true,
   highlightActiveLine: false,
@@ -101,7 +100,7 @@ export function RecipeParameterTab() {
 
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
-      {!showOnboarding && !loadingTemplate && (
+      {!showOnboarding && !loadingTemplate && needsAuthSetup && (
         <div className="mb-4 mx-4 mt-6 space-y-8">
           <UserTemplates />
           <StarterTemplates />
@@ -228,7 +227,6 @@ function RecipeJsonEditor() {
         value={requestCode}
         basicSetup={codeMirrorSetup}
         theme={isDarkMode ? "dark" : "light"}
-        extensions={extensions}
         onChange={(newCode) => {
           setRequestCode(newCode);
           debouncedSetRequestBody(newCode);

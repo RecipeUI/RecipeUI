@@ -97,6 +97,12 @@ export function useSaveRecipeUI() {
             const results = res.data || [];
 
             const userInfo = results[0];
+
+            console.debug(
+              "User info just onboarded. Trying to figure out this bug",
+              userInfo,
+              res
+            );
             if (!userInfo) {
               setOnboarding(true);
             } else {

@@ -21,7 +21,7 @@ import {
   ShareModal,
 } from "@/components/RecipeBody/RecipeTemplates";
 import { useLocalStorage } from "usehooks-ts";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import Link from "next/link";
 
 export function RecipeHomeContainer({

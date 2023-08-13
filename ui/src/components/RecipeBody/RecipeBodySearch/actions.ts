@@ -4,7 +4,7 @@ import { UserCreationError } from "@/components/Navbar/types";
 import { RecipeParameters } from "@/state/recipeSession";
 import { Database } from "@/types/database.types";
 import { UserTemplate } from "@/types/databaseExtended";
-import { DB_FUNC_ERRORS } from "@/utils/constants";
+import { DB_FUNC_ERRORS } from "@/utils/constants/main";
 import {
   createServerActionClient,
   createServerComponentClient,

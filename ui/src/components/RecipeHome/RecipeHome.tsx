@@ -3,8 +3,8 @@ import { ReactNode, useMemo } from "react";
 import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
-import { GITHUB_REPO } from "@/utils/constants";
+import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
+import { GITHUB_REPO } from "@/utils/constants/main";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const { popular, free, ycombinator, more } = useMemo(() => {

@@ -11,7 +11,7 @@ import {
   useRecipeSessionStore,
 } from "@/state/recipeSession";
 import { useLocalStorage, useScreen } from "usehooks-ts";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { UserTemplatePreview } from "@/types/databaseExtended";
 
 export function RecipeBody() {

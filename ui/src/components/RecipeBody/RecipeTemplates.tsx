@@ -14,13 +14,13 @@ import {
   deleteTemplate,
 } from "@/components/RecipeBody/RecipeBodySearch/actions";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
-} from "@/utils/constants";
+} from "@/utils/constants/main";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 

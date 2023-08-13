@@ -403,10 +403,10 @@ import { Fragment } from "react";
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "@/types/databaseExtended";
 import Link from "next/link";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants";
+import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { getUrl } from "@/utils/main";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 
 function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();

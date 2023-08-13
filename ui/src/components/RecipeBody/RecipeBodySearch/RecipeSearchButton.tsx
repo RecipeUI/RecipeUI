@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useContext, useEffect, useRef } from "react";
-import { RECIPE_PROXY } from "@/utils/constants";
+import { RECIPE_PROXY } from "@/utils/constants/main";
 import { useSecretManager, useSecretsFromSM } from "@/state/recipeAuth";
 import {
   RecipeBodyRoute,
@@ -17,7 +17,7 @@ import {
 } from "@/types/databaseExtended";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/posthogConstants";
+import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 import { getVariedParamInfo } from "@/components/RecipeOutput/RecipeDocs";
 
 export function RecipeSearchButton() {
@@ -34,6 +34,8 @@ export function RecipeSearchButton() {
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
   const controllerRef = useRef<AbortController | null>(null);
   const recipe = useContext(RecipeContext)!;
+
+  const setRequestInfo = useRecipeSessionStore((state) => state.setRequestInfo);
 
   const secretInfo = useSecretsFromSM();
   const loadingTemplate = useRecipeSessionStore(
@@ -147,7 +149,9 @@ export function RecipeSearchButton() {
         }
       }
     }
-    let body: undefined | string | FormData;
+    let body: undefined | Record<string, unknown> | FormData;
+    const SCHEMA_CONTENT_TYPE =
+      "requestBody" in recipe && recipe.requestBody?.contentType;
 
     // TODO: We can have very strict validation eventually
     if (
@@ -172,11 +176,9 @@ export function RecipeSearchButton() {
         _requestBody.stream = true;
       }
 
-      const contentType = recipe.requestBody.contentType;
-
-      if (contentType === "application/json") {
-        body = JSON.stringify(_requestBody);
-      } else if (contentType === "multipart/form-data") {
+      if (SCHEMA_CONTENT_TYPE === "application/json") {
+        body = _requestBody;
+      } else if (SCHEMA_CONTENT_TYPE === "multipart/form-data") {
         // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
         delete headers["Content-Type"];
 
@@ -218,6 +220,29 @@ export function RecipeSearchButton() {
     }
 
     try {
+      // We need to reformat it as it was originally
+      let clonedBody = structuredClone(body);
+      let infoOptions: Record<string, unknown> = {};
+
+      if (clonedBody && "stream" in clonedBody) {
+        infoOptions.stream = clonedBody.stream;
+        delete clonedBody.stream;
+      }
+
+      setRequestInfo({
+        url,
+        payload: {
+          method: recipe.method,
+          headers,
+          body: clonedBody,
+        },
+        options: infoOptions,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    try {
       controllerRef.current = new AbortController();
 
       setIsSending(true, RecipeOutputTab.Output);
@@ -225,12 +250,16 @@ export function RecipeSearchButton() {
       const payload = {
         method: recipe.method,
         headers,
-        body,
+        body:
+          SCHEMA_CONTENT_TYPE === "application/json"
+            ? JSON.stringify(body)
+            : (body as FormData | undefined),
         signal: controllerRef.current.signal,
       };
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
+      // ------ Actual Fetch Request ------
       const res = await fetch(url, payload);
 
       if (res.body && recipe.options?.streaming === true && res.ok) {
@@ -616,7 +645,7 @@ function useLoadingTemplate() {
           paramSchema,
           updateFunction: updateRequestBody,
           path: ".",
-          speedFactor: 1,
+          speedFactor: 1.5,
         });
       }
     }
