@@ -127,7 +127,7 @@ function getCurlCode({
 }: RecipeRequestInfo) {
   const { headers, method, body } = payload;
 
-  const lines = [`\t--url ${url.toString()}`];
+  const lines = [`\t--url '${url.toString()}'`];
 
   if (headers) {
     for (const [headerName, headerValue] of Object.entries(headers)) {

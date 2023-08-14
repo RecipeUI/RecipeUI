@@ -96,7 +96,7 @@ export function RecipeHomeContainer({
         )}
       </RecipeContext.Provider>
       {!(recipe && currentSession) && (
-        <footer className="mt-16 text-right -mx-6 -mb-6 border-t py-2  flex justify-end items-center px-8">
+        <footer className="mt-16 text-right sm:-mx-6 -mb-6 border-t py-2  flex justify-end items-center px-8">
           <Link href="/privacy">Privacy Policy</Link>
         </footer>
       )}

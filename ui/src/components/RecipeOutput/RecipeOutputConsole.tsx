@@ -179,7 +179,7 @@ function OutputModule({
         <h1 className="text-xl font-bold">{title}</h1>
         {tooltip && (
           <span
-            className="tooltip tooltip-right tooltip-accent ml-2"
+            className="tooltip tooltip-bottom tooltip-accent ml-2"
             data-tip={tooltip}
           >
             <InformationCircleIcon className="w-5 h-5" />

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   Recipe,
+  RecipeCore,
   RecipeMethod,
   RecipeTemplate,
   User,
@@ -80,7 +81,7 @@ export interface RecipeRequestInfo {
     headers: Record<string, string>;
     body: Record<string, unknown> | FormData | undefined;
   };
-  options: Record<string, unknown>;
+  options: RecipeCore["options"];
 }
 
 interface RecipeOutputSlice {

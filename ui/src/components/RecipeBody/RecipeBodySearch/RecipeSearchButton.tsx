@@ -212,7 +212,11 @@ export function RecipeSearchButton() {
     }
 
     // We need to reformat it as it was originally
+
     let clonedBody = structuredClone(body);
+    let clonedHeaders = structuredClone(headers);
+    let clonedUrl = new URL(path + url.search);
+
     let infoOptions: Record<string, unknown> = {};
 
     if (clonedBody && "stream" in clonedBody) {
@@ -220,11 +224,16 @@ export function RecipeSearchButton() {
       delete clonedBody.stream;
     }
 
+    if ("recipe-domain" in headers) {
+      infoOptions.cors = true;
+      delete clonedHeaders["recipe-domain"];
+    }
+
     const requestInfo = {
-      url,
+      url: clonedUrl,
       payload: {
         method: recipe.method,
-        headers,
+        headers: clonedHeaders,
         body: clonedBody,
       },
       options: infoOptions,
@@ -387,7 +396,7 @@ export function RecipeSearchButton() {
   const isHovering = useHover(ref);
 
   return (
-    <div className="tooltip tooltip-bottom">
+    <div>
       <button
         id={UNIQUE_ELEMENT_IDS.RECIPE_SEARCH}
         ref={ref}
