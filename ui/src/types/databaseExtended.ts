@@ -123,10 +123,10 @@ export type RecipeCore = Omit<
   urlParams?: RecipeObjectSchemas;
   templates?: RecipeTemplate[];
   options: null | {
-    cors: boolean;
-    deprecated: boolean;
-    streaming: boolean;
-    auth: string[];
+    cors?: boolean;
+    deprecated?: boolean;
+    streaming?: boolean;
+    auth?: string[];
   };
 
   // Added on later

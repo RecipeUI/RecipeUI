@@ -9,6 +9,7 @@ import {
   useRecipeSessionStore,
 } from "@/state/recipeSession";
 import {
+  RecipeMutationCore,
   RecipeParam,
   RecipeParamType,
   RecipeStringParam,
@@ -297,22 +298,30 @@ export function useLoadingTemplate() {
       }
     }
 
+    let headers: Record<string, string> = {};
+    if (selectedRecipe.auth !== null) {
+      headers["Authorization"] = "Configure Auth / Make Real Request";
+    }
+    if (
+      (selectedRecipe as RecipeMutationCore)?.requestBody?.["contentType"] ===
+      "application/json"
+    ) {
+      headers["Content-Type"] = "application/json";
+    }
+
     let requestInfo: RecipeRequestInfo = {
       url: requestUrl,
       payload: {
         method: selectedRecipe.method,
-        headers:
-          selectedRecipe.auth === null
-            ? {}
-            : {
-                Authorization: "Configure Auth Token",
-              },
+        headers: headers,
         body: requestBody,
       },
       options: {},
     };
 
-    if (selectedRecipe.options?.cors) requestInfo.options.cors = true;
+    if (selectedRecipe.options?.cors) {
+      requestInfo.options!.cors = true;
+    }
 
     if (selectedRecipe.auth === null) {
       t += 15;
