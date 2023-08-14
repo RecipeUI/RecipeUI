@@ -111,7 +111,10 @@ export function useLoadingTemplate() {
           // This is literally overkill but makes it look really cool!
           if (paramSchema.enum) {
             let speed = (paramSchema.enum.length > 5 ? 1 : 2) * speedFactor;
-            for (const enumValue of paramSchema.enum) {
+
+            for (let i = 0; i < Math.min(paramSchema.enum.length, 7); i += 1) {
+              const enumValue = paramSchema.enum[i];
+
               setTimeout(() => {
                 updateFunction({
                   path: path + paramName,
