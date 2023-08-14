@@ -36,6 +36,7 @@ export function RecipeParameterTab() {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
 
   const {
+    hasNoAuth,
     needsAuthSetup,
     hasRequiredBodyParams,
     hasRequestBody,
@@ -78,6 +79,7 @@ export function RecipeParameterTab() {
       hasQueryParams,
       hasRequiredQueryParams,
       hasUrlParams,
+      hasNoAuth: selectedRecipe.auth === null,
     };
   }, [secretInfo, selectedRecipe]);
   const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
@@ -97,6 +99,8 @@ export function RecipeParameterTab() {
 
   const showingRecipes = hasTemplates && needsParams;
   const showOnboarding = !loadingTemplate && needsAuthSetup && !showingRecipes;
+  const hasNoParams =
+    !hasRequestBody && !hasQueryParams && !hasUrlParams && !loadingTemplate;
 
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
@@ -120,9 +124,8 @@ export function RecipeParameterTab() {
                     <hr />
                     <h3 className="font-bold mb-2">Recipe Playground</h3>
                     <p>
-                      You can continue using recipes, but to truly enjoy the
-                      most of this API with your own parameters then setup auth
-                      below.
+                      You can use recipes below, but to truly enjoy the most of
+                      this API then configure auth.
                     </p>
                     <button
                       className="btn btn-sm btn-neutral"
@@ -155,16 +158,16 @@ export function RecipeParameterTab() {
         <RecipeJsonEditor />
       )}
       {!showingRecipes && hasQueryParams && !loadingTemplate && (
-        <RecipeQueryParameters needsParams={needsParams} />
+        <RecipeQueryParameters
+          needsParams={needsParams}
+          needsAuthSetup={needsAuthSetup}
+        />
       )}
       {!showingRecipes && hasUrlParams && !loadingTemplate && (
         <RecipeURLParams />
       )}
 
-      {!hasRequestBody &&
-        !hasQueryParams &&
-        !hasUrlParams &&
-        !loadingTemplate && <NoEditorCopy />}
+      {hasNoParams && <NoEditorCopy />}
     </div>
   );
 }
@@ -239,12 +242,22 @@ function RecipeJsonEditor() {
   );
 }
 
-function RecipeQueryParameters({ needsParams }: { needsParams: boolean }) {
+function RecipeQueryParameters({
+  needsParams,
+  needsAuthSetup,
+}: {
+  needsParams: boolean;
+  needsAuthSetup: boolean;
+}) {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const recipe = useContext(RecipeContext)!;
   const hasNoParams = Object.values(recipe.queryParams!).every(
     (param) => param.required === undefined || param.required === false
   );
+
+  if (hasNoParams && needsAuthSetup) {
+    return null;
+  }
 
   return (
     <div className="mx-4 my-6">
