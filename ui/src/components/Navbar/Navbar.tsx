@@ -135,6 +135,8 @@ export default function AuthForm({
 }) {
   const supabase = createClientComponentClient<Database>();
   const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
+  const searchParams = useSearchParams();
+  const hasGoogle = searchParams.get("google");
 
   return (
     <Dialog
@@ -196,7 +198,7 @@ export default function AuthForm({
                 // anchorTextHoverColor?: string;
               },
             }}
-            providers={["github"]}
+            providers={hasGoogle ? ["google", "github"] : ["github"]}
             redirectTo={`${getUrl()}/auth/callback`}
           />
           <button
