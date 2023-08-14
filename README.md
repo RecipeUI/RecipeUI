@@ -12,6 +12,7 @@ Couldn't have built this app without some really amazing packages
 - 🔺 NextJS + Vercel for a seamless frontend framework and deployment package
 - ⚡ Supabase for a seamless backend service that has many cool features. 
 - 🪞 Codemirror for the easy code editor plugin
+- 🦖 Docusaurus for docs!
 - Other fun stuff: pnpm, downshift, fuse, react18-json-view
 
 Contributors
