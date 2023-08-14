@@ -86,14 +86,14 @@ export function RecipeSearchButton() {
     if ("urlParams" in recipe && recipe.urlParams != undefined) {
       for (const { name: key, ...schema } of recipe.urlParams) {
         const value = urlParams[key];
-        if (value === undefined) {
+        if (value == undefined || value === "") {
           const isRequired = schema.required;
           // By default URL params are usually required if someone forgot to define
           if (isRequired === undefined || isRequired) {
             alert(`Please provide a value for ${key}`);
             return;
           } else {
-            path = path.replace(`{${key}}`, "");
+            path = path.replace(`/{${key}}`, "");
           }
         } else {
           path = path.replace(`{${key}}`, String(value));

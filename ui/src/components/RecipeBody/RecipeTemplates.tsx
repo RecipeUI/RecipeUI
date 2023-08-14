@@ -69,17 +69,8 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
 
   return (
     <div
-      className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box"
+      className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default"
       key={`${template.title}`}
-      onClick={async () => {
-        posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-          template_id: "Core" + template.title,
-          template_project: selectedRecipe.project,
-          recipe_id: selectedRecipe.id,
-          recipe_path: selectedRecipe.path,
-        });
-        setLoadingTemplate(template);
-      }}
     >
       <h3 className="font-bold">{template.title}</h3>
       <p className="text-sm line-clamp-3">{template.description}</p>
@@ -90,6 +81,15 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
             "btn btn-sm btn-neutral w-fit",
             loadingTemplate && "btn-disabled"
           )}
+          onClick={async () => {
+            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+              template_id: "Core" + template.title,
+              template_project: selectedRecipe.project,
+              recipe_id: selectedRecipe.id,
+              recipe_path: selectedRecipe.path,
+            });
+            setLoadingTemplate(template);
+          }}
         >
           Use
         </button>
@@ -131,6 +131,10 @@ export function UserTemplates() {
     (state) => state.setLoadingTemplate
   );
 
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
+
   if (userTemplates.length === 0) {
     return null;
   }
@@ -167,7 +171,10 @@ export function UserTemplates() {
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
                 <button
-                  className="btn btn-sm btn-neutral w-fit"
+                  className={classNames(
+                    "btn btn-sm btn-neutral w-fit",
+                    loadingTemplate && "btn-disabled"
+                  )}
                   onClick={async () => {
                     posthog.capture(
                       POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
@@ -196,7 +203,13 @@ export function UserTemplates() {
                     e.stopPropagation();
                   }}
                 >
-                  <label tabIndex={0} className="btn btn-sm btn-neutral">
+                  <label
+                    tabIndex={0}
+                    className={classNames(
+                      "btn btn-sm btn-neutral",
+                      loadingTemplate && "btn-disabled"
+                    )}
+                  >
                     Options
                   </label>
                   <ul
