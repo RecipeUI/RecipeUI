@@ -85,12 +85,13 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
       <p className="text-sm line-clamp-3">{template.description}</p>
       <div className="flex-1" />
       <div className="flex justify-between">
-        <button className="btn btn-sm btn-neutral w-fit">
-          {loadingTemplate ? (
-            <span className="loading loading-infinity"></span>
-          ) : (
-            "Use"
+        <button
+          className={classNames(
+            "btn btn-sm btn-neutral w-fit",
+            loadingTemplate && "btn-disabled"
           )}
+        >
+          Use
         </button>
       </div>
     </div>

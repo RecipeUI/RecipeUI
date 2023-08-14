@@ -101,29 +101,14 @@ export function RecipeParameterTab() {
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
       {/* This logic is pretty confusing */}
-      {!loadingTemplate &&
-        ((!showOnboarding && needsAuthSetup) ||
-          (!needsAuthSetup && needsParams)) && (
-          <div className="mb-4 mx-4 mt-6 space-y-8">
-            <UserTemplates />
-            <StarterTemplates />
-          </div>
-        )}
-      {!showOnboarding && !showingRecipes && hasRequestBody && (
-        <RecipeJsonEditor />
+      {(loadingTemplate ||
+        (!showOnboarding && needsAuthSetup) ||
+        (!needsAuthSetup && needsParams)) && (
+        <div className="mb-4 mx-4 mt-6 space-y-8">
+          <UserTemplates />
+          <StarterTemplates />
+        </div>
       )}
-      {!showOnboarding && !showingRecipes && hasQueryParams && (
-        <RecipeQueryParameters needsParams={needsParams} />
-      )}
-      {!showOnboarding && !showingRecipes && hasUrlParams && (
-        <RecipeURLParams />
-      )}
-
-      {!showOnboarding &&
-        !hasRequestBody &&
-        !hasQueryParams &&
-        !hasUrlParams && <NoEditorCopy />}
-
       {showOnboarding ? (
         needsAuthSetup ? (
           <div className="space-y-4 mb-4 mx-4 mt-6">
@@ -166,6 +151,20 @@ export function RecipeParameterTab() {
           </div>
         ) : null
       ) : null}
+      {!showingRecipes && hasRequestBody && !loadingTemplate && (
+        <RecipeJsonEditor />
+      )}
+      {!showingRecipes && hasQueryParams && !loadingTemplate && (
+        <RecipeQueryParameters needsParams={needsParams} />
+      )}
+      {!showingRecipes && hasUrlParams && !loadingTemplate && (
+        <RecipeURLParams />
+      )}
+
+      {!hasRequestBody &&
+        !hasQueryParams &&
+        !hasUrlParams &&
+        !loadingTemplate && <NoEditorCopy />}
     </div>
   );
 }
