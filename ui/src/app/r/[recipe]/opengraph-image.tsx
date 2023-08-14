@@ -64,8 +64,8 @@ export default async function Image({
       >
         <div tw="flex flex-col items-start">
           <h1 tw="text-6xl font-bold">{title}</h1>
-          {username && <p tw="text-5xl -mt-2">{username}</p>}
-          {description && <p tw="text-5xl font-normal mt-12">{description}</p>}
+          {username && <p tw="text-4xl -mt-2">{username}</p>}
+          {description && <p tw="text-5xl font-normal mt-14">{description}</p>}
         </div>
       </div>
     ),
