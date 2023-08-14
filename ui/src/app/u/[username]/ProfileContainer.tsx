@@ -42,7 +42,7 @@ export function ProfileContainer({
       {!profile ? (
         <div className="flex items-center space-x-4 px-4">
           <span className="text-xl font-bold">
-            No project found for {username}. Redirecting
+            No user found for {username}. Redirecting
           </span>
           <span className="loading loading-bars loading-lg"></span>
         </div>

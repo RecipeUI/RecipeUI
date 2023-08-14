@@ -59,12 +59,13 @@ export default async function Image({
           justifyContent: "center",
           backgroundColor: "#F0A500",
           padding: "0 4rem",
+          fontFamily: "Inter, sans-serif, arial",
         }}
       >
         <div tw="flex flex-col items-start">
           <h1 tw="text-6xl font-bold">{title}</h1>
-          {username && <p tw="text-4xl -mt-2">{username}</p>}
-          {description && <p tw="text-4xl font-normal mt-12">{description}</p>}
+          {username && <p tw="text-5xl -mt-2">{username}</p>}
+          {description && <p tw="text-5xl font-normal mt-12">{description}</p>}
         </div>
       </div>
     ),

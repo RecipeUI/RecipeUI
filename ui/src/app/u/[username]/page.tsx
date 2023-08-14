@@ -27,6 +27,7 @@ export default async function ProfilePage({
     .from("user_view")
     .select()
     .ilike("username", `%${params.username}%`)
+    .limit(1)
     .single();
 
   let userTemplates: UserTemplatePreview[] = [];

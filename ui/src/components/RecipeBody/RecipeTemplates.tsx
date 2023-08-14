@@ -23,6 +23,7 @@ import {
 } from "@/utils/constants/main";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
+import Link from "next/link";
 
 export function RecipeTemplatesTab() {
   return (
@@ -143,31 +144,20 @@ export function UserTemplates() {
           return (
             <div
               className={classNames(
-                "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box",
+                "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
                 newTemplateId === String(template.id) &&
                   "border-chefYellow border-4 border-dashed"
               )}
               key={`${template.id}`}
-              onClick={async () => {
-                posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
-                  template_id: template.id,
-                  template_project: selectedRecipe.project,
-                  recipe_id: selectedRecipe.id,
-                  recipe_path: selectedRecipe.path,
-                });
-
-                const templateInfo = await getTemplate(template.id);
-                if (templateInfo) {
-                  setLoadingTemplate(templateInfo);
-                } else {
-                  alert("Failed to find template");
-                }
-              }}
             >
               {(!user || template.original_author.user_id !== user.user_id) && (
-                <p className="text-xs">
+                <Link
+                  className="text-xs"
+                  href={`/u/${template.original_author.username}`}
+                  target="_blank"
+                >
                   Forked from @{template.original_author.username}
-                </p>
+                </Link>
               )}
               <h3 className="font-bold">{template.title}</h3>
 
@@ -175,7 +165,29 @@ export function UserTemplates() {
 
               <div className="flex-1" />
               <div className="flex space-x-1  sm:block sm:space-x-2">
-                <button className="btn btn-sm btn-neutral w-fit">Use</button>
+                <button
+                  className="btn btn-sm btn-neutral w-fit"
+                  onClick={async () => {
+                    posthog.capture(
+                      POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
+                      {
+                        template_id: template.id,
+                        template_project: selectedRecipe.project,
+                        recipe_id: selectedRecipe.id,
+                        recipe_path: selectedRecipe.path,
+                      }
+                    );
+
+                    const templateInfo = await getTemplate(template.id);
+                    if (templateInfo) {
+                      setLoadingTemplate(templateInfo);
+                    } else {
+                      alert("Failed to find template");
+                    }
+                  }}
+                >
+                  Use
+                </button>
 
                 <div
                   className="dropdown hidden sm:inline-block"
