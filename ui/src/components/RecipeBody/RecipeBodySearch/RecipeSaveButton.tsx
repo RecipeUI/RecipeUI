@@ -118,11 +118,14 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
         // @ts-expect-error I think we actually have a TS bug here
         queryParams,
         urlParams,
-        replay: {
-          output,
-          streaming: recipe.options?.streaming ?? false,
-          duration: duration ? Math.floor(duration) : null,
-        } as unknown as Record<string, unknown>,
+        replay:
+          recipe.auth !== null
+            ? ({
+                output,
+                streaming: recipe.options?.streaming ?? false,
+                duration: duration ? Math.floor(duration) : null,
+              } as unknown as Record<string, unknown>)
+            : {},
         ...data,
       });
 

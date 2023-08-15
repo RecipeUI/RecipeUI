@@ -28,9 +28,9 @@ Find your App ID and Secret Key
 ![Get_Api_Key](@site/static/img/guides/reddit2.png)
 
 ### Step 3
-**Bear with us, this next step requires the use of the terminal / CMD prompt.**
+**Bear with us, this next step requires the use of the terminal / CMD prompt, but we will have a one click button to get this eventually.**
 
-Run the following request in your terminal to get your API key (bearer token). 
+Run the following request in your terminal to get your API key (bearer token).
 
 There are 4 parts you need to replace:
 
@@ -44,7 +44,7 @@ curl --location 'https://www.reddit.com/api/v1/access_token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=password' \
 --data-urlencode 'username=**YourRedditUsername**' \
---data-urlencode 'password=**YourRedditPassword**'
+--data-urlencode 'password=**YourRedditPassword**' \
 --user '**************AppID**************:**************SecretKey**************'
 ```
 

@@ -16,6 +16,10 @@
     @apply px-4 my-1;
   }
 
+  .recipe-md a {
+    @apply text-blue-500;
+  }
+
   .projects-home-container {
     @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-4;
   }
