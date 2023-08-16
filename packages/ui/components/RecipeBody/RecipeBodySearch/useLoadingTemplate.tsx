@@ -8,9 +8,9 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import {
+  RecipeOutputType,
   RecipeParam,
   RecipeStringParam,
-  RecipeOutputType,
 } from "types/database";
 import { RecipeParamType } from "types/enums";
 import { getVariedParamInfo } from "../../RecipeOutput/RecipeDocs";

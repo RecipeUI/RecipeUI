@@ -20,10 +20,6 @@
     "autoprefixer": "10.4.14",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
-    "downshift": "^8.0.0",
-    "fuse.js": "^6.6.2",
-    "immer": "^10.0.2",
-    "lodash.debounce": "^4.0.8",
     "ui": "workspace:*"
   },
   "devDependencies": {
@@ -42,6 +38,7 @@
     "supabase": "^1.82.6",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
-    "types": "workspace:*"
+    "types": "workspace:*",
+    "eslint-config-custom": "workspace:*"
   }
 }

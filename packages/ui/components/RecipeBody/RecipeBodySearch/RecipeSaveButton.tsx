@@ -14,17 +14,9 @@ import { getURLParamsForSession } from "../../../utils/main";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import {
-  ReactNode,
-  startTransition,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export function RecipeSaveButton() {

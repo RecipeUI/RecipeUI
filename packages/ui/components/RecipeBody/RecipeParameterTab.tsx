@@ -9,7 +9,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import debounce from "lodash.debounce";
 
 import { json, jsonParseLinter } from "@codemirror/lang-json";
-import { linter, lintGutter } from "@codemirror/lint";
+import { lintGutter, linter } from "@codemirror/lint";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";

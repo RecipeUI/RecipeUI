@@ -38,3 +38,5 @@ script.ts
 /supabase
 .vscode
 node_modules
+
+/apps/desktop

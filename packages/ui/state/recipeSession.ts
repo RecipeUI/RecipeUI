@@ -1,21 +1,21 @@
-import { StateCreator, create } from "zustand";
-import { produce } from "immer";
-
-import { v4 as uuidv4 } from "uuid";
+import { getArrayPathIndex, isArrayPath } from "../utils/main";
 
 import {
   Recipe,
-  RecipeTemplate,
-  User,
-  RecipeOutputType,
   RecipeOptions,
+  RecipeOutputType,
   RecipeParameters,
+  RecipeTemplate,
   RecipeWithUserTemplate,
+  User,
 } from "types/database";
+
+import { StateCreator, create } from "zustand";
+import { createContext } from "react";
+import { produce } from "immer";
 import { RecipeMethod } from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
-import { createContext } from "react";
-import { getArrayPathIndex, isArrayPath } from "../utils/main";
+import { v4 as uuidv4 } from "uuid";
 
 export interface RecipeSession {
   id: string;

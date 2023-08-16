@@ -1,15 +1,18 @@
-import { useEffect } from "react";
-import { useInterval, useLocalStorage } from "usehooks-ts";
+import { Database, Recipe } from "types/database";
+
 import {
+  GLOBAL_POLLING_FACTOR,
   LocalStorageState,
   SESSION_HYDRATION_KEY,
   getEmptyParameters,
   useRecipeSessionStore,
-  GLOBAL_POLLING_FACTOR,
 } from "./recipeSession";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database, Recipe } from "types/database";
+
+import { useInterval, useLocalStorage } from "usehooks-ts";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect } from "react";
+
 import { useIsMobile } from "../../ui/hooks";
 
 /*

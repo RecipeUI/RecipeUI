@@ -1,14 +1,18 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { useIsMobile } from "../../hooks";
+import { useEffect, useState } from "react";
+import classNames from "classnames";
 
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { ReactNode, useEffect, useState, useTransition } from "react";
-import { Dialog } from "@headlessui/react";
+import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
+import { User } from "types/database";
+import Link from "next/link";
+import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
+import { OnboardingFlow } from "./OnboardingFlow";
+import NavAuthForm from "./NavAuthForm";
 
 export function Navbar() {
   const router = useRouter();
@@ -79,7 +83,7 @@ export function Navbar() {
         <h1 className="ml-2 dark:text-white">RecipeUI</h1>
       </button>
 
-      <ul className="menu menu-horizontal px-1 dark:text-white">
+      <ul className="menu menu-horizontal px-1 dark:text-white space-x-2">
         <li className="">
           <Link
             href="https://github.com/RecipeUI/RecipeUI"
@@ -90,6 +94,19 @@ export function Navbar() {
             <StarIcon className="w-3 h-3" />
             Star us on Github!
           </Link>
+        </li>
+        <li>
+          <button
+            id={UNIQUE_ELEMENT_IDS.SIGN_IN}
+            className="btn bg-chefYellow text-black btn-sm"
+            onClick={() => {
+              if (!user) {
+                setIsLoginModalOpen(true);
+              }
+            }}
+          >
+            Add an API
+          </button>
         </li>
         {!user ? (
           <li>
@@ -110,7 +127,7 @@ export function Navbar() {
         )}
       </ul>
       {showForm && (
-        <AuthForm
+        <NavAuthForm
           isModalOpen={isLoginModalOpen}
           setIsModalOpen={setIsLoginModalOpen}
         />
@@ -119,289 +136,6 @@ export function Navbar() {
     </div>
   );
 }
-
-export default function AuthForm({
-  isModalOpen,
-  setIsModalOpen,
-}: {
-  isModalOpen: boolean;
-  setIsModalOpen: (isOpen: boolean) => void;
-}) {
-  const supabase = createClientComponentClient<Database>();
-  const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
-  const searchParams = useSearchParams();
-  const hasGoogle = searchParams.get("google");
-
-  return (
-    <Dialog
-      open={isModalOpen}
-      onClose={setIsModalOpen}
-      className="relative z-50"
-    >
-      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
-
-      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white dark:bg-base-100 p-8 rounded-lg ">
-          <Dialog.Title className="text-2xl font-bold text-chefYellow">
-            {view === "sign_in" ? "Sign in" : "Sign up"}
-          </Dialog.Title>
-          <Dialog.Description className="pb-4">
-            Save your recipes and share templates with others!
-          </Dialog.Description>
-          <Auth
-            supabaseClient={supabase}
-            view={view}
-            showLinks={false}
-            appearance={{
-              theme: {
-                default: {
-                  ...ThemeSupa.default,
-
-                  colors: {
-                    ...ThemeSupa.default.colors,
-                    brand: "#F0A500",
-                    brandButtonText: "white",
-                    brandAccent: "black",
-                    // inputText: "white",
-                    inputText: "#F0A500",
-                    // inputLabelText: "#F0A500",
-                    // defaultButtonBorder: "0",
-                  },
-                  borderWidths: {
-                    ...ThemeSupa.default.borderWidths,
-                    // buttonBorderWidth: "0",
-                  },
-                },
-                // brand?: string;
-                // brandAccent?: string;
-                // brandButtonText?: string;
-                // defaultButtonBackground?: string;
-                // defaultButtonBackgroundHover?: string;
-                // defaultButtonBorder?: string;
-                // defaultButtonText?: string;
-                // dividerBackground?: string;
-                // inputBackground?: string;
-                // inputBorder?: string;
-                // inputBorderFocus?: string;
-                // inputBorderHover?: string;
-                // inputLabelText?: string;
-                // inputPlaceholder?: string;
-                // messageText?: string;
-                // messageTextDanger?: string;
-                // anchorTextColor?: string;
-                // anchorTextHoverColor?: string;
-              },
-            }}
-            providers={hasGoogle ? ["google", "github"] : ["github"]}
-            redirectTo={`${getUrl()}/auth/callback`}
-          />
-          <button
-            className="text-sm text-end"
-            onClick={() => {
-              setView(view === "sign_in" ? "sign_up" : "sign_in");
-            }}
-          >
-            {view === "sign_in"
-              ? "Need an account? "
-              : "Already have an account? "}
-            <span className="underline underline-offset-2">
-              {view === "sign_in" ? "Sign up." : "Sign in."}
-            </span>
-          </button>
-          {/* <button onClick={() => setIsModalOpen(false)}>Deactivate</button> */}
-        </Dialog.Panel>
-      </div>
-    </Dialog>
-  );
-}
-import { useForm } from "react-hook-form";
-import classNames from "classnames";
-import { OnboardingFormData, createUser } from "./actions";
-import { UserCreationError } from "./types";
-
-export function OnboardingFlow() {
-  const session = useRecipeSessionStore((state) => state.userSession);
-  const user = session?.user;
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  let [isPending, startTransition] = useTransition();
-  let defaultFormData: Partial<OnboardingFormData> = {};
-  if (user?.app_metadata.provider === "github" && user.user_metadata) {
-    defaultFormData = {
-      first: user.user_metadata.name.split(" ")[0],
-      last: user.user_metadata.name.split(" ")[1],
-      username: user.user_metadata.user_name,
-      email: user.email,
-      profile_pic: user.user_metadata.avatar_url,
-    };
-  } else if (user?.app_metadata.provider === "google" && user.user_metadata) {
-    defaultFormData = {
-      first: user.user_metadata.full_name.split(" ")[0],
-      last: user.user_metadata.full_name.split(" ")[1],
-      email: user.email,
-      profile_pic: user.user_metadata.picture,
-    };
-  }
-
-  const searchParams = useSearchParams();
-  const userError = searchParams.get(UserCreationError.UserAlreadyExists);
-  const posthog = usePostHog();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<OnboardingFormData>({
-    defaultValues: {
-      email: user?.email,
-      username: userError || undefined,
-      ...defaultFormData,
-    },
-  });
-
-  const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
-
-    if (stage === "User Info") {
-      setStage("Survey");
-    } else {
-      posthog.capture(POST_HOG_CONSTANTS.SIGN_UP, {
-        hear_about: data.hear_about,
-        use_case: data.use_case,
-      });
-      startTransition(async () => createUser(data));
-    }
-
-    setLoading(false);
-  });
-
-  const [stage, setStage] = useState<"User Info" | "Survey">("User Info");
-
-  useEffect(() => {
-    if (!user) router.push("/");
-  }, []);
-
-  return (
-    <Dialog open={true} onClose={() => {}} className="relative z-50">
-      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
-
-      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
-          <Dialog.Title className="text-2xl font-bold text-chefYellow">
-            Welcome to RecipeUI
-          </Dialog.Title>
-          <Dialog.Description className="pb-4">
-            {stage === "User Info"
-              ? "We can't wait to see what recipes you build! First things first, lets set up your profile."
-              : "Just a few quick q's. This will help us a lot!"}
-          </Dialog.Description>
-
-          <form className="flex flex-col space-y-2" onSubmit={onSubmit}>
-            {stage === "User Info" && (
-              <>
-                <LabelWrapper label="Username">
-                  <input
-                    className="input input-bordered w-full"
-                    {...register("username", {
-                      required: true,
-                      pattern: /^\S+$/i,
-                    })}
-                  />
-                </LabelWrapper>
-                <LabelWrapper label="Company (Optional)">
-                  <input
-                    className="input input-bordered w-full"
-                    {...register("company")}
-                  />
-                </LabelWrapper>
-                <div className="grid grid-cols-2 gap-x-8">
-                  <LabelWrapper label="First Name">
-                    <input
-                      className="input input-bordered w-full"
-                      {...register("first", { required: true })}
-                    />
-                  </LabelWrapper>
-                  <LabelWrapper label="Last Name">
-                    <input
-                      className="input input-bordered w-full"
-                      {...register("last", { required: true })}
-                    />
-                  </LabelWrapper>
-                </div>
-                {(errors.first ||
-                  errors.last ||
-                  errors.username?.type === "required") && (
-                  <p className="alert alert-error !mt-4">
-                    Please fill out all required fields.
-                  </p>
-                )}
-                {errors.username?.type === "pattern !mt-4" && (
-                  <p className="alert alert-error">Username must be one word</p>
-                )}
-                {userError && (
-                  <p className="alert alert-error !mt-4">
-                    Username already exists. Please choose another.
-                  </p>
-                )}
-              </>
-            )}
-
-            {stage === "Survey" && (
-              <>
-                <LabelWrapper label="How did you hear about us?">
-                  <input
-                    className="input input-bordered w-full"
-                    {...register("hear_about")}
-                  />
-                </LabelWrapper>
-                <LabelWrapper label="What are you looking forward to do?">
-                  <input
-                    className="input input-bordered w-full"
-                    {...register("use_case")}
-                  />
-                </LabelWrapper>
-              </>
-            )}
-
-            <button
-              type="submit"
-              className={classNames(
-                "btn  bg-chefYellow !mt-8",
-                loading && "btn-disabled"
-              )}
-            >
-              {stage === "User Info" ? "Next" : "Submit"}
-              {loading && <span className="loading loading-bars"></span>}
-            </button>
-          </form>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
-  );
-}
-
-function LabelWrapper({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="w-full">
-      <label className="label">{label}</label>
-      {children}
-    </div>
-  );
-}
-
-import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
-import { User } from "types/database";
-import Link from "next/link";
-import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
-import { getUrl } from "../../utils/main";
-import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 
 function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();

@@ -3,9 +3,9 @@ import { Database as DatabaseGenerated } from "./database-generated.types";
 export type { Json } from "./database-generated.types";
 import {
   RecipeMethod,
-  RecipeProjectStatus,
-  RecipeParamType,
   RecipeMutationContentType,
+  RecipeParamType,
+  RecipeProjectStatus,
 } from "./enums";
 
 type Nullable<T> = T | null;

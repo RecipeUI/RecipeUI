@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   Database,
-  RecipeWithUserTemplate,
   RecipeProject,
+  RecipeWithUserTemplate,
   UserTemplatePreview,
 } from "types/database";
 import { redirect } from "next/navigation";
