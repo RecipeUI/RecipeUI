@@ -6,7 +6,7 @@ import {
   User,
   UserTemplatePreview,
 } from "types/database";
-import { ProfileContainer } from "@/app/u/[username]/ProfileContainer";
+import { ProfileContainer } from "ui/components/Profile/ProfileContainer";
 
 export const dynamic = "force-dynamic";
 

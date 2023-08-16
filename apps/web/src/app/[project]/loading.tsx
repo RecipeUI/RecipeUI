@@ -1,7 +1,3 @@
-export default function Loading() {
-  return (
-    <div className="p-4">
-      <span className="loading loading-bars loading-lg"></span>
-    </div>
-  );
-}
+import { Loading } from "ui/components/Loading";
+
+export default Loading;

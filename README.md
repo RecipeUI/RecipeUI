@@ -3,7 +3,7 @@ RecipeUI is an open source playground for testing APIs. Our mission is to make i
 
 Try us out [www.recipeui.com](https://recipeui.com/)
 
-![RecipeUI API Client](https://raw.githubusercontent.com/RecipeUI/RecipeUI/main/ui/src/app/github_view.png)
+![RecipeUI API Client](https://raw.githubusercontent.com/RecipeUI/RecipeUI/main/apps/web/src/app/github_view.png)
 
 ## Built with
 Couldn't have built this app without some really amazing packages

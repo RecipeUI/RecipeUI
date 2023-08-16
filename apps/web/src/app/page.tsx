@@ -1,4 +1,4 @@
-import { RecipeHomeContainer } from "@/components/RecipeHome/RecipeHomeContainer";
+import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
 
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
