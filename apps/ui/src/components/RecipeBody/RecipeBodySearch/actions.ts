@@ -1,35 +1,25 @@
 "use server";
 
-import { UserCreationError } from "@/components/Navbar/types";
 import { RecipeParameters } from "@/state/recipeSession";
 import { Database } from "types";
-import { UserTemplate } from "types";
 import { DB_FUNC_ERRORS } from "@/utils/constants/main";
-import {
-  createServerActionClient,
-  createServerComponentClient,
-} from "@supabase/auth-helpers-nextjs";
-import { supabase } from "@supabase/auth-ui-shared";
-import { revalidatePath } from "next/cache";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { generateSlug } from "random-word-slugs";
 
-export async function createTemplate(
-  payload: Omit<
-    Database["public"]["Tables"]["template"]["Insert"],
-    "requestBody" | "queryParams " | "urlParams" | "replay"
-  > &
-    RecipeParameters & {
-      replay: Record<string, unknown>;
-    }
-) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+type DatabaseInsert = Omit<
+  Database["public"]["Tables"]["template"]["Insert"],
+  "requestBody" | "queryParams " | "urlParams" | "replay"
+> &
+  RecipeParameters & {
+    replay: Record<string, unknown>;
+  };
+export async function createTemplate(payload: DatabaseInsert) {
+  const supabase = createServerActionClient({ cookies: cookies });
 
   //   This should already have RLS
   const { data: templateData, error } = await supabase
     .from("template")
-    // @ts-expect-error Should be right
     .insert({
       ...payload,
       alias: generateSlug(4),

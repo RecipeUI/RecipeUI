@@ -1,0 +1,20 @@
+
+> test@0.1.0 lint /Users/jeanecarlos/Desktop/Projects/recipeui/apps/ui
+> pnpm run check-types && next lint
+
+
+> test@0.1.0 check-types /Users/jeanecarlos/Desktop/Projects/recipeui/apps/ui
+> tsc --noemit
+
+src/components/RecipeBody/RecipeBodySearch/actions.ts(22,47): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: { alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams?: Json | undefined; ... 5 more ...; visibility?: string | undefined; }, options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Argument of type '{ alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams: (Json | undefined) & Record<...>; ... 5 more ...; replay: Record<...>; }' is not assignable to parameter of type '{ alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams?: Json | undefined; ... 5 more ...; visibility?: string | undefined; }'.
+      Types of property 'replay' are incompatible.
+        Type 'Record<string, unknown>' is not assignable to type 'Json | undefined'.
+          Type 'Record<string, unknown>' is missing the following properties from type 'Json[]': length, pop, push, concat, and 31 more.
+  Overload 2 of 2, '(values: { alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams?: Json | undefined; ... 5 more ...; visibility?: string | undefined; }[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Argument of type '{ alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams: (Json | undefined) & Record<...>; ... 5 more ...; replay: Record<...>; }' is not assignable to parameter of type '{ alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams?: Json | undefined; ... 5 more ...; visibility?: string | undefined; }[]'.
+      Object literal may only specify known properties, and 'alias' does not exist in type '{ alias: string; author_id: string; created_at?: string | undefined; description: string; id?: number | undefined; original_author_id?: string | null | undefined; project: string; queryParams?: Json | undefined; ... 5 more ...; visibility?: string | undefined; }[]'.
+src/components/RecipeBody/RecipeBodySearch/actions.ts(24,5): error TS2578: Unused '@ts-expect-error' directive.
+ ELIFECYCLE  Command failed with exit code 1.
+ ELIFECYCLE  Command failed with exit code 1.
