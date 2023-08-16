@@ -3,15 +3,15 @@ import {
   RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
+} from "ui/state/recipeSession";
 import { Recipe, RecipeOutputType } from "types/database";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
-} from "@/utils/constants/main";
-import { getURLParamsForSession } from "@/utils/main";
-import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
+} from "ui/utils/constants/main";
+import { getURLParamsForSession } from "ui/utils/main";
+import { POST_HOG_CONSTANTS } from "ui/utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";

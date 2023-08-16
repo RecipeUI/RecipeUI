@@ -1,8 +1,5 @@
 import classNames from "classnames";
-import {
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
+import { RecipeContext, useRecipeSessionStore } from "ui/state/recipeSession";
 import { ReactNode, useContext, useMemo, useRef } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import CodeMirror from "@uiw/react-codemirror";

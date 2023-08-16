@@ -9,11 +9,11 @@ import {
   RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
+} from "ui/state/recipeSession";
 import { useLocalStorage, useScreen } from "usehooks-ts";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
+import { UNIQUE_ELEMENT_IDS } from "ui/utils/constants/main";
 import { UserTemplatePreview } from "types/database";
-import { useIsMobile } from "@/utils/main";
+import { useIsMobile } from "ui/hooks";
 import { useRouter } from "next/navigation";
 
 export function RecipeBody() {

@@ -4,7 +4,7 @@ import {
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "ui/state/recipeSession";
 import { RecipeTemplate, UserTemplatePreview } from "types/database";
 import { getTemplate } from "@/components/RecipeBody/actions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,13 +14,13 @@ import {
   deleteTemplate,
 } from "@/components/RecipeBody/RecipeBodySearch/actions";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
+import { POST_HOG_CONSTANTS } from "ui/utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
-} from "@/utils/constants/main";
+} from "ui/utils/constants/main";
 import { SucessAnimation } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";

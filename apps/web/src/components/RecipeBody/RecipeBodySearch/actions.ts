@@ -1,7 +1,7 @@
 "use server";
 
 import { Database, TableInserts, Tables } from "types/database";
-import { DB_FUNC_ERRORS } from "@/utils/constants/main";
+import { DB_FUNC_ERRORS } from "ui/utils/constants/main";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { generateSlug } from "random-word-slugs";

@@ -1,7 +1,7 @@
 import { produce } from "immer";
 import { useLocalStorage } from "usehooks-ts";
 import { useContext } from "react";
-import { RecipeContext } from "@/state/recipeSession";
+import { RecipeContext } from "./recipeSession";
 import { RecipeAuthType } from "types/enums";
 
 // TODO: This is pretty bad but lets think of something later in the future

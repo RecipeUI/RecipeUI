@@ -2,7 +2,7 @@ import {
   RecipeContext,
   RecipeRequestInfo,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
+} from "ui/state/recipeSession";
 import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";

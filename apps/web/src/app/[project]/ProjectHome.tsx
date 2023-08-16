@@ -1,9 +1,9 @@
 "use client";
 
-import { useRecipeSessionStore } from "@/state/recipeSession";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
-import { getURLParamsForSession } from "@/utils/main";
+import { getURLParamsForSession } from "ui/utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 

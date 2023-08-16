@@ -24,7 +24,7 @@
 59:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/components/Navbar/Navbar.tsx
-281:6  Warning: React Hook useEffect has missing dependencies: 'router' and 'user'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+282:6  Warning: React Hook useEffect has missing dependencies: 'router' and 'user'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
 
 ./src/components/RecipeBody/RecipeBodySearch/RecipeSaveButton.tsx
 257:6  Warning: React Hook useEffect has missing dependencies: 'addSession', 'newTemplateId', 'onClose', 'recipe', 'router', and 'setBodyRoute'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
@@ -48,21 +48,15 @@
 139:23  Warning: img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
 
 ./src/components/RecipeHome/RecipeHomeContainer.tsx
-68:6  Warning: React Hook useEffect has a missing dependency: 'sharedTemplate?.alias'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+65:6  Warning: React Hook useEffect has a missing dependency: 'sharedTemplate?.alias'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
 
 ./src/components/RecipeOutput/RecipeDocs.tsx
-620:6  Warning: React Hook useEffect has missing dependencies: 'fileInfo', 'paramPath', 'paramState', and 'updateRequestBody'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+617:6  Warning: React Hook useEffect has missing dependencies: 'fileInfo', 'paramPath', 'paramState', and 'updateRequestBody'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
 
 ./src/components/RecipeOutput/RecipeOutputConsole.tsx
-95:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+92:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/components/RecipeSidebar/index.tsx
-62:6  Warning: React Hook useEffect has a missing dependency: 'router'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-
-./src/state/useSaveRecipeUI.ts
-69:6  Warning: React Hook useEffect has missing dependencies: 'isMobile', 'localSave', 'setQueryParams', 'setRequestBody', 'setSessions', and 'setUrlParams'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-116:6  Warning: React Hook useEffect has missing dependencies: 'setOnboarding', 'setUser', 'setUserSession', and 'supabase'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-167:6  Warning: React Hook useEffect has missing dependencies: 'initializeRecipes', 'isMobile', 'localSave', 'projectId', 'setSessions', 'shareTemplateIdParam', 'supabase', and 'username'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
-191:6  Warning: React Hook useEffect has missing dependencies: 'currentSession', 'localSave.sessions', 'projectId', 'router', 'sessionIdParam', 'setCurrentSession', 'shareTemplateIdParam', and 'username'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+59:6  Warning: React Hook useEffect has a missing dependency: 'router'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

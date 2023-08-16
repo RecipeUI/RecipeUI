@@ -1,12 +1,12 @@
 import { useContext, useEffect } from "react";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
+import { UNIQUE_ELEMENT_IDS } from "ui/utils/constants/main";
 import {
   RecipeBodyRoute,
   RecipeContext,
   RecipeOutputTab,
   RecipeRequestInfo,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
+} from "ui/state/recipeSession";
 import {
   RecipeParam,
   RecipeStringParam,

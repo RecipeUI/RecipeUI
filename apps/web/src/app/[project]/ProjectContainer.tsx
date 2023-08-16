@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectHome } from "@/app/[project]/ProjectHome";
-import { useRecipeSessionStore } from "@/state/recipeSession";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";

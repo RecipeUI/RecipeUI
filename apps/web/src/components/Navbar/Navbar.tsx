@@ -1,8 +1,9 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
+import { useIsMobile } from "ui/hooks";
 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -397,10 +398,10 @@ function LabelWrapper({
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
 import Link from "next/link";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
-import { getUrl, useIsMobile } from "@/utils/main";
+import { UNIQUE_ELEMENT_IDS } from "ui/utils/constants/main";
+import { getUrl } from "ui/utils/main";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
+import { POST_HOG_CONSTANTS } from "ui/utils/constants/posthog";
 
 function NavMenu({ user }: { user: User }) {
   const supabase = createClientComponentClient<Database>();

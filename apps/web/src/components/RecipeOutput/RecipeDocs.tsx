@@ -10,12 +10,9 @@ import {
 import { RecipeParamType } from "types/enums";
 
 import ReactMarkdown from "react-markdown";
-import {
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
+import { RecipeContext, useRecipeSessionStore } from "ui/state/recipeSession";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { getDefaultValue, getValueInObjPath } from "../../utils/main";
+import { getDefaultValue, getValueInObjPath } from "ui/utils/main";
 import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export function RecipeDocs() {

@@ -3,7 +3,6 @@
 import { UserCreationError } from "@/components/Navbar/types";
 import { Database } from "types/database";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 export type OnboardingFormData = {

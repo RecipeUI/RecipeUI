@@ -1,17 +1,17 @@
 import classNames from "classnames";
 import { useContext, useEffect, useRef } from "react";
-import { RECIPE_PROXY, UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
-import { useSecretManager, useSecretsFromSM } from "@/state/recipeAuth";
+import { RECIPE_PROXY, UNIQUE_ELEMENT_IDS } from "ui/utils/constants/main";
+import { useSecretManager, useSecretsFromSM } from "ui/state/recipeAuth";
 import {
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
+} from "ui/state/recipeSession";
 import { RecipeOutputType } from "types/database";
 import { RecipeAuthType } from "types/enums";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
+import { POST_HOG_CONSTANTS } from "ui/utils/constants/posthog";
 import { useLoadingTemplate } from "./useLoadingTemplate";
 
 export function RecipeSearchButton() {

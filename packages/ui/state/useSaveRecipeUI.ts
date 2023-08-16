@@ -10,7 +10,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, Recipe } from "types/database";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { getURLParamsForSession, useIsMobile } from "@/utils/main";
+import { useIsMobile } from "../../ui/hooks";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.

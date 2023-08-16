@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { getHeaderTypes, useSecretManager } from "../../state/recipeAuth";
+import { getHeaderTypes, useSecretManager } from "ui/state/recipeAuth";
 import classNames from "classnames";
 
 import { RecipeAuthType } from "types/enums";
@@ -7,8 +7,8 @@ import {
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
-} from "@/state/recipeSession";
-import { DOC_LINKS } from "@/utils/docLinks";
+} from "ui/state/recipeSession";
+import { DOC_LINKS } from "ui/utils/docLinks";
 
 export function RecipeConfigTab() {
   const selectedRecipe = useContext(RecipeContext)!;

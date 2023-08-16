@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSecretManager, useSecretsFromSM } from "../../state/recipeAuth";
+import { useSecretsFromSM } from "ui/state/recipeAuth";
 import {
   RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "ui/state/recipeSession";
 import CodeMirror from "@uiw/react-codemirror";
 import debounce from "lodash.debounce";
 
@@ -13,7 +13,6 @@ import { linter, lintGutter } from "@codemirror/lint";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
-import { getDefaultValue } from "../../utils/main";
 import classNames from "classnames";
 import {
   StarterTemplates,

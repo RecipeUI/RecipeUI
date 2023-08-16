@@ -10,10 +10,10 @@ import {
   RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
-} from "../../../state/recipeSession";
+} from "ui/state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { usePathname, useRouter } from "next/navigation";
-import { getURLParamsForSession } from "@/utils/main";
+import { getURLParamsForSession } from "ui/utils/main";
 import { RecipeSaveButton } from "@/components/RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLoadingTemplate } from "@/components/RecipeBody/RecipeBodySearch/useLoadingTemplate";
 

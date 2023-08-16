@@ -1,5 +1,5 @@
 "use client";
-import { useSaveRecipeUI } from "@/state/useSaveRecipeUI";
+import { useSaveRecipeUI } from "ui/state/useSaveRecipeUI";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useEffect, useRef } from "react";
 

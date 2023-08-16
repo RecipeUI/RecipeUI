@@ -11,7 +11,7 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
-  transpilePackages: ["types"],
+  transpilePackages: ["types", "ui"],
 };
 
 module.exports = nextConfig;

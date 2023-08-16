@@ -4,8 +4,8 @@ import { RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
-import { GITHUB_REPO } from "@/utils/constants/main";
+import { POST_HOG_CONSTANTS } from "ui/utils/constants/posthog";
+import { GITHUB_REPO } from "ui/utils/constants/main";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   console.log("Live deploy");

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
+import { RecipeContext, useRecipeSessionStore } from "ui/state/recipeSession";
 import { RecipeBody } from "../RecipeBody";
 import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
@@ -12,13 +9,13 @@ import classNames from "classnames";
 import { Recipe, RecipeProject, UserTemplatePreview } from "types/database";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getURLParamsForSession } from "@/utils/main";
+import { getURLParamsForSession } from "ui/utils/main";
 import {
   ShareInviteModal,
   ShareModal,
 } from "@/components/RecipeBody/RecipeTemplates";
 import { useLocalStorage } from "usehooks-ts";
-import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
+import { UNIQUE_ELEMENT_IDS } from "ui/utils/constants/main";
 import Link from "next/link";
 
 export function RecipeHomeContainer({

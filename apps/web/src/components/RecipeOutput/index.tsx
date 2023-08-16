@@ -1,8 +1,5 @@
 import classNames from "classnames";
-import {
-  RecipeOutputTab,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
+import { RecipeOutputTab, useRecipeSessionStore } from "ui/state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
 import { useEffect, useMemo } from "react";
 

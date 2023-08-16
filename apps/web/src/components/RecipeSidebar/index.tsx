@@ -1,10 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import {
-  RecipeSession,
-  useRecipeSessionStore,
-} from "../../state/recipeSession";
+import { RecipeSession, useRecipeSessionStore } from "ui/state/recipeSession";
 import { useEffect, useRef, useState } from "react";
 import { useHover } from "usehooks-ts";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -15,8 +12,8 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { getURLParamsForSession, useIsMobile } from "@/utils/main";
-import Link from "next/link";
+import { getURLParamsForSession } from "ui/utils/main";
+import { useIsMobile } from "ui/hooks";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);

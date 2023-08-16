@@ -1,6 +1,6 @@
 "use client";
 
-import { useRecipeSessionStore } from "@/state/recipeSession";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { RecipeProject, User, UserTemplatePreview } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
