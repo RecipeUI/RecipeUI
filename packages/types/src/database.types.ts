@@ -1,502 +1,215 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+import { MergeDeep } from "type-fest";
+import { Database as DatabaseGenerated } from "./database-generated.types";
+export type { Json } from "./database-generated.types";
+import {
+  RecipeMethod,
+  RecipeProjectStatus,
+  RecipeParamType,
+  RecipeMutationContentType,
+} from "./enums";
 
-export interface Database {
-  public: {
-    Tables: {
-      project: {
-        Row: {
-          created_at: string | null
-          description: string
-          id: number
-          image: string | null
-          project: string
-          public: boolean
-          status: string
-          subheader: string
-          tags: string[] | null
-          title: string
-        }
-        Insert: {
-          created_at?: string | null
-          description: string
-          id?: number
-          image?: string | null
-          project: string
-          public?: boolean
-          status: string
-          subheader: string
-          tags?: string[] | null
-          title: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string
-          id?: number
-          image?: string | null
-          project?: string
-          public?: boolean
-          status?: string
-          subheader?: string
-          tags?: string[] | null
-          title?: string
-        }
-        Relationships: []
-      }
-      recipe: {
-        Row: {
-          auth: string | null
-          author: string | null
-          created_at: string | null
-          id: number
-          method: string
-          options: Json | null
-          path: string
-          private: boolean | null
-          project: string
-          queryParams: Json | null
-          rank: number | null
-          requestBody: Json | null
-          summary: string
-          tags: string[] | null
-          templates: Json[] | null
-          title: string
-          urlParams: Json | null
-        }
-        Insert: {
-          auth?: string | null
-          author?: string | null
-          created_at?: string | null
-          id?: number
-          method?: string
-          options?: Json | null
-          path: string
-          private?: boolean | null
-          project: string
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary: string
-          tags?: string[] | null
-          templates?: Json[] | null
-          title: string
-          urlParams?: Json | null
-        }
-        Update: {
-          auth?: string | null
-          author?: string | null
-          created_at?: string | null
-          id?: number
-          method?: string
-          options?: Json | null
-          path?: string
-          private?: boolean | null
-          project?: string
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string
-          tags?: string[] | null
-          templates?: Json[] | null
-          title?: string
-          urlParams?: Json | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          }
-        ]
-      }
-      template: {
-        Row: {
-          alias: string
-          author_id: string
-          created_at: string
-          description: string
-          id: number
-          original_author_id: string | null
-          project: string
-          queryParams: Json | null
-          recipe_id: number
-          replay: Json | null
-          requestBody: Json | null
-          title: string
-          urlParams: Json | null
-          visibility: string
-        }
-        Insert: {
-          alias: string
-          author_id: string
-          created_at?: string
-          description: string
-          id?: number
-          original_author_id?: string | null
-          project: string
-          queryParams?: Json | null
-          recipe_id: number
-          replay?: Json | null
-          requestBody?: Json | null
-          title: string
-          urlParams?: Json | null
-          visibility?: string
-        }
-        Update: {
-          alias?: string
-          author_id?: string
-          created_at?: string
-          description?: string
-          id?: number
-          original_author_id?: string | null
-          project?: string
-          queryParams?: Json | null
-          recipe_id?: number
-          replay?: Json | null
-          requestBody?: Json | null
-          title?: string
-          urlParams?: Json | null
-          visibility?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "template_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe_view"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      template_fork: {
-        Row: {
-          created_at: string
-          id: number
-          new_author_id: string
-          new_template: number
-          original_author_id: string
-          original_template: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          new_author_id: string
-          new_template: number
-          original_author_id: string
-          original_template: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          new_author_id?: string
-          new_template?: number
-          original_author_id?: string
-          original_template?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "template_fork_new_author_id_fkey"
-            columns: ["new_author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_fork_new_author_id_fkey"
-            columns: ["new_author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_fork_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_fork_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          }
-        ]
-      }
-      user: {
-        Row: {
-          company: string | null
-          created_at: string
-          email: string
-          first: string
-          hear_about: string | null
-          last: string
-          onboarded: boolean
-          place: number
-          profile_pic: string | null
-          tier: string
-          use_case: string | null
-          user_id: string
-          username: string
-        }
-        Insert: {
-          company?: string | null
-          created_at?: string
-          email: string
-          first: string
-          hear_about?: string | null
-          last: string
-          onboarded?: boolean
-          place?: number
-          profile_pic?: string | null
-          tier?: string
-          use_case?: string | null
-          user_id: string
-          username: string
-        }
-        Update: {
-          company?: string | null
-          created_at?: string
-          email?: string
-          first?: string
-          hear_about?: string | null
-          last?: string
-          onboarded?: boolean
-          place?: number
-          profile_pic?: string | null
-          tier?: string
-          use_case?: string | null
-          user_id?: string
-          username?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-    }
-    Views: {
-      recipe_view: {
-        Row: {
-          auth: string | null
-          author: string | null
-          created_at: string | null
-          id: number | null
-          label: string | null
-          method: string | null
-          options: Json | null
-          path: string | null
-          private: boolean | null
-          project: string | null
-          queryParams: Json | null
-          rank: number | null
-          requestBody: Json | null
-          summary: string | null
-          tags: string[] | null
-          tags_count: number | null
-          templates: Json[] | null
-          title: string | null
-          urlParams: Json | null
-        }
-        Insert: {
-          auth?: string | null
-          author?: string | null
-          created_at?: string | null
-          id?: number | null
-          label?: never
-          method?: string | null
-          options?: Json | null
-          path?: string | null
-          private?: boolean | null
-          project?: string | null
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string | null
-          tags?: string[] | null
-          tags_count?: never
-          templates?: Json[] | null
-          title?: string | null
-          urlParams?: Json | null
-        }
-        Update: {
-          auth?: string | null
-          author?: string | null
-          created_at?: string | null
-          id?: number | null
-          label?: never
-          method?: string | null
-          options?: Json | null
-          path?: string | null
-          private?: boolean | null
-          project?: string | null
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string | null
-          tags?: string[] | null
-          tags_count?: never
-          templates?: Json[] | null
-          title?: string | null
-          urlParams?: Json | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          }
-        ]
-      }
-      template_public_view: {
-        Row: {
-          alias: string | null
-          author_id: string | null
-          created_at: string | null
-          description: string | null
-          id: number | null
-          original_author: Json | null
-          original_author_id: string | null
-          project: string | null
-          queryParams: Json | null
-          recipe: Json | null
-          recipe_id: number | null
-          requestBody: Json | null
-          title: string | null
-          urlParams: Json | null
-          visibility: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "template_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_original_author_id_fkey"
-            columns: ["original_author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "template_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe_view"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      user_view: {
-        Row: {
-          first: string | null
-          last: string | null
-          profile_pic: string | null
-          user_id: string | null
-          username: string | null
-        }
-        Insert: {
-          first?: string | null
-          last?: string | null
-          profile_pic?: string | null
-          user_id?: string | null
-          username?: string | null
-        }
-        Update: {
-          first?: string | null
-          last?: string | null
-          profile_pic?: string | null
-          user_id?: string | null
-          username?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-    }
-    Functions: {
-      is_limited: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+type Nullable<T> = T | null;
+
+export type Database = MergeDeep<
+  DatabaseGenerated,
+  {
+    public: {
+      Tables: {
+        project: {
+          Row: {
+            status: RecipeProjectStatus;
+          };
+        };
+        recipe: {
+          Row: {
+            templates: Nullable<RecipeTemplate[]>;
+            options: Nullable<RecipeOptions>;
+            method: RecipeMethod;
+            requestBody: Nullable<RecipeRequestBody>;
+            queryParams: Nullable<RecipeObjectSchemas>;
+            urlParams: Nullable<RecipeObjectSchemas>;
+          };
+        };
+        template: {
+          Row: {
+            replay: Nullable<RecipeTemplateOutput>;
+          } & NullableRecipeParams;
+          Insert: {
+            replay: Nullable<RecipeTemplateOutput>;
+          } & NullableRecipeParams;
+        };
+      };
+      Enums: {
+        recipeprojectstatus: RecipeProjectStatus;
+        recipemethod: RecipeMethod;
+      };
+    };
   }
+>;
+export type NullableRecipeParams = {
+  requestBody: Nullable<JSONBody>;
+  queryParams: Nullable<JSONBody>;
+  urlParams: Nullable<JSONBody>;
+};
+
+export type RecipeRequestBody = RecipeObjectParam & {
+  contentType: RecipeMutationContentType;
+};
+
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+
+export type TableInserts<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
+
+export type Enums<T extends keyof Database["public"]["Enums"]> =
+  Database["public"]["Enums"][T];
+
+export type User = Tables<"user">;
+export type RecipeProject = Tables<"project">;
+export type Recipe = Tables<"recipe">;
+
+export type RecipeOptions = {
+  cors?: boolean;
+  deprecated?: boolean;
+  streaming?: boolean;
+  auth?: string[];
+};
+
+export type RecipeReplay = RecipeParameters & RecipeTemplateOutput;
+
+export interface JSONBody {
+  [key: string]: unknown;
 }
+
+export interface RecipeParamCore<T = void> {
+  type: RecipeParamType;
+  nullable?: boolean;
+  required?: boolean;
+  description?: string;
+  default?: T;
+  example?: T;
+}
+
+export interface RecipeStringParam extends RecipeParamCore<string> {
+  type: RecipeParamType.String;
+  enum?: string[];
+}
+
+export interface RecipeBooleanParam extends RecipeParamCore<boolean> {
+  type: RecipeParamType.Boolean;
+}
+
+export interface RecipeNumericalParam extends RecipeParamCore<number> {
+  type: RecipeParamType.Number | RecipeParamType.Integer;
+  minimum?: number;
+  maximum?: number;
+}
+
+export type RecipeObjectSchemas = (RecipeParam & { name: string })[];
+
+export interface RecipeObjectParam extends RecipeParamCore {
+  type: RecipeParamType.Object;
+  objectSchema: RecipeObjectSchemas;
+  additionalProperties?: boolean;
+}
+
+export interface RecipeArrayParam extends RecipeParamCore {
+  type: RecipeParamType.Array;
+  arraySchema: RecipeParam;
+  minItems?: number;
+  maxItems?: number;
+}
+
+export function isVariedParam(type: RecipeParamType): type is RecipeParamType {
+  return (
+    type === RecipeParamType.AnyOf ||
+    type === RecipeParamType.AllOf ||
+    type === RecipeParamType.OneOf
+  );
+}
+
+export interface RecipeVariedParam extends RecipeParamCore {
+  type: RecipeParamType.AnyOf | RecipeParamType.AllOf | RecipeParamType.OneOf;
+  variants: RecipeParam[];
+}
+
+export interface RecipeFileParam extends RecipeParamCore {
+  type: RecipeParamType.File;
+  format: "binary" | "byte" | "audio";
+}
+
+export type RecipeParam =
+  | RecipeStringParam
+  | RecipeBooleanParam
+  | RecipeNumericalParam
+  | RecipeObjectParam
+  | RecipeArrayParam
+  | RecipeVariedParam
+  | RecipeFileParam;
+
+export type RecipeTemplate = Omit<
+  UserTemplate,
+  "id" | "created_at" | "project" | "recipe_id" | "visibility"
+>;
+
+interface RecipeTemplateOutput {
+  output: JSONBody;
+  duration: number;
+  streaming?: boolean;
+}
+
+export interface UserTemplatePreview {
+  alias: string;
+  id: number;
+  created_at: string;
+  title: string;
+  description: string;
+  original_author: {
+    user_id: string;
+    username: string;
+    avatar: string;
+  };
+
+  recipe: Pick<Recipe, "id" | "project" | "title" | "method">;
+  visibility: "public" | "private";
+
+  replay?: Nullable<RecipeTemplateOutput>;
+  author_id: string;
+}
+
+export type UserTemplate = UserTemplatePreview & {
+  author_id: string;
+  project: string;
+  recipe_id: number;
+
+  requestBody?: JSONBody;
+  queryParams?: JSONBody;
+  urlParams?: JSONBody;
+};
+
+export type RecipeBook = {
+  project: string;
+  title: string;
+  description: string;
+  version: string;
+  server: string;
+  recipes: Recipe[];
+};
+
+export enum RecipeOutputType {
+  Void = "Void",
+  Response = "Response",
+  Streaming = "Streaming",
+  Error = "Error",
+}
+
+export type RecipeParameters = {
+  requestBody: JSONBody;
+  queryParams: JSONBody;
+  urlParams: JSONBody;
+};
+
+export type RecipeWithUserTemplate = Recipe & {
+  userTemplates?: UserTemplatePreview[];
+};
