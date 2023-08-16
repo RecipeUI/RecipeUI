@@ -28,11 +28,11 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          editUrl: "https://github.com/RecipeUI/RecipeUI/blob/main/docs/",
+          editUrl: "https://github.com/RecipeUI/RecipeUI/blob/main/apps/docs/",
         },
         blog: {
           showReadingTime: true,
-          editUrl: "https://github.com/RecipeUI/RecipeUI/blob/main/docs/",
+          editUrl: "https://github.com/RecipeUI/RecipeUI/blob/main/apps/cdocs/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
