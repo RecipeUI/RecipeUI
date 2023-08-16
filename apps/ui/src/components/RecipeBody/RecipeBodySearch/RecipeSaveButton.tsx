@@ -6,7 +6,7 @@ import {
   RecipeParameters,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
-import { Recipe } from "@/types/databaseExtended";
+import { Recipe } from "types";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,

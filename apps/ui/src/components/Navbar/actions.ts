@@ -1,7 +1,7 @@
 "use server";
 
 import { UserCreationError } from "@/components/Navbar/types";
-import { Database } from "@/types/database.types";
+import { Database } from "types";
 import {
   createServerActionClient,
   createServerComponentClient,

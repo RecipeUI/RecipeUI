@@ -1,11 +1,7 @@
 "use client";
 
 import { DeepActionType, useRecipeSessionStore } from "@/state/recipeSession";
-import {
-  Recipe,
-  RecipeProject,
-  RecipeProjectStatus,
-} from "@/types/databaseExtended";
+import { Recipe, RecipeProject, RecipeProjectStatus } from "types";
 import { getURLParamsForSession } from "@/utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";

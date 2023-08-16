@@ -3,13 +3,7 @@ import { produce } from "immer";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 import { v4 as uuidv4 } from "uuid";
 
-import {
-  Recipe,
-  RecipeCore,
-  RecipeMethod,
-  RecipeTemplate,
-  User,
-} from "@/types/databaseExtended";
+import { Recipe, RecipeCore, RecipeMethod, RecipeTemplate, User } from "types";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { createContext } from "react";
 

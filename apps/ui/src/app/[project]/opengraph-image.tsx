@@ -1,9 +1,9 @@
 import { ImageResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
+import { Database } from "types";
 import { cookies } from "next/headers";
-import { RecipeProject, UserTemplatePreview } from "@/types/databaseExtended";
+import { RecipeProject, UserTemplatePreview } from "types";
 
 // NextJS x Supabase bug unfortunately.
 // export const runtime = "edge";

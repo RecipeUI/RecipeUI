@@ -1,4 +1,4 @@
-import { Database } from "@/types/database.types";
+import { Database } from "./database.types";
 
 export enum RecipeProjectStatus {
   Active = "Active",

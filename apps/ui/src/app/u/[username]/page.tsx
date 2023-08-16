@@ -1,12 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
-import {
-  Recipe,
-  RecipeProject,
-  User,
-  UserTemplatePreview,
-} from "@/types/databaseExtended";
+import { Database } from "types";
+import { Recipe, RecipeProject, User, UserTemplatePreview } from "types";
 import { ProfileContainer } from "@/app/u/[username]/ProfileContainer";
 import { redirect } from "next/navigation";
 

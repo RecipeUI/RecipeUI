@@ -9,7 +9,7 @@ import {
   RecipeStringParam,
   RecipeVariedParam,
   isVariedParam,
-} from "@/types/databaseExtended";
+} from "types";
 import ReactMarkdown from "react-markdown";
 import {
   RecipeContext,

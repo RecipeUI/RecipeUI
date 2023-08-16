@@ -13,7 +13,7 @@ import {
   RecipeParam,
   RecipeParamType,
   RecipeStringParam,
-} from "@/types/databaseExtended";
+} from "types";
 import { getVariedParamInfo } from "@/components/RecipeOutput/RecipeDocs";
 
 export function useLoadingTemplate() {

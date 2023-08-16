@@ -11,7 +11,7 @@ import {
   RecipeProjectStatus,
   User,
   UserTemplatePreview,
-} from "@/types/databaseExtended";
+} from "types";
 import { getURLParamsForSession } from "@/utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";

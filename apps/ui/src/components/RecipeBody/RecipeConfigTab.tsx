@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { getHeaderTypes, useSecretManager } from "../../state/recipeAuth";
 import classNames from "classnames";
 
-import { RecipeAuthType } from "@/types/databaseExtended";
+import { RecipeAuthType } from "types";
 import {
   RecipeContext,
   RecipeOutputTab,

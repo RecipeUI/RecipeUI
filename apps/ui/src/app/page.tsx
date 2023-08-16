@@ -6,12 +6,8 @@ import { RecipeSidebar } from "@/components/RecipeSidebar";
 
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
-import {
-  Recipe,
-  RecipeProject,
-  UserTemplatePreview,
-} from "@/types/databaseExtended";
+import { Database } from "types";
+import { Recipe, RecipeProject, UserTemplatePreview } from "types";
 import { RecipeProjectsContext } from "@/state/pageContexts";
 import { redirect } from "next/navigation";
 

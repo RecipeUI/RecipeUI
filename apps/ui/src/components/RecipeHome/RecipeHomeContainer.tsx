@@ -8,11 +8,7 @@ import { RecipeBody } from "../RecipeBody";
 import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
 import classNames from "classnames";
-import {
-  Recipe,
-  RecipeProject,
-  UserTemplatePreview,
-} from "@/types/databaseExtended";
+import { Recipe, RecipeProject, UserTemplatePreview } from "types";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "@/utils/main";

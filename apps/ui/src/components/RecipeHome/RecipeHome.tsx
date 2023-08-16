@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import { ReactNode, useMemo } from "react";
-import { RecipeProject, RecipeProjectStatus } from "@/types/databaseExtended";
+import { RecipeProject, RecipeProjectStatus } from "types";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";
 import { GITHUB_REPO } from "@/utils/constants/main";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
+  console.log("Live deploy");
   const { popular, free, ycombinator, more } = useMemo(() => {
     const popular: RecipeProject[] = [];
     const free: RecipeProject[] = [];

@@ -3,7 +3,7 @@
 import { ProjectHome } from "@/app/[project]/ProjectHome";
 import { RecipeBodySearch } from "@/components/RecipeBody/RecipeBodySearch";
 import { useRecipeSessionStore } from "@/state/recipeSession";
-import { Recipe, RecipeProject } from "@/types/databaseExtended";
+import { Recipe, RecipeProject } from "types";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

@@ -3,11 +3,11 @@
 import { ProjectHome } from "@/app/[project]/ProjectHome";
 import { RecipeBodySearch } from "@/components/RecipeBody/RecipeBodySearch";
 import { useRecipeSessionStore } from "@/state/recipeSession";
-import { Recipe, RecipeProject, User } from "@/types/databaseExtended";
+import { Recipe, RecipeProject, User } from "types";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { UserTemplatePreview } from "@/types/databaseExtended";
+import { UserTemplatePreview } from "types";
 import { ProfileHome } from "@/app/u/[username]/ProfileHome";
 
 export function ProfileContainer({

@@ -1,4 +1,4 @@
-import { RecipeProject } from "@/types/databaseExtended";
+import { RecipeProject } from "types";
 import { createContext } from "react";
 
 export const RecipeProjectsContext = createContext<RecipeProject[]>([]);

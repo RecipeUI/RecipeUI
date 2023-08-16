@@ -7,7 +7,7 @@ import {
 } from "next/navigation";
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database.types";
+import { Database } from "types";
 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -407,7 +407,7 @@ function LabelWrapper({
 
 import { Fragment } from "react";
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
-import { User } from "@/types/databaseExtended";
+import { User } from "types";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { getUrl, useIsMobile } from "@/utils/main";
