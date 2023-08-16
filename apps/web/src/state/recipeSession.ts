@@ -5,14 +5,14 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   Recipe,
-  RecipeMethod,
   RecipeTemplate,
   User,
   RecipeOutputType,
   RecipeOptions,
   RecipeParameters,
   RecipeWithUserTemplate,
-} from "types";
+} from "types/database";
+import { RecipeMethod } from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { createContext } from "react";
 

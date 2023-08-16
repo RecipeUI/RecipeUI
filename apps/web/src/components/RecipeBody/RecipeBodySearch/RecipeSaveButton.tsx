@@ -4,7 +4,7 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
-import { Recipe, RecipeOutputType } from "types";
+import { Recipe, RecipeOutputType } from "types/database";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,

@@ -1,7 +1,11 @@
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types";
-import { RecipeProject, User, UserTemplatePreview } from "types";
+import {
+  Database,
+  RecipeProject,
+  User,
+  UserTemplatePreview,
+} from "types/database";
 import { ProfileContainer } from "@/app/u/[username]/ProfileContainer";
 
 export const dynamic = "force-dynamic";

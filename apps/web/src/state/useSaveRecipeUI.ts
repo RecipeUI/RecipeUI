@@ -8,8 +8,7 @@ import {
   GLOBAL_POLLING_FACTOR,
 } from "./recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types";
-import { Recipe } from "types";
+import { Database, Recipe } from "types/database";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getURLParamsForSession, useIsMobile } from "@/utils/main";
 

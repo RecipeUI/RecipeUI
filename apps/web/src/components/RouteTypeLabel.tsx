@@ -1,4 +1,4 @@
-import { RecipeMethod } from "types";
+import { RecipeMethod } from "types/enums";
 import classNames from "classnames";
 
 export function RouteTypeLabel({

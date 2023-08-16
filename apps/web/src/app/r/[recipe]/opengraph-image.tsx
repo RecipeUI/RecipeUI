@@ -1,8 +1,7 @@
 import { ImageResponse } from "next/server";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types";
+import { Database, UserTemplatePreview } from "types/database";
 import { cookies } from "next/headers";
-import { UserTemplatePreview } from "types";
 
 // NextJS x Supabase bug unfortunately.
 // export const runtime = "edge";

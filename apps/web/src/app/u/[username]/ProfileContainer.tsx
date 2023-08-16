@@ -1,11 +1,10 @@
 "use client";
 
 import { useRecipeSessionStore } from "@/state/recipeSession";
-import { RecipeProject, User } from "types";
+import { RecipeProject, User, UserTemplatePreview } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { UserTemplatePreview } from "types";
 import { ProfileHome } from "@/app/u/[username]/ProfileHome";
 
 export function ProfileContainer({

@@ -9,7 +9,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
-import { RecipeOutputType } from "types";
+import { RecipeOutputType } from "types/database";
 
 const codeMirrorSetup = {
   lineNumbers: true,

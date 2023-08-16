@@ -1,5 +1,6 @@
 import { RecipeSession } from "@/state/recipeSession";
-import { RecipeParam, RecipeParamType } from "types";
+import { RecipeParam } from "types/database";
+import { RecipeParamType } from "types/enums";
 
 export function isArrayPath(str: string): boolean {
   // Check to see if string in format of [number]

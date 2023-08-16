@@ -2,7 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types";
+import { Database } from "types/database";
 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -395,7 +395,7 @@ function LabelWrapper({
 }
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
-import { User } from "types";
+import { User } from "types/database";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
 import { getUrl, useIsMobile } from "@/utils/main";

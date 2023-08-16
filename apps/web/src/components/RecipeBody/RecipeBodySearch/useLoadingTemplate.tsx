@@ -9,10 +9,10 @@ import {
 } from "@/state/recipeSession";
 import {
   RecipeParam,
-  RecipeParamType,
   RecipeStringParam,
   RecipeOutputType,
-} from "types";
+} from "types/database";
+import { RecipeParamType } from "types/enums";
 import { getVariedParamInfo } from "@/components/RecipeOutput/RecipeDocs";
 
 export function useLoadingTemplate() {

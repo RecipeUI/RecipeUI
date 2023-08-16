@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "types": "supabase gen types typescript --project-id nqtmsoehkjdrhcmzfjar > ./src/database-generated.types.ts"
+    "types": "supabase gen types typescript --project-id nqtmsoehkjdrhcmzfjar > ./database-generated.types.ts"
   },
   "devDependencies": {
     "type-fest": "^4.2.0",

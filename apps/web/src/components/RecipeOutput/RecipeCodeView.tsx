@@ -6,7 +6,8 @@ import {
 import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
-import { Recipe, RecipeParamType } from "types";
+import { Recipe } from "types/database";
+import { RecipeParamType } from "types/enums";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,

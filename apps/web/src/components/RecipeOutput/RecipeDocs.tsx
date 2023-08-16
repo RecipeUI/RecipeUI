@@ -4,10 +4,11 @@ import {
   RecipeObjectParam,
   RecipeObjectSchemas,
   RecipeParam,
-  RecipeParamType,
   RecipeVariedParam,
   isVariedParam,
-} from "types";
+} from "types/database";
+import { RecipeParamType } from "types/enums";
+
 import ReactMarkdown from "react-markdown";
 import {
   RecipeContext,

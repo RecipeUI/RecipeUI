@@ -1,7 +1,6 @@
 "use server";
 
-import { Database } from "types";
-import { UserTemplate } from "types";
+import { Database, UserTemplate } from "types/database";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 

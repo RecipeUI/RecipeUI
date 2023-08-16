@@ -7,7 +7,8 @@ import {
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "@/state/recipeSession";
-import { RecipeAuthType, RecipeOutputType } from "types";
+import { RecipeOutputType } from "types/database";
+import { RecipeAuthType } from "types/enums";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";

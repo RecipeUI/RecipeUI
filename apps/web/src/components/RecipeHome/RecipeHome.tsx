@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ReactNode, useMemo } from "react";
-import { RecipeProject, RecipeProjectStatus } from "types";
+import { RecipeProject } from "types/database";
+import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "@/utils/constants/posthog";

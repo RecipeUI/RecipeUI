@@ -2,8 +2,12 @@ import { RecipeHomeContainer } from "@/components/RecipeHome/RecipeHomeContainer
 
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database, RecipeWithUserTemplate } from "types";
-import { RecipeProject, UserTemplatePreview } from "types";
+import {
+  Database,
+  RecipeWithUserTemplate,
+  RecipeProject,
+  UserTemplatePreview,
+} from "types/database";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";

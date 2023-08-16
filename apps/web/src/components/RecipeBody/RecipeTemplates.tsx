@@ -5,11 +5,7 @@ import {
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import {
-  RecipeTemplate,
-  RecipeWithUserTemplate,
-  UserTemplatePreview,
-} from "types";
+import { RecipeTemplate, UserTemplatePreview } from "types/database";
 import { getTemplate } from "@/components/RecipeBody/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";

@@ -12,7 +12,7 @@ import {
 } from "@/state/recipeSession";
 import { useLocalStorage, useScreen } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "@/utils/constants/main";
-import { UserTemplatePreview } from "types";
+import { UserTemplatePreview } from "types/database";
 import { useIsMobile } from "@/utils/main";
 import { useRouter } from "next/navigation";
 

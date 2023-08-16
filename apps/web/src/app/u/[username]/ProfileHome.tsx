@@ -4,7 +4,7 @@ import {
   ShareInviteModal,
   TemplateMockCode,
 } from "@/components/RecipeBody/RecipeTemplates";
-import { RecipeProject, User, UserTemplatePreview } from "types";
+import { RecipeProject, User, UserTemplatePreview } from "types/database";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
