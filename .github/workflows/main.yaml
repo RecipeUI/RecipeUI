@@ -25,12 +25,14 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
+          
+      - uses: pnpm/action-setup@v2
         with:
-          node-version: 'lts/*'
-          cache: 'pnpm' # Set this to npm, pnpm or pnpm.
+          version: 6.32.9
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'pnpm'
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
