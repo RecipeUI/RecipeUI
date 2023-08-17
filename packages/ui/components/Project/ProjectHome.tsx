@@ -17,7 +17,7 @@ export function ProjectHome({
   return (
     <div className="flex-1 px-4 pt-4">
       <div className="flex justify-start rounded-md border min-h-[250px] bg-white dark:bg-slate-800">
-        <div className="p-4 flex flex-col space-y-8 lg:space-y-0   lg:flex-row lg:items-center lg:space-x-8">
+        <div className="p-4 flex flex-col space-y-8 lg:space-y-0  justify-center  lg:flex-row lg:items-center lg:space-x-8">
           {project.image && (
             <img
               src={project.image}
@@ -61,10 +61,18 @@ function ProjectHomeBox({
 }) {
   const router = useRouter();
   const addSession = useRecipeSessionStore((state) => state.addSession);
+  const createdAt = new Date(recipe.created_at!);
+  const currentTime = new Date();
+  const difference = currentTime.getTime() - createdAt.getTime();
 
   return (
     <div
-      className="border border-slate-700 rounded-md p-4 space-y-1 flex flex-col h-38 cursor-pointer recipe-container-box"
+      className={classNames(
+        "border border-slate-700 rounded-md p-4 space-y-1 flex flex-col h-38 cursor-pointer recipe-container-box",
+        difference < 300000
+          ? "border !border-chefYellow border-2 border-dotted"
+          : ""
+      )}
       onClick={() => {
         const session = addSession(recipe);
         router.push(`/?${getURLParamsForSession(session)}`);
@@ -86,7 +94,6 @@ function ProjectHomeBox({
           View
         </button>
       </div>
-
       <p className="text-sm text-black line-clamp-3 dark:text-gray-300">
         {recipe.summary}
       </p>

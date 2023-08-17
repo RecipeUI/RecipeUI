@@ -32,7 +32,7 @@ export interface Database {
           owner_id?: string | null
           project: string
           scope?: Database["public"]["Enums"]["projectscope"]
-          status: Database["public"]["Enums"]["recipeprojectstatus"]
+          status?: Database["public"]["Enums"]["recipeprojectstatus"]
           subheader?: string | null
           tags?: string[] | null
           title: string
@@ -71,30 +71,30 @@ export interface Database {
         Row: {
           created_at: string
           id: number
-          project_id: number
+          project: string
           role: Database["public"]["Enums"]["projectmemberrole"]
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: number
-          project_id: number
+          project: string
           role?: Database["public"]["Enums"]["projectmemberrole"]
           user_id: string
         }
         Update: {
           created_at?: string
           id?: number
-          project_id?: number
+          project?: string
           role?: Database["public"]["Enums"]["projectmemberrole"]
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_member_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "project_member_project_fkey"
+            columns: ["project"]
             referencedRelation: "project"
-            referencedColumns: ["id"]
+            referencedColumns: ["project"]
           },
           {
             foreignKeyName: "project_member_user_id_fkey"
@@ -571,10 +571,7 @@ export interface Database {
       }
     }
     Functions: {
-      is_limited: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       projectmemberrole: "owner" | "editor" | "viewer"

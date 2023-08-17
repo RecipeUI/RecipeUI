@@ -76,4 +76,5 @@ export enum ProjectScope {
 
 export enum QueryKey {
   RecipesAll = "RecipesAll",
+  Projects = "Projects",
 }

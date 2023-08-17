@@ -9,11 +9,18 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { DOC_LINKS } from "../../utils/docLinks";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "types/database";
+import { useRouter } from "next/navigation";
 
 export function RecipeConfigTab() {
   const selectedRecipe = useContext(RecipeContext)!;
-
   const needsAuth = selectedRecipe.auth !== null;
+  const supabase = createClientComponentClient<Database>();
+  const router = useRouter();
+  const user = useRecipeSessionStore((state) => state.user);
+
+  const canDelete = selectedRecipe.author_id === user?.user_id;
 
   return (
     <div className="flex-1 relative px-4 py-6">
@@ -26,6 +33,33 @@ export function RecipeConfigTab() {
               <RecipeNeedsAuth />
             </>
           )}
+          <hr />
+          <div className="w-full space-y-4 text-start mt-4">
+            <h1 className="text-xl font-bold">Delete Recipe</h1>
+            <p>
+              This will delete the API and all templates attached to this API.
+            </p>
+            {canDelete && (
+              <button
+                className="btn btn-error btn-sm"
+                onClick={async () => {
+                  if (
+                    !confirm("Are you sure you want to delete this recipe?")
+                  ) {
+                    return;
+                  }
+
+                  const { error } = await supabase
+                    .from("recipe")
+                    .delete()
+                    .match({ id: selectedRecipe.id });
+                  router.push("/");
+                }}
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

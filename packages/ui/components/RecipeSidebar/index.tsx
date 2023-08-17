@@ -67,6 +67,7 @@ export function RecipeSidebar() {
   }, [currentSession, isMobile, sessions, setCurrentSession, setSessions]);
 
   if (sessions.length === 0) return null;
+  if (pathname === "/new") return null;
 
   return (
     <div className="hidden sm:block w-56 border-r">

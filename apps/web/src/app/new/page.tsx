@@ -3,15 +3,23 @@
 import { processYamlSpec } from "openapi-parser-js";
 import { ChangeEvent, SetStateAction, useEffect, useState } from "react";
 import yaml from "js-yaml";
-import { AuthConfig, Database, Recipe } from "types/database";
+import { AuthConfig, Database, Recipe, RecipeProject } from "types/database";
 import { RouteTypeLabel } from "ui/components/RouteTypeLabel";
 import classNames from "classnames";
 import { uploadAPIs } from "@/app/new/actions";
-import { AuthFormType } from "types/enums";
+import { AuthFormType, ProjectScope, QueryKey } from "types/enums";
 import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { redirect, useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery } from "@tanstack/react-query";
+
+enum ImportStage {
+  Upload,
+  Select,
+  Auth,
+  Project,
+  Submit,
+}
 
 export default function NewPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -19,20 +27,40 @@ export default function NewPage() {
   const [selectedRecipesRecord, setSelectedRecipesRecord] = useState<
     Record<string, boolean>
   >({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const [finishedStages, setFinishedStages] = useState<Set<ImportStage>>(
+    new Set()
+  );
 
   const user = useRecipeSessionStore((state) => state.user);
   const supabase = createClientComponentClient<Database>();
+  const [selectedProject, setSelectedProject] = useState<null | string>(null);
 
-  const projectData = useQuery({
-    queryKey: ["userProjects", user?.user_id],
+  const projectRes = useQuery({
+    queryKey: [QueryKey.Projects, user?.user_id],
     queryFn: async () => {
-      if (user?.user_id) {
+      if (!user?.user_id) {
         return [];
       }
 
-      return supabase.from("projects").select("*").eq("user_id", user?.user_id);
+      const _projects: RecipeProject[] =
+        (
+          await supabase
+            .from("project")
+            .select("*")
+            .neq("scope", ProjectScope.Global)
+        ).data || [];
+
+      if (_projects.length > 0) {
+        setSelectedProject(_projects[0].project);
+      }
+
+      return _projects;
     },
   });
+
+  const projects = projectRes.data || [];
 
   const numOfSelectedRecipes = Object.values(selectedRecipesRecord).filter(
     (v) => v
@@ -52,7 +80,7 @@ export default function NewPage() {
         const fileInfo = await _file.text();
         let parsedYaml = yaml.load(fileInfo);
 
-        // We'll need strong typing here eventually in case the user gives ben OpenAPI spec. But it's not needed for V1 as DB will just not allow it to be uploaded.
+        // We'll need strong typing here eventually in case the user gives an OpenAPI spec. But it's not needed for V1 as DB will just not allow it to be uploaded.
         const recipes = processYamlSpec(
           parsedYaml as Record<string, unknown>,
           "OpenAI",
@@ -60,7 +88,18 @@ export default function NewPage() {
         ) as Recipe[];
 
         setRecipes(recipes);
+
+        if (recipes.length > 0) {
+          setFinishedStages((prev) => {
+            return new Set(prev).add(ImportStage.Select);
+          });
+        } else {
+          throw new Error("No recipes found in file.");
+        }
       } catch (e) {
+        alert(
+          "Unable to parse file or could not find recipes. Please try again."
+        );
         console.error(e);
       }
     }
@@ -74,21 +113,40 @@ export default function NewPage() {
   const [authConfigs, setAuthConfigs] = useState<AuthConfig["payload"][]>([]);
   const [queryParamKey, setQueryParamKey] = useState("api_key");
   const [authDocs, setAuthDocs] = useState("");
+  const router = useRouter();
 
   const onSubmit = async () => {
     if (!window.confirm("Are you sure you want to upload these API's?")) {
       return;
     }
+    setSubmitting(true);
 
     const selectedRecipes = recipes.filter(
       (recipe) => selectedRecipesRecord[recipe.path + recipe.method]
     );
 
-    uploadAPIs({
-      apis: selectedRecipes,
-      authType: authType,
-      authConfigs: authConfigs,
-    });
+    try {
+      const projectName = uploadAPIs({
+        apis: selectedRecipes,
+        authType: authType,
+        authConfigs: authConfigs,
+        project: selectedProject,
+        username: user?.username!,
+        authDocs,
+      }).then((res) => {
+        if (typeof res === "string") {
+          setTimeout(() => {
+            router.push(`/${res}`);
+          }, 2000);
+        } else {
+          alert("Something went wrong. Please try again.");
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    setSubmitting(false);
   };
 
   if (!user) {
@@ -104,7 +162,7 @@ export default function NewPage() {
   return (
     <div className="p-12 space-y-12">
       <div>
-        <h1 className="text-3xl font-bold dark:text-gray-100">New Project</h1>
+        <h1 className="text-3xl font-bold dark:text-gray-100">Import APIs</h1>
         <p>
           {
             "Let's start with importing an OpenAPI yaml spec. If you want us to the entire setup for you, please email team@recipeui.com."
@@ -195,30 +253,91 @@ export default function NewPage() {
               })}
             </div>
           </div>
+          {!finishedStages.has(ImportStage.Auth) &&
+            numOfSelectedRecipes !== 0 && (
+              <button
+                className="btn btn-accent"
+                disabled={numOfSelectedRecipes === 0}
+                onClick={() => {
+                  setFinishedStages((prev) => {
+                    return new Set(prev).add(ImportStage.Auth);
+                  });
+                }}
+              >
+                Continue
+              </button>
+            )}
         </>
       )}
 
       {numOfSelectedRecipes > 0 && (
         <>
-          <AuthForm
-            authType={authType}
-            setAuthType={setAuthType}
-            queryParamKey={queryParamKey}
-            setQueryParamKey={setQueryParamKey}
-            authConfigs={authConfigs}
-            setAuthConfigs={setAuthConfigs}
-            authDocs={authDocs}
-            setAuthDocs={setAuthDocs}
-          />
+          {finishedStages.has(ImportStage.Auth) && (
+            <>
+              <AuthForm
+                authType={authType}
+                setAuthType={setAuthType}
+                queryParamKey={queryParamKey}
+                setQueryParamKey={setQueryParamKey}
+                authConfigs={authConfigs}
+                setAuthConfigs={setAuthConfigs}
+                authDocs={authDocs}
+                setAuthDocs={setAuthDocs}
+              />
 
-          <div>
-            <h1 className="text-2xl font-bold dark:text-gray-100">Submit</h1>
-            <p>Double check everything before submitting below.</p>
-            <button className="btn btn-accent btn-sm" onClick={onSubmit}>
-              Submit
-            </button>
-          </div>
+              {!finishedStages.has(ImportStage.Project) && (
+                <button
+                  className="btn btn-accent"
+                  onClick={() => {
+                    setFinishedStages((prev) => {
+                      return new Set(prev).add(ImportStage.Project);
+                    });
+                  }}
+                >
+                  Continue
+                </button>
+              )}
+            </>
+          )}
         </>
+      )}
+
+      {finishedStages.has(ImportStage.Project) && (
+        <div>
+          {projects.length > 0 && (
+            <>
+              <h1 className="text-2xl font-bold dark:text-gray-100">
+                Choose a Project
+              </h1>
+              <div className="grid grid-cols-2 gap-3 my-2">
+                {projects.map((project) => {
+                  return (
+                    <SelectionBox
+                      key={project.id}
+                      description={project.description}
+                      title={project.title}
+                      selected={project.project === selectedProject}
+                      onClick={() => {
+                        setSelectedProject(project.project);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
+          <p className="my-2">
+            Double check everything before submitting below.
+          </p>
+          <button
+            className="btn btn-accent"
+            onClick={onSubmit}
+            disabled={submitting}
+          >
+            Submit
+            {submitting && <span className="loading loading-bars"></span>}
+          </button>
+        </div>
       )}
     </div>
   );
@@ -250,7 +369,7 @@ function AuthForm({
         How can people use your API? If your auth is custom, contact us so we
         can support you ASAP. Reach out to team@recipeui.com.
       </p>
-      <div className="grid grid-cols-3 py-2 gap-3">
+      <div className="grid grid-cols-2 py-2 gap-3">
         <SelectionBox
           title="None"
           description="Perfect if you're under a VPN, testing a local API, or just don't need auth."
@@ -282,7 +401,7 @@ function AuthForm({
         />
         <SelectionBox
           title="OAuth (Contact Us)"
-          description="Consists of a login and token flow. We'll support this soon, if you need it now, contact us at team@recipeui.com."
+          description="Contact us at team@recipeui.com."
           selected={false}
           onClick={() => {}}
           disabled
@@ -393,9 +512,9 @@ function AuthForm({
         </div>
       )}
       <div className="mt-4">
-        <p>Do you have a guide link for setting up Auth?</p>
+        <p>Link to documentation about auth (Optional)</p>
         <input
-          className="input input-sm mt-1"
+          className="input input-sm mt-2"
           value={authDocs}
           onChange={(e) => {
             setAuthDocs(e.target.value);
