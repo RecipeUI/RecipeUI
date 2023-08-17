@@ -6,14 +6,20 @@ import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 
-export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
+export function RecipeHome({
+  globalProjects,
+  projects,
+}: {
+  globalProjects: RecipeProject[];
+  projects: RecipeProject[];
+}) {
   const { popular, free, ycombinator, more } = useMemo(() => {
     const popular: RecipeProject[] = [];
     const free: RecipeProject[] = [];
     const ycombinator: RecipeProject[] = [];
     const more: RecipeProject[] = [];
 
-    projects.forEach((recipe) => {
+    globalProjects.forEach((recipe) => {
       const tags = recipe.tags || [];
 
       if (tags.includes("Popular")) {
@@ -33,10 +39,13 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
       ycombinator,
       more,
     };
-  }, [projects]);
+  }, [globalProjects]);
 
   return (
     <div className="-mt-6 sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
+      {projects.length > 0 && (
+        <MarketplaceSection header="Your Projects" projects={projects} />
+      )}
       <MarketplaceSection
         header="Popular APIs"
         description={
@@ -71,13 +80,19 @@ function MarketplaceSection({
   projects,
 }: {
   header: string;
-  description: string | ReactNode;
+  description?: string | ReactNode;
   projects: RecipeProject[];
 }) {
   return (
     <div>
       <h1 className="text-2xl font-bold dark:text-gray-100">{header}</h1>
-      {typeof description === "string" ? <p>{description}</p> : description}
+      {description ? (
+        typeof description === "string" ? (
+          <p>{description}</p>
+        ) : (
+          description
+        )
+      ) : null}
       <div className="projects-home-container">
         {projects.map((recipe) => {
           return (
@@ -107,7 +122,7 @@ export function RecipeHomeBox({
 }: {
   title: string;
   project: string;
-  subheader: string;
+  subheader?: string | null;
   description: string;
   status: RecipeProjectStatus;
   image?: string | null;

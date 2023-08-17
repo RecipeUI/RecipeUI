@@ -4,11 +4,12 @@ import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   Database,
+  Recipe,
   RecipeProject,
-  RecipeWithUserTemplate,
   UserTemplatePreview,
 } from "types/database";
 import { redirect } from "next/navigation";
+import { getProjectSplit } from "ui/utils/main";
 
 export const dynamic = "force-dynamic";
 
@@ -30,12 +31,12 @@ export default async function Home({
     cookies,
   });
 
-  const projectsResponse = await supabase.from("global_projects_view").select();
+  const projectRes = await supabase.from("project").select();
+  const { globalProjects, userProjects } = getProjectSplit(
+    (projectRes.data || []) as RecipeProject[]
+  );
 
-  const projects = (projectsResponse.data || []) as RecipeProject[];
-
-  //
-  let recipe: null | RecipeWithUserTemplate = null;
+  let recipe: null | Recipe = null;
 
   if (recipeId) {
     const response = recipeId
@@ -47,7 +48,7 @@ export default async function Home({
       return;
     }
 
-    recipe = response.data as RecipeWithUserTemplate;
+    recipe = response.data as Recipe;
     const { data: userData } = await supabase.auth.getUser();
 
     if (userData.user) {
@@ -71,7 +72,8 @@ export default async function Home({
 
   return (
     <RecipeHomeContainer
-      recipeProjects={projects}
+      globalProjects={globalProjects}
+      projects={userProjects}
       recipe={recipe || undefined}
       sessionId={sessionId}
     />

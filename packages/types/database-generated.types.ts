@@ -19,7 +19,7 @@ export interface Database {
           project: string
           scope: Database["public"]["Enums"]["projectscope"]
           status: Database["public"]["Enums"]["recipeprojectstatus"]
-          subheader: string
+          subheader: string | null
           tags: string[] | null
           title: string
           visibility: Database["public"]["Enums"]["projectvisibility"]
@@ -33,7 +33,7 @@ export interface Database {
           project: string
           scope?: Database["public"]["Enums"]["projectscope"]
           status: Database["public"]["Enums"]["recipeprojectstatus"]
-          subheader: string
+          subheader?: string | null
           tags?: string[] | null
           title: string
           visibility?: Database["public"]["Enums"]["projectvisibility"]
@@ -47,7 +47,7 @@ export interface Database {
           project?: string
           scope?: Database["public"]["Enums"]["projectscope"]
           status?: Database["public"]["Enums"]["recipeprojectstatus"]
-          subheader?: string
+          subheader?: string | null
           tags?: string[] | null
           title?: string
           visibility?: Database["public"]["Enums"]["projectvisibility"]
@@ -73,18 +73,21 @@ export interface Database {
           id: number
           project_id: number
           role: Database["public"]["Enums"]["projectmemberrole"]
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: number
           project_id: number
           role?: Database["public"]["Enums"]["projectmemberrole"]
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: number
           project_id?: number
           role?: Database["public"]["Enums"]["projectmemberrole"]
+          user_id?: string
         }
         Relationships: [
           {
@@ -94,23 +97,28 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "project_member_project_id_fkey"
-            columns: ["project_id"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["id"]
+            foreignKeyName: "project_member_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_member_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
           }
         ]
       }
       recipe: {
         Row: {
           auth: string | null
-          author: string | null
+          author_id: string | null
           created_at: string | null
           id: number
           method: Database["public"]["Enums"]["recipemethod"]
           options: Json | null
           path: string
-          private: boolean | null
           project: string
           queryParams: Json | null
           rank: number | null
@@ -120,16 +128,16 @@ export interface Database {
           templates: Json[] | null
           title: string
           urlParams: Json | null
+          visibility: Database["public"]["Enums"]["visibility"]
         }
         Insert: {
           auth?: string | null
-          author?: string | null
+          author_id?: string | null
           created_at?: string | null
           id?: number
           method?: Database["public"]["Enums"]["recipemethod"]
           options?: Json | null
           path: string
-          private?: boolean | null
           project: string
           queryParams?: Json | null
           rank?: number | null
@@ -139,16 +147,16 @@ export interface Database {
           templates?: Json[] | null
           title: string
           urlParams?: Json | null
+          visibility?: Database["public"]["Enums"]["visibility"]
         }
         Update: {
           auth?: string | null
-          author?: string | null
+          author_id?: string | null
           created_at?: string | null
           id?: number
           method?: Database["public"]["Enums"]["recipemethod"]
           options?: Json | null
           path?: string
-          private?: boolean | null
           project?: string
           queryParams?: Json | null
           rank?: number | null
@@ -158,18 +166,25 @@ export interface Database {
           templates?: Json[] | null
           title?: string
           urlParams?: Json | null
+          visibility?: Database["public"]["Enums"]["visibility"]
         }
         Relationships: [
           {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "recipe_project_fkey"
             columns: ["project"]
-            referencedRelation: "global_projects_view"
+            referencedRelation: "project"
             referencedColumns: ["project"]
           }
         ]
@@ -189,7 +204,7 @@ export interface Database {
           requestBody: Json | null
           title: string
           urlParams: Json | null
-          visibility: string
+          visibility: Database["public"]["Enums"]["visibility"]
         }
         Insert: {
           alias: string
@@ -205,7 +220,7 @@ export interface Database {
           requestBody?: Json | null
           title: string
           urlParams?: Json | null
-          visibility?: string
+          visibility?: Database["public"]["Enums"]["visibility"]
         }
         Update: {
           alias?: string
@@ -221,7 +236,7 @@ export interface Database {
           requestBody?: Json | null
           title?: string
           urlParams?: Json | null
-          visibility?: string
+          visibility?: Database["public"]["Enums"]["visibility"]
         }
         Relationships: [
           {
@@ -255,15 +270,15 @@ export interface Database {
             referencedColumns: ["project"]
           },
           {
-            foreignKeyName: "template_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "template_recipe_id_fkey"
             columns: ["recipe_id"]
-            referencedRelation: "recipe"
+            referencedRelation: "recipe_view"
             referencedColumns: ["id"]
           }
         ]
@@ -377,61 +392,85 @@ export interface Database {
       }
     }
     Views: {
-      global_projects_view: {
+      recipe_view: {
         Row: {
+          auth: string | null
+          author_id: string | null
           created_at: string | null
-          description: string | null
           id: number | null
-          image: string | null
-          owner_id: string | null
+          method: Database["public"]["Enums"]["recipemethod"] | null
+          options: Json | null
+          path: string | null
           project: string | null
-          scope: Database["public"]["Enums"]["projectscope"] | null
-          status: Database["public"]["Enums"]["recipeprojectstatus"] | null
-          subheader: string | null
+          queryParams: Json | null
+          rank: number | null
+          requestBody: Json | null
+          summary: string | null
           tags: string[] | null
+          tags_count: number | null
+          templates: Json[] | null
           title: string | null
-          visibility: Database["public"]["Enums"]["projectvisibility"] | null
+          urlParams: Json | null
+          visibility: Database["public"]["Enums"]["visibility"] | null
         }
         Insert: {
+          auth?: string | null
+          author_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: number | null
-          image?: string | null
-          owner_id?: string | null
+          method?: Database["public"]["Enums"]["recipemethod"] | null
+          options?: Json | null
+          path?: string | null
           project?: string | null
-          scope?: Database["public"]["Enums"]["projectscope"] | null
-          status?: Database["public"]["Enums"]["recipeprojectstatus"] | null
-          subheader?: string | null
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary?: string | null
           tags?: string[] | null
+          tags_count?: never
+          templates?: Json[] | null
           title?: string | null
-          visibility?: Database["public"]["Enums"]["projectvisibility"] | null
+          urlParams?: Json | null
+          visibility?: Database["public"]["Enums"]["visibility"] | null
         }
         Update: {
+          auth?: string | null
+          author_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: number | null
-          image?: string | null
-          owner_id?: string | null
+          method?: Database["public"]["Enums"]["recipemethod"] | null
+          options?: Json | null
+          path?: string | null
           project?: string | null
-          scope?: Database["public"]["Enums"]["projectscope"] | null
-          status?: Database["public"]["Enums"]["recipeprojectstatus"] | null
-          subheader?: string | null
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary?: string | null
           tags?: string[] | null
+          tags_count?: never
+          templates?: Json[] | null
           title?: string | null
-          visibility?: Database["public"]["Enums"]["projectvisibility"] | null
+          urlParams?: Json | null
+          visibility?: Database["public"]["Enums"]["visibility"] | null
         }
         Relationships: [
           {
-            foreignKeyName: "project_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
             referencedRelation: "user"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "project_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
           }
         ]
       }
@@ -452,7 +491,7 @@ export interface Database {
           requestBody: Json | null
           title: string | null
           urlParams: Json | null
-          visibility: string | null
+          visibility: Database["public"]["Enums"]["visibility"] | null
         }
         Relationships: [
           {
@@ -486,15 +525,15 @@ export interface Database {
             referencedColumns: ["project"]
           },
           {
-            foreignKeyName: "template_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
+            foreignKeyName: "template_recipe_id_fkey"
+            columns: ["recipe_id"]
+            referencedRelation: "recipe"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "template_recipe_id_fkey"
             columns: ["recipe_id"]
-            referencedRelation: "recipe"
+            referencedRelation: "recipe_view"
             referencedColumns: ["id"]
           }
         ]
@@ -543,6 +582,7 @@ export interface Database {
       projectvisibility: "private" | "public" | "unlisted"
       recipemethod: "GET" | "POST" | "PUT" | "DELETE"
       recipeprojectstatus: "Active" | "Install" | "Waitlist" | "Soon"
+      visibility: "private" | "public" | "unlisted"
     }
     CompositeTypes: {
       [_ in never]: never

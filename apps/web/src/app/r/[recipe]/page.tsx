@@ -3,6 +3,7 @@ import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContaine
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, RecipeProject, UserTemplatePreview } from "types/database";
+import { getProjectSplit } from "ui/utils/main";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,10 @@ export default async function Home({
     cookies,
   });
 
-  const projectsResponse = await supabase.from("global_projects_view").select();
-  const projects = (projectsResponse.data || []) as RecipeProject[];
+  const projectRes = await supabase.from("project").select();
+  const { globalProjects, userProjects } = getProjectSplit(
+    (projectRes.data || []) as RecipeProject[]
+  );
 
   let sharedTemplateInfo: null | UserTemplatePreview = null;
   if (recipeName) {
@@ -37,7 +40,8 @@ export default async function Home({
 
   return (
     <RecipeHomeContainer
-      recipeProjects={projects}
+      projects={userProjects}
+      globalProjects={globalProjects}
       sharedTemplate={sharedTemplateInfo || undefined}
     />
   );

@@ -6,7 +6,6 @@ import {
   RecipeOutputType,
   RecipeParameters,
   RecipeTemplate,
-  RecipeWithUserTemplate,
   User,
 } from "types/database";
 
@@ -25,9 +24,6 @@ export interface RecipeSession {
 }
 
 interface RecipeSessionSlice {
-  recipes: Recipe[];
-  initializeRecipes: (recipes: Recipe[]) => void;
-
   currentSession: RecipeSession | null;
   sessions: RecipeSession[];
 
@@ -133,10 +129,6 @@ const createRecipeSessionSlice: StateCreator<
   RecipeSessionSlice
 > = (set) => {
   return {
-    recipes: [],
-    initializeRecipes: (recipes) => {
-      set(() => ({ recipes }));
-    },
     currentSession: null,
     sessions: [],
     setSessions: (sessions) => set(() => ({ sessions })),
@@ -524,4 +516,4 @@ function deleteParamsForSessionIdFromLocal(sessionId: string) {
   localStorage.removeItem(getRecipeUrlParamsKey(sessionId));
 }
 
-export const RecipeContext = createContext<RecipeWithUserTemplate | null>(null);
+export const RecipeContext = createContext<Recipe | null>(null);

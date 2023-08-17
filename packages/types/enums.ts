@@ -49,3 +49,31 @@ export enum AuthFormType {
   QueryParam,
   MultipleParams,
 }
+
+export enum ProjectVisibility {
+  Public = "public",
+  Private = "private",
+  Unlisted = "unlisted",
+}
+
+export enum Visibility {
+  Public = "public",
+  Private = "private",
+  Unlisted = "unlisted",
+}
+
+export enum ProjectMemberRole {
+  Owner = "owner",
+  Editor = "editor",
+  Viewer = "viewer",
+}
+
+export enum ProjectScope {
+  Personal = "personal",
+  Team = "team",
+  Global = "global",
+}
+
+export enum QueryKey {
+  RecipesAll = "RecipesAll",
+}

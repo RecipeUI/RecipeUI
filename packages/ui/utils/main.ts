@@ -1,5 +1,5 @@
-import { RecipeParam } from "types/database";
-import { RecipeParamType } from "types/enums";
+import { RecipeParam, RecipeProject } from "types/database";
+import { ProjectScope, RecipeParamType } from "types/enums";
 import { RecipeSession } from "../state/recipeSession";
 
 export function isArrayPath(str: string): boolean {
@@ -114,4 +114,22 @@ export function getUrl() {
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function getProjectSplit(projects: RecipeProject[]) {
+  const globalProjects: RecipeProject[] = [];
+  const userProjects: RecipeProject[] = [];
+
+  for (const project of projects) {
+    if (project.scope === ProjectScope.Global) {
+      globalProjects.push(project);
+    } else {
+      userProjects.push(project);
+    }
+  }
+
+  return {
+    globalProjects,
+    userProjects,
+  };
 }

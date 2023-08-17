@@ -464,6 +464,7 @@ export function ShareInviteModal({
               onClose={onClose}
               newTemplateId={newTemplateId}
               passiveRecipe={template.recipe}
+              ignoreAnimation={!!isCurrentUserTemplate}
             />
           )}
 

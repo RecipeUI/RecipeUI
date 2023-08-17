@@ -19,12 +19,14 @@ import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import Link from "next/link";
 
 export function RecipeHomeContainer({
-  recipeProjects,
+  globalProjects,
+  projects,
   recipe,
   sessionId,
   sharedTemplate,
 }: {
-  recipeProjects: RecipeProject[];
+  globalProjects: RecipeProject[];
+  projects: RecipeProject[];
   recipe?: Recipe;
   sessionId?: string;
   sharedTemplate?: UserTemplatePreview;
@@ -77,7 +79,7 @@ export function RecipeHomeContainer({
           <RecipeBody />
         ) : (
           <>
-            <RecipeHome projects={recipeProjects} />
+            <RecipeHome globalProjects={globalProjects} projects={projects} />
             {showShareModal && sharedTemplate && (
               <ShareInviteModal
                 template={sharedTemplate}

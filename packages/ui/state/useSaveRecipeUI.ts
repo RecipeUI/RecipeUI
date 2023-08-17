@@ -118,56 +118,6 @@ export function useSaveRecipeUI() {
     });
   }, []);
 
-  const initializeRecipes = useRecipeSessionStore(
-    (state) => state.initializeRecipes
-  );
-  useEffect(() => {
-    async function fetchRecipes() {
-      const res = await supabase.from("recipe_view").select("*");
-      const newRecipes = res.data as unknown[] as Recipe[];
-      if (res.data) {
-        initializeRecipes(newRecipes);
-      }
-
-      if (!localSave || isMobile) return null;
-      // Lets fix all the sessions and the current session
-      // This is not really ideal right now, we should really be referencing ids and then matching later
-
-      let _sessions = localSave.sessions.map((session) => {
-        const latestRecipe = newRecipes.find(
-          (_recipe) => _recipe.id === session.recipeId
-        );
-
-        if (latestRecipe) {
-          return {
-            ...session,
-            recipe: latestRecipe,
-          };
-        }
-
-        return session;
-      });
-      setSessions(_sessions);
-
-      if (projectId || shareTemplateIdParam || username) return;
-
-      // const localSession = localSave.currentSession;
-      // if (localSession != null) {
-      //   const latestRecipe = newRecipes.find(
-      //     (_recipe) => _recipe.id === localSession.recipeId
-      //   );
-
-      //   if (localSave.currentSession && latestRecipe) {
-      //     setCurrentSession({
-      //       ...localSession,
-      //       recipeId: latestRecipe.id,
-      //       recipeMethod: latestRecipe.method,
-      //     });
-      //   }
-      // }
-    }
-    fetchRecipes();
-  }, []);
   const router = useRouter();
 
   useEffect(() => {

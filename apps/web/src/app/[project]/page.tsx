@@ -18,13 +18,14 @@ export default async function ProjectPage({
   });
 
   const { data: projectInfo } = await supabase
-    .from("global_projects_view")
+    .from("project")
     .select()
     .ilike("project", `%${projectName}%`)
+    .limit(1)
     .single();
 
   const { data: projectRecipes } = await supabase
-    .from("recipe_view")
+    .from("recipe")
     .select()
     .ilike("project", `%${projectName}%`);
 

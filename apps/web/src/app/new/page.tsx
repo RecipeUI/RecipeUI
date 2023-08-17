@@ -3,11 +3,15 @@
 import { processYamlSpec } from "openapi-parser-js";
 import { ChangeEvent, SetStateAction, useEffect, useState } from "react";
 import yaml from "js-yaml";
-import { AuthConfig, Recipe } from "types/database";
+import { AuthConfig, Database, Recipe } from "types/database";
 import { RouteTypeLabel } from "ui/components/RouteTypeLabel";
 import classNames from "classnames";
 import { uploadAPIs } from "@/app/new/actions";
 import { AuthFormType } from "types/enums";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { redirect, useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useQuery } from "@tanstack/react-query";
 
 export default function NewPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -15,6 +19,20 @@ export default function NewPage() {
   const [selectedRecipesRecord, setSelectedRecipesRecord] = useState<
     Record<string, boolean>
   >({});
+
+  const user = useRecipeSessionStore((state) => state.user);
+  const supabase = createClientComponentClient<Database>();
+
+  const projectData = useQuery({
+    queryKey: ["userProjects", user?.user_id],
+    queryFn: async () => {
+      if (user?.user_id) {
+        return [];
+      }
+
+      return supabase.from("projects").select("*").eq("user_id", user?.user_id);
+    },
+  });
 
   const numOfSelectedRecipes = Object.values(selectedRecipesRecord).filter(
     (v) => v
@@ -72,6 +90,16 @@ export default function NewPage() {
       authConfigs: authConfigs,
     });
   };
+
+  if (!user) {
+    return (
+      <div className="p-12 space-y-12">
+        <h1 className="text-3xl font-bold dark:text-gray-100">
+          Please login to upload APIs.
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="p-12 space-y-12">

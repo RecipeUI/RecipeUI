@@ -102,7 +102,9 @@ export function Navbar() {
             onClick={() => {
               if (!user) {
                 setIsLoginModalOpen(true);
+                return;
               }
+              router.push("/new");
             }}
           >
             Add an API

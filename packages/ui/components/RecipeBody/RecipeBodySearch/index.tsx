@@ -1,4 +1,5 @@
 "use client";
+
 import { useCombobox } from "downshift";
 import classNames from "classnames";
 import Fuse from "fuse.js";
@@ -16,6 +17,14 @@ import { useRouter } from "next/navigation";
 import { getURLParamsForSession } from "../../../utils/main";
 import { RecipeSaveButton } from "../../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLoadingTemplate } from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKey } from "types/enums";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database, Recipe } from "types/database";
+
+interface RecipeSearchExtended extends Recipe {
+  label: string;
+}
 
 export function RecipeBodySearch() {
   const addSession = useRecipeSessionStore((state) => state.addSession);
@@ -28,10 +37,27 @@ export function RecipeBodySearch() {
     (state) => state.loadingTemplate
   );
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
+  const supabase = createClientComponentClient<Database>();
 
-  const _recipes = useRecipeSessionStore((state) => state.recipes);
+  const [recipes, setRecipes] = useState<RecipeSearchExtended[]>([]);
 
-  const [recipes, setRecipes] = useState(_recipes);
+  const recipeQuery = useQuery({
+    queryKey: [QueryKey.RecipesAll],
+    queryFn: async () => {
+      const response = await supabase.from("recipe_view").select();
+      const newRecipes = ((response.data || []) as Recipe[]).map((r) => ({
+        ...r,
+        label: `${r.project} ${r.title}`,
+      }));
+      setRecipes(newRecipes);
+
+      return newRecipes;
+    },
+  });
+  const _recipes = useMemo(() => {
+    return recipeQuery.data || [];
+  }, [recipeQuery.data]);
+
   const router = useRouter();
   const currentSessionRecipe = useContext(RecipeContext);
 
@@ -186,7 +212,7 @@ export function RecipeBodySearch() {
                         "bg-blue-300 dark:!bg-neutral-700",
                       "py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-800"
                     )}
-                    key={recipe.path + recipe.method}
+                    key={recipe.path + recipe.method + recipe.project}
                     {...getItemProps({
                       index,
                       item: recipe,

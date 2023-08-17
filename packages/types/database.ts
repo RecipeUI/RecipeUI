@@ -2,11 +2,15 @@ import { MergeDeep } from "type-fest";
 import { Database as DatabaseGenerated } from "./database-generated.types";
 export type { Json } from "./database-generated.types";
 import {
+  ProjectMemberRole,
+  ProjectScope,
+  ProjectVisibility,
   RecipeAuthType,
   RecipeMethod,
   RecipeMutationContentType,
   RecipeParamType,
   RecipeProjectStatus,
+  Visibility,
 } from "./enums";
 
 type Nullable<T> = T | null;
@@ -43,6 +47,10 @@ export type Database = MergeDeep<
       Enums: {
         recipeprojectstatus: RecipeProjectStatus;
         recipemethod: RecipeMethod;
+        projectvisibility: ProjectVisibility;
+        visibility: Visibility;
+        projectmemberrole: ProjectMemberRole;
+        projectscope: ProjectScope;
       };
     };
   }
@@ -68,7 +76,9 @@ export type Enums<T extends keyof Database["public"]["Enums"]> =
 
 export type User = Tables<"user">;
 export type RecipeProject = Tables<"project">;
-export type Recipe = Tables<"recipe">;
+export type Recipe = Tables<"recipe"> & {
+  userTemplates?: UserTemplatePreview[];
+};
 
 export interface AuthConfig {
   type: RecipeAuthType;
@@ -220,8 +230,4 @@ export type RecipeParameters = {
   requestBody: JSONBody;
   queryParams: JSONBody;
   urlParams: JSONBody;
-};
-
-export type RecipeWithUserTemplate = Recipe & {
-  userTemplates?: UserTemplatePreview[];
 };

@@ -225,10 +225,12 @@ export function SucessAnimation({
   onClose,
   newTemplateId,
   passiveRecipe,
+  ignoreAnimation,
 }: {
   onClose: () => void;
   newTemplateId: number;
   passiveRecipe?: Pick<Recipe, "title" | "id" | "method">;
+  ignoreAnimation?: boolean;
 }) {
   const router = useRouter();
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
@@ -236,16 +238,19 @@ export function SucessAnimation({
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   useEffect(() => {
-    setTimeout(() => {
-      const newSession = addSession(recipe);
-      onClose();
-      setBodyRoute(RecipeBodyRoute.Templates);
-      router.push(
-        `/?${getURLParamsForSession(newSession, {
-          newTemplateId: String(newTemplateId),
-        })}`
-      );
-    }, 4000);
+    setTimeout(
+      () => {
+        const newSession = addSession(recipe);
+        onClose();
+        setBodyRoute(RecipeBodyRoute.Templates);
+        router.push(
+          `/?${getURLParamsForSession(newSession, {
+            newTemplateId: String(newTemplateId),
+          })}`
+        );
+      },
+      ignoreAnimation ? 0 : 4000
+    );
   }, []);
 
   return <img src={"/animated.gif"} alt="visual" className="w-full h-full" />;

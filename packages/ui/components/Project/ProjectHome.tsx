@@ -31,13 +31,23 @@ export function ProjectHome({
           </div>
         </div>
       </div>
-      <div className="projects-home-container">
-        {recipes.map((recipe) => {
-          return (
-            <ProjectHomeBox key={recipe.id} recipe={recipe} project={project} />
-          );
-        })}
-      </div>
+      {recipes.length > 0 ? (
+        <div className="projects-home-container">
+          {recipes.map((recipe) => {
+            return (
+              <ProjectHomeBox
+                key={recipe.id}
+                recipe={recipe}
+                project={project}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-96">
+          <span className="text-3xl font-bold">No recipes yet.</span>
+        </div>
+      )}
     </div>
   );
 }
