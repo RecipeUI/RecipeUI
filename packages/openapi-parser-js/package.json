@@ -1,8 +1,9 @@
 {
-  "name": "openapi-parser",
+  "name": "openapi-parser-js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

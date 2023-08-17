@@ -18,7 +18,7 @@ export default async function Home({
     cookies,
   });
 
-  const projectsResponse = await supabase.from("project").select();
+  const projectsResponse = await supabase.from("global_projects_view").select();
   const projects = (projectsResponse.data || []) as RecipeProject[];
 
   let sharedTemplateInfo: null | UserTemplatePreview = null;

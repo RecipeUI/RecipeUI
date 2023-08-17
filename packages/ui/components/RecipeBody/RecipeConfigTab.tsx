@@ -59,6 +59,7 @@ export function RecipeNeedsAuth({
   if (selectedRecipe.auth === RecipeAuthType.Custom) {
     return <CustomAuthConfig onboardingFlow={onboardingFlow} />;
   }
+
   const generalDocLink = docLink ? (
     <>
       Read{" "}
@@ -188,7 +189,8 @@ function CustomAuthConfig({ onboardingFlow }: { onboardingFlow: boolean }) {
   const selectedRecipe = useContext(RecipeContext)!;
   const { simpleHeaders } = getHeaderTypes(selectedRecipe.options?.auth || []);
 
-  const docLink = DOC_LINKS[selectedRecipe.project];
+  const docLink =
+    selectedRecipe.options?.docs?.auth || DOC_LINKS[selectedRecipe.project];
 
   const [showAuthFlow, setShowAuthFlow] = useState(!onboardingFlow);
 

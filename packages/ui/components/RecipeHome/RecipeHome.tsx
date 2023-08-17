@@ -14,9 +14,6 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
     const more: RecipeProject[] = [];
 
     projects.forEach((recipe) => {
-      // TODO: We have an RLS policy on this but will disable temp until we get roles.
-      if (!recipe.public) return;
-
       const tags = recipe.tags || [];
 
       if (tags.includes("Popular")) {
@@ -154,7 +151,9 @@ export function RecipeHomeBox({
             </button>
           </div>
         </div>
-        <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
+        {subheader && (
+          <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
+        )}
         <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
           {description}
         </p>

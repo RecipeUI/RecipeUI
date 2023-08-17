@@ -1,10 +1,5 @@
-const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
-
 const {
   REF_KEY,
-  OUTPUT_DIR,
-  RECIPE_DIR,
   logDebug,
   camelCaseToTitleCase,
   clonePropertyIfExists,
@@ -209,7 +204,6 @@ function getRecipes(api, componentSchemas, projectConfig) {
         );
       }
 
-      recipe.id = uuidv4();
       recipes.push(recipe);
     }
   }
@@ -217,7 +211,7 @@ function getRecipes(api, componentSchemas, projectConfig) {
   return recipes;
 }
 
-function processYamlSpec(api, project, version, debugArtifacts) {
+export function processYamlSpec(api, project = "OpenAI", version = "1") {
   try {
     const { info, servers } = api;
 
@@ -225,8 +219,6 @@ function processYamlSpec(api, project, version, debugArtifacts) {
     const server = servers[0].url;
 
     const projectId = `${project}_v${version}`;
-    // TODO: Need to be more varied with this later
-
     const projectConfig = {
       id: projectId,
       project,
@@ -238,73 +230,10 @@ function processYamlSpec(api, project, version, debugArtifacts) {
     };
 
     const recipes = getRecipes(api, componentSchemas, projectConfig);
-    const outputFolder = `${RECIPE_DIR}/${project}_v${version}`;
-    writeAndMergeJSON(outputFolder, recipes);
-
-    fs.writeFileSync(
-      `${outputFolder}/config.json`,
-      JSON.stringify(projectConfig, null, 2)
-    );
-
-    // ----------------- Debugging -----------------
-    if (debugArtifacts) {
-      if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR);
-      fs.writeFileSync(`${OUTPUT_DIR}/api.json`, JSON.stringify(api, null, 2));
-      fs.writeFileSync(
-        `${OUTPUT_DIR}/components.json`,
-        JSON.stringify(componentSchemas, null, 2)
-      );
-      fs.writeFileSync(
-        `${OUTPUT_DIR}/recipes.json`,
-        JSON.stringify(recipe_obj, null, 2)
-      );
-    }
+    return recipes;
   } catch (e) {
     console.error(e);
   }
-}
-
-// ---- Write Helper ----
-
-function getRecipeKey(recipe) {
-  return `${recipe.method}_${recipe.path}`;
-}
-
-function writeAndMergeJSON(outputFolder, newRecipes) {
-  if (!fs.existsSync(outputFolder)) fs.mkdirSync(outputFolder);
-  const hasOldRecipes = fs.existsSync(`${outputFolder}/recipes.json`);
-
-  // Need to make sure the ids for each recipe is the same
-  // Can get away with this by using method and path
-  if (hasOldRecipes) {
-    const oldRecipes = JSON.parse(
-      fs.readFileSync(`${outputFolder}/recipes.json`)
-    );
-
-    // Create mapping here
-    const oldRecipeKeyMap = {};
-    for (const recipe of oldRecipes) {
-      oldRecipeKeyMap[getRecipeKey(recipe)] = recipe;
-    }
-
-    for (let i = 0; i < newRecipes.length; i++) {
-      const recipe = newRecipes[i];
-      const oldRecipe = oldRecipeKeyMap[getRecipeKey(recipe)];
-      if (oldRecipe) {
-        recipe.id = oldRecipe.id;
-
-        newRecipes[i] = {
-          ...oldRecipe,
-          ...recipe,
-        };
-      }
-    }
-  }
-
-  fs.writeFileSync(
-    `${outputFolder}/recipes.json`,
-    JSON.stringify(newRecipes, null, 2)
-  );
 }
 
 module.exports = {

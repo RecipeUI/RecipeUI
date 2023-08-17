@@ -18,7 +18,7 @@ export default async function ProjectPage({
   });
 
   const { data: projectInfo } = await supabase
-    .from("project")
+    .from("global_projects_view")
     .select()
     .ilike("project", `%${projectName}%`)
     .single();

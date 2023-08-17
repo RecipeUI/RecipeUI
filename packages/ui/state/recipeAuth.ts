@@ -3,6 +3,7 @@ import { RecipeAuthType } from "types/enums";
 import { RecipeContext } from "./recipeSession";
 import { useContext } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { AuthConfig } from "types/database";
 
 // TODO: This is pretty bad but lets think of something later in the future
 const SECRET_KEY = "RECIPE_SECRET";
@@ -78,10 +79,11 @@ export function useSecretsFromSM() {
   return { secrets: secretRecord, hasAllSecrets, simpleHeaders };
 }
 
-export function getHeaderTypes(headers: string[]) {
+export function getHeaderTypes(headers: AuthConfig[]) {
   const simpleHeaders = headers
-    .filter((h) => h.startsWith("-h="))
-    .map((h) => h.replace("-h=", "").trim());
+    .filter((h) => h.type === RecipeAuthType.Header)
+    .map((h) => h.payload.name);
+
   return {
     simpleHeaders,
   };

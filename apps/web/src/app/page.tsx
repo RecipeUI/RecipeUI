@@ -30,7 +30,7 @@ export default async function Home({
     cookies,
   });
 
-  const projectsResponse = await supabase.from("project").select();
+  const projectsResponse = await supabase.from("global_projects_view").select();
 
   const projects = (projectsResponse.data || []) as RecipeProject[];
 
@@ -64,9 +64,7 @@ export default async function Home({
         .eq("recipe_id", recipeId);
 
       if (!error && templateRes && templateRes.length > 0) {
-        recipe.userTemplates = (
-          templateRes as unknown as UserTemplatePreview[]
-        ).reverse();
+        recipe.userTemplates = (templateRes as UserTemplatePreview[]).reverse();
       }
     }
   }

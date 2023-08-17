@@ -12,17 +12,22 @@
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.7.4",
     "@supabase/supabase-js": "^2.31.0",
+    "autoprefixer": "10.4.14",
     "classnames": "^2.3.2",
+    "daisyui": "^3.5.0",
+    "js-yaml": "^4.1.0",
     "next": "13.4.12",
+    "openapi-parser-js": "workspace:*",
+    "postcss": "^8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "daisyui": "^3.5.0",
-    "autoprefixer": "10.4.14",
-    "postcss": "^8.4.27",
+    "react-hook-form": "^7.45.4",
     "tailwindcss": "^3.3.3",
-    "ui": "workspace:*"
+    "ui": "workspace:*",
+    "eslint-config-custom": "workspace:*"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
@@ -37,8 +42,7 @@
     "postcss": "^8.4.27",
     "supabase": "^1.82.6",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.0.2",
     "types": "workspace:*",
-    "eslint-config-custom": "workspace:*"
+    "typescript": "^5.0.2"
   }
 }

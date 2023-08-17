@@ -30,9 +30,22 @@ export enum RecipeAuthType {
   ClientID = "clientId",
   Token = "token",
   Custom = "custom",
+  Query = "query",
+  OAuth = "oauth",
+  Setup = "setup",
+  Header = "header",
+  HeaderWithPrefix = "headerWithPrefix",
 }
 
 export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
+}
+
+export enum AuthFormType {
+  None,
+  Bearer,
+  OAuth,
+  QueryParam,
+  MultipleParams,
 }

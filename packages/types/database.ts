@@ -2,6 +2,7 @@ import { MergeDeep } from "type-fest";
 import { Database as DatabaseGenerated } from "./database-generated.types";
 export type { Json } from "./database-generated.types";
 import {
+  RecipeAuthType,
   RecipeMethod,
   RecipeMutationContentType,
   RecipeParamType,
@@ -69,11 +70,22 @@ export type User = Tables<"user">;
 export type RecipeProject = Tables<"project">;
 export type Recipe = Tables<"recipe">;
 
+export interface AuthConfig {
+  type: RecipeAuthType;
+  payload: {
+    name: string;
+    prefix?: string;
+  };
+}
+
 export type RecipeOptions = {
   cors?: boolean;
   deprecated?: boolean;
   streaming?: boolean;
-  auth?: string[];
+  auth?: AuthConfig[];
+  docs?: {
+    auth: string;
+  };
 };
 
 export type RecipeReplay = RecipeParameters & RecipeTemplateOutput;
