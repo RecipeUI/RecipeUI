@@ -60,7 +60,7 @@ function getSchemaType(schema) {
 
   return "string";
 }
-``;
+
 module.exports = {
   logDebug,
   camelCaseToTitleCase,

@@ -1,15 +1,14 @@
-"use server";
+"use client";
 
-import { Database, TableInserts, Tables } from "types/database";
-import { DB_FUNC_ERRORS } from "../../../utils/constants/main";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { Database, TableInserts } from "types/database";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { generateSlug } from "random-word-slugs";
+import { DB_FUNC_ERRORS } from "../../../utils/constants/main";
 
 export async function createTemplate(
   payload: Omit<TableInserts<"template">, "alias">
 ) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
 
   //   This should already have RLS
   const { data: templateData, error } = await supabase
@@ -27,7 +26,7 @@ export async function createTemplate(
 }
 
 export async function deleteTemplate(templateId: number) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
 
   const { error } = await supabase
     .from("template")
@@ -38,7 +37,7 @@ export async function deleteTemplate(templateId: number) {
 }
 
 export async function cloneTemplate(templateId: number) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
 
   const { data: oldTemplateData } = await supabase
     .from("template")

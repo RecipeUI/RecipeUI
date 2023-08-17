@@ -1,4 +1,3 @@
-import { createTemplate } from "../../RecipeBody/RecipeBodySearch/actions";
 import {
   RecipeBodyRoute,
   RecipeContext,
@@ -18,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { createTemplate } from "./actions";
 
 export function RecipeSaveButton() {
   const { type } = useRecipeSessionStore((state) => state.getOutput());

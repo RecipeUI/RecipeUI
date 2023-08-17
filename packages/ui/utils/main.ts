@@ -133,3 +133,7 @@ export function getProjectSplit(projects: RecipeProject[]) {
     userProjects,
   };
 }
+
+export function isTauri() {
+  return Boolean(window && "__TAURI__" in window);
+}

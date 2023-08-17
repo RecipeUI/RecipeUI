@@ -43,7 +43,6 @@ export async function uploadAPIs({
   const projectName = _project || generateSlug(4);
 
   if (!_project) {
-    console.log("Creating new project");
     // RLS currently being enforced for scope and visibility
     const { data, error } = await supabase.from("project").insert({
       project: projectName,

@@ -1,11 +1,10 @@
-"use server";
+"use client";
 
 import { Database, UserTemplate } from "types/database";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export async function getTemplate(templateId: number) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
 
   //   This should already have RLS
   const { data: templateData, error } = await supabase

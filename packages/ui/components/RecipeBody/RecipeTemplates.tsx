@@ -6,13 +6,10 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeTemplate, UserTemplatePreview } from "types/database";
-import { getTemplate } from "../RecipeBody/actions";
+import { getTemplate } from "./actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
-import {
-  cloneTemplate,
-  deleteTemplate,
-} from "../RecipeBody/RecipeBodySearch/actions";
+
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
@@ -25,6 +22,7 @@ import { SucessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope } from "types/enums";
+import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
 
 export function RecipeTemplatesTab() {
   return (

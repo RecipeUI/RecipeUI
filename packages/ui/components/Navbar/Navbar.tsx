@@ -13,6 +13,9 @@ import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { OnboardingFlow } from "./OnboardingFlow";
 import NavAuthForm from "./NavAuthForm";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey } from "types/enums";
+import { isTauri } from "../../utils/main";
 
 export function Navbar() {
   const router = useRouter();
@@ -35,6 +38,8 @@ export function Navbar() {
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
   const isMobile = useIsMobile();
+
+  const queryClient = useQueryClient();
 
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
@@ -95,21 +100,23 @@ export function Navbar() {
             Star us on Github!
           </Link>
         </li>
-        <li>
-          <button
-            id={UNIQUE_ELEMENT_IDS.SIGN_IN}
-            className="btn bg-chefYellow text-black btn-sm"
-            onClick={() => {
-              if (!user) {
-                setIsLoginModalOpen(true);
-                return;
-              }
-              router.push("/new");
-            }}
-          >
-            Add an API
-          </button>
-        </li>
+        {!isTauri && (
+          <li>
+            <button
+              id={UNIQUE_ELEMENT_IDS.SIGN_IN}
+              className="btn bg-chefYellow text-black btn-sm"
+              onClick={() => {
+                if (!user) {
+                  setIsLoginModalOpen(true);
+                  return;
+                }
+                router.push("/new");
+              }}
+            >
+              Add an API
+            </button>
+          </li>
+        )}
         {!user ? (
           <li>
             <button

@@ -1,9 +1,6 @@
-"use server";
-
 import { UserCreationError } from "./types";
 import { Database } from "types/database";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
 
 export type OnboardingFormData = {
@@ -13,14 +10,13 @@ export type OnboardingFormData = {
   username: string;
   email: string;
   profile_pic?: string;
-
   company?: string;
   hear_about?: string;
   use_case?: string;
 };
 
 export async function createUser(data: OnboardingFormData) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
 
   const userRes = await supabase.auth.getUser();
 

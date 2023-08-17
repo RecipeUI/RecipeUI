@@ -1,15 +1,9 @@
 import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
-
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import {
-  Database,
-  Recipe,
-  RecipeProject,
-  UserTemplatePreview,
-} from "types/database";
+import { Database } from "types/database";
 import { redirect } from "next/navigation";
-import { getProjectSplit } from "ui/utils/main";
+import { fetchHome } from "ui/fetchers/home";
 
 export const dynamic = "force-dynamic";
 
@@ -31,42 +25,13 @@ export default async function Home({
     cookies,
   });
 
-  const projectRes = await supabase.from("project").select();
-  const { globalProjects, userProjects } = getProjectSplit(
-    (projectRes.data || []) as RecipeProject[]
-  );
+  const { globalProjects, userProjects, recipe } = await fetchHome({
+    searchParams,
+    supabase,
+  });
 
-  let recipe: null | Recipe = null;
-
-  if (recipeId) {
-    const response = recipeId
-      ? await supabase.from("recipe").select().eq("id", recipeId).single()
-      : null;
-
-    if ((response && response.error) || !response?.data) {
-      redirect("/");
-      return;
-    }
-
-    recipe = response.data as Recipe;
-    const { data: userData } = await supabase.auth.getUser();
-
-    if (userData.user) {
-      let builder = supabase
-        .from("template_view")
-        .select(
-          "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
-        )
-        .or(`author_id.eq.${userData.user.id},scope.eq.team`)
-        .eq("recipe_id", recipeId);
-
-      const { data: templateRes, error, statusText } = await builder;
-      // If global just get author_id, else fetch all we can see
-
-      if (!error && templateRes && templateRes.length > 0) {
-        recipe.userTemplates = (templateRes as UserTemplatePreview[]).reverse();
-      }
-    }
+  if (recipeId && !recipe) {
+    redirect("/");
   }
 
   return (

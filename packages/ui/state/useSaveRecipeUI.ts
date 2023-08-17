@@ -90,26 +90,25 @@ export function useSaveRecipeUI() {
         (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
         session?.user
       ) {
-        // See if user just signed up
-
         supabase
           .from("user")
           .select("*")
           .eq("user_id", session?.user?.id)
           .then((res) => {
             const results = res.data || [];
-
             const userInfo = results[0];
 
-            console.debug(
-              "User info just onboarded. Trying to figure out this bug",
-              userInfo,
-              res
-            );
             if (!userInfo) {
+              console.debug(
+                "User info just onboarded. Trying to figure out this bug",
+                userInfo,
+                res
+              );
+
               setOnboarding(true);
             } else {
               setUser(userInfo);
+              router.refresh();
             }
           });
       } else if (event === "SIGNED_OUT") {

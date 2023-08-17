@@ -42,7 +42,7 @@ export function RecipeBodySearch() {
   const [recipes, setRecipes] = useState<RecipeSearchExtended[]>([]);
 
   const recipeQuery = useQuery({
-    queryKey: [QueryKey.RecipesAll],
+    queryKey: [QueryKey.RecipesView],
     queryFn: async () => {
       const response = await supabase.from("recipe_view").select();
       const newRecipes = ((response.data || []) as Recipe[]).map((r) => ({

@@ -50,34 +50,12 @@ export default function NavAuthForm({
                     brand: "#F0A500",
                     brandButtonText: "white",
                     brandAccent: "black",
-                    // inputText: "white",
                     inputText: "#F0A500",
-                    // inputLabelText: "#F0A500",
-                    // defaultButtonBorder: "0",
                   },
                   borderWidths: {
                     ...ThemeSupa.default.borderWidths,
-                    // buttonBorderWidth: "0",
                   },
                 },
-                // brand?: string;
-                // brandAccent?: string;
-                // brandButtonText?: string;
-                // defaultButtonBackground?: string;
-                // defaultButtonBackgroundHover?: string;
-                // defaultButtonBorder?: string;
-                // defaultButtonText?: string;
-                // dividerBackground?: string;
-                // inputBackground?: string;
-                // inputBorder?: string;
-                // inputBorderFocus?: string;
-                // inputBorderHover?: string;
-                // inputLabelText?: string;
-                // inputPlaceholder?: string;
-                // messageText?: string;
-                // messageTextDanger?: string;
-                // anchorTextColor?: string;
-                // anchorTextHoverColor?: string;
               },
             }}
             providers={hasGoogle ? ["google", "github"] : ["github"]}
