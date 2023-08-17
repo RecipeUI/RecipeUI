@@ -81,11 +81,15 @@ export async function uploadAPIs({
       : null;
 
   const recipes = apis.map((api, index) => {
+    const isStreaming = api.path.includes("chat/completions");
+
     return {
       ...api,
       project: projectName,
       auth: recipeAuth,
-      options,
+      options: isStreaming
+        ? { ...options, streaming: true, cors: isStreaming ? false : true }
+        : options,
       author_id: user.data.user?.id!,
     };
   });

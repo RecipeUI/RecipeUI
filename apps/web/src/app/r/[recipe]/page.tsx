@@ -27,7 +27,7 @@ export default async function Home({
   let sharedTemplateInfo: null | UserTemplatePreview = null;
   if (recipeName) {
     const { data: templateData } = await supabase
-      .from("template_public_view")
+      .from("template_view")
       .select(
         "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
       )

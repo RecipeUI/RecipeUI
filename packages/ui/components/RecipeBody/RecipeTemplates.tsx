@@ -24,6 +24,7 @@ import {
 import { SucessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
+import { ProjectScope } from "types/enums";
 
 export function RecipeTemplatesTab() {
   return (
@@ -100,18 +101,8 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
 
 export function UserTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
-  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
-  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
-
   const searchParams = useSearchParams();
-
   const newTemplateId = searchParams.get("newTemplateId");
-  const user = useRecipeSessionStore((state) => state.user);
-
-  const router = useRouter();
-  const posthog = usePostHog();
 
   const [forkedTemplate, setForkedTemplate] =
     useLocalStorage<UserTemplatePreview | null>(
@@ -126,14 +117,11 @@ export function UserTemplates() {
     ...(selectedRecipe.userTemplates || []),
   ];
 
-  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
-  const setLoadingTemplate = useRecipeSessionStore(
-    (state) => state.setLoadingTemplate
-  );
-
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
+
+  const isTeam = userTemplates.some((ut) => ut.scope === ProjectScope.Team);
 
   if (userTemplates.length === 0) {
     return null;
@@ -141,164 +129,208 @@ export function UserTemplates() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">Your Recipes</h1>
+      <h1 className="text-xl font-bold">{isTeam ? "" : "Your "}Recipes</h1>
       <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
-        {userTemplates.map((template) => {
-          const isLocalFork = forkedTemplate?.id === template.id;
+        {userTemplates.map((template) => (
+          <UserTemplateItem
+            key={template.title}
+            template={template}
+            isLocalFork={forkedTemplate?.id === template.id}
+            setForkedTemplate={setForkedTemplate}
+            newTemplateId={newTemplateId}
+            loadingTemplate={loadingTemplate}
+            isTeam={isTeam}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-          return (
-            <div
-              className={classNames(
-                "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
-                newTemplateId === String(template.id) &&
-                  "border-chefYellow border-4 border-dashed"
-              )}
-              key={`${template.id}`}
+function UserTemplateItem({
+  template,
+  isLocalFork,
+  newTemplateId,
+  loadingTemplate,
+  setForkedTemplate,
+  isTeam,
+}: {
+  template: UserTemplatePreview;
+  isLocalFork: boolean;
+  newTemplateId: string | null;
+  loadingTemplate: RecipeTemplate | null;
+  setForkedTemplate: (template: UserTemplatePreview | null) => void;
+  isTeam: boolean;
+}) {
+  const selectedRecipe = useContext(RecipeContext)!;
+  const user = useRecipeSessionStore((state) => state.user);
+  const posthog = usePostHog();
+  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
+  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
+  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
+  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
+
+  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
+  const setLoadingTemplate = useRecipeSessionStore(
+    (state) => state.setLoadingTemplate
+  );
+  const router = useRouter();
+
+  return (
+    <div
+      className={classNames(
+        "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
+        newTemplateId === String(template.id) &&
+          "border-chefYellow border-4 border-dashed"
+      )}
+      key={`${template.id}`}
+    >
+      {!isTeam ? (
+        <>
+          {(!user || template.original_author.user_id !== user.user_id) && (
+            <Link
+              className="text-xs"
+              href={`/u/${template.original_author.username}`}
+              target="_blank"
             >
-              {(!user || template.original_author.user_id !== user.user_id) && (
-                <Link
-                  className="text-xs"
-                  href={`/u/${template.original_author.username}`}
-                  target="_blank"
-                >
-                  Forked from @{template.original_author.username}
-                </Link>
-              )}
-              <h3 className="font-bold">{template.title}</h3>
+              Forked from @{template.original_author.username}
+            </Link>
+          )}
+        </>
+      ) : (
+        <>
+          <Link
+            className="text-xs"
+            href={`/u/${template.original_author.username}`}
+            target="_blank"
+          >
+            @{template.original_author.username}
+          </Link>
+        </>
+      )}
+      <h3 className="font-bold">{template.title}</h3>
+      <p className="text-sm line-clamp-3">{template.description}</p>
 
-              <p className="text-sm line-clamp-3">{template.description}</p>
+      <div className="flex-1" />
+      <div className="flex space-x-1  sm:block sm:space-x-2">
+        <button
+          className={classNames(
+            "btn btn-sm btn-neutral w-fit",
+            loadingTemplate && "btn-disabled"
+          )}
+          onClick={async () => {
+            posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
+              template_id: template.id,
+              template_project: selectedRecipe.project,
+              recipe_id: selectedRecipe.id,
+              recipe_path: selectedRecipe.path,
+            });
 
-              <div className="flex-1" />
-              <div className="flex space-x-1  sm:block sm:space-x-2">
+            const templateInfo = await getTemplate(template.id);
+            if (templateInfo) {
+              setLoadingTemplate(templateInfo);
+            } else {
+              alert("Failed to find template");
+            }
+          }}
+        >
+          Use
+        </button>
+
+        <div
+          className="dropdown hidden sm:inline-block"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <label
+            tabIndex={0}
+            className={classNames(
+              "btn btn-sm btn-neutral",
+              loadingTemplate && "btn-disabled"
+            )}
+          >
+            Options
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-20 menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
+          >
+            <li>
+              <button
+                className="btn btn-sm btn-neutral w-full"
+                onClick={async () => {
+                  const templateInfo = await getTemplate(template.id);
+
+                  if (!templateInfo) {
+                    alert("Failed to find template");
+                    return;
+                  }
+
+                  if (templateInfo.requestBody) {
+                    setRequestBody(templateInfo.requestBody);
+                  }
+
+                  if (templateInfo.queryParams) {
+                    setQueryParams(templateInfo.queryParams);
+                  }
+
+                  if (templateInfo.urlParams) {
+                    setUrlParams(templateInfo.urlParams);
+                  }
+
+                  setCurrentTab(RecipeOutputTab.Docs);
+                  setBodyRoute(RecipeBodyRoute.Parameters);
+
+                  posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+                    template_id: template.id,
+                    template_project: selectedRecipe.project,
+                    recipe_id: selectedRecipe.id,
+                    recipe_path: selectedRecipe.path,
+                  });
+                }}
+              >
+                Prefill
+              </button>
+            </li>
+            <li>
+              <ShareRecipeButton template={template} />
+            </li>
+            {(template.original_author.user_id === user?.user_id ||
+              template.author_id === user?.user_id) && (
+              <li>
                 <button
-                  className={classNames(
-                    "btn btn-sm btn-neutral w-fit",
-                    loadingTemplate && "btn-disabled"
-                  )}
+                  className="btn btn-sm btn-neutral w-full"
                   onClick={async () => {
-                    posthog.capture(
-                      POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW,
-                      {
+                    if (!confirm("Are you sure you want to delete this?")) {
+                      return;
+                    }
+                    if (isLocalFork) {
+                      setForkedTemplate(null);
+                      return;
+                    }
+
+                    const deletedTemplate = await deleteTemplate(template.id);
+                    if (deletedTemplate) {
+                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
                         template_id: template.id,
                         template_project: selectedRecipe.project,
                         recipe_id: selectedRecipe.id,
                         recipe_path: selectedRecipe.path,
-                      }
-                    );
+                      });
 
-                    const templateInfo = await getTemplate(template.id);
-                    if (templateInfo) {
-                      setLoadingTemplate(templateInfo);
-                    } else {
-                      alert("Failed to find template");
+                      router.refresh();
+                      alert("Template deleted");
+                      return;
                     }
                   }}
                 >
-                  Use
+                  Del
                 </button>
-
-                <div
-                  className="dropdown hidden sm:inline-block"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <label
-                    tabIndex={0}
-                    className={classNames(
-                      "btn btn-sm btn-neutral",
-                      loadingTemplate && "btn-disabled"
-                    )}
-                  >
-                    Options
-                  </label>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content z-20 menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
-                  >
-                    <li>
-                      <button
-                        className="btn btn-sm btn-neutral w-full"
-                        onClick={async () => {
-                          const templateInfo = await getTemplate(template.id);
-
-                          if (!templateInfo) {
-                            alert("Failed to find template");
-                            return;
-                          }
-
-                          if (templateInfo.requestBody) {
-                            setRequestBody(templateInfo.requestBody);
-                          }
-
-                          if (templateInfo.queryParams) {
-                            setQueryParams(templateInfo.queryParams);
-                          }
-
-                          if (templateInfo.urlParams) {
-                            setUrlParams(templateInfo.urlParams);
-                          }
-
-                          setCurrentTab(RecipeOutputTab.Docs);
-                          setBodyRoute(RecipeBodyRoute.Parameters);
-
-                          posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-                            template_id: template.id,
-                            template_project: selectedRecipe.project,
-                            recipe_id: selectedRecipe.id,
-                            recipe_path: selectedRecipe.path,
-                          });
-                        }}
-                      >
-                        Prefill
-                      </button>
-                    </li>
-                    <li>
-                      <ShareRecipeButton template={template} />
-                    </li>
-                    <li>
-                      <button
-                        className="btn btn-sm btn-neutral w-full"
-                        onClick={async () => {
-                          if (
-                            !confirm("Are you sure you want to delete this?")
-                          ) {
-                            return;
-                          }
-                          if (isLocalFork) {
-                            setForkedTemplate(null);
-                            return;
-                          }
-
-                          const deletedTemplate = await deleteTemplate(
-                            template.id
-                          );
-                          if (deletedTemplate) {
-                            posthog.capture(
-                              POST_HOG_CONSTANTS.TEMPLATE_CREATE,
-                              {
-                                template_id: template.id,
-                                template_project: selectedRecipe.project,
-                                recipe_id: selectedRecipe.id,
-                                recipe_path: selectedRecipe.path,
-                              }
-                            );
-
-                            router.refresh();
-                            alert("Template deleted");
-                            return;
-                          }
-                        }}
-                      >
-                        Del
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );

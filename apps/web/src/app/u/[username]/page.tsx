@@ -36,7 +36,7 @@ export default async function ProfilePage({
       error,
       statusText,
     } = await supabase
-      .from("template_public_view")
+      .from("template_view")
       .select(
         "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
       )

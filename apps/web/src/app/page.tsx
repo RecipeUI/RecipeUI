@@ -52,17 +52,16 @@ export default async function Home({
     const { data: userData } = await supabase.auth.getUser();
 
     if (userData.user) {
-      const {
-        data: templateRes,
-        error,
-        statusText,
-      } = await supabase
-        .from("template_public_view")
+      let builder = supabase
+        .from("template_view")
         .select(
-          "id, created_at, title, description, original_author, recipe, visibility, alias, author_id"
+          "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
         )
-        .eq("author_id", userData.user.id)
+        // .or(`author_id.eq.${userData.user.id},scope.eq.team`)
         .eq("recipe_id", recipeId);
+
+      const { data: templateRes, error, statusText } = await builder;
+      // If global just get author_id, else fetch all we can see
 
       if (!error && templateRes && templateRes.length > 0) {
         recipe.userTemplates = (templateRes as UserTemplatePreview[]).reverse();

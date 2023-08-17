@@ -148,7 +148,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
           {!newTemplateId ? (
             <>
               <Dialog.Title className="text-2xl font-bold ">
-                {`New "${recipe.title}" Recipe`}
+                {`New Recipe`}
               </Dialog.Title>
               <Dialog.Description
                 as="div"

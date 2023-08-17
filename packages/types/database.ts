@@ -206,6 +206,7 @@ export interface UserTemplatePreview {
 
   replay?: Nullable<RecipeTemplateOutput>;
   author_id: string;
+  scope: ProjectScope;
 }
 
 export type UserTemplate = UserTemplatePreview & {

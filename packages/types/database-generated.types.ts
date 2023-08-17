@@ -474,7 +474,7 @@ export interface Database {
           }
         ]
       }
-      template_public_view: {
+      template_view: {
         Row: {
           alias: string | null
           author_id: string | null
@@ -489,6 +489,7 @@ export interface Database {
           recipe_id: number | null
           replay: Json | null
           requestBody: Json | null
+          scope: Database["public"]["Enums"]["projectscope"] | null
           title: string | null
           urlParams: Json | null
           visibility: Database["public"]["Enums"]["visibility"] | null

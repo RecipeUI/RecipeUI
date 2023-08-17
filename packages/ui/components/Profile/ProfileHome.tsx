@@ -47,7 +47,7 @@ export function ProfileHome({
       </div>
       <div className="mt-12">
         <h3 className="font-bold text-2xl mb-4">
-          Recipes built in {projects.length} different APIs.
+          Recipes built in {projects.length} different API projects.
         </h3>
         <div className="flex flex-wrap space-x-4">
           {projects.map((projectInfo) => {
@@ -56,12 +56,17 @@ export function ProfileHome({
                 className="flex justify-center flex-col items-center"
                 key={projectInfo.id}
               >
-                <img
-                  className="object-cover w-[100px] h-[100px]"
-                  // @ts-expect-error no
-                  src={projectInfo.image}
-                  alt={projectInfo.title}
-                />
+                {projectInfo.image ? (
+                  <img
+                    className="object-cover w-[100px] h-[100px]"
+                    src={projectInfo.image}
+                    alt={projectInfo.title}
+                  />
+                ) : (
+                  <div className="w-[100px] h-[100px] bg-accent shadow-sm font-bold flex justify-center items-center text-center rounded-md">
+                    {projectInfo.title}
+                  </div>
+                )}
               </div>
             );
           })}

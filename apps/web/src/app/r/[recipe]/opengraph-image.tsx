@@ -27,7 +27,7 @@ export default async function Image({
     error,
     status,
   } = await supabase
-    .from("template_public_view")
+    .from("template_view")
     .select(
       "id, created_at, title, description, original_author, recipe, visibility, alias"
     )

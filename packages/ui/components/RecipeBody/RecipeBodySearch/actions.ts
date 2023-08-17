@@ -82,7 +82,7 @@ export async function cloneTemplate(templateId: number) {
     };
   }
 
-  const res = await supabase.from("template_fork").insert({
+  const { error: forkError } = await supabase.from("template_fork").insert({
     new_author_id: userData.user?.id!,
     new_template: newTemplate.id,
     original_template: templateId,

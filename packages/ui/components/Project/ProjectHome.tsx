@@ -69,9 +69,7 @@ function ProjectHomeBox({
     <div
       className={classNames(
         "border border-slate-700 rounded-md p-4 space-y-1 flex flex-col h-38 cursor-pointer recipe-container-box",
-        difference < 300000
-          ? "border !border-chefYellow border-2 border-dotted"
-          : ""
+        difference < 300000 && "border-accent"
       )}
       onClick={() => {
         const session = addSession(recipe);
@@ -97,11 +95,11 @@ function ProjectHomeBox({
       <p className="text-sm text-black line-clamp-3 dark:text-gray-300">
         {recipe.summary}
       </p>
-      {recipe.tags && recipe.tags.length > 0 && (
+      {((recipe.tags && recipe.tags.length > 0) || difference < 300000) && (
         <>
           <div className="flex-1" />
           <div className="space-x-2">
-            {recipe.tags.map((tag) => {
+            {recipe?.tags?.map((tag) => {
               return (
                 <span
                   className="badge badge-info p-2 py-3"
@@ -111,6 +109,9 @@ function ProjectHomeBox({
                 </span>
               );
             })}
+            {difference < 300000 && (
+              <span className="badge badge-accent font-bold py-2">New</span>
+            )}
           </div>
         </>
       )}
