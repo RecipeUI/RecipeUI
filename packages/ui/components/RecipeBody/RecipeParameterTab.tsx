@@ -87,7 +87,9 @@ export function RecipeParameterTab() {
   const hasUrlParamPayload = Object.keys(urlParams).length > 0;
   const needsUrlParams = hasUrlParams && !hasUrlParamPayload;
 
-  const hasTemplates = selectedRecipe.templates != null;
+  const hasTemplates =
+    selectedRecipe.templates != null ||
+    (selectedRecipe.userTemplates && selectedRecipe.userTemplates.length > 0);
   const needsParams = needsBodyParams || needsUrlParams || needsQueryParams;
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate

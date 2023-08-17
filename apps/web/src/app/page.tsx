@@ -57,7 +57,7 @@ export default async function Home({
         .select(
           "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
         )
-        // .or(`author_id.eq.${userData.user.id},scope.eq.team`)
+        .or(`author_id.eq.${userData.user.id},scope.eq.team`)
         .eq("recipe_id", recipeId);
 
       const { data: templateRes, error, statusText } = await builder;

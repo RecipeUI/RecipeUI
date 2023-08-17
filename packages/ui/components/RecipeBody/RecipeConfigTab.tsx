@@ -132,7 +132,7 @@ export function RecipeNeedsAuth({
         </p>
       );
     }
-  } else if (selectedRecipe.auth && selectedRecipe.auth.includes("query")) {
+  } else if (selectedRecipe.auth === RecipeAuthType.Query) {
     authNote = (
       <p>
         This recipe authorizes with a query param token that you can add below.{" "}

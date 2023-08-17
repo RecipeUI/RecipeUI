@@ -126,8 +126,20 @@ export function RecipeSearchButton() {
         headers["Authorization"] = `Bearer ${primaryToken}`;
       }
 
-      if (recipe.auth.includes("query")) {
-        url.searchParams.append(recipe.auth.split("=")[1], primaryToken!);
+      if (recipe.auth === RecipeAuthType.Query) {
+        // Need to find name of query param
+        const QUERY_KEY_NAME = recipe.options?.auth?.find(
+          (auth) => auth.type === RecipeAuthType.Query
+        )?.payload.name;
+
+        if (!QUERY_KEY_NAME) {
+          alert(
+            "The auth for this recipe is not setup correctly. Please contact us at team@recipeui.com"
+          );
+          return;
+        }
+
+        url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
       }
 
       if (recipe.auth === RecipeAuthType.ClientID) {
