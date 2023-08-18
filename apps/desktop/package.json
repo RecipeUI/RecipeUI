@@ -28,9 +28,6 @@
     "typescript": "^5.0.2",
     "ui": "workspace:*"
   },
-  "overrides": {
-    "@supabase/supabase-js": "2.31.0"
-  },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",
     "types": "workspace:*"
