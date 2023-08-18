@@ -1,63 +1,104 @@
 "use client";
 import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/database";
+import { Database, RecipeProject } from "types/database";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
-import { fetchHome } from "ui/fetchers/home";
+import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
+import { getProjectSplit } from "ui/utils/main";
+import { RecipeContext, useRecipeSessionStore } from "ui/state/recipeSession";
+import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
+import { RecipeBody } from "ui/components/RecipeBody";
+import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
+import classNames from "classnames";
 
-export default function Home({
-  searchParams,
-}: {
-  searchParams: {
-    sessionId?: string;
-    recipeId?: string;
-  };
-}) {
-  const { sessionId, recipeId } = searchParams;
+export default function Container() {
+  const projectParam = useRecipeSessionStore((state) => state.projectParam);
 
-  useEffect(() => {
-    if (recipeId == null && sessionId) {
-      redirect("/");
-    }
-  }, [recipeId, sessionId]);
+  if (projectParam) {
+    return <ProjectPage project={projectParam} />;
+  }
 
+  return <HomePage />;
+}
+
+function HomePage() {
+  const supabase = createClientComponentClient<Database>();
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
+  const { data: projectData, isLoading: isLoadingHome } = useQuery({
+    queryKey: [QueryKey.Projects],
+    queryFn: async () => supabase.from("project").select(),
+  });
+
+  const { globalProjects, userProjects } = getProjectSplit(
+    (projectData?.data || []) as RecipeProject[]
+  );
+
+  const { data: recipe, isLoading: isLoadingRecipe } = useQuery({
+    queryKey: [QueryKey.RecipesView, currentSession?.recipeId, supabase],
+    queryFn: async () =>
+      currentSession?.recipeId
+        ? fetchHomeRecipe({ supabase, recipeId: currentSession?.recipeId })
+        : null,
+  });
+
+  if (isLoadingHome || isLoadingRecipe) {
+    return <Loading />;
+  }
+
+  return (
+    <div
+      className={classNames(
+        "flex-1 flex flex-col",
+        currentSession == null && "p-4 sm:px-6 sm:pb-6 sm:pt-4"
+      )}
+    >
+      <RecipeContext.Provider value={recipe || null}>
+        <RecipeBodySearch />
+        {recipe && currentSession ? (
+          <RecipeBody />
+        ) : (
+          <RecipeHome globalProjects={globalProjects} projects={userProjects} />
+        )}
+      </RecipeContext.Provider>
+    </div>
+  );
+}
+
+import { fetchProjectPage } from "ui/fetchers/project";
+import { ProjectContainer } from "ui/components/Project/ProjectContainer";
+
+function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = createClientComponentClient<Database>();
 
-  const { data: projectRes, isLoading } = useQuery({
-    queryKey: [QueryKey.Projects, QueryKey.Recipes, searchParams, supabase],
+  const { data: projectData, isLoading } = useQuery({
+    queryKey: [QueryKey.Projects, projectParam, supabase],
     queryFn: async () =>
-      fetchHome({
-        searchParams,
+      fetchProjectPage({
+        project: projectParam,
         supabase,
       }),
   });
-
-  useEffect(() => {
-    if (recipeId && !projectRes?.recipe && !isLoading) {
-      redirect("/");
-    }
-  }, [isLoading, projectRes?.recipe, recipeId]);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  if (!projectRes) {
-    return <div className="p-4">App seems to be down</div>;
+  if (!projectData) {
+    return <div>App 404</div>;
   }
 
-  const { globalProjects, userProjects, recipe } = projectRes;
+  const { project, projectName, recipes } = projectData;
 
   return (
-    <RecipeHomeContainer
-      globalProjects={globalProjects}
-      projects={userProjects}
-      recipe={recipe || undefined}
-      sessionId={sessionId}
+    <ProjectContainer
+      projectName={projectName}
+      project={project}
+      recipes={recipes}
     />
   );
 }

@@ -8,21 +8,19 @@ import {
 import { getProjectSplit } from "../utils/main";
 
 interface ProjectFetcher {
-  params: {
-    project: string;
-  };
+  project: string;
   supabase: SupabaseClient<Database>;
 }
 
 export async function fetchProjectPage({
-  params,
+  project,
   supabase,
 }: ProjectFetcher): Promise<{
   project: RecipeProject | null;
   recipes: Recipe[] | null;
   projectName: string;
 }> {
-  const projectName = decodeURIComponent(params.project);
+  const projectName = decodeURIComponent(project);
 
   const { data: projectInfo } = await supabase
     .from("project")

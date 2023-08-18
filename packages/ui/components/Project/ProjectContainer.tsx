@@ -6,6 +6,7 @@ import { Recipe, RecipeProject } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { isTauri } from "../../utils/main";
 
 export function ProjectContainer({
   projectName,
@@ -22,10 +23,17 @@ export function ProjectContainer({
   );
   const router = useRouter();
   const hasNoProject = project === null;
+  const setProjectParam = useRecipeSessionStore(
+    (state) => state.setProjectParam
+  );
 
   useEffect(() => {
     if (hasNoProject) {
-      setTimeout(() => router.push("/"), 3000);
+      if (isTauri()) {
+        setProjectParam(null);
+      } else {
+        setTimeout(() => router.push("/"), 3000);
+      }
     } else if (currentSession) {
       setCurrentSession(null);
     }

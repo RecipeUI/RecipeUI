@@ -3,7 +3,7 @@
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
-import { getURLParamsForSession } from "../../utils/main";
+import { getURLParamsForSession, isTauri } from "../../utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 
@@ -73,7 +73,10 @@ function ProjectHomeBox({
       )}
       onClick={() => {
         const session = addSession(recipe);
-        router.push(`/?${getURLParamsForSession(session)}`);
+
+        if (!isTauri()) {
+          router.push(`/?${getURLParamsForSession(session)}`);
+        }
       }}
     >
       <div className="flex justify-between ">

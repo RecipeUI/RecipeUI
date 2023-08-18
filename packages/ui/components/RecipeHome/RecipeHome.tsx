@@ -5,6 +5,9 @@ import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
+import { useRouter } from "next/navigation";
+import { isTauri } from "../../utils/main";
+import { useRecipeSessionStore } from "../../state/recipeSession";
 
 export function RecipeHome({
   globalProjects,
@@ -134,45 +137,54 @@ export function RecipeHomeBox({
     status = "View";
   }
 
-  return (
-    <Link href={`/${project}`}>
-      <div
-        className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
-        onClick={() => {
-          postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
-            project,
-          });
-        }}
-      >
-        <div className="flex justify-between">
-          <div className="flex items-center">
-            {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
-            <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
-          </div>
+  const router = useRouter();
+  const setProjectParam = useRecipeSessionStore(
+    (state) => state.setProjectParam
+  );
 
-          <div
-            className="tooltip"
-            data-tip={
-              status === RecipeProjectStatus.Soon ? "Stay tuned!" : undefined
-            }
-          >
-            <button
-              className={classNames(
-                "btn btn-neutral btn-sm",
-                status === RecipeProjectStatus.Soon && "!btn-accent"
-              )}
-            >
-              {status}
-            </button>
-          </div>
+  return (
+    <div
+      className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
+      onClick={() => {
+        postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
+          project,
+        });
+
+        if (isTauri()) {
+          setProjectParam(project);
+        } else {
+          router.push(`/${project}`);
+        }
+      }}
+    >
+      <div className="flex justify-between">
+        <div className="flex items-center">
+          {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
+          <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
         </div>
-        {subheader && (
-          <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
-        )}
-        <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
-          {description}
-        </p>
+
+        <div
+          className="tooltip"
+          data-tip={
+            status === RecipeProjectStatus.Soon ? "Stay tuned!" : undefined
+          }
+        >
+          <button
+            className={classNames(
+              "btn btn-neutral btn-sm",
+              status === RecipeProjectStatus.Soon && "!btn-accent"
+            )}
+          >
+            {status}
+          </button>
+        </div>
       </div>
-    </Link>
+      {subheader && (
+        <h3 className="font-bold text-sm dark:text-gray-300">{subheader}</h3>
+      )}
+      <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
+        {description}
+      </p>
+    </div>
   );
 }

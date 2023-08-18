@@ -111,11 +111,30 @@ interface FileManagerSlice {
   deleteFileManager: (path: string) => void;
 }
 
+interface DesktopStateSlice {
+  projectParam: string | null;
+  setProjectParam: (projectParam: string | null) => void;
+}
+
 type Slices = RecipeSessionSlice &
   RecipeBodySlice &
   RecipeOutputSlice &
   FileManagerSlice &
-  UserSessionSlice;
+  UserSessionSlice &
+  DesktopStateSlice;
+
+export const createDesktopSlice: StateCreator<
+  Slices,
+  [],
+  [],
+  DesktopStateSlice
+> = (set) => {
+  return {
+    projectParam: null,
+    setProjectParam: (projectParam) =>
+      set(() => ({ projectParam: projectParam })),
+  };
+};
 
 export type LocalStorageState = {
   sessions: RecipeSession[];
@@ -163,6 +182,7 @@ const createRecipeSessionSlice: StateCreator<
           bodyRoute: RecipeBodyRoute.Parameters,
           outputTab: hasOutput ? RecipeOutputTab.Output : RecipeOutputTab.Docs,
           requestInfo: null,
+          projectParam: null,
         };
       }),
 
@@ -208,6 +228,7 @@ const createRecipeSessionSlice: StateCreator<
           sessions: [...prevState.sessions, newSession],
           outputTab: RecipeOutputTab.Docs,
           requestInfo: null,
+          projectParam: null,
           ...getEmptyParameters(),
         };
       });
@@ -452,6 +473,7 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeOutputSlice(...a),
   ...createFileManagerSlice(...a),
   ...createUserSessionSlice(...a),
+  ...createDesktopSlice(...a),
 }));
 
 export const GLOBAL_POLLING_FACTOR = 10000;

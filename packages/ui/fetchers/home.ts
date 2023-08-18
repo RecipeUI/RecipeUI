@@ -29,42 +29,49 @@ export async function fetchHome({
     (projectRes.data || []) as RecipeProject[]
   );
 
-  const returnObj = {
+  return {
     globalProjects,
     userProjects,
-    recipe: null as Recipe | null,
+    recipe: recipeId
+      ? await fetchHomeRecipe({ recipeId: Number(recipeId), supabase })
+      : null,
   };
+}
 
-  if (recipeId) {
-    const response = recipeId
-      ? await supabase.from("recipe").select().eq("id", recipeId).single()
-      : null;
-    if ((response && response.error) || !response?.data) {
-      return returnObj;
-    }
+export async function fetchHomeRecipe({
+  recipeId,
+  supabase,
+}: {
+  recipeId: number;
+  supabase: HomeFetcher["supabase"];
+}) {
+  const response = recipeId
+    ? await supabase.from("recipe").select().eq("id", recipeId).single()
+    : null;
+  if ((response && response.error) || !response?.data) {
+    return null;
+  }
 
-    returnObj.recipe = response.data as Recipe;
-    const { data: userData } = await supabase.auth.getUser();
+  const recipe = response.data as Recipe;
+  const { data: userData } = await supabase.auth.getUser();
 
-    if (userData.user) {
-      const {
-        data: templateRes,
-        error,
-        statusText,
-      } = await supabase
-        .from("template_view")
-        .select(
-          "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
-        )
-        .or(`author_id.eq.${userData.user.id},scope.eq.team`)
-        .eq("recipe_id", recipeId);
+  if (userData.user) {
+    const {
+      data: templateRes,
+      error,
+      statusText,
+    } = await supabase
+      .from("template_view")
+      .select(
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
+      )
+      .or(`author_id.eq.${userData.user.id},scope.eq.team`)
+      .eq("recipe_id", recipeId);
 
-      if (!error && templateRes && templateRes.length > 0) {
-        returnObj.recipe.userTemplates = (
-          templateRes as UserTemplatePreview[]
-        ).reverse();
-      }
+    if (!error && templateRes && templateRes.length > 0) {
+      recipe.userTemplates = (templateRes as UserTemplatePreview[]).reverse();
     }
   }
-  return returnObj;
+
+  return recipe;
 }

@@ -17,7 +17,7 @@ export default async function ProjectPage({
   });
 
   const { project, recipes, projectName } = await fetchProjectPage({
-    params,
+    project: params.project,
     supabase,
   });
 
