@@ -12,7 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest]
+        settings:
+          - platform: 'macos-latest'
+          args: '--target universal-apple-darwin'
     runs-on: ${{ matrix.platform }}
 
     steps:
