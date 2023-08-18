@@ -4,6 +4,9 @@ on:
     branches:
       - release
   workflow_dispatch:
+
+env:
+  RUST_BACKTRACE: short
       
 jobs:
   publish-tauri:
@@ -14,8 +17,9 @@ jobs:
       matrix:
         settings:
           - platform: 'macos-latest'
-            args: '--target universal-apple-darwin'
-    runs-on: ${{ matrix.platform }}
+            args: '--target universal-apple-darwin --verbose'
+
+    runs-on: ${{ matrix.settings.platform }}
 
     steps:
       - name: Checkout repository
@@ -75,8 +79,8 @@ jobs:
 
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          args: --verbose
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
+          args: ${{ matrix.settings.args }}
           releaseDraft: true
           prerelease: true
