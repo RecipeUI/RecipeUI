@@ -14,7 +14,7 @@ jobs:
       matrix:
         settings:
           - platform: 'macos-latest'
-          args: '--target universal-apple-darwin'
+            args: '--target universal-apple-darwin'
     runs-on: ${{ matrix.platform }}
 
     steps:
