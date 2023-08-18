@@ -28,7 +28,7 @@ export async function createTemplate(
 export async function deleteTemplate(templateId: number) {
   const supabase = createClientComponentClient<Database>();
 
-  const { error } = await supabase
+  const { error, status, statusText } = await supabase
     .from("template")
     .delete()
     .eq("id", templateId);

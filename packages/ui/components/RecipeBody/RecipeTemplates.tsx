@@ -23,6 +23,7 @@ import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope } from "types/enums";
 import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
+import { isTauri } from "../../utils/main";
 
 export function RecipeTemplatesTab() {
   return (
@@ -308,8 +309,11 @@ function UserTemplateItem({
                       return;
                     }
 
-                    const deletedTemplate = await deleteTemplate(template.id);
-                    if (deletedTemplate) {
+                    const deletedTemplateRes = await deleteTemplate(
+                      template.id
+                    );
+                    console.log("here", deletedTemplateRes);
+                    if (deletedTemplateRes) {
                       posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
                         template_id: template.id,
                         template_project: selectedRecipe.project,
@@ -434,8 +438,13 @@ export function ShareInviteModal({
                 <button
                   className="btn btn-accent w-full mt-4"
                   onClick={async () => {
+                    //
                     await navigator.clipboard.writeText(
-                      `${window.location.origin}/r/${template.alias}`
+                      `${
+                        isTauri()
+                          ? "https://recipeui.com/"
+                          : window.location.origin
+                      }/r/${template.alias}`
                     );
 
                     alert("Copied to clipboard");

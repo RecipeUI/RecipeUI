@@ -19,7 +19,8 @@ export function RecipeConfigTab() {
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
   const user = useRecipeSessionStore((state) => state.user);
-
+  const closeSession = useRecipeSessionStore((state) => state.closeSession);
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const canDelete = selectedRecipe.author_id === user?.user_id;
 
   return (
@@ -39,7 +40,7 @@ export function RecipeConfigTab() {
             <p>
               This will delete the API and all templates attached to this API.
             </p>
-            {canDelete && (
+            {canDelete ? (
               <button
                 className="btn btn-error btn-sm"
                 onClick={async () => {
@@ -53,11 +54,21 @@ export function RecipeConfigTab() {
                     .from("recipe")
                     .delete()
                     .match({ id: selectedRecipe.id });
-                  router.push("/");
+
+                  if (currentSession) {
+                    closeSession(currentSession);
+                  }
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 0);
                 }}
               >
                 Delete
               </button>
+            ) : (
+              <p className="">
+                Please ask the owner of this API to delete this
+              </p>
             )}
           </div>
         </div>
@@ -84,7 +95,8 @@ export function RecipeNeedsAuth({
 
   const existingSecret = sm.getSecret(authConfig);
   const hasChanged = apiKey !== sm.getSecret(authConfig);
-  const docLink = DOC_LINKS[selectedRecipe.project];
+  const docLink =
+    selectedRecipe.options?.docs?.auth || DOC_LINKS[selectedRecipe.project];
 
   const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
@@ -98,7 +110,7 @@ export function RecipeNeedsAuth({
     <>
       Read{" "}
       <a className="link tooltip" href={docLink} target="_blank">
-        our guide
+        the guide
       </a>{" "}
       on getting auth for {selectedRecipe.project}.
     </>
@@ -110,7 +122,7 @@ export function RecipeNeedsAuth({
           This recipe authorizes with a Bearer token that you{" "}
           {existingSecret ? "can edit below" : "need to add below"}. Read{" "}
           <a className="link tooltip" href={docLink} target="_blank">
-            our guide
+            the guide
           </a>{" "}
           on getting auth for {selectedRecipe.project}.
         </p>
@@ -238,7 +250,7 @@ function CustomAuthConfig({ onboardingFlow }: { onboardingFlow: boolean }) {
           target="_blank"
           className="underline underline-offset-2"
         >
-          our guide
+          the guide
         </a>{" "}
         on getting setup with {selectedRecipe.project}.
       </p>

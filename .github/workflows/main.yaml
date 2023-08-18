@@ -17,7 +17,7 @@ jobs:
       matrix:
         settings:
           - platform: 'macos-latest'
-            args: '--target universal-apple-darwin --verbose'
+            args: '--target universal-apple-darwin --verbose --debug'
 
     runs-on: ${{ matrix.settings.platform }}
 
@@ -46,16 +46,13 @@ jobs:
         
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
-
-      - name: install arm64 rust target (macos only)
-        if: matrix.settings.platform == 'macos-latest'
-        run: rustup target add aarch64-apple-darwin
+        with:
+          targets: aarch64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-
 
 
       - name: Install frontend dependencies

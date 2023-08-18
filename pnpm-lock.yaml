@@ -133,9 +133,6 @@ importers:
       eslint-config-custom:
         specifier: workspace:*
         version: link:../../packages/eslint-config-custom
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
       next:
         specifier: 13.4.12
         version: 13.4.12(react-dom@18.2.0)(react@18.2.0)
@@ -296,12 +293,18 @@ importers:
       immer:
         specifier: ^10.0.2
         version: 10.0.2
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
       lodash.debounce:
         specifier: ^4.0.8
         version: 4.0.8
       next:
         specifier: 13.4.12
         version: 13.4.12(react-dom@18.2.0)(react@18.2.0)
+      openapi-parser-js:
+        specifier: workspace:*
+        version: link:../openapi-parser-js
       postcss:
         specifier: ^8.4.27
         version: 8.4.28
@@ -333,6 +336,9 @@ importers:
         specifier: ^4.3.9
         version: 4.3.9(immer@10.0.2)(react@18.2.0)
     devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@types/lodash.debounce':
         specifier: ^4.0.7
         version: 4.0.7

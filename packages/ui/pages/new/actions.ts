@@ -1,20 +1,12 @@
-"use server";
-
-import {
-  createServerActionClient,
-  createServerComponentClient,
-} from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { AuthConfig, Database, Recipe } from "types/database";
 import {
   AuthFormType,
-  ProjectMemberRole,
   ProjectScope,
   RecipeAuthType,
   Visibility,
 } from "types/enums";
 import { generateSlug } from "random-word-slugs";
-import { redirect } from "next/navigation";
 
 export async function uploadAPIs({
   username,
@@ -31,7 +23,7 @@ export async function uploadAPIs({
   project: string | null;
   authDocs?: string;
 }) {
-  const supabase = createServerActionClient<Database>({ cookies: cookies });
+  const supabase = createClientComponentClient<Database>();
   const user = await supabase.auth.getUser();
 
   if (!user.data.user) {

@@ -56,6 +56,7 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
 struct FetchServerOutput {
     output: String,
     status: u16,
+    #[allow(non_snake_case)]
     contentType: String,
 }
 #[derive(Debug, Deserialize)]

@@ -100,23 +100,21 @@ export function Navbar() {
             Star us on Github!
           </Link>
         </li>
-        {!isTauri && (
-          <li>
-            <button
-              id={UNIQUE_ELEMENT_IDS.SIGN_IN}
-              className="btn bg-chefYellow text-black btn-sm"
-              onClick={() => {
-                if (!user) {
-                  setIsLoginModalOpen(true);
-                  return;
-                }
-                router.push("/new");
-              }}
-            >
-              Add an API
-            </button>
-          </li>
-        )}
+        <li>
+          <button
+            id={UNIQUE_ELEMENT_IDS.SIGN_IN}
+            className="btn bg-chefYellow text-black btn-sm"
+            onClick={() => {
+              if (!user) {
+                setIsLoginModalOpen(true);
+                return;
+              }
+              router.push("/new");
+            }}
+          >
+            Add an API
+          </button>
+        </li>
         {!user ? (
           <li>
             <button
