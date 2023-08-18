@@ -2,6 +2,7 @@
 
 import {
   RecipeContext,
+  RecipeNativeFetch,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeBody } from "../RecipeBody";
@@ -17,6 +18,7 @@ import { ShareInviteModal, ShareModal } from "../RecipeBody/RecipeTemplates";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import Link from "next/link";
+import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 
 export function RecipeHomeContainer({
   globalProjects,
@@ -74,22 +76,24 @@ export function RecipeHomeContainer({
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
-        <RecipeBodySearch />
-        {recipe && currentSession ? (
-          <RecipeBody />
-        ) : (
-          <>
-            <RecipeHome globalProjects={globalProjects} projects={projects} />
-            {showShareModal && sharedTemplate && (
-              <ShareInviteModal
-                template={sharedTemplate}
-                onClose={() => {
-                  setShowShareModal(false);
-                }}
-              />
-            )}
-          </>
-        )}
+        <RecipeNativeFetch.Provider value={fetchServer}>
+          <RecipeBodySearch />
+          {recipe && currentSession ? (
+            <RecipeBody />
+          ) : (
+            <>
+              <RecipeHome globalProjects={globalProjects} projects={projects} />
+              {showShareModal && sharedTemplate && (
+                <ShareInviteModal
+                  template={sharedTemplate}
+                  onClose={() => {
+                    setShowShareModal(false);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </RecipeNativeFetch.Provider>
       </RecipeContext.Provider>
       {!(recipe && currentSession) && (
         <footer className="mt-16 text-right sm:-mx-6 -mb-6 border-t py-2  flex justify-end items-center px-8">

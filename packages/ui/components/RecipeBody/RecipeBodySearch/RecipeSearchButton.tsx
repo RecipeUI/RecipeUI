@@ -6,7 +6,10 @@ import {
 } from "../../../utils/constants/main";
 import { useSecretsFromSM } from "../../../state/recipeAuth";
 import {
+  FetchRequest,
+  FetchResponse,
   RecipeContext,
+  RecipeNativeFetch,
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
@@ -16,7 +19,6 @@ import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { isTauri } from "../../../utils/main";
-import { fetchServer } from "./fetchServer";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -50,6 +52,7 @@ export function RecipeSearchButton() {
     }, 500);
   };
 
+  const nativeFetch = useContext(RecipeNativeFetch)!;
   const _onSubmit = async () => {
     if (!currentSession) return;
 
@@ -109,12 +112,6 @@ export function RecipeSearchButton() {
     }
 
     let url = new URL(path);
-    // TODO:  Web problem only. Should we just make this the default so no one deals with this problem?
-    // Server Actions can actually get around this BUT it doesn't support response objects
-    if (!isTauri() && recipe.options?.cors === true) {
-      headers["recipe-domain"] = url.origin;
-      url = new URL(RECIPE_PROXY + url.pathname);
-    }
 
     if (recipe.auth) {
       if (!secretInfo?.hasAllSecrets) {
@@ -270,20 +267,15 @@ export function RecipeSearchButton() {
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
-      // ------ Actual Fetch Request ------
-      const res = await new Promise<Response>((resolve, reject) => {
-        fetchRejectRef.current = reject;
-
-        if (!isTauri()) {
-          fetch(url, payload)
-            .then((res) => resolve(res))
-            .catch((err) => reject(err));
-        }
-      });
-
-      if (res.body && recipe.options?.streaming === true && res.ok) {
+      // Streaming is unique edge case. We'll have to port this over to Server's later
+      if (recipe.options?.streaming === true) {
+        const res = await fetch(url, payload);
         let content = "";
         const textDecoder = new TextDecoder("utf-8");
+
+        if (!res.body) {
+          throw new Error("No body found.");
+        }
 
         let reader = res.body.getReader();
 
@@ -332,26 +324,73 @@ export function RecipeSearchButton() {
         return true;
       }
 
-      let output: Record<string, unknown> = {};
+      // ------ Actual Fetch Request ------
+      const {
+        contentType,
+        status,
+        output: outputStr,
+      } = await new Promise<FetchResponse>((resolve, reject) => {
+        fetchRejectRef.current = reject;
 
-      const contentType = res.headers.get("content-type");
+        // Prefer browser fetch if we can.
+        function simpleFetch() {
+          fetch(url, payload)
+            .then(async (res) => {
+              resolve({
+                output: await res.text(),
+                status: res.status,
+                contentType: res.headers.get("content-type") ?? "text/plain",
+              });
+            })
+            .catch(reject);
+        }
+
+        if (payload.body instanceof FormData || !nativeFetch) {
+          // TODO: Make these work with native fetch
+          simpleFetch();
+          return;
+        }
+
+        const fetchPayload: FetchRequest = {
+          url: url.toString(),
+          payload: {
+            ...payload,
+            body: payload.body || undefined,
+          },
+        };
+
+        // If we have to deal with CORS, then we need a server or proxy.
+        if (recipe.options?.cors === true) {
+          nativeFetch(fetchPayload).then(resolve).catch(reject);
+          return;
+        }
+
+        simpleFetch();
+      });
+
+      let output: Record<string, unknown> = {};
+      const isStatusOk = status >= 200 && status < 300;
 
       if (contentType?.includes("application/json")) {
-        output = await res.json();
+        try {
+          output = JSON.parse(outputStr);
+        } catch (e) {
+          output = { response: "unable to parse json" };
+        }
       } else if (contentType?.includes("text/plain")) {
-        output = { response: await res.text() };
+        output = { response: outputStr };
       } else {
-        const statusPrefix = `Error code ${res.status}.`;
-        if (!res.ok) {
-          if ([401, 403, 405, 406].includes(res.status)) {
+        const statusPrefix = `Error code ${status}.`;
+        if (!isStatusOk) {
+          if ([401, 403, 405, 406].includes(status)) {
             output = {
               error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
             };
-          } else if (res.status === 400) {
+          } else if (status === 400) {
             output = {
               error: `${statusPrefix} Something went wrong with the request, but we're unable to get more info.`,
             };
-          } else if (res.status === 404) {
+          } else if (status === 404) {
             output = {
               error: `${statusPrefix} No resource found here, double check you parameters.`,
             };
@@ -364,7 +403,8 @@ export function RecipeSearchButton() {
       }
 
       posthog.capture(
-        res.ok
+        // The ok read-only property of the Response interface contains a Boolean stating whether the response was successful (status in the range 200-299) or not.
+        isStatusOk
           ? POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS
           : POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE,
         recipeInfoLog
@@ -372,7 +412,7 @@ export function RecipeSearchButton() {
 
       setOutput(currentSession.id, {
         output: output,
-        type: res.ok ? RecipeOutputType.Response : RecipeOutputType.Error,
+        type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
         duration: performance.now() - startTime,
         requestInfo,
       });

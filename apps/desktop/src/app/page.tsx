@@ -3,17 +3,24 @@ import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContaine
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, RecipeProject } from "types/database";
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
 import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
-import { RecipeContext, useRecipeSessionStore } from "ui/state/recipeSession";
+import {
+  FetchRequest,
+  FetchResponse,
+  RecipeContext,
+  RecipeNativeFetch,
+  useRecipeSessionStore,
+} from "ui/state/recipeSession";
 import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "ui/components/RecipeBody";
 import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
 import classNames from "classnames";
+import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 
 export default function Container() {
   const projectParam = useRecipeSessionStore((state) => state.projectParam);
@@ -46,6 +53,11 @@ function HomePage() {
         : null,
   });
 
+  const invokeMemoized = useMemo(() => {
+    return (payload: FetchRequest) =>
+      invoke<FetchResponse>("fetch_wrapper", payload as unknown as InvokeArgs);
+  }, []);
+
   if (isLoadingHome || isLoadingRecipe) {
     return <Loading />;
   }
@@ -58,12 +70,17 @@ function HomePage() {
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
-        <RecipeBodySearch />
-        {recipe && currentSession ? (
-          <RecipeBody />
-        ) : (
-          <RecipeHome globalProjects={globalProjects} projects={userProjects} />
-        )}
+        <RecipeNativeFetch.Provider value={invokeMemoized}>
+          <RecipeBodySearch />
+          {recipe && currentSession ? (
+            <RecipeBody />
+          ) : (
+            <RecipeHome
+              globalProjects={globalProjects}
+              projects={userProjects}
+            />
+          )}
+        </RecipeNativeFetch.Provider>
       </RecipeContext.Provider>
     </div>
   );

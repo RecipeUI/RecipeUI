@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "turbo": "^1.10.12",
-    "eslint-config-custom": "workspace:*"
+    "encoding": "^0.1.13",
+    "eslint-config-custom": "workspace:*",
+    "turbo": "^1.10.12"
   }
 }

@@ -539,3 +539,21 @@ function deleteParamsForSessionIdFromLocal(sessionId: string) {
 }
 
 export const RecipeContext = createContext<Recipe | null>(null);
+
+export interface FetchRequest {
+  url: string;
+  payload: {
+    method: RecipeMethod;
+    headers: Record<string, string>;
+    body: string | undefined;
+  };
+}
+export interface FetchResponse {
+  output: string;
+  status: number;
+  contentType: string;
+}
+
+export const RecipeNativeFetch = createContext<
+  ((req: FetchRequest) => Promise<FetchResponse>) | null
+>(null);
