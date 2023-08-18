@@ -10,12 +10,14 @@ import classNames from "classnames";
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
 import Link from "next/link";
-import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
+import { APP_COOKIE, UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { OnboardingFlow } from "./OnboardingFlow";
 import NavAuthForm from "./NavAuthForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { isTauri } from "../../utils/main";
+
+import Cookie from "js-cookie";
 
 export function Navbar() {
   const router = useRouter();
@@ -101,6 +103,17 @@ export function Navbar() {
             Star us on Github!
           </Link>
         </li>
+
+        {/* <li>
+          <button
+            className="btn btn-sm bg-accent"
+            onClick={() => {
+              Cookie.set(APP_COOKIE, "true");
+            }}
+          >
+            set
+          </button>
+        </li> */}
         <li>
           <button
             id={UNIQUE_ELEMENT_IDS.SIGN_IN}

@@ -72,7 +72,7 @@ export function RecipeHomeContainer({
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession == null && "p-4 sm:px-24 sm:pb-6 sm:pt-4"
+        currentSession == null && "p-4 sm:px-24 sm:pb-6 sm:pt-12"
       )}
     >
       <RecipeContext.Provider value={recipe || null}>

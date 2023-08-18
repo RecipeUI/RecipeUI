@@ -22,11 +22,11 @@ jobs:
     runs-on: ${{ matrix.settings.platform }}
 
     steps:
-      - name: Create .env file
-        run: echo "${{ secrets.RECIPE_ENV }}" > .env
-
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: echo "${{ secrets.RECIPE_ENV }}" > ./apps/desktop/.env
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'

@@ -33,7 +33,7 @@ export function ProfileContainer({
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession === null && "sm:px-6 sm:pb-6 pt-8"
+        currentSession == null && "sm:px-6 sm:pb-6 pt-8"
       )}
     >
       {!profile ? (

@@ -23,8 +23,11 @@
     "downshift": "^8.0.0",
     "fuse.js": "^6.6.2",
     "immer": "^10.0.2",
+    "js-cookie": "^3.0.5",
+    "js-yaml": "^4.1.0",
     "lodash.debounce": "^4.0.8",
     "next": "13.4.12",
+    "openapi-parser-js": "workspace:*",
     "postcss": "^8.4.27",
     "posthog-js": "^1.75.3",
     "random-word-slugs": "^0.1.7",
@@ -34,11 +37,10 @@
     "tailwindcss": "^3.3.3",
     "usehooks-ts": "^2.9.1",
     "uuid": "^9.0.0",
-    "zustand": "^4.3.9",
-    "openapi-parser-js": "workspace:*",
-    "js-yaml": "^4.1.0"
+    "zustand": "^4.3.9"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
     "@types/js-yaml": "^4.0.5",
     "@types/lodash.debounce": "^4.0.7",
     "@types/react": "18.2.18",

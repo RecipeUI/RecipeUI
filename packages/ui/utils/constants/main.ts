@@ -2,6 +2,8 @@ export const RECIPE_PROXY = "https://recipe-proxy-node.fly.dev";
 
 export const GITHUB_REPO = "https://github.com/RecipeUI/RecipeUI";
 
+export const APP_COOKIE = "showApp";
+
 export enum QueryKeys {
   Projects = "projects",
   Recipes = "recipes",

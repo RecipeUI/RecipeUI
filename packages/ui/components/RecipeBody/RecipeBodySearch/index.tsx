@@ -208,7 +208,6 @@ export function RecipeBodySearch() {
           {isOpen && (
             <>
               {recipes.map((recipe, index) => {
-                console.log(recipe.path + recipe.method + recipe.project);
                 return (
                   // eslint-disable-next-line react/jsx-key
                   <li
