@@ -199,6 +199,8 @@ function NavMenu({ user }: { user: User }) {
           <button
             onClick={() => {
               supabase.auth.signOut();
+              Cookie.remove(APP_COOKIE);
+
               router.refresh();
             }}
           >

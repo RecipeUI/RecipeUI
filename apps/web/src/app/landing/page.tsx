@@ -3,24 +3,40 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { redirect } from "next/navigation";
 import { APP_COOKIE } from "ui/utils/constants/main";
+import { SimpleCookies } from "ui/components/Test/SimpleButton";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: {
+    forceLoad?: boolean;
+  };
+}) {
   const supabase = createServerComponentClient<Database>({
     cookies,
   });
-  const hasSession = await supabase.auth.getSession();
   const cookieStore = cookies();
+  const session = await supabase.auth.getSession();
+  const hasSessionUser = session.data.session?.user != undefined;
+  const hasAppCookie = cookieStore.get(APP_COOKIE)?.value !== undefined;
+  const isLocalEnv = process.env.NEXT_PUBLIC_ENV === "dev";
 
   const showApp =
-    hasSession.data != null ||
-    cookieStore.get(APP_COOKIE)?.value !== undefined ||
-    process.env.NEXT_PUBLIC_ENV === "dev";
+    hasSessionUser ||
+    hasAppCookie ||
+    isLocalEnv ||
+    searchParams.forceLoad !== undefined;
 
   if (!showApp) {
     redirect("https://home.recipeui.com/");
   }
 
-  return <div>Page loaded</div>;
+  return (
+    <div>
+      {hasAppCookie ? "hasAppCookie" : "noAppCookie"}
+      <SimpleCookies />
+    </div>
+  );
 }
