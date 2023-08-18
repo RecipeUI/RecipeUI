@@ -79,3 +79,7 @@ export enum QueryKey {
   RecipesView = "RecipesView",
   Projects = "Projects",
 }
+
+export enum RecipeError {
+  AbortedRequest = "AbortedRequest",
+}

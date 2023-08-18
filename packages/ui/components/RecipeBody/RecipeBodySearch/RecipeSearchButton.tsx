@@ -4,18 +4,19 @@ import {
   RECIPE_PROXY,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { useSecretManager, useSecretsFromSM } from "../../../state/recipeAuth";
+import { useSecretsFromSM } from "../../../state/recipeAuth";
 import {
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeOutputType } from "types/database";
-import { RecipeAuthType } from "types/enums";
+import { RecipeAuthType, RecipeError } from "types/enums";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
-import { useLoadingTemplate } from "./useLoadingTemplate";
+import { isTauri } from "../../../utils/main";
+import { fetchServer } from "./fetchServer";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -29,7 +30,7 @@ export function RecipeSearchButton() {
   const setIsSending = useRecipeSessionStore((store) => store.setIsSending);
   const queryParams = useRecipeSessionStore((store) => store.queryParams);
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
-  const controllerRef = useRef<AbortController | null>(null);
+  const fetchRejectRef = useRef<((val: any) => void) | null>(null);
   const recipe = useContext(RecipeContext)!;
 
   const secretInfo = useSecretsFromSM();
@@ -68,8 +69,9 @@ export function RecipeSearchButton() {
 
     if (isSending) {
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_ABORT, recipeInfoLog);
-      controllerRef.current?.abort();
-      controllerRef.current = null;
+      fetchRejectRef.current?.(new Error(RecipeError.AbortedRequest));
+      fetchRejectRef.current = null;
+
       setOutput(currentSession.id, {
         output: {
           message: "Request aborted.",
@@ -107,9 +109,9 @@ export function RecipeSearchButton() {
     }
 
     let url = new URL(path);
-    // TODO: Should we just make this the default so no one deals with this problem?
-    // TODO: We actually don't need this anymore with server actions. Kinda insane...
-    if (recipe.options?.cors === true) {
+    // TODO:  Web problem only. Should we just make this the default so no one deals with this problem?
+    // Server Actions can actually get around this BUT it doesn't support response objects
+    if (!isTauri() && recipe.options?.cors === true) {
       headers["recipe-domain"] = url.origin;
       url = new URL(RECIPE_PROXY + url.pathname);
     }
@@ -255,8 +257,6 @@ export function RecipeSearchButton() {
     };
 
     try {
-      controllerRef.current = new AbortController();
-
       setIsSending(true, RecipeOutputTab.Output);
 
       const payload = {
@@ -266,13 +266,20 @@ export function RecipeSearchButton() {
           SCHEMA_CONTENT_TYPE === "application/json"
             ? JSON.stringify(body)
             : (body as FormData | undefined),
-        signal: controllerRef.current.signal,
       };
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
       // ------ Actual Fetch Request ------
-      const res = await fetch(url, payload);
+      const res = await new Promise<Response>((resolve, reject) => {
+        fetchRejectRef.current = reject;
+
+        if (!isTauri()) {
+          fetch(url, payload)
+            .then((res) => resolve(res))
+            .catch((err) => reject(err));
+        }
+      });
 
       if (res.body && recipe.options?.streaming === true && res.ok) {
         let content = "";
@@ -370,11 +377,10 @@ export function RecipeSearchButton() {
         requestInfo,
       });
     } catch (e) {
-      console.error(e);
       let output =
         "Something went wrong. Can you report this issue to us at team@recipeui.com";
 
-      if ("name" in (e as Error) && (e as Error).name === "AbortError") {
+      if ((e as Error)?.message === RecipeError.AbortedRequest) {
         output = "Request cancelled.";
       }
 
@@ -418,8 +424,10 @@ export function RecipeSearchButton() {
         className={classNames(
           "btn btn-accent dark:text-white sm:w-24 w-full !text-black",
           !currentSession && "btn-disabled",
-          isSending && "hover:btn-error"
+          isSending && "hover:btn-error",
+          isTauri() && "tooltip tooltip-left"
         )}
+        data-tip="CMD+Enter"
         type="button"
         onClick={onSubmit}
       >

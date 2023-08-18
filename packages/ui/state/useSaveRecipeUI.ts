@@ -80,11 +80,12 @@ export function useSaveRecipeUI() {
   useEffect(() => {
     setOnboarding(false);
 
-    console.debug("Initializing");
+    console.debug("Initializinag");
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.debug(session, event);
       setUserSession(session);
+      setOnboarding(false);
 
       if (
         (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&

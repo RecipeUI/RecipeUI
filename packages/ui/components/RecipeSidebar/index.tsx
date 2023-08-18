@@ -7,7 +7,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import classNames from "classnames";
-import { getURLParamsForSession } from "../../utils/main";
+import { getURLParamsForSession, isTauri } from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
@@ -75,10 +75,17 @@ export function RecipeSidebar() {
         className="text-start py-2 pt-3 w-full"
         onClick={() => {
           setCurrentSession(null);
-          router.push("/");
+
+          if (!isTauri()) {
+            router.push("/");
+          }
         }}
       >
-        <h3 className="font-bold text-sm ml-4 cursor-pointer w-full">Home</h3>
+        <h3 className="font-bold text-sm ml-4 cursor-pointer w-full  justify-start p-0 text-start">
+          <span className="tooltip tooltip-right" data-tip="CMD+K">
+            Home
+          </span>
+        </h3>
       </button>
       <div className="text-start py-2 w-full">
         <h3 className="font-bold text-sm ml-4">Sessions</h3>
