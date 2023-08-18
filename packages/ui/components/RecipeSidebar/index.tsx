@@ -70,7 +70,7 @@ export function RecipeSidebar() {
   if (pathname === "/new") return null;
 
   return (
-    <div className="hidden sm:block w-56 border-r">
+    <div className="hidden sm:block w-56 border-r border-r-slate-200 dark:border-r-slate-600">
       <button
         className="text-start py-2 pt-3 w-full"
         onClick={() => {

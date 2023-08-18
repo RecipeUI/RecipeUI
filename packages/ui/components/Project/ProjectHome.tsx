@@ -16,7 +16,7 @@ export function ProjectHome({
 }) {
   return (
     <div className="flex-1 px-4 pt-4">
-      <div className="flex justify-start rounded-md border min-h-[250px] bg-white dark:bg-slate-800">
+      <div className="flex justify-start rounded-md border border-slate-200 dark:border-slate-600 min-h-[250px] bg-white dark:bg-slate-800">
         <div className="p-4 flex flex-col space-y-8 lg:space-y-0  justify-center  lg:flex-row lg:items-center lg:space-x-8">
           {project.image && (
             <img

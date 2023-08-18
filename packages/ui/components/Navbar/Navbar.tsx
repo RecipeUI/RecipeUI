@@ -43,7 +43,7 @@ export function Navbar() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
-    <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
+    <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600">
       <button
         className={classNames(
           "flex items-center cursor-pointer",

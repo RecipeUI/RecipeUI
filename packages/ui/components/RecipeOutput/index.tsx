@@ -56,19 +56,19 @@ export function RecipeOutput() {
   }, [output, currentTab]);
 
   return (
-    <div className="flex-1 relative border-t sm:border-l sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
+    <div className="flex-1 relative border-t sm:border-l border-slate-200 dark:border-slate-600 sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {currentTab === RecipeOutputTab.Code && <RecipeCodeView />}
       {!loadingTemplate && tabs.length && (
-        <div className="absolute right-0 top-0 flex border-l border-b">
+        <div className="absolute right-0 top-0 flex border-l border-b border-slate-200 dark:border-slate-600">
           {tabs.map((tab) => {
             return (
               <div
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "text-sm py-1 sm:text-base first:!border-l-0 border-l px-2 sm:py-2 cursor-pointer tooltip bg-chefYellow dark:text-gray-800"
+                  "text-sm py-1 sm:text-base first:!border-l-0 border-l border-slate-200 dark:border-slate-600 px-2 sm:py-2 cursor-pointer tooltip bg-chefYellow dark:text-gray-800"
                 )}
                 data-tip={"CMD+D"}
               >

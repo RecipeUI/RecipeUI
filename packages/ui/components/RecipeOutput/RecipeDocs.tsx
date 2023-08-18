@@ -305,7 +305,10 @@ function RecipeDocsParamContainer({
   const showNestedDocs = !isParamInState || !hideDocs;
 
   return (
-    <div className="border rounded-sm p-4" id={`${paramPath}`}>
+    <div
+      className="border border-slate-200 dark:border-slate-600 rounded-sm p-4"
+      id={`${paramPath}`}
+    >
       <div className="flex justify-between items-center">
         <RecipeDocObjectDefinition
           paramName={paramName}
@@ -401,7 +404,10 @@ function ArrayParamDocs({
         const innerParamName = innerParamSchema.name;
 
         return (
-          <div className="border rounded-sm p-4" key={innerParamName}>
+          <div
+            className="border border-slate-200 dark:border-slate-600 rounded-sm p-4"
+            key={innerParamName}
+          >
             <RecipeDocObjectDefinition
               key={innerParamName}
               paramName={innerParamName}
@@ -635,7 +641,7 @@ function RecipeFileParamEdit({ paramPath }: { paramPath: string }) {
     <div className="flex space-x-2 items-center">
       {fileInfo && paramState ? (
         <div className="">
-          <div className="mr-2 text-sm border border-dashed rounded-md p-2">
+          <div className="mr-2 text-sm border border-slate-200 dark:border-slate-600 border-dashed rounded-md p-2">
             {fileInfo.name}
           </div>
           <button
@@ -699,7 +705,7 @@ function RecipeDocObjectParam({
   }
 
   return (
-    <div className="border border-dashed rounded p-4 space-y-2 w-full">
+    <div className="border border-slate-200 dark:border-slate-600 border-dashed rounded p-4 space-y-2 w-full">
       {Object.keys(paramState).map((innerParamName) => {
         const innerParamSchema = paramSchema.objectSchema.find(
           (param) => param.name === innerParamName
@@ -761,7 +767,8 @@ function RecipeDocArrayParam({
     <div className="">
       <div
         className={classNames(
-          paramState.length > 0 && "mb-2 space-y-2 border rounded-sm p-2",
+          paramState.length > 0 &&
+            "mb-2 space-y-2 border border-slate-200 dark:border-slate-600 rounded-sm p-2",
           loadingTemplate && "flex flex-col-reverse"
         )}
       >
@@ -988,7 +995,7 @@ function RecipeUrlDocsContainer({
         return (
           <div
             className={classNames(
-              "border rounded-sm p-4",
+              "border border-slate-200 dark:border-slate-600 rounded-sm p-4",
               loadingTemplate && "animate-pulse dark:text-white"
             )}
             key={paramName}

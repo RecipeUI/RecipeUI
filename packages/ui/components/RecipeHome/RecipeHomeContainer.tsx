@@ -72,7 +72,7 @@ export function RecipeHomeContainer({
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession == null && "p-4 sm:px-6 sm:pb-6 sm:pt-4"
+        currentSession == null && "p-4 sm:px-24 sm:pb-6 sm:pt-4"
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
@@ -96,7 +96,7 @@ export function RecipeHomeContainer({
         </RecipeNativeFetch.Provider>
       </RecipeContext.Provider>
       {!(recipe && currentSession) && (
-        <footer className="mt-16 text-right sm:-mx-6 -mb-6 border-t py-2  flex justify-end items-center px-8">
+        <footer className="mt-16 text-right sm:-mx-24 -mb-6 border-t border-t-slate-200 dark:border-t-slate-600 py-2  flex justify-end items-center px-8">
           <Link href="/privacy">Privacy Policy</Link>
         </footer>
       )}

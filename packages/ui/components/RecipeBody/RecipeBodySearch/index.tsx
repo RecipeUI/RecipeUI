@@ -166,7 +166,7 @@ export function RecipeBodySearch() {
         <div className="flex space-x-2 sm:flex sm:space-x-2 sm:flex-row">
           <div
             className={classNames(
-              "input input-bordered flex-1 flex items-center space-x-2 py-4 sm:mb-0 border-slate-600"
+              "input input-bordered flex-1 flex items-center space-x-2 py-4 sm:mb-0 border-slate-200 dark:border-slate-600"
             )}
             data-tip={
               currentSession

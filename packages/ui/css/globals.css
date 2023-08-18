@@ -23,11 +23,11 @@
   }
 
   .projects-home-container {
-    @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-4;
+    @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mt-4 gap-6;
   }
 
   body {
-    @apply bg-base-200 dark:bg-base-100;
+    @apply bg-[#FAFAFA] dark:bg-base-100;
   }
 }
 
@@ -37,7 +37,7 @@
   }
 
   .recipe-container-box {
-    @apply bg-white dark:bg-slate-800 cursor-pointer shadow-sm;
+    @apply bg-white dark:bg-slate-800 cursor-pointer shadow-sm border border-slate-200 dark:border-slate-600 hover:drop-shadow-xl dark:border-slate-600 hover:border-blue-300;
   }
 }
 
