@@ -14,7 +14,7 @@ import {
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { useRouter } from "next/navigation";
-import { getURLParamsForSession } from "../../../utils/main";
+import { getURLParamsForSession, isTauri } from "../../../utils/main";
 import { RecipeSaveButton } from "../../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLoadingTemplate } from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
 import { useQuery } from "@tanstack/react-query";
@@ -86,6 +86,8 @@ export function RecipeBodySearch() {
     },
   });
 
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -95,7 +97,12 @@ export function RecipeBodySearch() {
         if (currentSession !== null) {
           setCurrentSession(null);
           setInputValue("");
-          router.push("/");
+
+          if (isTauri()) {
+            setDesktopPage(null);
+          } else {
+            router.push("/");
+          }
         } else {
           openMenu();
         }
@@ -201,6 +208,7 @@ export function RecipeBodySearch() {
           {isOpen && (
             <>
               {recipes.map((recipe, index) => {
+                console.log(recipe.path + recipe.method + recipe.project);
                 return (
                   // eslint-disable-next-line react/jsx-key
                   <li
@@ -212,7 +220,7 @@ export function RecipeBodySearch() {
                         "bg-blue-300 dark:!bg-neutral-700",
                       "py-2 px-4 shadow-sm flex space-x-2 dark:bg-neutral-800"
                     )}
-                    key={recipe.path + recipe.method + recipe.project}
+                    key={recipe.title + recipe.method + recipe.project}
                     {...getItemProps({
                       index,
                       item: recipe,

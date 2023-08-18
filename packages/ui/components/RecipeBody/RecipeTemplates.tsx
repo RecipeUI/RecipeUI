@@ -21,9 +21,10 @@ import {
 import { SucessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
-import { ProjectScope } from "types/enums";
+import { ProjectScope, QueryKey } from "types/enums";
 import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
 import { isTauri } from "../../utils/main";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function RecipeTemplatesTab() {
   return (
@@ -175,6 +176,8 @@ function UserTemplateItem({
   );
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   return (
     <div
       className={classNames(
@@ -312,16 +315,21 @@ function UserTemplateItem({
                     const deletedTemplateRes = await deleteTemplate(
                       template.id
                     );
-                    console.log("here", deletedTemplateRes);
+
                     if (deletedTemplateRes) {
-                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
+                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE, {
                         template_id: template.id,
                         template_project: selectedRecipe.project,
                         recipe_id: selectedRecipe.id,
                         recipe_path: selectedRecipe.path,
                       });
 
-                      router.refresh();
+                      if (isTauri()) {
+                        queryClient.invalidateQueries([QueryKey.RecipesView]);
+                      } else {
+                        router.refresh();
+                      }
+
                       alert("Template deleted");
                       return;
                     }

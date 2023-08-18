@@ -112,7 +112,7 @@ export function RecipeNeedsAuth({
       <a className="link tooltip" href={docLink} target="_blank">
         the guide
       </a>{" "}
-      on getting auth for {selectedRecipe.project}.
+      on getting auth for this project.
     </>
   ) : null;
   if (selectedRecipe.auth === RecipeAuthType.Bearer) {
@@ -124,7 +124,7 @@ export function RecipeNeedsAuth({
           <a className="link tooltip" href={docLink} target="_blank">
             the guide
           </a>{" "}
-          on getting auth for {selectedRecipe.project}.
+          on getting auth for this project.
         </p>
       );
     } else {
@@ -252,7 +252,7 @@ function CustomAuthConfig({ onboardingFlow }: { onboardingFlow: boolean }) {
         >
           the guide
         </a>{" "}
-        on getting setup with {selectedRecipe.project}.
+        on getting setup with this project.
       </p>
       {showAuthFlow ? (
         <div>

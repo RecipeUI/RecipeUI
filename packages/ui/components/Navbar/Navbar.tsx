@@ -49,7 +49,7 @@ export function Navbar() {
           "flex items-center cursor-pointer",
           !isMobile && "tooltip tooltip-right"
         )}
-        data-tip="Home (CMD+K)"
+        data-tip="Home"
         onClick={() => {
           setCurrentSession(null);
           router.push("/");

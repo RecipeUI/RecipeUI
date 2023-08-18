@@ -9,7 +9,7 @@ import {
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { getURLParamsForSession } from "../../../utils/main";
+import { getURLParamsForSession, isTauri } from "../../../utils/main";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
@@ -18,6 +18,8 @@ import { usePostHog } from "posthog-js/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createTemplate } from "./actions";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey } from "types/enums";
 
 export function RecipeSaveButton() {
   const { type } = useRecipeSessionStore((state) => state.getOutput());
@@ -125,6 +127,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
           recipe_id: recipe.id,
           recipe_path: recipe.path,
         });
+
         setNewTemplateId(newTemplate.id);
       } else if (error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
         setErrorMsg(
@@ -236,20 +239,28 @@ export function SucessAnimation({
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
   const addSession = useRecipeSessionStore((state) => state.addSession);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
+  console.log("in success animation", { ignoreAnimation });
 
+  const queryClient = useQueryClient();
   useEffect(() => {
     setTimeout(
       () => {
         const newSession = addSession(recipe);
         onClose();
         setBodyRoute(RecipeBodyRoute.Templates);
-        router.push(
-          `/?${getURLParamsForSession(newSession, {
-            newTemplateId: String(newTemplateId),
-          })}`
-        );
+
+        if (isTauri()) {
+          queryClient.invalidateQueries([QueryKey.RecipesView]);
+        } else {
+          // router.push(
+          //   `/?${getURLParamsForSession(newSession, {
+          //     newTemplateId: String(newTemplateId),
+          //   })}`
+          // );
+        }
       },
-      ignoreAnimation ? 0 : 4000
+      4000
+      // ignoreAnimation === true ? 0 : 4000
     );
   }, []);
 
