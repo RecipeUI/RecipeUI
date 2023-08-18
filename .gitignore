@@ -1,5 +1,5 @@
 # dependencies
-/**/node_modules
+/*/node_modules
 /.pnp
 .pnp.js
 
@@ -35,4 +35,6 @@ next-env.d.ts
 script.ts
 
 /supabase
-node_modulesf
+node_modules
+
+./*/.turbo

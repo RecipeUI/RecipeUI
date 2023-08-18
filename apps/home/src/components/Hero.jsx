@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import yc from '@/images/logos/yc.svg'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import Cookie from 'js-cookie'
 
 export function Hero() {
