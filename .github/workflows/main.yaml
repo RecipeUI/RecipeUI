@@ -17,7 +17,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+            - args: [--global, gulp, prettier, typescript]
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+        
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
 
@@ -25,14 +36,8 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-          
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 6.32.9
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-          cache: 'pnpm'
+
+
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
