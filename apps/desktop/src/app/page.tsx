@@ -10,6 +10,7 @@ import { Loading } from "ui/components/Loading";
 import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
 import {
+  DesktopPage,
   FetchRequest,
   FetchResponse,
   RecipeContext,
@@ -21,14 +22,20 @@ import { RecipeBody } from "ui/components/RecipeBody";
 import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
+import NewPage from "ui/pages/new";
 
 export default function Container() {
-  const projectParam = useRecipeSessionStore((state) => state.projectParam);
+  const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
 
-  if (projectParam) {
-    return <ProjectPage project={projectParam} />;
+  if (!desktopPage) {
+    return <HomePage />;
   }
-
+  if (desktopPage.page === DesktopPage.Project) {
+    return <ProjectPage project={desktopPage.pageParam} />;
+  }
+  if (desktopPage.page === DesktopPage.New) {
+    return <NewPage />;
+  }
   return <HomePage />;
 }
 

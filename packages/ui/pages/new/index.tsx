@@ -11,7 +11,8 @@ import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { RouteTypeLabel } from "../../components/RouteTypeLabel";
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
+import { isTauri } from "../../utils/main";
 
 enum ImportStage {
   Upload,
@@ -114,12 +115,15 @@ export default function NewPage() {
   const [queryParamKey, setQueryParamKey] = useState("api_key");
   const [authDocs, setAuthDocs] = useState("");
   const router = useRouter();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   const onSubmit = async () => {
+    setSubmitting(true);
+
     if (!window.confirm("Are you sure you want to upload these API's?")) {
+      setSubmitting(false);
       return;
     }
-    setSubmitting(true);
 
     const selectedRecipes = recipes.filter(
       (recipe) => selectedRecipesRecord[recipe.path + recipe.method]
@@ -136,7 +140,14 @@ export default function NewPage() {
       }).then((res) => {
         if (typeof res === "string") {
           setTimeout(() => {
-            router.push(`/${res}`);
+            if (isTauri()) {
+              setDesktopPage({
+                page: DesktopPage.Project,
+                pageParam: res,
+              });
+            } else {
+              router.push(`/${res}`);
+            }
           }, 2000);
         } else {
           alert("Something went wrong. Please try again.");

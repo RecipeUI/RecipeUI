@@ -167,7 +167,7 @@ function SessionTab({
       <RouteTypeLabel size="small" recipeMethod={session.recipeMethod} />
       {isEditing ? (
         <input
-          className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900"
+          className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 w-full"
           onBlur={onUpdateSessionName}
           onKeyDown={(e) => {
             if (e.key === "Enter") onUpdateSessionName();

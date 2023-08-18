@@ -111,9 +111,23 @@ interface FileManagerSlice {
   deleteFileManager: (path: string) => void;
 }
 
+export enum DesktopPage {
+  Project = "Project",
+  New = "New",
+}
+
+type DesktopPageShape =
+  | {
+      page: DesktopPage.Project;
+      pageParam: string;
+    }
+  | {
+      page: DesktopPage.New;
+    }
+  | null;
 interface DesktopStateSlice {
-  projectParam: string | null;
-  setProjectParam: (projectParam: string | null) => void;
+  desktopPage: DesktopPageShape;
+  setDesktopPage: (props: DesktopPageShape) => void;
 }
 
 type Slices = RecipeSessionSlice &
@@ -130,9 +144,11 @@ export const createDesktopSlice: StateCreator<
   DesktopStateSlice
 > = (set) => {
   return {
-    projectParam: null,
-    setProjectParam: (projectParam) =>
-      set(() => ({ projectParam: projectParam })),
+    desktopPage: null,
+    setDesktopPage: (pageProps) =>
+      set(() => ({
+        desktopPage: pageProps,
+      })),
   };
 };
 
@@ -182,7 +198,7 @@ const createRecipeSessionSlice: StateCreator<
           bodyRoute: RecipeBodyRoute.Parameters,
           outputTab: hasOutput ? RecipeOutputTab.Output : RecipeOutputTab.Docs,
           requestInfo: null,
-          projectParam: null,
+          desktopPage: null,
         };
       }),
 
@@ -228,7 +244,7 @@ const createRecipeSessionSlice: StateCreator<
           sessions: [...prevState.sessions, newSession],
           outputTab: RecipeOutputTab.Docs,
           requestInfo: null,
-          projectParam: null,
+          desktopPage: null,
           ...getEmptyParameters(),
         };
       });

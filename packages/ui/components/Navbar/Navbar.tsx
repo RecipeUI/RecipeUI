@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { useIsMobile } from "../../hooks";
@@ -40,6 +40,7 @@ export function Navbar() {
   const isMobile = useIsMobile();
 
   const queryClient = useQueryClient();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-base-200 dark:bg-base-100 border-b">
@@ -109,7 +110,14 @@ export function Navbar() {
                 setIsLoginModalOpen(true);
                 return;
               }
-              router.push("/new");
+
+              if (isTauri()) {
+                setDesktopPage({
+                  page: DesktopPage.New,
+                });
+              } else {
+                router.push("/new");
+              }
             }}
           >
             Add an API

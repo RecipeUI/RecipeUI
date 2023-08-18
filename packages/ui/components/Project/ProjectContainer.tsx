@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectHome } from "./ProjectHome";
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
@@ -23,14 +23,15 @@ export function ProjectContainer({
   );
   const router = useRouter();
   const hasNoProject = project === null;
-  const setProjectParam = useRecipeSessionStore(
-    (state) => state.setProjectParam
-  );
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   useEffect(() => {
     if (hasNoProject) {
       if (isTauri()) {
-        setProjectParam(null);
+        setDesktopPage({
+          page: DesktopPage.Project,
+          pageParam: projectName,
+        });
       } else {
         setTimeout(() => router.push("/"), 3000);
       }

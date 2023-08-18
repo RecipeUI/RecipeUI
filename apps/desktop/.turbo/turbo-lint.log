@@ -2,5 +2,4 @@
 > desktop@0.1.0 lint /Users/jeanecarlos/Desktop/Projects/recipeui/apps/desktop
 > next lint
 
-- info Loaded env from /Users/jeanecarlos/Desktop/Projects/recipeui/apps/desktop/.env.local
-✔ No ESLint warnings or errors
+- info Loaded env from /Users/jeanecarlos/Desktop/Projects/recipeui/apps/desktop/.env
