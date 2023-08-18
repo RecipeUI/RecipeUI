@@ -48,7 +48,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: install arm64 rust target (macos only)
-        if: matrix.platform == 'macos-latest'
+        if: matrix.settings.platform == 'macos-latest'
         run: rustup target add aarch64-apple-darwin
 
       - name: Rust cache
