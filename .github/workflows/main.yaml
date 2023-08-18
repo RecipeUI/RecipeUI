@@ -22,6 +22,9 @@ jobs:
     runs-on: ${{ matrix.settings.platform }}
 
     steps:
+      - name: Create .env file
+        run: echo "${{ secrets.RECIPE_ENV }}" > .env
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
