@@ -1,8 +1,8 @@
 name: publish
 on:
   push:
-    tags:
-      - 'app-v*'
+    branches:
+          - release
       
 jobs:
   publish-tauri:
