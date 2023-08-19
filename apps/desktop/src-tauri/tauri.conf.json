@@ -73,17 +73,7 @@
       }
     },
     "security": {
-      "csp": null,
-      "dangerousRemoteDomainIpcAccess": [
-        {
-          "domain": "recipeui.com",
-          "windows": ["main"]
-        },
-        {
-          "domain": "github.com",
-          "windows": ["main"]
-        }
-      ]
+      "csp": null
     },
     "updater": {
       "active": true,

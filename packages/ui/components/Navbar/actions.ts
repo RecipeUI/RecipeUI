@@ -32,19 +32,8 @@ export async function createUser(data: OnboardingFormData) {
     user_id: userRes.data.user?.id!,
   });
 
-  if (res.status === 409) {
-    redirect(
-      `/?${new URLSearchParams({
-        [UserCreationError.UserAlreadyExists]: data.username,
-      }).toString()}`
-    );
-  } else if (res.error != null) {
-    redirect(
-      `/?${new URLSearchParams({
-        userError: UserCreationError.General,
-      }).toString()}`
-    );
-  } else {
-    redirect("/");
-  }
+  return {
+    status: res.status,
+    error: res.error,
+  };
 }

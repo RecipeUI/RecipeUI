@@ -21,7 +21,7 @@ export default function RootLayout({
       </Suspense>
       <body className={inter.className}>
         <Providers>
-          <div className="w-full h-screen flex overflow-y-auto">
+          <div className="w-full h-screen flex overflow-y-auto border-t border-slate-200">
             <RecipeSidebar />
             <div className="flex flex-1 flex-col overflow-y-scroll">
               <Navbar />

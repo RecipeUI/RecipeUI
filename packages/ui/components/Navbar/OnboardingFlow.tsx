@@ -10,6 +10,7 @@ import { UserCreationError } from "./types";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { FormLabelWrapper } from "./FormLabelWrapper";
+import { relaunch } from "@tauri-apps/api/process";
 
 export function OnboardingFlow() {
   const session = useRecipeSessionStore((state) => state.userSession);
@@ -35,7 +36,7 @@ export function OnboardingFlow() {
   }
 
   const searchParams = useSearchParams();
-  const userError = searchParams.get(UserCreationError.UserAlreadyExists);
+  const [userError, setUserError] = useState<string | null>(null);
   const posthog = usePostHog();
 
   const {
@@ -60,7 +61,15 @@ export function OnboardingFlow() {
         hear_about: data.hear_about,
         use_case: data.use_case,
       });
-      createUser(data);
+      const createRes = await createUser(data);
+
+      if (createRes.status === 409) {
+        setUserError(data.username);
+      } else if (createRes.error != null) {
+        //
+      } else {
+        relaunch();
+      }
     }
 
     setLoading(false);
