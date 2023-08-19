@@ -161,7 +161,7 @@ export function RecipeHomeBox({
       <div className="flex justify-between">
         <div className="flex items-center">
           {image && <img className="w-6 h-6 mr-2 object-cover" src={image} />}
-          <h2 className="font-bold text-xl dark:text-gray-300">{title}</h2>
+          <h2 className="font-bold text-lg dark:text-gray-300">{title}</h2>
         </div>
 
         <div
@@ -172,8 +172,8 @@ export function RecipeHomeBox({
         >
           <button
             className={classNames(
-              "btn btn-neutral btn-sm",
-              status === RecipeProjectStatus.Soon && "!btn-accent"
+              "btn btn-outline btn-sm",
+              status === RecipeProjectStatus.Soon && "!btn-outline"
             )}
           >
             {status}

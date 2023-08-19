@@ -12,6 +12,7 @@ import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { RecipeHomeSidebar } from "./RecipeHomeSidebar";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -66,8 +67,9 @@ export function RecipeSidebar() {
     }
   }, [currentSession, isMobile, sessions, setCurrentSession, setSessions]);
 
-  if (sessions.length === 0) return null;
-  if (pathname === "/new") return null;
+  if (sessions.length === 0 || pathname === "/new" || currentSession === null) {
+    return <RecipeHomeSidebar />;
+  }
 
   return (
     <div className="hidden sm:block w-56 border-r border-r-slate-200 dark:border-r-slate-600">

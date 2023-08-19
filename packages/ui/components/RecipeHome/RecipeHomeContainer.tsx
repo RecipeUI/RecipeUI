@@ -19,6 +19,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
+import { RecipeHomeHero } from "./RecipeHomeHero";
 
 export function RecipeHomeContainer({
   globalProjects,
@@ -68,17 +69,20 @@ export function RecipeHomeContainer({
     }
   }, [localForked, router, setLocalForked, user]);
 
+  const hasSession = Boolean(recipe && currentSession);
+
   return (
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession == null && "p-4 sm:px-24 sm:pb-6 sm:pt-12"
+        currentSession == null && "p-4 sm:px-16 sm:pb-6 sm:pt-8"
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeNativeFetch.Provider value={fetchServer}>
+          {!hasSession && <RecipeHomeHero />}
           <RecipeBodySearch />
-          {recipe && currentSession ? (
+          {hasSession ? (
             <RecipeBody />
           ) : (
             <>
@@ -95,11 +99,6 @@ export function RecipeHomeContainer({
           )}
         </RecipeNativeFetch.Provider>
       </RecipeContext.Provider>
-      {!(recipe && currentSession) && (
-        <footer className="mt-16 text-right sm:-mx-24 -mb-6 border-t border-t-slate-200 dark:border-t-slate-600 py-2  flex justify-end items-center px-8">
-          <Link href="/privacy">Privacy Policy</Link>
-        </footer>
-      )}
     </div>
   );
 }

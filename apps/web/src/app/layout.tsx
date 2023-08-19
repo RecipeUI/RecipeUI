@@ -59,10 +59,10 @@ export default function RootLayout({
       </Suspense>
       <body className={inter.className}>
         <Providers>
-          <div className="w-full h-screen flex flex-col overflow-y-auto">
-            <Navbar />
-            <div className="flex flex-1">
-              <RecipeSidebar />
+          <div className="w-full h-screen flex overflow-y-auto">
+            <RecipeSidebar />
+            <div className="flex flex-1 flex-col overflow-y-scroll">
+              <Navbar />
               {children}
             </div>
           </div>

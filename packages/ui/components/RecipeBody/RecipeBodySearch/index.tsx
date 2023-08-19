@@ -199,7 +199,7 @@ export function RecipeBodySearch() {
         </div>
         <ul
           className={classNames(
-            "w-full mt-2 sm:w-[calc(100%-6.5rem)] shadow-md max-h-80 overflow-auto  rounded-md border z-10",
+            "w-full mt-2 shadow-md max-h-80 overflow-auto  rounded-md border z-10 border-slate-200",
             !isOpen && "hidden",
             currentSession && "hidden"
           )}

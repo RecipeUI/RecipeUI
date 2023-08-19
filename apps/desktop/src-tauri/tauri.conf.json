@@ -69,7 +69,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}}"
+        "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJDMzc5QjhDNkVFMjZGRTMKUldUamIrSnVqSnMzdkdVTkZQY3RRL3Z6alhSZU1kYTdHTVUyTk5NRjJQaHNYZ3FJK29JMXZYQlIK"

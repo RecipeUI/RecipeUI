@@ -88,7 +88,7 @@ function ProjectHomeBox({
 
         <button
           className={classNames(
-            "btn btn-neutral btn-sm",
+            "btn btn-outline btn-sm",
             project.status === RecipeProjectStatus.Soon && "!btn-accent"
           )}
         >
