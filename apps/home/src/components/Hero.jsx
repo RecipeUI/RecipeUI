@@ -1,13 +1,10 @@
 import Image from 'next/image'
 
-import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import yc from '@/images/logos/yc.svg'
-import { useRouter } from 'next/navigation'
-import Cookie from 'js-cookie'
+import { HeroCTA } from './HeroCTA'
 
 export function Hero() {
-  const router = useRouter()
   return (
     <Container className="bg-black pb-16 pt-20 text-center lg:pt-32">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-white marker:sm:text-7xl">
@@ -18,23 +15,7 @@ export function Hero() {
         Built for everyone from Devs to PMs to QA. <br /> Test APIs with a click
         of a button. <br />
       </p>
-      <div className="mt-10 flex justify-center gap-x-6">
-        <Button
-          color="white"
-          className="text-[black]"
-          onClick={() => {
-            Cookie.set('showApp', 'true', { domain: '.recipeui.com' })
-            setTimeout(() => {
-              router.push('https://recipeui.com/')
-            }, 500)
-          }}
-        >
-          Explore our API network
-        </Button>
-        <Button variant="outline" className="text-white">
-          Book a demo
-        </Button>
-      </div>
+      <HeroCTA />
       <div className="mt-10 flex items-center justify-center">
         <Image src={yc} alt="backed by yc" unoptimized className="w-40" />
 

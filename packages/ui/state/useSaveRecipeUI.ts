@@ -8,12 +8,15 @@ import {
   useRecipeSessionStore,
 } from "./recipeSession";
 
+import Cookie from "js-cookie";
+
 import { useInterval, useLocalStorage } from "usehooks-ts";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect } from "react";
 
 import { useIsMobile } from "../../ui/hooks";
+import { APP_COOKIE } from "../utils/constants/main";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -108,6 +111,8 @@ export function useSaveRecipeUI() {
 
               setOnboarding(true);
             } else {
+              Cookie.set(APP_COOKIE, "true", { expires: 7 });
+
               setUser(userInfo);
               router.refresh();
             }
