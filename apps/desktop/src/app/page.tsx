@@ -69,6 +69,7 @@ function HomePage() {
     return <Loading />;
   }
 
+  const hasSession = currentSession != null && recipe;
   return (
     <div
       className={classNames(
@@ -78,8 +79,9 @@ function HomePage() {
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeNativeFetch.Provider value={invokeMemoized}>
+          {!hasSession && <RecipeHomeHero />}
           <RecipeBodySearch />
-          {recipe && currentSession ? (
+          {hasSession ? (
             <RecipeBody />
           ) : (
             <RecipeHome
@@ -95,6 +97,7 @@ function HomePage() {
 
 import { fetchProjectPage } from "ui/fetchers/project";
 import { ProjectContainer } from "ui/components/Project/ProjectContainer";
+import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = createClientComponentClient<Database>();

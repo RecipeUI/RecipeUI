@@ -6,6 +6,7 @@ import { Database } from "types/database";
 import { useIsMobile } from "../../hooks";
 import { useEffect, useState } from "react";
 import classNames from "classnames";
+import { relaunch } from "@tauri-apps/api/process";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
@@ -120,11 +121,11 @@ function NavMenu({ user }: { user: User }) {
         </li>
         <li>
           <button
-            onClick={() => {
-              supabase.auth.signOut();
+            onClick={async () => {
+              await supabase.auth.signOut();
               Cookie.remove(APP_COOKIE);
 
-              router.refresh();
+              window.location.reload();
             }}
           >
             Logout

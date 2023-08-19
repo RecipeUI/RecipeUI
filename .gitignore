@@ -37,4 +37,5 @@ script.ts
 /supabase
 node_modules
 
-./*/.turbo
+/**/.turbo/*
+

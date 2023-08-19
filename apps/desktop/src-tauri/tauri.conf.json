@@ -26,10 +26,19 @@
         "open": false,
         "save": false
       },
+      "shell": {
+        "all": true,
+        "execute": false,
+        "open": false,
+        "scope": [],
+        "sidecar": false
+      },
+
       "os": {
         "all": true
       }
     },
+
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
@@ -64,7 +73,17 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": null,
+      "dangerousRemoteDomainIpcAccess": [
+        {
+          "domain": "recipeui.com",
+          "windows": ["main"]
+        },
+        {
+          "domain": "github.com",
+          "windows": ["main"]
+        }
+      ]
     },
     "updater": {
       "active": true,
