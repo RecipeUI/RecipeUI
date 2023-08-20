@@ -78,7 +78,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json"
+        "https://github.com/RecipeUI/RecipeUI/releases/download/latest/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJDMzc5QjhDNkVFMjZGRTMKUldUamIrSnVqSnMzdkdVTkZQY3RRL3Z6alhSZU1kYTdHTVUyTk5NRjJQaHNYZ3FJK29JMXZYQlIK"
