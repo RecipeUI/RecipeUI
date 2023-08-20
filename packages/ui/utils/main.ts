@@ -136,9 +136,11 @@ export function getProjectSplit(projects: RecipeProject[]) {
 }
 
 export function isTauri() {
-  return Boolean(window && "__TAURI__" in window);
+  return Boolean(typeof window !== undefined && "__TAURI__" in window);
 }
 
 export function isLocalHost() {
-  return window && window.location.hostname === "localhost";
+  return (
+    typeof window !== undefined && window.location.hostname === "localhost"
+  );
 }

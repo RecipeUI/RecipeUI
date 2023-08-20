@@ -3,5 +3,5 @@
     { "pattern": "apps/*/" },
     { "pattern": "packages/*/" }
   ],
-  "rust-analyzer.linkedProjects": ["apps/desktop/src-tauri"]
+  "rust-analyzer.linkedProjects": ["apps/desktop/src-tauri/Cargo.toml"]
 }

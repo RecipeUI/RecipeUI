@@ -6,7 +6,6 @@ import { Database } from "types/database";
 import { useIsMobile } from "../../hooks";
 import { useEffect, useState } from "react";
 import classNames from "classnames";
-import { relaunch } from "@tauri-apps/api/process";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";

@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Dialog } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
@@ -10,9 +10,13 @@ import { UserCreationError } from "./types";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { FormLabelWrapper } from "./FormLabelWrapper";
-import { relaunch } from "@tauri-apps/api/process";
+import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "types/database";
+import { isTauri } from "../../utils/main";
 
 export function OnboardingFlow() {
+  const supabase = createClientComponentClient<Database>();
   const session = useRecipeSessionStore((state) => state.userSession);
   const user = session?.user;
   const router = useRouter();
@@ -26,7 +30,12 @@ export function OnboardingFlow() {
       email: user.email,
       profile_pic: user.user_metadata.avatar_url,
     };
-  } else if (user?.app_metadata.provider === "google" && user.user_metadata) {
+  } else if (
+    user?.app_metadata.provider === "google" &&
+    user.user_metadata &&
+    Object.keys(user.user_metadata).length > 0
+  ) {
+    console.log("user", user.user_metadata);
     defaultFormData = {
       first: user.user_metadata.full_name.split(" ")[0],
       last: user.user_metadata.full_name.split(" ")[1],
@@ -35,7 +44,6 @@ export function OnboardingFlow() {
     };
   }
 
-  const searchParams = useSearchParams();
   const [userError, setUserError] = useState<string | null>(null);
   const posthog = usePostHog();
 
@@ -68,7 +76,7 @@ export function OnboardingFlow() {
       } else if (createRes.error != null) {
         //
       } else {
-        relaunch();
+        window.location.reload();
       }
     }
 
@@ -81,12 +89,24 @@ export function OnboardingFlow() {
     if (!user) router.push("/");
   }, []);
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const { ref: inputRefCB, ...usernameProps } = register("username", {
+    required: true,
+    pattern: /^\S+$/i,
+  });
+
   return (
-    <Dialog open={true} onClose={() => {}} className="relative z-50">
+    <Dialog
+      open={true}
+      onClose={() => {}}
+      className="relative z-50"
+      initialFocus={inputRef}
+    >
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
+        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px] relative">
           <Dialog.Title className="text-2xl font-bold text-chefYellow">
             Welcome to RecipeUI
           </Dialog.Title>
@@ -95,6 +115,21 @@ export function OnboardingFlow() {
               ? "We can't wait to see what recipes you build! First things first, lets set up your profile."
               : "Just a few quick q's. This will help us a lot!"}
           </Dialog.Description>
+          <button
+            className="absolute top-4 right-4"
+            tabIndex={2}
+            onClick={() => {
+              supabase.auth.signOut().then(() => {
+                if (isTauri()) {
+                  window.location.reload();
+                } else {
+                  router.refresh();
+                }
+              });
+            }}
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
 
           <form className="flex flex-col space-y-2" onSubmit={onSubmit}>
             {stage === "User Info" && (
@@ -102,10 +137,11 @@ export function OnboardingFlow() {
                 <FormLabelWrapper label="Username">
                   <input
                     className="input input-bordered w-full"
-                    {...register("username", {
-                      required: true,
-                      pattern: /^\S+$/i,
-                    })}
+                    {...usernameProps}
+                    ref={(e) => {
+                      inputRefCB(e);
+                      inputRef.current = e;
+                    }}
                   />
                 </FormLabelWrapper>
                 <FormLabelWrapper label="Company (Optional)">
@@ -166,7 +202,7 @@ export function OnboardingFlow() {
             <button
               type="submit"
               className={classNames(
-                "btn  bg-chefYellow !mt-8",
+                "btn  bg-chefYellow !mt-8 text-black",
                 loading && "btn-disabled"
               )}
             >

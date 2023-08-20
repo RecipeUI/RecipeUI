@@ -2,12 +2,12 @@
 
 import { PostHogPageview, Providers } from "ui/components/Providers";
 import "ui/css/globals.css";
-import { Inter } from "next/font/google";
+import { Sora } from "next/font/google";
 import { Navbar } from "ui/components/Navbar/Navbar";
 import { RecipeSidebar } from "ui/components/RecipeSidebar";
 import { Suspense } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+const sora = Sora({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -20,7 +20,7 @@ export default function RootLayout({
       <Suspense>
         <PostHogPageview />
       </Suspense>
-      <body className={inter.className}>
+      <body className={sora.className}>
         <Providers>
           <div className="w-full h-screen flex overflow-y-auto border-t border-recipe-slate">
             <RecipeSidebar />

@@ -89,4 +89,3 @@ jobs:
           args: ${{ matrix.settings.args }}
           releaseDraft: true
           prerelease: true
-          includeDebug: true

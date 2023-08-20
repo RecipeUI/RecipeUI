@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "RecipeUI",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "tauri": {
     "allowlist": {
@@ -27,9 +27,9 @@
         "save": false
       },
       "shell": {
-        "all": true,
-        "execute": false,
-        "open": false,
+        "all": false,
+        "execute": true,
+        "open": true,
         "scope": [],
         "sidecar": false
       },
@@ -56,13 +56,6 @@
       ],
       "identifier": "com.recipeui",
       "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
       "resources": [],
       "shortDescription": "",
       "targets": "all",
