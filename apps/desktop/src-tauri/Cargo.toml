@@ -21,6 +21,8 @@ tauri = { version = "1.4.0", features = [ "shell-all", "updater", "dialog-messag
 anyhow = "1.0.75"
 reqwest = { version = "0.10", features = ["json"] }
 tokio = { version = "0.2", features = ["full"] }
+url = "2.2.2"
+tauri-plugin-oauth = { git = "https://github.com/FabianLars/tauri-plugin-oauth", branch = "main" }
 
 
 [features]

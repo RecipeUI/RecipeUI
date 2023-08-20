@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![fetch_wrapper])
+        .plugin(tauri_plugin_oauth::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -72,7 +72,9 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-oauth",
  "tokio 0.2.25",
+ "url",
 ]
 
 [[package]]
@@ -3347,6 +3349,18 @@ dependencies = [
  "syn 1.0.109",
  "tauri-codegen",
  "tauri-utils",
+]
+
+[[package]]
+name = "tauri-plugin-oauth"
+version = "0.0.0"
+source = "git+https://github.com/FabianLars/tauri-plugin-oauth?branch=main#26e381159922338f992b3870fc82273fa9320b5b"
+dependencies = [
+ "httparse",
+ "log",
+ "serde",
+ "tauri",
+ "url",
 ]
 
 [[package]]

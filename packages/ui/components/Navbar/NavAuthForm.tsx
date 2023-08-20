@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { Auth } from "@supabase/auth-ui-react";
@@ -7,6 +7,10 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { getUrl } from "../../utils/main";
+import { emit, listen } from "@tauri-apps/api/event";
+import { shell } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api";
+import { relaunch } from "@tauri-apps/api/process";
 
 export default function NavAuthForm({
   isModalOpen,
@@ -19,6 +23,8 @@ export default function NavAuthForm({
   const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
   const searchParams = useSearchParams();
   const hasGoogle = searchParams.get("google");
+
+  const router = useRouter();
 
   return (
     <Dialog
@@ -36,6 +42,70 @@ export default function NavAuthForm({
           <Dialog.Description className="pb-4">
             Save your recipes and share templates with others!
           </Dialog.Description>
+          <button
+            className="btn btn-sm"
+            onClick={async () => {
+              console.log("clicking link");
+
+              listen("oauth://url", (data) => {
+                console.log("data", data);
+
+                if (!data.payload) return;
+
+                const url = new URL(data.payload as string);
+                const code = new URLSearchParams(url.search).get("code");
+
+                console.log({ code });
+
+                if (code) {
+                  supabase.auth
+                    .exchangeCodeForSession(code)
+                    .then(({ data, error }) => {
+                      console.log({ data, error });
+                      if (error) {
+                        console.log(error);
+                        return;
+                      }
+                      relaunch();
+                    });
+                }
+              });
+
+              // googleSignIn(data.payload as string);
+
+              // Start tauri oauth plugin. When receive first request
+              // When it starts, will return the server port
+              // it will kill the server
+              invoke("plugin:oauth|start", {
+                // config: {
+                //   // Optional config, but use here to more friendly callback page
+                //   response: callbackTemplate,
+                // },
+              }).then(async (port) => {
+                const { data, error, ...props } =
+                  await supabase.auth.signInWithOAuth({
+                    options: {
+                      skipBrowserRedirect: true,
+                      redirectTo: `http://localhost:${port}`,
+                    },
+                    provider: "github",
+                  });
+
+                if (data.url) {
+                  console.log("Opening url", data.url);
+                  shell.open(data.url);
+                }
+              });
+
+              // console.log({ data, error, props });
+              // console.log(data.url);
+              // // const { url } = data;
+
+              // console.log("here", { data, error });
+            }}
+          >
+            Github
+          </button>
           <Auth
             supabaseClient={supabase}
             view={view}
@@ -58,9 +128,10 @@ export default function NavAuthForm({
                 },
               },
             }}
-            providers={hasGoogle ? ["google", "github"] : ["github"]}
+            providers={hasGoogle ? ["google", "github"] : ["google", "github"]}
             redirectTo={`${getUrl()}/auth/callback`}
           />
+
           <button
             className="text-sm text-end"
             onClick={() => {
