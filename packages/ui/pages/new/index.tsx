@@ -172,7 +172,7 @@ export default function NewPage() {
 
   return (
     <div className="p-12 space-y-12">
-      <div>
+      <div className="space-y-2">
         <h1 className="text-3xl font-bold dark:text-gray-100">Import APIs</h1>
         <p>
           {
@@ -223,7 +223,7 @@ export default function NewPage() {
               </span>{" "}
             </p>
 
-            <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-scroll p-4 border mt-2">
+            <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-scroll p-4 border  border-recipe-slate mt-2">
               {recipes.map((recipe) => {
                 const selected =
                   selectedRecipesRecord[recipe.path + recipe.method];
@@ -232,7 +232,7 @@ export default function NewPage() {
                   <div
                     key={recipe.path + recipe.method}
                     className={classNames(
-                      "border rounded-md p-3 relative cursor-pointer",
+                      "border rounded-md p-3 relative cursor-pointer border-recipe-slate recipe-hover",
                       selected ? "bg-base-300 " : "bg-base-100"
                     )}
                     onClick={() => {
@@ -552,7 +552,7 @@ function SelectionBox({
   return (
     <button
       className={classNames(
-        "border rounded-md p-3 relative cursor-pointer flex flex-col items-start justify-start",
+        "border rounded-md p-3 relative cursor-pointer flex flex-col items-start justify-start border-recipe-slate recipe-hover",
         disabled && "pointer-events-none opacity-40"
       )}
       onClick={onClick}

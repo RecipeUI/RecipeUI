@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { isTauri } from "../../utils/main";
+import { usePathname, useRouter } from "next/navigation";
+import { getURLParamsForSession, isTauri } from "../../utils/main";
 import classNames from "classnames";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
@@ -11,6 +11,12 @@ export function RecipeHomeSidebar() {
   const router = useRouter();
   const user = useRecipeSessionStore((state) => state.user);
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const sessions = useRecipeSessionStore((state) => state.sessions);
+
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
+  const pathname = usePathname();
 
   return (
     <div className="hidden sm:block w-64 border-r border-r-slate-200 dark:border-r-slate-600 p-6 space-y-4 bg-base-100 overflow-y-auto">
@@ -42,29 +48,32 @@ export function RecipeHomeSidebar() {
             </clipPath>
           </defs>
         </svg>
-        <h1 className="ml-2 dark:text-white font-bold">RecipeUI</h1>
+        <h1 className="ml-2 dark:text-white font-bold text-lg">RecipeUI</h1>
       </Link>
       <div className="text-start py-2 w-full">
         <h3 className="font-bold">API tool for teams</h3>
         <p className="text-sm mt-2">
-          Have internal APIs? Book a demo to see how RecipeUI can save countless
-          hours of testing.
+          Have internal APIs? Book a demo to see how RecipeUI can save your team
+          countless hours of testing.
         </p>
         <div className="space-x-2">
-          {/* <Link
-            className="btn btn-sm btn-outline mt-4"
-            href="https://home.recipeui.com/"
-            target="_blank"
-          >
-            Features
-          </Link> */}
-          <Link
-            className="btn btn-sm btn-neutral mt-4"
-            href="https://calendly.com/jeane-nfi/30min"
-            target="_blank"
-          >
-            Book
-          </Link>
+          {isTauri() ? (
+            <Link
+              className="btn btn-sm btn-neutral mt-4"
+              href="https://home.recipeui.com/"
+              target="_blank"
+            >
+              View features
+            </Link>
+          ) : (
+            <Link
+              className="btn btn-sm btn-neutral mt-4"
+              href="https://calendly.com/jeane-nfi/30min"
+              target="_blank"
+            >
+              Book a demo
+            </Link>
+          )}
         </div>
       </div>
 
@@ -72,20 +81,44 @@ export function RecipeHomeSidebar() {
 
       <div className="text-sm text-gray-600 dark:text-gray-300">
         <ul className="space-y-2">
-          <li className="hidden sm:block">
-            <button
-              className=""
-              onClick={() => {
-                if (isTauri()) {
-                  setDesktopPage(null);
-                } else {
-                  router.push("/");
-                }
-              }}
-            >
-              Home
-            </button>
-          </li>
+          {pathname !== "/" && (
+            <li className="hidden sm:block">
+              {
+                <button
+                  className=""
+                  onClick={() => {
+                    if (isTauri()) {
+                      setDesktopPage(null);
+                    } else {
+                      router.push("/");
+                    }
+                  }}
+                >
+                  Home
+                </button>
+              }
+            </li>
+          )}
+          {sessions.length > 0 && (
+            <li>
+              <button
+                className=""
+                onClick={() => {
+                  setCurrentSession(sessions[0]);
+
+                  if (!isTauri()) {
+                    router.push(
+                      `/?${new URLSearchParams(
+                        getURLParamsForSession(sessions[0])
+                      ).toString()}`
+                    );
+                  }
+                }}
+              >
+                View sessions
+              </button>
+            </li>
+          )}
           <li className="hidden sm:block">
             <button
               id={UNIQUE_ELEMENT_IDS.SIGN_IN}

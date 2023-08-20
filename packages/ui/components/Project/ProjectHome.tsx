@@ -21,11 +21,11 @@ export function ProjectHome({
           {project.image && (
             <img
               src={project.image}
-              className="max-w-[10rem] lg:max-w-xs rounded-lg"
+              className="max-w-[10rem] rounded-lg"
               alt={project.title}
             />
           )}
-          <div className="ml-4">
+          <div className="sm:ml-4">
             <h1 className="text-5xl font-bold">{project.title}</h1>
             <p className="py-4">{project.description}</p>
           </div>

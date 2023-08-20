@@ -26,6 +26,10 @@
     @apply flex flex-col md:grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mt-4 gap-6;
   }
 
+  .border-recipe-slate {
+    @apply border-slate-200 dark:border-slate-600;
+  }
+
   body {
     @apply bg-[#FAFAFA] dark:bg-base-100;
   }
@@ -36,8 +40,12 @@
     @apply h-0.5;
   }
 
+  .recipe-hover {
+    @apply hover:drop-shadow-xl hover:border-blue-300;
+  }
+
   .recipe-container-box {
-    @apply bg-white dark:bg-slate-800 cursor-pointer shadow-sm border border-slate-200 dark:border-slate-600 hover:drop-shadow-xl dark:border-slate-600 hover:border-blue-300;
+    @apply bg-white dark:bg-slate-800 cursor-pointer shadow-sm border border-slate-200 dark:border-slate-600 recipe-hover;
   }
 }
 

@@ -10,11 +10,11 @@ export function RecipeHomeHero() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
-    <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/85 p-6 sm:p-8 rounded-md mb-4 dark:text-black">
+    <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/80 p-6 sm:p-8 rounded-md mb-4 dark:text-black">
       <h1 className="font-bold text-xl">Test APIs in seconds</h1>
       <p className="mt-2 sm:text-base">
         {
-          "Use APIs below immediately, no coding experience required. See how we're making API's easier for teams and developers of all backgrounds."
+          "Use the APIs below immediately, no coding experience required. See how we're making APIs easier for teams and developers of all backgrounds."
         }
       </p>
       <div className="mt-4 flex-col sm:flex-row gap-2 hidden sm:flex">
@@ -33,11 +33,19 @@ export function RecipeHomeHero() {
         >
           Try OpenAI
         </button>
-        {/* {!isTauri() && (
-            <button className="btn btn-neutral hidden sm:block">
-              Download for Desktop
-            </button>
-          )} */}
+        {!isTauri() && (
+          <button
+            className="btn btn-neutral hidden sm:block"
+            onClick={() => {
+              window.open(
+                "https://github.com/RecipeUI/RecipeUI/releases",
+                "_blank"
+              );
+            }}
+          >
+            Download Desktop
+          </button>
+        )}
       </div>
     </div>
   );

@@ -152,12 +152,15 @@ function SessionTab({
       )}
       onClick={() => {
         if (!isCurrentSession) {
-          router.push(
-            `/?${new URLSearchParams(
-              getURLParamsForSession(session)
-            ).toString()}`
-          );
           setCurrentSession(session);
+
+          if (!isTauri()) {
+            router.push(
+              `/?${new URLSearchParams(
+                getURLParamsForSession(session)
+              ).toString()}`
+            );
+          }
           return;
         }
         if (!isEditing) {
