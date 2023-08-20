@@ -105,6 +105,9 @@ importers:
       react-dom:
         specifier: ^17.0.2
         version: 17.0.2(react@17.0.2)
+      trim:
+        specifier: '>=0.0.3'
+        version: 0.0.3
     devDependencies:
       '@docusaurus/module-type-aliases':
         specifier: 2.4.1
@@ -11439,6 +11442,11 @@ packages:
 
   /trim@0.0.1:
     resolution: {integrity: sha512-YzQV+TZg4AxpKxaTHK3c3D+kRDCGVEE7LemdlQZoQXn0iennk10RsIoY6ikzAqJTc9Xjl9C1/waHom/J86ziAQ==}
+    deprecated: Use String.prototype.trim() instead
+    dev: false
+
+  /trim@0.0.3:
+    resolution: {integrity: sha512-h82ywcYhHK7veeelXrCScdH7HkWfbIT1D/CgYO+nmDarz3SGNssVBMws6jU16Ga60AJCRAvPV6w6RLuNerQqjg==}
     deprecated: Use String.prototype.trim() instead
     dev: false
 

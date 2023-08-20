@@ -35,17 +35,9 @@ export function RecipeHomeHero() {
           Try OpenAI
         </button>
         {!isTauri && (
-          <button
-            className="btn btn-neutral hidden sm:block"
-            onClick={() => {
-              window.open(
-                "https://github.com/RecipeUI/RecipeUI/releases",
-                "_blank"
-              );
-            }}
-          >
+          <Link className="btn btn-neutral" href="/download">
             Download Desktop
-          </button>
+          </Link>
         )}
       </div>
     </div>
