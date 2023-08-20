@@ -145,7 +145,11 @@ export default function HybridAuthForm({
   };
 
   const providerInfoMap = useMemo(() => {
-    return providersInfo.filter(({ provider }) => providers.includes(provider));
+    return providers
+      .map(
+        (provider) => providersInfo.find(({ provider: p }) => p === provider)!
+      )
+      .filter(Boolean)!;
   }, [providers]);
 
   return (

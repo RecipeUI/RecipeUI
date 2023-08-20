@@ -7,6 +7,8 @@ import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { useEffect, useState, version } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 
 export function RecipeHomeSidebar() {
   const router = useRouter();
@@ -20,8 +22,15 @@ export function RecipeHomeSidebar() {
   const pathname = usePathname();
   const isTauri = useIsTauri();
 
+  const [appVersion, setAppVersion] = useState<string | null>(null);
+  useEffect(() => {
+    if (isTauri) {
+      getVersion().then(setAppVersion);
+    }
+  }, [isTauri]);
+
   return (
-    <div className="hidden sm:block w-64 border-r border-r-slate-200 dark:border-r-slate-600 p-6 space-y-4 bg-base-100 overflow-y-auto">
+    <div className="hidden sm:flex w-64 border-r border-r-slate-200 dark:border-r-slate-600 p-6 space-y-4 bg-base-100 overflow-y-auto max-h-screen flex-col">
       <Link
         href="/"
         className="cursor-pointer flex items-center"
@@ -78,9 +87,7 @@ export function RecipeHomeSidebar() {
           )}
         </div>
       </div>
-
       <div className="divider" />
-
       <div className="text-sm text-gray-600 dark:text-gray-300">
         <ul className="space-y-2">
           {pathname !== "/" && (
@@ -151,6 +158,9 @@ export function RecipeHomeSidebar() {
           )}
         </ul>
       </div>
+
+      <div className="flex-1" />
+      {appVersion && <div className="text-xs">v{appVersion}</div>}
     </div>
   );
 }
