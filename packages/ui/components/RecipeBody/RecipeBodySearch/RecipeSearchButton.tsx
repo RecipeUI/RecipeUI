@@ -18,7 +18,7 @@ import { RecipeAuthType, RecipeError } from "types/enums";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
-import { isTauri } from "../../../utils/main";
+import { useIsTauri } from "../../../hooks/useIsTauri";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -455,6 +455,7 @@ export function RecipeSearchButton() {
   }, []);
 
   const isHovering = useHover(ref);
+  const isTauri = useIsTauri();
 
   return (
     <div>
@@ -465,7 +466,7 @@ export function RecipeSearchButton() {
           "btn btn-accent dark:text-white sm:w-24 w-full !text-black",
           !currentSession && "btn-disabled",
           isSending && "hover:btn-error",
-          isTauri() && "tooltip tooltip-left"
+          isTauri && "tooltip tooltip-left"
         )}
         data-tip="CMD+Enter"
         type="button"

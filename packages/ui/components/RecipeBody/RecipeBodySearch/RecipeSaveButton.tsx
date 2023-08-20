@@ -9,7 +9,6 @@ import {
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { getURLParamsForSession, isTauri } from "../../../utils/main";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
@@ -20,6 +19,8 @@ import { useForm } from "react-hook-form";
 import { createTemplate } from "./actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
+import { useIsTauri } from "../../../hooks/useIsTauri";
+import { getURLParamsForSession } from "../../../utils/main";
 
 export function RecipeSaveButton() {
   const { type } = useRecipeSessionStore((state) => state.getOutput());
@@ -239,9 +240,10 @@ export function SucessAnimation({
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
   const addSession = useRecipeSessionStore((state) => state.addSession);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  console.log("in success animation", { ignoreAnimation });
 
   const queryClient = useQueryClient();
+  const isTauri = useIsTauri();
+
   useEffect(() => {
     setTimeout(
       () => {
@@ -249,20 +251,20 @@ export function SucessAnimation({
         onClose();
         setBodyRoute(RecipeBodyRoute.Templates);
 
-        if (isTauri()) {
+        if (isTauri) {
           queryClient.invalidateQueries([QueryKey.RecipesView]);
         } else {
-          // router.push(
-          //   `/?${getURLParamsForSession(newSession, {
-          //     newTemplateId: String(newTemplateId),
-          //   })}`
-          // );
+          router.push(
+            `/?${getURLParamsForSession(newSession, {
+              newTemplateId: String(newTemplateId),
+            })}`
+          );
         }
       },
       4000
       // ignoreAnimation === true ? 0 : 4000
     );
-  }, []);
+  }, [isTauri]);
 
   return <img src={"/animated.gif"} alt="visual" className="w-full h-full" />;
 }

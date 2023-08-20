@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { shell } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api";
@@ -8,16 +9,21 @@ import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { listen } from "@tauri-apps/api/event";
-import { isTauri, getUrl } from "../../../utils/main";
+import { getUrl } from "../../../utils/main";
 import { Provider, AuthForm, providersInfo, View } from "./providers";
+import { useIsTauri } from "../../../hooks/useIsTauri";
 
-// Courtesy of Supabase
-export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
+export default function HybridAuthForm({
+  providers = [],
+}: {
+  providers?: Provider[];
+}) {
   const supabase = createClientComponentClient<Database>();
   const portRef = useRef<number | null>(null);
+  const isTauri = useIsTauri();
 
   useEffect(() => {
-    const unlisten = isTauri()
+    const unlisten = isTauri
       ? listen("oauth://url", (data) => {
           if (!data.payload) return;
 
@@ -31,13 +37,13 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
                   console.error(error);
                   return;
                 }
-                window.location.reload();
+                location.reload();
               });
           }
         })
       : null;
 
-    if (isTauri()) {
+    if (isTauri) {
       invoke("plugin:oauth|start", {
         // config: {
         // Add a nicer UI for the call back
@@ -49,12 +55,12 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
     }
 
     () => {
-      if (isTauri()) {
+      if (isTauri) {
         unlisten?.then((u) => u());
         invoke("plugin:oauth|cancel", { port: portRef.current });
       }
     };
-  }, []);
+  }, [isTauri]);
 
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -72,7 +78,7 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
     setLoading(true);
     setError(null);
 
-    if (!portRef.current && isTauri()) {
+    if (!portRef.current && isTauri) {
       setError("Login failed. Close window and try again");
     }
 
@@ -93,7 +99,7 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
           email: formInfo.email,
           password: formInfo.password,
           options: {
-            emailRedirectTo: isTauri()
+            emailRedirectTo: isTauri
               ? `http://localhost:${portRef.current}`
               : `${getUrl()}/auth/callback`,
           },
@@ -113,14 +119,14 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
 
   const onProviderLogin = async (provider: Provider) => {
     setError(null);
-    if (!portRef.current && isTauri()) {
+    if (!portRef.current && isTauri) {
       setError("Login failed. Close window and try again");
     }
 
     const { data } = await supabase.auth.signInWithOAuth({
       options: {
         skipBrowserRedirect: true,
-        redirectTo: isTauri()
+        redirectTo: isTauri
           ? `http://localhost:${portRef.current}`
           : `${getUrl()}/auth/callback`,
       },
@@ -128,10 +134,10 @@ export function HybridAuthForm({ providers = [] }: { providers?: Provider[] }) {
     });
 
     if (data.url) {
-      if (isTauri()) {
+      if (isTauri) {
         shell.open(data.url);
       } else {
-        window.location.href = data.url;
+        location.href = data.url;
       }
     } else {
       setError("Login failed. Close window and try again");

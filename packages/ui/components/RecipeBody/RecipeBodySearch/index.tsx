@@ -14,13 +14,14 @@ import {
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { useRouter } from "next/navigation";
-import { getURLParamsForSession, isTauri } from "../../../utils/main";
+import { getURLParamsForSession } from "../../../utils/main";
 import { RecipeSaveButton } from "../../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLoadingTemplate } from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, Recipe } from "types/database";
+import { useIsTauri } from "../../../hooks/useIsTauri";
 
 interface RecipeSearchExtended extends Recipe {
   label: string;
@@ -89,6 +90,7 @@ export function RecipeBodySearch() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   const ref = useRef<HTMLInputElement>(null);
+  const isTauri = useIsTauri();
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -98,7 +100,7 @@ export function RecipeBodySearch() {
           setCurrentSession(null);
           setInputValue("");
 
-          if (isTauri()) {
+          if (isTauri) {
             setDesktopPage(null);
           } else {
             router.push("/");
@@ -114,7 +116,7 @@ export function RecipeBodySearch() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [openMenu, currentSession]);
+  }, [openMenu, currentSession, isTauri]);
 
   const recipeSearch = useMemo(() => {
     return new Fuse(_recipes, {

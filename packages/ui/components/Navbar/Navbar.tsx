@@ -15,7 +15,6 @@ import { OnboardingFlow } from "./OnboardingFlow";
 import NavAuthForm from "./NavAuthForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
-import { isTauri } from "../../utils/main";
 
 import Cookie from "js-cookie";
 
@@ -39,10 +38,6 @@ export function Navbar() {
   const user = useRecipeSessionStore((state) => state.user);
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
-  const isMobile = useIsMobile();
-
-  const queryClient = useQueryClient();
-  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
     <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600">
@@ -124,7 +119,7 @@ function NavMenu({ user }: { user: User }) {
               await supabase.auth.signOut();
               Cookie.remove(APP_COOKIE);
 
-              window.location.reload();
+              location.reload();
             }}
           >
             Logout

@@ -17,7 +17,7 @@ import { useEffect } from "react";
 
 import { useIsMobile } from "../../ui/hooks";
 import { APP_COOKIE } from "../utils/constants/main";
-import { isTauri } from "../utils/main";
+import { useIsTauri } from "../hooks/useIsTauri";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -149,6 +149,7 @@ export function useSaveRecipeUI() {
     }
   }, []);
 
+  const isTauri = useIsTauri();
   // Save changes every POLLING_FACTOR seconds
   useInterval(
     () => {
@@ -160,6 +161,6 @@ export function useSaveRecipeUI() {
         urlParams,
       });
     },
-    isTauri() ? GLOBAL_POLLING_FACTOR * 3 : GLOBAL_POLLING_FACTOR
+    isTauri ? GLOBAL_POLLING_FACTOR * 3 : GLOBAL_POLLING_FACTOR
   );
 }

@@ -134,13 +134,3 @@ export function getProjectSplit(projects: RecipeProject[]) {
     userProjects,
   };
 }
-
-export function isTauri() {
-  return Boolean(typeof window !== undefined && "__TAURI__" in window);
-}
-
-export function isLocalHost() {
-  return (
-    typeof window !== undefined && window.location.hostname === "localhost"
-  );
-}

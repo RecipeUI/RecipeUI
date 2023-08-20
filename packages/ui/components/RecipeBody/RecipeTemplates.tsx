@@ -23,8 +23,8 @@ import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
 import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
-import { isTauri } from "../../utils/main";
 import { useQueryClient } from "@tanstack/react-query";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeTemplatesTab() {
   return (
@@ -177,6 +177,7 @@ function UserTemplateItem({
   const router = useRouter();
 
   const queryClient = useQueryClient();
+  const isTauri = useIsTauri();
 
   return (
     <div
@@ -324,7 +325,7 @@ function UserTemplateItem({
                         recipe_path: selectedRecipe.path,
                       });
 
-                      if (isTauri()) {
+                      if (isTauri) {
                         queryClient.invalidateQueries([QueryKey.RecipesView]);
                       } else {
                         router.refresh();
@@ -380,6 +381,7 @@ export function ShareModal({
 }) {
   const [onAction, setOnAction] = useState(false);
   const posthog = usePostHog();
+  const isTauri = useIsTauri();
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-50">
@@ -393,9 +395,9 @@ export function ShareModal({
             className="btn btn-accent w-full mt-4"
             onClick={async () => {
               await navigator.clipboard.writeText(
-                `${
-                  isTauri() ? "https://recipeui.com" : window.location.origin
-                }/r/${template.alias}`
+                `${isTauri ? "https://recipeui.com" : location.origin}/r/${
+                  template.alias
+                }`
               );
 
               posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
@@ -434,6 +436,7 @@ export function ShareInviteModal({
   );
 
   const isCurrentUserTemplate = template.author_id === user?.user_id;
+  const isTauri = useIsTauri();
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
@@ -450,9 +453,7 @@ export function ShareInviteModal({
                   onClick={async () => {
                     await navigator.clipboard.writeText(
                       `${
-                        isTauri()
-                          ? "https://recipeui.com"
-                          : window.location.origin
+                        isTauri ? "https://recipeui.com" : location.origin
                       }/r/${template.alias}`
                     );
 

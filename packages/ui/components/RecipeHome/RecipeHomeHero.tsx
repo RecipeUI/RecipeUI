@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { isTauri } from "../../utils/main";
 import { useRouter } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeHomeHero() {
   const router = useRouter();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const isTauri = useIsTauri();
 
   return (
     <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/80 p-6 sm:p-8 rounded-md mb-4 dark:text-black">
@@ -21,7 +22,7 @@ export function RecipeHomeHero() {
         <button
           className="btn btn-neutral w-fit"
           onClick={() => {
-            if (isTauri()) {
+            if (isTauri) {
               setDesktopPage({
                 page: DesktopPage.Project,
                 pageParam: "OpenAI",
@@ -33,7 +34,7 @@ export function RecipeHomeHero() {
         >
           Try OpenAI
         </button>
-        {!isTauri() && (
+        {!isTauri && (
           <button
             className="btn btn-neutral hidden sm:block"
             onClick={() => {

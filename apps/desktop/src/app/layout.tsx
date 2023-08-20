@@ -14,7 +14,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log("Root");
   return (
     <html lang="en">
       <Suspense>

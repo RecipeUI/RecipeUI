@@ -6,7 +6,7 @@ import { Recipe, RecipeProject } from "types/database";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { isTauri } from "../../utils/main";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function ProjectContainer({
   projectName,
@@ -24,10 +24,11 @@ export function ProjectContainer({
   const router = useRouter();
   const hasNoProject = project === null;
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const isTauri = useIsTauri();
 
   useEffect(() => {
     if (hasNoProject) {
-      if (isTauri()) {
+      if (isTauri) {
         setDesktopPage({
           page: DesktopPage.Project,
           pageParam: projectName,
@@ -38,7 +39,7 @@ export function ProjectContainer({
     } else if (currentSession) {
       setCurrentSession(null);
     }
-  }, []);
+  }, [isTauri]);
 
   return (
     <div

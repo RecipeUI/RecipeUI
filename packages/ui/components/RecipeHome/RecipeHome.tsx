@@ -6,8 +6,8 @@ import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { useRouter } from "next/navigation";
-import { isTauri } from "../../utils/main";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeHome({
   globalProjects,
@@ -139,6 +139,7 @@ export function RecipeHomeBox({
 
   const router = useRouter();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const isTauri = useIsTauri();
 
   return (
     <div
@@ -148,7 +149,7 @@ export function RecipeHomeBox({
           project,
         });
 
-        if (isTauri()) {
+        if (isTauri) {
           setDesktopPage({
             page: DesktopPage.Project,
             pageParam: project,

@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { getURLParamsForSession, isTauri } from "../../utils/main";
+import { getURLParamsForSession } from "../../utils/main";
 import classNames from "classnames";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeHomeSidebar() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export function RecipeHomeSidebar() {
     (state) => state.setCurrentSession
   );
   const pathname = usePathname();
+  const isTauri = useIsTauri();
 
   return (
     <div className="hidden sm:block w-64 border-r border-r-slate-200 dark:border-r-slate-600 p-6 space-y-4 bg-base-100 overflow-y-auto">
@@ -24,7 +26,7 @@ export function RecipeHomeSidebar() {
         href="/"
         className="cursor-pointer flex items-center"
         onClick={() => {
-          if (isTauri()) {
+          if (isTauri) {
             setDesktopPage(null);
           }
         }}
@@ -57,7 +59,7 @@ export function RecipeHomeSidebar() {
           countless hours of testing.
         </p>
         <div className="space-x-2">
-          {isTauri() ? (
+          {isTauri ? (
             <Link
               className="btn btn-sm btn-neutral mt-4"
               href="https://home.recipeui.com/"
@@ -87,7 +89,7 @@ export function RecipeHomeSidebar() {
                 <button
                   className=""
                   onClick={() => {
-                    if (isTauri()) {
+                    if (isTauri) {
                       setDesktopPage(null);
                     } else {
                       router.push("/");
@@ -106,7 +108,7 @@ export function RecipeHomeSidebar() {
                 onClick={() => {
                   setCurrentSession(sessions[0]);
 
-                  if (!isTauri()) {
+                  if (!isTauri) {
                     router.push(
                       `/?${new URLSearchParams(
                         getURLParamsForSession(sessions[0])
@@ -129,7 +131,7 @@ export function RecipeHomeSidebar() {
                   return;
                 }
 
-                if (isTauri()) {
+                if (isTauri) {
                   setDesktopPage({
                     page: DesktopPage.New,
                   });
@@ -142,7 +144,7 @@ export function RecipeHomeSidebar() {
             </button>
           </li>
           {/* <button>What is a Recipe?</button> */}
-          {!isTauri() && (
+          {!isTauri && (
             <Link href="/privacy" className="text-sm block">
               Privacy Policy
             </Link>

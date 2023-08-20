@@ -7,12 +7,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import classNames from "classnames";
-import { getURLParamsForSession, isTauri } from "../../utils/main";
+import { getURLParamsForSession } from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { RecipeHomeSidebar } from "./RecipeHomeSidebar";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -22,6 +23,7 @@ export function RecipeSidebar() {
     (state) => state.setCurrentSession
   );
   const router = useRouter();
+  const isTauri = useIsTauri();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -78,7 +80,7 @@ export function RecipeSidebar() {
         onClick={() => {
           setCurrentSession(null);
 
-          if (!isTauri()) {
+          if (!isTauri) {
             router.push("/");
           }
         }}
@@ -141,6 +143,7 @@ function SessionTab({
     updateSessionName(session, name);
   };
   const router = useRouter();
+  const isTauri = useIsTauri();
 
   return (
     <button
@@ -154,7 +157,7 @@ function SessionTab({
         if (!isCurrentSession) {
           setCurrentSession(session);
 
-          if (!isTauri()) {
+          if (!isTauri) {
             router.push(
               `/?${new URLSearchParams(
                 getURLParamsForSession(session)

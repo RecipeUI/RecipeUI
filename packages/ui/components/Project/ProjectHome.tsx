@@ -3,9 +3,10 @@
 import { useRecipeSessionStore } from "../../state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
-import { getURLParamsForSession, isTauri } from "../../utils/main";
+import { getURLParamsForSession } from "../../utils/main";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function ProjectHome({
   project,
@@ -64,6 +65,7 @@ function ProjectHomeBox({
   const createdAt = new Date(recipe.created_at!);
   const currentTime = new Date();
   const difference = currentTime.getTime() - createdAt.getTime();
+  const isTauri = useIsTauri();
 
   return (
     <div
@@ -74,7 +76,7 @@ function ProjectHomeBox({
       onClick={() => {
         const session = addSession(recipe);
 
-        if (!isTauri()) {
+        if (!isTauri) {
           router.push(`/?${getURLParamsForSession(session)}`);
         }
       }}

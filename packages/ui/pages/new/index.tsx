@@ -12,7 +12,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { RouteTypeLabel } from "../../components/RouteTypeLabel";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
-import { isTauri } from "../../utils/main";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 enum ImportStage {
   Upload,
@@ -116,11 +116,12 @@ export default function NewPage() {
   const [authDocs, setAuthDocs] = useState("");
   const router = useRouter();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const isTauri = useIsTauri();
 
   const onSubmit = async () => {
     setSubmitting(true);
 
-    if (!window.confirm("Are you sure you want to upload these API's?")) {
+    if (!window.confirm("Are you sure you want to upload these APIs?")) {
       setSubmitting(false);
       return;
     }
@@ -140,7 +141,7 @@ export default function NewPage() {
       }).then((res) => {
         if (typeof res === "string") {
           setTimeout(() => {
-            if (isTauri()) {
+            if (isTauri) {
               setDesktopPage({
                 page: DesktopPage.Project,
                 pageParam: res,

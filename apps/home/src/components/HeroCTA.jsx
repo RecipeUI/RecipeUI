@@ -12,7 +12,7 @@ export function HeroCTA() {
         onClick={() => {
           Cookie.set('showApp', 'true', { domain: 'recipeui.com' })
 
-          window.location.replace('https://recipeui.com/')
+          location.replace('https://recipeui.com/')
         }}
       >
         Explore our API network

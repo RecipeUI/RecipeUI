@@ -1,19 +1,18 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import { OnboardingFormData, createUser } from "./actions";
-import { UserCreationError } from "./types";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { FormLabelWrapper } from "./FormLabelWrapper";
-import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
-import { isTauri } from "../../utils/main";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function OnboardingFlow() {
   const supabase = createClientComponentClient<Database>();
@@ -35,7 +34,6 @@ export function OnboardingFlow() {
     user.user_metadata &&
     Object.keys(user.user_metadata).length > 0
   ) {
-    console.log("user", user.user_metadata);
     defaultFormData = {
       first: user.user_metadata.full_name.split(" ")[0],
       last: user.user_metadata.full_name.split(" ")[1],
@@ -46,6 +44,7 @@ export function OnboardingFlow() {
 
   const [userError, setUserError] = useState<string | null>(null);
   const posthog = usePostHog();
+  const isTauri = useIsTauri();
 
   const {
     register,
@@ -76,7 +75,9 @@ export function OnboardingFlow() {
       } else if (createRes.error != null) {
         //
       } else {
-        window.location.reload();
+        if (typeof window !== "undefined") {
+          location.reload();
+        }
       }
     }
 
@@ -120,8 +121,8 @@ export function OnboardingFlow() {
             tabIndex={2}
             onClick={() => {
               supabase.auth.signOut().then(() => {
-                if (isTauri()) {
-                  window.location.reload();
+                if (isTauri) {
+                  location.reload();
                 } else {
                   router.refresh();
                 }

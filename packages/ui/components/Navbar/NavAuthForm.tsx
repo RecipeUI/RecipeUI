@@ -1,8 +1,11 @@
 "use client";
 import { Dialog } from "@headlessui/react";
 
-import { HybridAuthForm } from "./DesktopAuthForm";
-import { Provider } from "./DesktopAuthForm/providers";
+import { Provider } from "./HybridAuthForm/providers";
+import dynamic from "next/dynamic";
+const HybridAuthForm = dynamic(() => import("./HybridAuthForm/index"), {
+  ssr: false,
+});
 
 export default function NavAuthForm({
   isModalOpen,
