@@ -3,8 +3,10 @@ import { Dialog } from "@headlessui/react";
 
 import { Provider } from "./HybridAuthForm/providers";
 import dynamic from "next/dynamic";
-const HybridAuthForm = dynamic(() => import("./HybridAuthForm/index"), {
+import { Loading } from "../Loading";
+const HybridAuthForm = dynamic(() => import("./HybridAuthForm"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 export default function NavAuthForm({
