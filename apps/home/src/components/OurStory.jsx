@@ -21,7 +21,9 @@ export function OurStory() {
                   when he saw his colleagues struggle to use and test internal
                   APIs. It went viral and was adopted by near 100% of the
                   engineering org, QA, and support teams, saving countless hours
-                  in testing. Today, Jeane teams up with Samuel (left) to bring
+                  in testing. Samuel (left) spent years as a product manager at
+                  Apple and Coinbase and saw first hand how difficult it was for
+                  dev-adjacent teams to consume APIs. So, we teamed up to bring
                   RecipeUI to life!
                 </p>
               </div>
