@@ -270,9 +270,9 @@ function UserTemplateItem({
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content z-20 menu shadow rounded-box bg-base-300 gap-1 w-[150px] mt-1 grid grid-cols-1 overflow-auto"
+            className="dropdown-content  z-20  menu  shadow rounded-box bg-base-300 gap-2 w-[180px] mt-1 grid grid-cols-2 overflow-auto"
           >
-            <li>
+            <li className="">
               <button
                 className="btn btn-sm btn-neutral w-full"
                 onClick={async () => {
@@ -312,7 +312,7 @@ function UserTemplateItem({
                   }, 500);
                 }}
               >
-                Quick Use
+                Send
               </button>
             </li>
             <li>
@@ -360,7 +360,7 @@ function UserTemplateItem({
               template.author_id === user?.user_id) && (
               <li>
                 <button
-                  className="btn btn-sm btn-neutral w-full"
+                  className="btn btn-sm btn-neutral w-full z-40"
                   onClick={async () => {
                     if (
                       !(await confirm("Are you sure you want to delete this?"))
