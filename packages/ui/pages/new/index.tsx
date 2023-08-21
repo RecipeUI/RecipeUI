@@ -8,11 +8,11 @@ import classNames from "classnames";
 import { uploadAPIs } from "./actions";
 import { AuthFormType, ProjectScope, QueryKey } from "types/enums";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { RouteTypeLabel } from "../../components/RouteTypeLabel";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { useSupabaseClient } from "../../components/Providers/SupabaseProvider";
 
 enum ImportStage {
   Upload,
@@ -35,7 +35,7 @@ export default function NewPage() {
   );
 
   const user = useRecipeSessionStore((state) => state.user);
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const [selectedProject, setSelectedProject] = useState<null | string>(null);
 
   const projectRes = useQuery({
@@ -119,9 +119,11 @@ export default function NewPage() {
   const isTauri = useIsTauri();
 
   const onSubmit = async () => {
-    setSubmitting(true);
+    const confirmation = await window.confirm(
+      "Are you sure you want to upload these APIs?"
+    );
 
-    if (!window.confirm("Are you sure you want to upload these APIs?")) {
+    if (!confirmation) {
       setSubmitting(false);
       return;
     }
@@ -131,14 +133,17 @@ export default function NewPage() {
     );
 
     try {
-      const projectName = uploadAPIs({
-        apis: selectedRecipes,
-        authType: authType,
-        authConfigs: authConfigs,
-        project: selectedProject,
-        username: user?.username!,
-        authDocs,
-      }).then((res) => {
+      const projectName = uploadAPIs(
+        {
+          apis: selectedRecipes,
+          authType: authType,
+          authConfigs: authConfigs,
+          project: selectedProject,
+          username: user?.username!,
+          authDocs,
+        },
+        supabase
+      ).then((res) => {
         if (typeof res === "string") {
           setTimeout(() => {
             if (isTauri) {
@@ -343,7 +348,12 @@ export default function NewPage() {
           </p>
           <button
             className="btn btn-accent"
-            onClick={onSubmit}
+            onClick={() => {
+              setSubmitting(true);
+              setTimeout(() => {
+                onSubmit();
+              }, 500);
+            }}
             disabled={submitting}
           >
             Submit

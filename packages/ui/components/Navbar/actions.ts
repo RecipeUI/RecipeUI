@@ -1,7 +1,10 @@
 import { UserCreationError } from "./types";
 import { Database } from "types/database";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
+import {
+  RecipeSupabase,
+  useSupabaseClient,
+} from "../Providers/SupabaseProvider";
 
 export type OnboardingFormData = {
   first: string;
@@ -15,9 +18,10 @@ export type OnboardingFormData = {
   use_case?: string;
 };
 
-export async function createUser(data: OnboardingFormData) {
-  const supabase = createClientComponentClient<Database>();
-
+export async function createUser(
+  data: OnboardingFormData,
+  supabase: RecipeSupabase
+) {
   const userRes = await supabase.auth.getUser();
 
   const res = await supabase.from("user").insert({

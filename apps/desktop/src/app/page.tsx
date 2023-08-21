@@ -1,10 +1,9 @@
 "use client";
 import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, RecipeProject } from "types/database";
 import { redirect } from "next/navigation";
 import { useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
 import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
@@ -40,7 +39,7 @@ export default function Container() {
 }
 
 function HomePage() {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   const { data: projectData, isLoading: isLoadingHome } = useQuery({
@@ -52,12 +51,21 @@ function HomePage() {
     (projectData?.data || []) as RecipeProject[]
   );
 
-  const { data: recipe, isLoading: isLoadingRecipe } = useQuery({
-    queryKey: [QueryKey.RecipesView, currentSession?.recipeId, supabase],
-    queryFn: async () =>
-      currentSession?.recipeId
-        ? fetchHomeRecipe({ supabase, recipeId: currentSession?.recipeId })
-        : null,
+  const {
+    data: recipe,
+    isLoading: isLoadingRecipe,
+    refetch,
+  } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [QueryKey.RecipesHomeView, currentSession?.recipeId],
+    queryFn: async () => {
+      return currentSession?.recipeId
+        ? fetchHomeRecipe({
+            supabase,
+            recipeId: currentSession?.recipeId!,
+          })
+        : null;
+    },
   });
 
   const invokeMemoized = useMemo(() => {
@@ -98,9 +106,10 @@ function HomePage() {
 import { fetchProjectPage } from "ui/fetchers/project";
 import { ProjectContainer } from "ui/components/Project/ProjectContainer";
 import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
+import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
 
   const { data: projectData, isLoading } = useQuery({
     queryKey: [QueryKey.Projects, projectParam, supabase],

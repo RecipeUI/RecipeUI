@@ -60,7 +60,6 @@ export function RecipeSidebar() {
   }, [currentSession, sessions, setCurrentSession]);
 
   const pathname = usePathname();
-  const { project: projectId, recipe: recipeAlias, username } = useParams();
 
   const isMobile = useIsMobile();
   useEffect(() => {

@@ -99,7 +99,6 @@ export function RecipeParameterTab() {
   const showOnboarding = !loadingTemplate && needsAuthSetup && !showingRecipes;
   const hasNoParams =
     !hasRequestBody && !hasQueryParams && !hasUrlParams && !loadingTemplate;
-
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
       {/* This logic is pretty confusing */}

@@ -1,11 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "types/database";
-import { useIsMobile } from "../../hooks";
+import { useRecipeSessionStore } from "../../state/recipeSession";
 import { useEffect, useState } from "react";
-import classNames from "classnames";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
@@ -13,10 +9,9 @@ import Link from "next/link";
 import { APP_COOKIE, UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { OnboardingFlow } from "./OnboardingFlow";
 import NavAuthForm from "./NavAuthForm";
-import { useQueryClient } from "@tanstack/react-query";
-import { QueryKey } from "types/enums";
 
 import Cookie from "js-cookie";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
 
 export function Navbar() {
   const router = useRouter();
@@ -84,7 +79,7 @@ export function Navbar() {
 }
 
 function NavMenu({ user }: { user: User }) {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const router = useRouter();
 
   return (

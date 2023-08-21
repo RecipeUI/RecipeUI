@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { shell } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 
 import { useForm } from "react-hook-form";
@@ -12,16 +11,16 @@ import { listen } from "@tauri-apps/api/event";
 import { getUrl } from "../../../utils/main";
 import { Provider, AuthForm, providersInfo, View } from "./providers";
 import { useIsTauri } from "../../../hooks/useIsTauri";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 export default function HybridAuthForm({
   providers = [],
 }: {
   providers?: Provider[];
 }) {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const portRef = useRef<number | null>(null);
   const isTauri = useIsTauri();
-
   useEffect(() => {
     const unlisten = isTauri
       ? listen("oauth://url", (data) => {
@@ -60,7 +59,7 @@ export default function HybridAuthForm({
         invoke("plugin:oauth|cancel", { port: portRef.current });
       }
     };
-  }, [isTauri]);
+  }, [isTauri, supabase.auth]);
 
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -123,14 +122,14 @@ export default function HybridAuthForm({
       setError("Login failed. Close window and try again");
     }
 
-    const { data } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       options: {
         skipBrowserRedirect: true,
         redirectTo: isTauri
           ? `http://localhost:${portRef.current}`
           : `${getUrl()}/auth/callback`,
       },
-      provider: "github",
+      provider: provider,
     });
 
     if (data.url) {

@@ -9,14 +9,15 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { DOC_LINKS } from "../../utils/docLinks";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
 
 export function RecipeConfigTab() {
   const selectedRecipe = useContext(RecipeContext)!;
   const needsAuth = selectedRecipe.auth !== null;
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const router = useRouter();
   const user = useRecipeSessionStore((state) => state.user);
   const closeSession = useRecipeSessionStore((state) => state.closeSession);
@@ -45,7 +46,9 @@ export function RecipeConfigTab() {
                 className="btn btn-error btn-sm"
                 onClick={async () => {
                   if (
-                    !confirm("Are you sure you want to delete this recipe?")
+                    !(await confirm(
+                      "Are you sure you want to delete this API?"
+                    ))
                   ) {
                     return;
                   }

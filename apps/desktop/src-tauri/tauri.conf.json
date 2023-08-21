@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "RecipeUI",
-    "version": "0.1.4"
+    "version": "0.1.5"
   },
   "tauri": {
     "allowlist": {
@@ -23,8 +23,8 @@
       },
       "dialog": {
         "all": false,
-        "ask": false,
-        "confirm": false,
+        "ask": true,
+        "confirm": true,
         "message": true,
         "open": false,
         "save": false

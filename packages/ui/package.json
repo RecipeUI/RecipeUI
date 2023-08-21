@@ -12,6 +12,7 @@
     "@headlessui/react": "^1.7.16",
     "@heroicons/react": "^2.0.18",
     "@supabase/auth-helpers-nextjs": "^0.7.4",
+    "@supabase/supabase-js": "^2.31.0",
     "@tanstack/react-query": "^4.32.6",
     "@tauri-apps/api": "^1.4.0",
     "@uiw/react-codemirror": "^4.21.9",

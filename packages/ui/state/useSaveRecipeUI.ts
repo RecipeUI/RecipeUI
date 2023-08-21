@@ -12,12 +12,12 @@ import Cookie from "js-cookie";
 
 import { useInterval, useLocalStorage } from "usehooks-ts";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect } from "react";
 
 import { useIsMobile } from "../../ui/hooks";
 import { APP_COOKIE } from "../utils/constants/main";
 import { useIsTauri } from "../hooks/useIsTauri";
+import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 
 /*
 This is definitely a naive, unoptimized, approach to storing data locally.
@@ -75,7 +75,7 @@ export function useSaveRecipeUI() {
     if (localSave.urlParams) setUrlParams(localSave.urlParams);
   }, []);
 
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const setUserSession = useRecipeSessionStore((state) => state.setUserSession);
 
   const setOnboarding = useRecipeSessionStore((state) => state.setOnboarding);

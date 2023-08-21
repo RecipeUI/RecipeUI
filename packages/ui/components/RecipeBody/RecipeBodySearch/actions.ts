@@ -1,15 +1,14 @@
 "use client";
 
 import { Database, TableInserts } from "types/database";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { generateSlug } from "random-word-slugs";
 import { DB_FUNC_ERRORS } from "../../../utils/constants/main";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function createTemplate(
-  payload: Omit<TableInserts<"template">, "alias">
+  payload: Omit<TableInserts<"template">, "alias">,
+  supabase: SupabaseClient<Database>
 ) {
-  const supabase = createClientComponentClient<Database>();
-
   //   This should already have RLS
   const { data: templateData, error } = await supabase
     .from("template")
@@ -25,9 +24,10 @@ export async function createTemplate(
   };
 }
 
-export async function deleteTemplate(templateId: number) {
-  const supabase = createClientComponentClient<Database>();
-
+export async function deleteTemplate(
+  templateId: number,
+  supabase: SupabaseClient<Database>
+) {
   const { error, status, statusText } = await supabase
     .from("template")
     .delete()
@@ -36,9 +36,10 @@ export async function deleteTemplate(templateId: number) {
   return error ? false : true;
 }
 
-export async function cloneTemplate(templateId: number) {
-  const supabase = createClientComponentClient<Database>();
-
+export async function cloneTemplate(
+  templateId: number,
+  supabase: SupabaseClient<Database>
+) {
   const { data: oldTemplateData } = await supabase
     .from("template")
     .select()

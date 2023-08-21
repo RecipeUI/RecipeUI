@@ -18,13 +18,14 @@ import {
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
 } from "../../utils/constants/main";
-import { SucessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { SuccessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
 import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
 
 export function RecipeTemplatesTab() {
   return (
@@ -178,13 +179,14 @@ function UserTemplateItem({
 
   const queryClient = useQueryClient();
   const isTauri = useIsTauri();
-
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const supabase = useSupabaseClient();
   return (
     <div
       className={classNames(
         "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
         newTemplateId === String(template.id) &&
-          "border-chefYellow border-4 border-dashed"
+          "!border-blue-600 !border-2 border-dashed"
       )}
       key={`${template.id}`}
     >
@@ -229,7 +231,7 @@ function UserTemplateItem({
               recipe_path: selectedRecipe.path,
             });
 
-            const templateInfo = await getTemplate(template.id);
+            const templateInfo = await getTemplate(template.id, supabase);
             if (templateInfo) {
               setLoadingTemplate(templateInfo);
             } else {
@@ -263,7 +265,7 @@ function UserTemplateItem({
               <button
                 className="btn btn-sm btn-neutral w-full"
                 onClick={async () => {
-                  const templateInfo = await getTemplate(template.id);
+                  const templateInfo = await getTemplate(template.id, supabase);
 
                   if (!templateInfo) {
                     alert("Failed to find template");
@@ -305,7 +307,9 @@ function UserTemplateItem({
                 <button
                   className="btn btn-sm btn-neutral w-full"
                   onClick={async () => {
-                    if (!confirm("Are you sure you want to delete this?")) {
+                    if (
+                      !(await confirm("Are you sure you want to delete this?"))
+                    ) {
                       return;
                     }
                     if (isLocalFork) {
@@ -314,7 +318,8 @@ function UserTemplateItem({
                     }
 
                     const deletedTemplateRes = await deleteTemplate(
-                      template.id
+                      template.id,
+                      supabase
                     );
 
                     if (deletedTemplateRes) {
@@ -326,12 +331,16 @@ function UserTemplateItem({
                       });
 
                       if (isTauri) {
-                        queryClient.invalidateQueries([QueryKey.RecipesView]);
+                        setTimeout(() => {
+                          queryClient.invalidateQueries({
+                            queryKey: [QueryKey.RecipesHomeView],
+                          });
+                        }, 0);
                       } else {
                         router.refresh();
                       }
 
-                      alert("Template deleted");
+                      alert("Recipe deleted");
                       return;
                     }
                   }}
@@ -437,6 +446,7 @@ export function ShareInviteModal({
 
   const isCurrentUserTemplate = template.author_id === user?.user_id;
   const isTauri = useIsTauri();
+  const supabase = useSupabaseClient();
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
@@ -483,7 +493,8 @@ export function ShareInviteModal({
                   } else {
                     setIsForking(true);
                     const { newTemplate, error } = await cloneTemplate(
-                      template.id
+                      template.id,
+                      supabase
                     );
 
                     if (newTemplate) {
@@ -509,7 +520,7 @@ export function ShareInviteModal({
               </button>
             </>
           ) : (
-            <SucessAnimation
+            <SuccessAnimation
               onClose={onClose}
               newTemplateId={newTemplateId}
               passiveRecipe={template.recipe}

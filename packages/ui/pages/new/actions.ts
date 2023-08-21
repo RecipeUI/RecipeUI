@@ -1,4 +1,3 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { AuthConfig, Database, Recipe } from "types/database";
 import {
   AuthFormType,
@@ -7,23 +6,26 @@ import {
   Visibility,
 } from "types/enums";
 import { generateSlug } from "random-word-slugs";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export async function uploadAPIs({
-  username,
-  apis,
-  authType,
-  authConfigs,
-  project: _project,
-  authDocs,
-}: {
-  username: string;
-  apis: Omit<Recipe, "id">[];
-  authType: AuthFormType;
-  authConfigs: AuthConfig["payload"][];
-  project: string | null;
-  authDocs?: string;
-}) {
-  const supabase = createClientComponentClient<Database>();
+export async function uploadAPIs(
+  {
+    username,
+    apis,
+    authType,
+    authConfigs,
+    project: _project,
+    authDocs,
+  }: {
+    username: string;
+    apis: Omit<Recipe, "id">[];
+    authType: AuthFormType;
+    authConfigs: AuthConfig["payload"][];
+    project: string | null;
+    authDocs?: string;
+  },
+  supabase: SupabaseClient<Database>
+) {
   const user = await supabase.auth.getUser();
 
   if (!user.data.user) {

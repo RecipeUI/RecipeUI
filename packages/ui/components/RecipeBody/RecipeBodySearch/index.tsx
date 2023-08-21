@@ -19,9 +19,9 @@ import { RecipeSaveButton } from "../../RecipeBody/RecipeBodySearch/RecipeSaveBu
 import { useLoadingTemplate } from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database, Recipe } from "types/database";
 import { useIsTauri } from "../../../hooks/useIsTauri";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 interface RecipeSearchExtended extends Recipe {
   label: string;
@@ -38,7 +38,7 @@ export function RecipeBodySearch() {
     (state) => state.loadingTemplate
   );
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
 
   const [recipes, setRecipes] = useState<RecipeSearchExtended[]>([]);
 

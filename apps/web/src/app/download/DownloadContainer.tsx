@@ -194,7 +194,6 @@ export function DownloadContainer({
 
     return _platforms.slice(0, 1);
   }, [content, platform, showAll]);
-  console.log({ platformInfo });
 
   return (
     <div className="h-full sm:flex sm:flex-col lg:grid grid-cols-5 ">

@@ -10,12 +10,12 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { FormLabelWrapper } from "./FormLabelWrapper";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
 
 export function OnboardingFlow() {
-  const supabase = createClientComponentClient<Database>();
+  const supabase = useSupabaseClient();
   const session = useRecipeSessionStore((state) => state.userSession);
   const user = session?.user;
   const router = useRouter();
@@ -68,7 +68,7 @@ export function OnboardingFlow() {
         hear_about: data.hear_about,
         use_case: data.use_case,
       });
-      const createRes = await createUser(data);
+      const createRes = await createUser(data, supabase);
 
       if (createRes.status === 409) {
         setUserError(data.username);

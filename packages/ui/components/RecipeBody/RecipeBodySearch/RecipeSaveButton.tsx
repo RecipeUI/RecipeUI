@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { getURLParamsForSession } from "../../../utils/main";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 export function RecipeSaveButton() {
   const { type } = useRecipeSessionStore((state) => state.getOutput());
@@ -98,28 +99,38 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
     state.getOutput()
   );
 
+  useEffect(() => {
+    () => {
+      onClose();
+    };
+  }, []);
+  const supabase = useSupabaseClient();
+
   const onSubmit = handleSubmit(async (data) => {
     setLoading(true);
 
     try {
-      const { newTemplate, error } = await createTemplate({
-        author_id: user.user_id,
-        original_author_id: user.user_id,
-        project: recipe.project,
-        recipe_id: recipe.id,
-        requestBody,
-        queryParams,
-        urlParams,
-        replay:
-          recipe.auth !== null && duration
-            ? {
-                output,
-                streaming: recipe.options?.streaming ?? false,
-                duration: Math.floor(duration),
-              }
-            : null,
-        ...data,
-      });
+      const { newTemplate, error } = await createTemplate(
+        {
+          author_id: user.user_id,
+          original_author_id: user.user_id,
+          project: recipe.project,
+          recipe_id: recipe.id,
+          requestBody,
+          queryParams,
+          urlParams,
+          replay:
+            recipe.auth !== null && duration
+              ? {
+                  output,
+                  streaming: recipe.options?.streaming ?? false,
+                  duration: Math.floor(duration),
+                }
+              : null,
+          ...data,
+        },
+        supabase
+      );
 
       if (newTemplate) {
         posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
@@ -217,7 +228,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
               </form>
             </>
           ) : (
-            <SucessAnimation onClose={onClose} newTemplateId={newTemplateId} />
+            <SuccessAnimation onClose={onClose} newTemplateId={newTemplateId} />
           )}
         </Dialog.Panel>
       </div>
@@ -225,7 +236,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function SucessAnimation({
+export function SuccessAnimation({
   onClose,
   newTemplateId,
   passiveRecipe,
@@ -240,29 +251,35 @@ export function SucessAnimation({
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
   const addSession = useRecipeSessionStore((state) => state.addSession);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const queryClient = useQueryClient();
   const isTauri = useIsTauri();
 
   useEffect(() => {
     setTimeout(
       () => {
-        const newSession = addSession(recipe);
-        onClose();
-        setBodyRoute(RecipeBodyRoute.Templates);
+        const needsSession = passiveRecipe == null;
 
+        setBodyRoute(RecipeBodyRoute.Templates);
         if (isTauri) {
-          queryClient.invalidateQueries([QueryKey.RecipesView]);
+          queryClient.invalidateQueries({
+            queryKey: [QueryKey.RecipesHomeView, currentSession?.recipeId],
+          });
         } else {
-          router.push(
-            `/?${getURLParamsForSession(newSession, {
-              newTemplateId: String(newTemplateId),
-            })}`
-          );
+          if (needsSession) {
+            const newSession = addSession(recipe);
+            router.push(
+              `/?${getURLParamsForSession(newSession, {
+                newTemplateId: String(newTemplateId),
+              })}`
+            );
+          } else {
+            router.refresh();
+          }
         }
+        onClose();
       },
-      4000
-      // ignoreAnimation === true ? 0 : 4000
+      ignoreAnimation === true ? 0 : 4000
     );
   }, [isTauri]);
 
