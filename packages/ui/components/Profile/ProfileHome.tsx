@@ -3,7 +3,7 @@
 import {
   ShareInviteModal,
   TemplateMockCode,
-} from "../RecipeBody/RecipeTemplates";
+} from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
 import { RecipeProject, User, UserTemplatePreview } from "types/database";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

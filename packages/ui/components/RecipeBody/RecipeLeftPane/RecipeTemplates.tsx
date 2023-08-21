@@ -1,31 +1,32 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   RecipeBodyRoute,
   RecipeContext,
   RecipeOutputTab,
+  RecipeProjectContext,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "../../../state/recipeSession";
 import { RecipeTemplate, UserTemplatePreview } from "types/database";
-import { getTemplate } from "./actions";
+import { getTemplate } from "../actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 
 import { usePostHog } from "posthog-js/react";
-import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
+import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
-} from "../../utils/constants/main";
-import { SuccessAnimation } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
+} from "../../../utils/constants/main";
+import { SuccessAnimation } from "../RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
-import { cloneTemplate, deleteTemplate } from "./RecipeBodySearch/actions";
+import { cloneTemplate, deleteTemplate } from "../RecipeBodySearch/actions";
 import { useQueryClient } from "@tanstack/react-query";
-import { useIsTauri } from "../../hooks/useIsTauri";
-import { useSupabaseClient } from "../Providers/SupabaseProvider";
+import { useIsTauri } from "../../../hooks/useIsTauri";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 export function RecipeTemplatesTab() {
   return (
@@ -122,7 +123,9 @@ export function UserTemplates() {
     (state) => state.loadingTemplate
   );
 
-  const isTeam = userTemplates.some((ut) => ut.scope === ProjectScope.Team);
+  const project = useContext(RecipeProjectContext)!;
+
+  const isTeam = project.scope === ProjectScope.Team;
 
   if (userTemplates.length === 0) {
     return null;
@@ -130,7 +133,15 @@ export function UserTemplates() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">{isTeam ? "" : "Your "}Recipes</h1>
+      <h1 className="text-xl font-bold">
+        {isTeam ? (
+          <>
+            <span className="">{`${project.title}'s`}</span> recipes
+          </>
+        ) : (
+          "Your"
+        )}
+      </h1>
       <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
         {userTemplates.map((template) => (
           <UserTemplateItem
@@ -186,7 +197,7 @@ function UserTemplateItem({
       className={classNames(
         "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
         newTemplateId === String(template.id) &&
-          "!border-blue-600 !border-2 border-dashed"
+          "!border-accent !border-4 border-dashed"
       )}
       key={`${template.id}`}
     >
@@ -259,8 +270,51 @@ function UserTemplateItem({
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content z-20 menu p-2 shadow rounded-box bg-base-300 space-y-2 mt-2"
+            className="dropdown-content z-20 menu shadow rounded-box bg-base-300 gap-1 w-[150px] mt-1 grid grid-cols-1 overflow-auto"
           >
+            <li>
+              <button
+                className="btn btn-sm btn-neutral w-full"
+                onClick={async () => {
+                  const templateInfo = await getTemplate(template.id, supabase);
+
+                  if (!templateInfo) {
+                    alert("Failed to find template");
+                    return;
+                  }
+
+                  if (templateInfo.requestBody) {
+                    setRequestBody(templateInfo.requestBody);
+                  }
+
+                  if (templateInfo.queryParams) {
+                    setQueryParams(templateInfo.queryParams);
+                  }
+
+                  if (templateInfo.urlParams) {
+                    setUrlParams(templateInfo.urlParams);
+                  }
+
+                  setCurrentTab(RecipeOutputTab.Docs);
+                  setBodyRoute(RecipeBodyRoute.Parameters);
+
+                  posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
+                    template_id: template.id,
+                    template_project: selectedRecipe.project,
+                    recipe_id: selectedRecipe.id,
+                    recipe_path: selectedRecipe.path,
+                  });
+
+                  setTimeout(() => {
+                    document
+                      .getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)
+                      ?.click();
+                  }, 500);
+                }}
+              >
+                Quick Use
+              </button>
+            </li>
             <li>
               <button
                 className="btn btn-sm btn-neutral w-full"
@@ -298,6 +352,7 @@ function UserTemplateItem({
                 Prefill
               </button>
             </li>
+
             <li>
               <ShareRecipeButton template={template} />
             </li>
@@ -381,7 +436,7 @@ function ShareRecipeButton({ template }: { template: UserTemplatePreview }) {
   );
 }
 
-export function ShareModal({
+function ShareModal({
   template,
   onClose,
 }: {
@@ -391,6 +446,7 @@ export function ShareModal({
   const [onAction, setOnAction] = useState(false);
   const posthog = usePostHog();
   const isTauri = useIsTauri();
+  const project = useContext(RecipeProjectContext);
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-50">
@@ -448,13 +504,17 @@ export function ShareInviteModal({
   const isTauri = useIsTauri();
   const supabase = useSupabaseClient();
 
+  const isTeam = template.project_scope === ProjectScope.Team;
+
+  const isQuickUse = isCurrentUserTemplate || isTeam;
+
   return (
     <Dialog open={true} onClose={onClose} className="relative z-20">
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[400px]">
-          <TemplateMockCode template={template} />
+          <TemplateMockCode template={template} isTeam />
           {newTemplateId === null ? (
             <>
               {isCurrentUserTemplate && (
@@ -475,8 +535,8 @@ export function ShareInviteModal({
               )}
               <button
                 className="btn btn-accent w-full mt-4"
-                onClick={async () => {
-                  if (isCurrentUserTemplate) {
+                onClick={async (e) => {
+                  if (isQuickUse) {
                     setNewTemplateId(template.id);
                     return;
                   }
@@ -515,7 +575,7 @@ export function ShareInviteModal({
                   }
                 }}
               >
-                {isCurrentUserTemplate ? "Use template" : "Fork this Recipe!"}
+                {isQuickUse ? "Use template" : "Fork this Recipe!"}
                 {isForking && <span className="loading loading-bars" />}
               </button>
             </>
@@ -524,7 +584,7 @@ export function ShareInviteModal({
               onClose={onClose}
               newTemplateId={newTemplateId}
               passiveRecipe={template.recipe}
-              ignoreAnimation={!!isCurrentUserTemplate}
+              ignoreAnimation={isQuickUse}
             />
           )}
 
@@ -549,15 +609,22 @@ export function ShareInviteModal({
 
 export function TemplateMockCode({
   template,
+  isTeam: _isTeam,
 }: {
   template: UserTemplatePreview;
+  isTeam?: boolean;
 }) {
+  const project = useContext(RecipeProjectContext);
+  const isTeam = _isTeam || project?.scope === ProjectScope.Team;
+
+  const label = isTeam
+    ? `${project ? project.title : "Team"} | ${template.recipe.title}`
+    : `${template.recipe.project} | ${template.recipe.title}`;
+
   return (
     <div className="mockup-code h-full w-full">
       <pre className="px-4 py-2 whitespace-pre-wrap">
-        <p className="text-xs font-bold">
-          {template.recipe.project} | {template.recipe.title}
-        </p>
+        <p className="text-xs font-bold">{label}</p>
         <p className="text-xs font-bold">
           Created by @{template.original_author.username}
         </p>

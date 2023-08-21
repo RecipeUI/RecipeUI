@@ -63,11 +63,14 @@ export async function fetchHomeRecipe({
     } = await supabase
       .from("template_view")
       .select(
-        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, scope"
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, project_scope"
       )
-      .or(`author_id.eq.${userData.user.id},scope.eq.team`)
+      .or(`author_id.eq.${userData.user.id},project_scope.eq.team`)
       .eq("recipe_id", recipeId);
 
+    if (error) {
+      console.error(error);
+    }
     if (!error && templateRes && templateRes.length > 0) {
       recipe.userTemplates = (templateRes as UserTemplatePreview[]).reverse();
     }

@@ -1,8 +1,8 @@
 "use client";
 import classNames from "classnames";
-import { RecipeParameterTab } from "./RecipeParameterTab";
-import { RecipeTemplatesTab } from "./RecipeTemplates";
-import { RecipeConfigTab } from "./RecipeConfigTab";
+import { RecipeParameterTab } from "./RecipeLeftPane/RecipeParameterTab";
+import { RecipeTemplatesTab } from "./RecipeLeftPane/RecipeTemplates";
+import { RecipeConfigTab } from "./RecipeLeftPane/RecipeConfigTab";
 import { useContext, useEffect, useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
 import {
@@ -15,6 +15,7 @@ import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { UserTemplatePreview } from "types/database";
 import { useIsMobile } from "../../hooks";
 import { useRouter } from "next/navigation";
+import { useLeftPaneInfo } from "./RecipeLeftPane/useLeftPaneInfo";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -30,6 +31,8 @@ export function RecipeBody() {
       null
     );
 
+  const { showingRecipesTwo } = useLeftPaneInfo();
+
   const routes = useMemo(() => {
     if (selectedRecipe === null) {
       return [];
@@ -38,12 +41,13 @@ export function RecipeBody() {
     const parameters = [RecipeBodyRoute.Parameters];
 
     if (
-      (selectedRecipe &&
+      !showingRecipesTwo &&
+      ((selectedRecipe &&
         selectedRecipe.templates &&
         selectedRecipe.templates.length > 0) ||
-      (selectedRecipe.userTemplates &&
-        selectedRecipe.userTemplates.length > 0) ||
-      forkedTemplate
+        (selectedRecipe.userTemplates &&
+          selectedRecipe.userTemplates.length > 0) ||
+        forkedTemplate)
     ) {
       parameters.push(RecipeBodyRoute.Templates);
     }
@@ -66,7 +70,7 @@ export function RecipeBody() {
     }
 
     return parameters;
-  }, [forkedTemplate, isMobile, selectedRecipe, setBodyRoute]);
+  }, [forkedTemplate, isMobile, selectedRecipe, showingRecipesTwo]);
 
   useEffect(() => {
     if (isMobile) {

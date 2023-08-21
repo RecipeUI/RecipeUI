@@ -5,6 +5,7 @@ import {
   RecipeOptions,
   RecipeOutputType,
   RecipeParameters,
+  RecipeProject,
   RecipeTemplate,
   User,
 } from "types/database";
@@ -555,6 +556,8 @@ function deleteParamsForSessionIdFromLocal(sessionId: string) {
 }
 
 export const RecipeContext = createContext<Recipe | null>(null);
+
+export const RecipeProjectContext = createContext<RecipeProject | null>(null);
 
 export interface FetchRequest {
   url: string;

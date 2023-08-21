@@ -14,6 +14,7 @@ import {
   FetchResponse,
   RecipeContext,
   RecipeNativeFetch,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "ui/state/recipeSession";
 import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
@@ -68,6 +69,13 @@ function HomePage() {
     },
   });
 
+  const project = useMemo(() => {
+    return recipe
+      ? userProjects.find((p) => p.project === recipe.project) ||
+          globalProjects.find((p) => p.project === recipe.project)
+      : null;
+  }, [globalProjects, userProjects, recipe]);
+
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>
       invoke<FetchResponse>("fetch_wrapper", payload as unknown as InvokeArgs);
@@ -78,6 +86,7 @@ function HomePage() {
   }
 
   const hasSession = currentSession != null && recipe;
+
   return (
     <div
       className={classNames(
@@ -86,18 +95,20 @@ function HomePage() {
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
-        <RecipeNativeFetch.Provider value={invokeMemoized}>
-          {!hasSession && <RecipeHomeHero />}
-          <RecipeBodySearch />
-          {hasSession ? (
-            <RecipeBody />
-          ) : (
-            <RecipeHome
-              globalProjects={globalProjects}
-              projects={userProjects}
-            />
-          )}
-        </RecipeNativeFetch.Provider>
+        <RecipeProjectContext.Provider value={project || null}>
+          <RecipeNativeFetch.Provider value={invokeMemoized}>
+            {!hasSession && <RecipeHomeHero />}
+            <RecipeBodySearch />
+            {hasSession ? (
+              <RecipeBody />
+            ) : (
+              <RecipeHome
+                globalProjects={globalProjects}
+                projects={userProjects}
+              />
+            )}
+          </RecipeNativeFetch.Provider>
+        </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
   );

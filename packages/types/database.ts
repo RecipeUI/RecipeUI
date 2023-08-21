@@ -46,6 +46,7 @@ export type Database = MergeDeep<
         template: {
           Row: {
             replay: Nullable<RecipeTemplateOutput>;
+            project_scope: ProjectScope;
           } & NullableRecipeParams;
           Insert: {
             replay: Nullable<RecipeTemplateOutput>;
@@ -206,7 +207,7 @@ export interface UserTemplatePreview {
 
   replay?: Nullable<RecipeTemplateOutput>;
   author_id: string;
-  scope: ProjectScope;
+  project_scope: ProjectScope;
 }
 
 export type UserTemplate = UserTemplatePreview & {

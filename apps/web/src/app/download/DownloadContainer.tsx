@@ -222,10 +222,10 @@ export function DownloadContainer({
                   href={item.href}
                   target="_blank"
                   className={classNames(
-                    "!bg-accent btn text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
+                    "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
                   )}
                 >
-                  <Icon className="" />
+                  <Icon className="fill-black dark:fill-gray-200" />
                   <h3 className={classNames("font-bold")}>{item.label}</h3>
                 </Link>
               );

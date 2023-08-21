@@ -3,6 +3,7 @@
 import {
   RecipeContext,
   RecipeNativeFetch,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeBody } from "../RecipeBody";
@@ -14,12 +15,12 @@ import { Recipe, RecipeProject, UserTemplatePreview } from "types/database";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "../../utils/main";
-import { ShareInviteModal, ShareModal } from "../RecipeBody/RecipeTemplates";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 import { RecipeHomeHero } from "./RecipeHomeHero";
+import { ShareInviteModal } from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
 
 export function RecipeHomeContainer({
   globalProjects,
@@ -71,6 +72,15 @@ export function RecipeHomeContainer({
 
   const hasSession = Boolean(recipe && currentSession);
 
+  const project = useMemo(() => {
+    let searchRecipe = recipe ?? sharedTemplate?.recipe;
+
+    return searchRecipe
+      ? projects.find((p) => p.project === searchRecipe?.project) ||
+          globalProjects.find((p) => p.project === searchRecipe?.project)
+      : null;
+  }, [globalProjects, projects, recipe, sharedTemplate?.recipe]);
+
   return (
     <div
       className={classNames(
@@ -79,25 +89,30 @@ export function RecipeHomeContainer({
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
-        <RecipeNativeFetch.Provider value={fetchServer}>
-          {!hasSession && <RecipeHomeHero />}
-          <RecipeBodySearch />
-          {hasSession ? (
-            <RecipeBody />
-          ) : (
-            <>
-              <RecipeHome globalProjects={globalProjects} projects={projects} />
-              {showShareModal && sharedTemplate && (
-                <ShareInviteModal
-                  template={sharedTemplate}
-                  onClose={() => {
-                    setShowShareModal(false);
-                  }}
+        <RecipeProjectContext.Provider value={project || null}>
+          <RecipeNativeFetch.Provider value={fetchServer}>
+            {!hasSession && <RecipeHomeHero />}
+            <RecipeBodySearch />
+            {hasSession ? (
+              <RecipeBody />
+            ) : (
+              <>
+                <RecipeHome
+                  globalProjects={globalProjects}
+                  projects={projects}
                 />
-              )}
-            </>
-          )}
-        </RecipeNativeFetch.Provider>
+                {showShareModal && sharedTemplate && (
+                  <ShareInviteModal
+                    template={sharedTemplate}
+                    onClose={() => {
+                      setShowShareModal(false);
+                    }}
+                  />
+                )}
+              </>
+            )}
+          </RecipeNativeFetch.Provider>
+        </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
   );

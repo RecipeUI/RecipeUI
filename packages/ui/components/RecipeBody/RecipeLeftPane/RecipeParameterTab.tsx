@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSecretsFromSM } from "../../state/recipeAuth";
+import { useSecretsFromSM } from "../../../state/recipeAuth";
 import {
   RecipeBodyRoute,
   RecipeContext,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "../../../state/recipeSession";
 import CodeMirror from "@uiw/react-codemirror";
 import debounce from "lodash.debounce";
 
@@ -14,7 +14,9 @@ import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import classNames from "classnames";
-import { StarterTemplates, UserTemplates } from "../RecipeBody/RecipeTemplates";
+import { StarterTemplates, UserTemplates } from "./RecipeTemplates";
+import { useLeftPaneInfo } from "./useLeftPaneInfo";
+
 const extensions = [json(), linter(jsonParseLinter()), lintGutter()];
 const codeMirrorSetup = {
   lineNumbers: true,
@@ -24,87 +26,24 @@ const codeMirrorSetup = {
 export function RecipeParameterTab() {
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
-  const selectedRecipe = useContext(RecipeContext)!;
-  const secretInfo = useSecretsFromSM();
-
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const urlParams = useRecipeSessionStore((state) => state.urlParams);
-
   const {
-    hasNoAuth,
+    loadingTemplate,
+    showOnboarding,
     needsAuthSetup,
-    hasRequiredBodyParams,
+    hasTemplates,
+    needsParams,
+    showingRecipes,
+    showingRecipesTwo,
+    hasNoParams,
     hasRequestBody,
-    hasQueryParams,
-    hasRequiredQueryParams,
     hasUrlParams,
-  } = useMemo(() => {
-    const needsAuthSetup = secretInfo ? !secretInfo.hasAllSecrets : false;
+    hasQueryParams,
+  } = useLeftPaneInfo();
 
-    let hasRequiredBodyParams = false;
-    let hasRequestBody = false;
-    if (
-      "requestBody" in selectedRecipe &&
-      selectedRecipe.requestBody != null &&
-      "objectSchema" in selectedRecipe["requestBody"] &&
-      selectedRecipe.requestBody.objectSchema != null
-    ) {
-      hasRequiredBodyParams = Object.values(
-        selectedRecipe.requestBody.objectSchema
-      ).some((param) => param.required);
-      hasRequestBody = true;
-    }
-
-    let hasQueryParams = false;
-    let hasRequiredQueryParams = false;
-    if ("queryParams" in selectedRecipe && selectedRecipe.queryParams != null) {
-      hasRequiredQueryParams = Object.values(selectedRecipe.queryParams).some(
-        (param) => param.required
-      );
-      hasQueryParams = true;
-    }
-
-    const hasUrlParams =
-      "urlParams" in selectedRecipe && selectedRecipe.urlParams != null;
-
-    return {
-      needsAuthSetup,
-      hasRequiredBodyParams,
-      hasRequestBody,
-      hasQueryParams,
-      hasRequiredQueryParams,
-      hasUrlParams,
-      hasNoAuth: selectedRecipe.auth === null,
-    };
-  }, [secretInfo, selectedRecipe]);
-  const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
-  const needsBodyParams = hasRequiredBodyParams && !hasRequestBodyPayload;
-
-  const hasQueryParamPayload = Object.keys(queryParams).length > 0;
-  const needsQueryParams = hasRequiredQueryParams && !hasQueryParamPayload;
-
-  const hasUrlParamPayload = Object.keys(urlParams).length > 0;
-  const needsUrlParams = hasUrlParams && !hasUrlParamPayload;
-
-  const hasTemplates =
-    selectedRecipe.templates != null ||
-    (selectedRecipe.userTemplates && selectedRecipe.userTemplates.length > 0);
-  const needsParams = needsBodyParams || needsUrlParams || needsQueryParams;
-  const loadingTemplate = useRecipeSessionStore(
-    (state) => state.loadingTemplate
-  );
-
-  const showingRecipes = hasTemplates && needsParams;
-  const showOnboarding = !loadingTemplate && needsAuthSetup && !showingRecipes;
-  const hasNoParams =
-    !hasRequestBody && !hasQueryParams && !hasUrlParams && !loadingTemplate;
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
       {/* This logic is pretty confusing */}
-      {(loadingTemplate ||
-        (!showOnboarding && needsAuthSetup) ||
-        (!needsAuthSetup && needsParams)) && (
+      {showingRecipesTwo && (
         <div className="mb-4 mx-4 mt-6 space-y-8">
           <UserTemplates />
           <StarterTemplates />
@@ -214,12 +153,12 @@ function RecipeJsonEditor() {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className="mx-4 my-6 overflow-x-auto">
+    <div className="mx-4 my-6 overflow-x-auto min-h-[250px]">
       <div className="flex items-center space-x-1 mb-2">
         <h3 className="text-lg font-bold">Request Body</h3>
         <div
-          className="tooltip tooltip-right"
-          data-tip={`This is the payload we'll send to ${selectedRecipe.project}. Use parameters on the right or choose from examples.`}
+          className="tooltip tooltip-bottom"
+          data-tip={`This is the payload we'll send. Use parameters on the right or choose from examples.`}
         >
           <InformationCircleIcon className="h-4 w-4" />
         </div>

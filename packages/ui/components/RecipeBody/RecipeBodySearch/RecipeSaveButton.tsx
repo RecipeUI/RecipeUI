@@ -12,7 +12,7 @@ import {
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -254,11 +254,12 @@ export function SuccessAnimation({
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const queryClient = useQueryClient();
   const isTauri = useIsTauri();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setTimeout(
       () => {
-        const needsSession = passiveRecipe == null;
+        const needsSession = passiveRecipe != null;
 
         setBodyRoute(RecipeBodyRoute.Templates);
         if (isTauri) {
@@ -274,7 +275,11 @@ export function SuccessAnimation({
               })}`
             );
           } else {
-            router.refresh();
+            const newParams = new URLSearchParams(
+              (searchParams as unknown as URLSearchParams) || undefined
+            );
+            newParams.set("newTemplateId", String(newTemplateId));
+            router.push(`/?${newParams.toString()}`);
           }
         }
         onClose();

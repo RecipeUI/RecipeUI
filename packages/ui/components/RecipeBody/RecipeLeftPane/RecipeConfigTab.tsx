@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { getHeaderTypes, useSecretManager } from "../../state/recipeAuth";
+import { getHeaderTypes, useSecretManager } from "../../../state/recipeAuth";
 import classNames from "classnames";
 
 import { RecipeAuthType } from "types/enums";
@@ -7,12 +7,12 @@ import {
   RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
-import { DOC_LINKS } from "../../utils/docLinks";
+} from "../../../state/recipeSession";
+import { DOC_LINKS } from "../../../utils/docLinks";
 import { Database } from "types/database";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSupabaseClient } from "../Providers/SupabaseProvider";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 export function RecipeConfigTab() {
   const selectedRecipe = useContext(RecipeContext)!;

@@ -402,6 +402,7 @@ export interface Database {
           options: Json | null
           path: string | null
           project: string | null
+          project_scope: Database["public"]["Enums"]["projectscope"] | null
           queryParams: Json | null
           rank: number | null
           requestBody: Json | null
@@ -412,46 +413,6 @@ export interface Database {
           title: string | null
           urlParams: Json | null
           visibility: Database["public"]["Enums"]["visibility"] | null
-        }
-        Insert: {
-          auth?: string | null
-          author_id?: string | null
-          created_at?: string | null
-          id?: number | null
-          method?: Database["public"]["Enums"]["recipemethod"] | null
-          options?: Json | null
-          path?: string | null
-          project?: string | null
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string | null
-          tags?: string[] | null
-          tags_count?: never
-          templates?: Json[] | null
-          title?: string | null
-          urlParams?: Json | null
-          visibility?: Database["public"]["Enums"]["visibility"] | null
-        }
-        Update: {
-          auth?: string | null
-          author_id?: string | null
-          created_at?: string | null
-          id?: number | null
-          method?: Database["public"]["Enums"]["recipemethod"] | null
-          options?: Json | null
-          path?: string | null
-          project?: string | null
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string | null
-          tags?: string[] | null
-          tags_count?: never
-          templates?: Json[] | null
-          title?: string | null
-          urlParams?: Json | null
-          visibility?: Database["public"]["Enums"]["visibility"] | null
         }
         Relationships: [
           {
@@ -484,12 +445,12 @@ export interface Database {
           original_author: Json | null
           original_author_id: string | null
           project: string | null
+          project_scope: Database["public"]["Enums"]["projectscope"] | null
           queryParams: Json | null
           recipe: Json | null
           recipe_id: number | null
           replay: Json | null
           requestBody: Json | null
-          scope: Database["public"]["Enums"]["projectscope"] | null
           title: string | null
           urlParams: Json | null
           visibility: Database["public"]["Enums"]["visibility"] | null
