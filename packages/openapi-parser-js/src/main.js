@@ -163,7 +163,7 @@ function getComponentSchemaDirectory(api) {
 
 // ---- Recipes - Main Functions ----
 
-const DEBUG_RECIPES_SCHEMAS = true;
+const DEBUG_RECIPES_SCHEMAS = false;
 function getRecipes(api, componentSchemas, projectConfig) {
   const paths = api.paths;
   const recipes = [];

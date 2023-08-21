@@ -84,7 +84,7 @@ export default function NewPage() {
         // We'll need strong typing here eventually in case the user gives an OpenAPI spec. But it's not needed for V1 as DB will just not allow it to be uploaded.
         const recipes = processYamlSpec(
           parsedYaml as Record<string, unknown>,
-          "OpenAI",
+          _file.name.split(".")[0],
           "1"
         ) as Recipe[];
 
@@ -227,6 +227,11 @@ export default function NewPage() {
               <span className="font-bold">
                 {numOfSelectedRecipes} out of {recipes.length} recipes selected.
               </span>{" "}
+              {numOfSelectedRecipes >= 30 && (
+                <p className="my-2 text-red-600 text-sm font-bold">
+                  {"Currently we're capping accounts at 30 APIs to import."}
+                </p>
+              )}
             </p>
 
             <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-scroll p-4 border  border-recipe-slate mt-2">
