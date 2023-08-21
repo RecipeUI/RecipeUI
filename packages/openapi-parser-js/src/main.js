@@ -5,6 +5,7 @@ const {
   clonePropertyIfExists,
   getSchemaRefFromVal,
   getSchemaType,
+  pathsToTitleCase,
 } = require("./utils");
 
 function getRefDependencies(obj) {
@@ -100,10 +101,10 @@ function getComponentSchema(schema, processedSchemas) {
   return recipeSchema;
 }
 
-const DEBUG_COMPONENT_SCHEMAS = false;
+const DEBUG_COMPONENT_SCHEMAS = true;
 function getComponentSchemaDirectory(api) {
   const componentSchemas = {};
-  let toProcessSchemas = Object.keys(api.components.schemas);
+  let toProcessSchemas = Object.keys(api.components.schemas ?? {});
 
   let current_round = 1;
   while (toProcessSchemas.length > 0) {
@@ -162,7 +163,7 @@ function getComponentSchemaDirectory(api) {
 
 // ---- Recipes - Main Functions ----
 
-const DEBUG_RECIPES_SCHEMAS = false;
+const DEBUG_RECIPES_SCHEMAS = true;
 function getRecipes(api, componentSchemas, projectConfig) {
   const paths = api.paths;
   const recipes = [];
@@ -170,12 +171,20 @@ function getRecipes(api, componentSchemas, projectConfig) {
   for (const [path, pathSchema] of Object.entries(paths)) {
     for (const [method, methodSchema] of Object.entries(pathSchema)) {
       logDebug(`\n\n${method.toUpperCase()} ${path}`, DEBUG_RECIPES_SCHEMAS);
+      logDebug(methodSchema, DEBUG_RECIPES_SCHEMAS);
 
       const recipe = {};
-
       recipe.summary = methodSchema.summary;
-      recipe.title = camelCaseToTitleCase(methodSchema.operationId);
       recipe.method = method.toUpperCase();
+
+      if (methodSchema.operationId) {
+        recipe.title = camelCaseToTitleCase(methodSchema.operationId);
+      } else {
+        recipe.title = pathsToTitleCase(path);
+      }
+
+      logDebug("Title processed", recipe.title);
+
       recipe.path = `${projectConfig.server}${path}`;
       recipe.project = projectConfig.project;
       recipe.auth =
@@ -188,13 +197,23 @@ function getRecipes(api, componentSchemas, projectConfig) {
 
         const content = methodSchema.requestBody.content;
         const contentType = Object.keys(content)[0];
-        const componentReferenceKey = getSchemaRefFromVal(
-          content[contentType].schema[REF_KEY]
-        );
 
-        recipe.requestBody = {
-          ...componentSchemas[componentReferenceKey],
-        };
+        if (REF_KEY in content[contentType].schema) {
+          const componentReferenceKey = getSchemaRefFromVal(
+            content[contentType].schema[REF_KEY]
+          );
+
+          recipe.requestBody = {
+            ...componentSchemas[componentReferenceKey],
+          };
+        } else {
+          recipe.requestBody = {
+            ...getComponentSchema(
+              content[contentType].schema,
+              componentSchemas
+            ),
+          };
+        }
         recipe.requestBody.contentType = contentType;
 
         clonePropertyIfExists(

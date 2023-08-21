@@ -88,7 +88,7 @@ export default function NewPage() {
           "1"
         ) as Recipe[];
 
-        setRecipes(recipes);
+        setRecipes(recipes || []);
 
         if (recipes.length > 0) {
           setFinishedStages((prev) => {
@@ -238,7 +238,7 @@ export default function NewPage() {
                   <div
                     key={recipe.path + recipe.method}
                     className={classNames(
-                      "border rounded-md p-3 relative cursor-pointer border-recipe-slate recipe-hover",
+                      "border rounded-md p-3 relative cursor-pointer border-recipe-slate recipe-hover hover:!outline-accent",
                       selected ? "bg-base-300 " : "bg-base-100"
                     )}
                     onClick={() => {
@@ -564,7 +564,8 @@ function SelectionBox({
     <button
       className={classNames(
         "border rounded-md p-3 relative cursor-pointer flex flex-col items-start justify-start border-recipe-slate recipe-hover",
-        disabled && "pointer-events-none opacity-40"
+        disabled && "pointer-events-none opacity-40",
+        selected && "border-accent"
       )}
       onClick={onClick}
     >

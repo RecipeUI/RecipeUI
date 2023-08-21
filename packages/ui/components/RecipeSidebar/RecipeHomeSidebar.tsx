@@ -13,6 +13,7 @@ import { getVersion } from "@tauri-apps/api/app";
 export function RecipeHomeSidebar() {
   const router = useRouter();
   const user = useRecipeSessionStore((state) => state.user);
+  const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const sessions = useRecipeSessionStore((state) => state.sessions);
 
@@ -99,7 +100,7 @@ export function RecipeHomeSidebar() {
       <div className="divider" />
       <div className="text-sm text-gray-600 dark:text-gray-300">
         <ul className="space-y-2">
-          {pathname !== "/" && (
+          {(pathname !== "/" || (isTauri && desktopPage !== null)) && (
             <li className="hidden sm:block">
               {
                 <button
