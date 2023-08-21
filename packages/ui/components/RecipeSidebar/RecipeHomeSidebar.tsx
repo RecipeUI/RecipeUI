@@ -65,7 +65,16 @@ export function RecipeHomeSidebar() {
         <h3 className="font-bold">API tool for teams</h3>
         <p className="text-sm mt-2">
           Have internal APIs? Book a demo to see how RecipeUI can save your team
-          countless hours of testing.
+          countless hours of testing.{" "}
+          {!isTauri && (
+            <Link
+              href="https://home.recipeui.com/"
+              className="text-sm underline underline-offset-2 w-fit"
+              target="_blank"
+            >
+              View website.
+            </Link>
+          )}
         </p>
         <div className="space-x-2">
           {isTauri ? (

@@ -15,6 +15,7 @@ export default async function Home({
   searchParams: {
     sessionId?: string;
     recipeId?: string;
+    test?: string;
   };
 }) {
   const { sessionId, recipeId } = searchParams;
@@ -26,17 +27,15 @@ export default async function Home({
   const supabase = createServerComponentClient<Database>({
     cookies,
   });
-  const hasSession = await supabase.auth.getSession();
+
   const cookieStore = cookies();
 
-  const showApp =
-    hasSession.data != null ||
-    cookieStore.get(APP_COOKIE)?.value !== undefined ||
-    process.env.NEXT_PUBLIC_ENV === "dev";
-
-  // if (!showApp) {
-  //   redirect("https://home.recipeui.com/");
-  // }
+  if (Object.keys(searchParams).length === 0) {
+    const showApp = cookieStore.get(APP_COOKIE)?.value !== undefined;
+    if (!showApp) {
+      redirect("https://home.recipeui.com/");
+    }
+  }
 
   const { globalProjects, userProjects, recipe } = await fetchHome({
     searchParams,

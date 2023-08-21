@@ -38,7 +38,7 @@ export default async function Image({
 
   const title = sharedTemplateInfo
     ? `${sharedTemplateInfo.recipe.project} API | ${sharedTemplateInfo.title}`
-    : "RecipeUI: No Recipe Found";
+    : "RecipeUI: Private Recipe";
   const username = sharedTemplateInfo
     ? `Built by @${sharedTemplateInfo.original_author.username}`
     : null;

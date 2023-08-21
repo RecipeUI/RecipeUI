@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { Container } from '@/components/Container'
 import yc from '@/images/logos/yc.svg'
 import { Button } from './Button'
+import { HeroButtons } from '@/components/HeroButtons'
+import classNames from 'classnames'
 
 export function Hero() {
   return (
@@ -15,21 +17,17 @@ export function Hero() {
         <br className="hidden sm:block" />
         Built for everyone from Devs to PMs to QA. Test APIs in seconds.
       </p>
-      <div className="mt-10 flex justify-center gap-x-6">
-        <Button color="white" className="text-[black]">
-          Explore our API Network
-        </Button>
-        <Button
-          variant="outline"
-          className="text-white hover:bg-slate-900 hover:text-white"
-        >
-          Book a demo
-        </Button>
-      </div>
+      <HeroButtons />
       <div className="mt-10 flex items-center justify-center">
         <Image src={yc} alt="backed by yc" unoptimized className="w-40" />
       </div>
-      <div className="mx-auto mt-8 max-w-screen-xl">
+      <div
+        className={classNames(
+          'mx-auto mt-8 max-w-screen-xl',
+          // Revert this later when loom comesb ack,
+          'hidden'
+        )}
+      >
         <div className="aspect-w-16 aspect-h-9">
           <iframe
             title="Loom Video"
@@ -41,6 +39,11 @@ export function Hero() {
               height: '100%', // Adjust the height as needed
             }}
           />
+        </div>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <div className="h-[600px] w-[70%] rounded-sm bg-gray-600 ">
+          <h2 className="mt-24 text-4xl font-bold ">Demo Soon</h2>
         </div>
       </div>
     </Container>

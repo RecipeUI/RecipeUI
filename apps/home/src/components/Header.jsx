@@ -9,6 +9,7 @@ import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
 import { NavLink } from '@/components/NavLink'
+import Cookie from 'js-cookie'
 
 function MobileNavLink({ href, children }) {
   return (
@@ -103,11 +104,22 @@ export function Header() {
               <NavLink href="#features">Features</NavLink>
               <NavLink href="#api-network">API Network</NavLink>
               <NavLink href="#contact-us">Contact Us</NavLink>
-              <NavLink href="#contact-us">Join Our Community</NavLink>
+              <NavLink href="https://discord.gg/jPAKE7Ur">
+                Join Our Community
+              </NavLink>
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <Button href="/register" color="white">
+            <Button
+              color="white"
+              onClick={() => {
+                Cookie.set('showApp', 'true', { domain: 'recipeui.com' })
+
+                setTimeout(() => {
+                  window.open('https://recipeui.com/', '_blank')
+                }, 500)
+              }}
+            >
               <span>Try RecipeUI</span>
             </Button>
             <div className="-mr-1 md:hidden">

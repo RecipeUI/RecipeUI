@@ -12,7 +12,7 @@ const sora = Sora({ subsets: ["latin"] });
 const metadataConstants = {
   title: "RecipeUI",
   description:
-    "Discover how to use APIs from ChatGPT, GIPHY, Reddit, PokeAPI, and more in under a minute.",
+    "Open source postman alternative for teams. Discover how to use APIs from ChatGPT, GIPHY, Reddit, PokeAPI, and more in under a minute.",
   image_url: "https://www.recipeui.com/opengraph-image.png",
 };
 export const metadata: Metadata = {

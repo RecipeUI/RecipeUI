@@ -19,6 +19,8 @@ export function CallToAction() {
           <Button
             variant="outline"
             className="mt-10 text-white hover:bg-slate-900 hover:text-white"
+            href="https://calendly.com/jeane-nfi/30min"
+            target="_blank"
           >
             Book a demo
           </Button>

@@ -23,7 +23,17 @@ export function SecondaryFeatures() {
           </p>
         </div>
         <div className="mt-10 flex justify-center gap-x-6">
-          <Button color="white" className="text-[black]">
+          <Button
+            color="white"
+            className="text-[black]"
+            onClick={() => {
+              Cookie.set('showApp', 'true', { domain: 'recipeui.com' })
+
+              setTimeout(() => {
+                window.open('https://recipeui.com/', '_blank')
+              }, 500)
+            }}
+          >
             Test some APIs now with RecipeUI
           </Button>
         </div>

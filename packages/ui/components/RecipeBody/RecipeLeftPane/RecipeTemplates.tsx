@@ -197,7 +197,7 @@ function UserTemplateItem({
       className={classNames(
         "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
         newTemplateId === String(template.id) &&
-          "!border-accent !border-4 border-dashed"
+          "!border-accent !border-4 border-dashed "
       )}
       key={`${template.id}`}
     >
