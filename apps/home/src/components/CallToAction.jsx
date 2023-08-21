@@ -12,6 +12,7 @@ export function CallToAction() {
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl">
             Contact us
           </h2>
+<<<<<<< HEAD
           <p className="mt-4 text-lg tracking-tight text-white">
             Email us at team@recipeui.com for questions or feedback. Book a demo
             to see how RecipeUI can work for your team.
@@ -24,6 +25,12 @@ export function CallToAction() {
           >
             Book a demo
           </Button>
+=======
+
+          <a href="#" className="text-sm font-semibold leading-6 text-white">
+            Learn more <span aria-hidden="true">→</span>
+          </a>
+>>>>>>> e846806 (revamp home a bit)
         </div>
       </Container>
     </section>
