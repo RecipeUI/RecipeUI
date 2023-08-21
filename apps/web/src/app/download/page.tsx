@@ -3,7 +3,7 @@
 import { DownloadContainer } from "@/app/download/DownloadContainer";
 
 export default async function DownloadPage() {
-  let latestVersion: string = "0.1.3";
+  let latestVersion: string = "0.2.0";
 
   try {
     const latestJson = await (
