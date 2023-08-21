@@ -12,9 +12,9 @@ export function HeroCTA() {
               Explore our network of APIs
             </h2>
             <p className="mt-6 text-lg leading-8 text-slate-300">
-              See how easy APIs can be first hand. Try out public APIs instantly
-              and share the Recipes you create! We are constantly adding new
-              APIs for everyone to try.
+              Try out some public APIs we support and see how easy APIs can be
+              first hand! We are constantly adding new APIs for everyone to try,
+              no coding experience required.
             </p>
           </div>
         </div>
