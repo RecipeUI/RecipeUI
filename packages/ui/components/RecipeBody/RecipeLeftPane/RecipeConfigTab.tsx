@@ -6,6 +6,7 @@ import { RecipeAuthType } from "types/enums";
 import {
   RecipeContext,
   RecipeOutputTab,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { DOC_LINKS } from "../../../utils/docLinks";
@@ -22,6 +23,8 @@ export function RecipeConfigTab() {
   const user = useRecipeSessionStore((state) => state.user);
   const closeSession = useRecipeSessionStore((state) => state.closeSession);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const project = useContext(RecipeProjectContext)!;
+
   const canDelete = selectedRecipe.author_id === user?.user_id;
 
   return (
@@ -35,45 +38,54 @@ export function RecipeConfigTab() {
               <RecipeNeedsAuth />
             </>
           )}
-          <hr />
-          <div className="w-full space-y-4 text-start mt-4">
-            <h1 className="text-xl font-bold">Delete Recipe</h1>
-            <p>
-              This will delete the API and all templates attached to this API.
-            </p>
-            {canDelete ? (
-              <button
-                className="btn btn-error btn-sm"
-                onClick={async () => {
-                  if (
-                    !(await confirm(
-                      "Are you sure you want to delete this API?"
-                    ))
-                  ) {
-                    return;
-                  }
+          {canDelete ? (
+            <>
+              <hr />
 
-                  const { error } = await supabase
-                    .from("recipe")
-                    .delete()
-                    .match({ id: selectedRecipe.id });
+              <div className="w-full space-y-4 text-start mt-4">
+                <h1 className="text-xl font-bold">Delete Recipe</h1>
+                <p>
+                  This will delete the API and all templates attached to this
+                  API.
+                </p>
 
-                  if (currentSession) {
-                    closeSession(currentSession);
-                  }
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 0);
-                }}
-              >
-                Delete
-              </button>
-            ) : (
-              <p className="">
-                Please ask the owner of this API to delete this
-              </p>
-            )}
-          </div>
+                <button
+                  className="btn btn-error btn-sm"
+                  onClick={async () => {
+                    if (
+                      !(await confirm(
+                        "Are you sure you want to delete this API?"
+                      ))
+                    ) {
+                      return;
+                    }
+
+                    const { error } = await supabase
+                      .from("recipe")
+                      .delete()
+                      .match({ id: selectedRecipe.id });
+
+                    if (currentSession) {
+                      closeSession(currentSession);
+                    }
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 0);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {project?.scope !== "global" && (
+                <p className="">
+                  Please ask the owner of this API to delete this
+                </p>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

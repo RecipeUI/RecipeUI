@@ -34,9 +34,16 @@ export function OnboardingFlow() {
     user.user_metadata &&
     Object.keys(user.user_metadata).length > 0
   ) {
+    const fullName =
+      user.user_metadata.full_name || user.user_metadata.name || "";
+
+    const [first, last] = fullName.split(" ");
+    const possibleUsername = first + last;
+
     defaultFormData = {
-      first: user.user_metadata.full_name.split(" ")[0],
-      last: user.user_metadata.full_name.split(" ")[1],
+      first: first,
+      last: last,
+      username: possibleUsername,
       email: user.email,
       profile_pic: user.user_metadata.picture,
     };
@@ -58,29 +65,31 @@ export function OnboardingFlow() {
     },
   });
 
+  const [generalError, setGeneralError] = useState<string | null>(null);
+
   const onSubmit = handleSubmit(async (data) => {
     setLoading(true);
+    setGeneralError(null);
 
     if (stage === "User Info") {
+      const createRes = await createUser(data, supabase);
+
+      if (createRes.status === 409) {
+        setUserError(data.username);
+      } else if (createRes.error != null) {
+        setGeneralError(createRes.error.message);
+      }
+
       setStage("Survey");
     } else {
       posthog.capture(POST_HOG_CONSTANTS.SIGN_UP, {
         hear_about: data.hear_about,
         use_case: data.use_case,
       });
-      const createRes = await createUser(data, supabase);
-
-      if (createRes.status === 409) {
-        setUserError(data.username);
-      } else if (createRes.error != null) {
-        //
-      } else {
-        if (typeof window !== "undefined") {
-          location.reload();
-        }
+      if (typeof window !== "undefined") {
+        location.reload();
       }
     }
-
     setLoading(false);
   });
 
@@ -88,7 +97,7 @@ export function OnboardingFlow() {
 
   useEffect(() => {
     if (!user) router.push("/");
-  }, []);
+  }, [router, user]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -178,6 +187,11 @@ export function OnboardingFlow() {
                 {userError && (
                   <p className="alert alert-error !mt-4">
                     Username already exists. Please choose another.
+                  </p>
+                )}
+                {generalError && (
+                  <p className="alert alert-error !mt-4">
+                    {generalError || ""}
                   </p>
                 )}
               </>

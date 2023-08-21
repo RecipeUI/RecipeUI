@@ -125,6 +125,7 @@ export default function HybridAuthForm({
     const { data, error } = await supabase.auth.signInWithOAuth({
       options: {
         skipBrowserRedirect: true,
+        scopes: provider === Provider.Google ? "profile email" : "",
         redirectTo: isTauri
           ? `http://localhost:${portRef.current}`
           : `${getUrl()}/auth/callback`,
