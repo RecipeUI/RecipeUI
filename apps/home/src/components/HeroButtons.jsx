@@ -5,7 +5,7 @@ import Cookie from 'js-cookie'
 
 export function HeroButtons() {
   return (
-    <div className="mt-10 flex justify-center gap-x-6">
+    <div className="mt-10 flex justify-center gap-x-4 sm:gap-x-6">
       <Button
         color="white"
         className="text-[black]"

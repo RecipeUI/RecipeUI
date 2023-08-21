@@ -9,7 +9,7 @@ import classNames from 'classnames'
 export function Hero() {
   return (
     <Container className="bg-black  text-center lg:pt-10">
-      <h1 className="mx-auto max-w-4xl font-display text-4xl font-medium tracking-tight text-white sm:text-5xl marker:sm:text-7xl">
+      <h1 className="mx-auto max-w-4xl font-display text-4xl font-bold tracking-tight text-white sm:text-5xl marker:sm:text-7xl">
         The API tool <span className="block sm:inline">for teams</span>
       </h1>
       <p className="mx-auto mt-6 max-w-3xl text-lg tracking-tight text-slate-300">
@@ -39,11 +39,6 @@ export function Hero() {
               height: '100%', // Adjust the height as needed
             }}
           />
-        </div>
-      </div>
-      <div className="mt-6 flex justify-center">
-        <div className="h-[600px] w-[70%] rounded-sm bg-gray-600 ">
-          <h2 className="mt-24 text-4xl font-bold ">Demo Soon</h2>
         </div>
       </div>
     </Container>

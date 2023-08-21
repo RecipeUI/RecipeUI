@@ -20,7 +20,7 @@ const features = [
   {
     title: 'Designed for collaboration',
     description:
-      'Create and share "Recipes" (example use cases) that work without any setup. Recipes run with a click of a button.',
+      'Create and share "Recipes" (example use cases) that work without any setup or auth. Recipes run with a click of a button.',
     image: screenshotExpenses,
   },
   {
@@ -57,7 +57,7 @@ export function PrimaryFeatures() {
     >
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
-          <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
             Redefining the API testing experience
           </h2>
           <p className="mt-6 text-lg tracking-tight text-slate-300">

@@ -23,7 +23,7 @@ function MobileNavIcon({ open }) {
   return (
     <svg
       aria-hidden="true"
-      className="b h-3.5 w-3.5 overflow-visible stroke-slate-700"
+      className="b h-3.5 w-3.5 overflow-visible stroke-slate-300"
       fill="none"
       strokeWidth={2}
       strokeLinecap="round"
@@ -82,6 +82,7 @@ function MobileNavigation() {
           >
             <MobileNavLink href="#features">Features</MobileNavLink>
             <MobileNavLink href="#api-network">API Network</MobileNavLink>
+            <MobileNavLink href="#inspiration">Our Story</MobileNavLink>
             <MobileNavLink href="#contact-us">Join Our Community</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
           </Popover.Panel>
@@ -103,10 +104,8 @@ export function Header() {
             <div className="hidden md:flex md:gap-x-6">
               <NavLink href="#features">Features</NavLink>
               <NavLink href="#api-network">API Network</NavLink>
-              <NavLink href="#contact-us">Contact Us</NavLink>
-              <NavLink href="https://discord.gg/jPAKE7Ur">
-                Join Our Community
-              </NavLink>
+              <NavLink href="#inspiration">Our Story</NavLink>
+              <NavLink href="#contact-us">Join Our Community</NavLink>
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">

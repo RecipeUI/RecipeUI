@@ -13,7 +13,7 @@ export function SecondaryFeatures() {
     >
       <Container>
         <div className="mx-auto max-w-3xl md:text-center">
-          <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Explore our network of public APIs
           </h2>
           <p className="mt-6 text-lg tracking-tight text-slate-300">
