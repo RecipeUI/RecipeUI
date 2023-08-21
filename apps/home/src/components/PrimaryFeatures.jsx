@@ -7,26 +7,26 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import screenshotExpenses from '@/images/screenshots/recipes.png'
-import screenshotPayroll from '@/images/screenshots/payroll.png'
-import screenshotVatReturns from '@/images/screenshots/vat-returns.png'
+import screenshotPayroll from '@/images/screenshots/endpoints.png'
+import screenshotVatReturns from '@/images/screenshots/import.png'
 
 const features = [
   {
-    title: 'Designed for collaboration',
+    title: 'Easy setup',
     description:
-      'Create and share "Recipes" (pre-configured API calls) that work without any setup. Recipes run with a click of a button.',
-    image: screenshotExpenses,
+      'Quickly onboard onto new APIs with our user-friendly interface. No more jumping around docs, comms, and wikis.',
+    image: screenshotPayroll,
   },
   {
-    title: 'Simplified learning',
+    title: 'Designed for collaboration',
     description:
-      'Easily onboard onto new APIs using our parameter forms with built-in documentation. No more jumping around docs, comms, and wikis.',
-    image: screenshotPayroll,
+      'Create and share "Recipes" (example use cases) that work without any setup. Recipes run with a click of a button.',
+    image: screenshotExpenses,
   },
   {
     title: 'Add APIs in minutes',
     description:
-      'Just import your YAML or JSON files and we’ll auto convert them into beautiful, easy to use Recipes.',
+      'Just import your YAML files and we’ll auto convert them into documented APIs for anyone to test. We also offer white-glove onboarding.',
     image: screenshotVatReturns,
   },
 ]
@@ -53,7 +53,7 @@ export function PrimaryFeatures() {
     <section
       id="features"
       aria-label="RecipeUI features"
-      className="relative overflow-hidden bg-black pb-28 pt-20 sm:py-32"
+      className="relative overflow-hidden bg-black pb-28 pt-32 sm:py-32"
     >
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">

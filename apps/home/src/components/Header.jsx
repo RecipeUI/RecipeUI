@@ -80,10 +80,9 @@ function MobileNavigation() {
             className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
           >
             <MobileNavLink href="#features">Features</MobileNavLink>
-            <MobileNavLink href="#testimonials">Testimonials</MobileNavLink>
-            <MobileNavLink href="#pricing">Pricing</MobileNavLink>
+            <MobileNavLink href="#api-network">API Network</MobileNavLink>
+            <MobileNavLink href="#contact-us">Contact Us</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            <MobileNavLink href="/login">Sign in</MobileNavLink>
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -102,16 +101,14 @@ export function Header() {
             </Link>
             <div className="hidden md:flex md:gap-x-6">
               <NavLink href="#features">Features</NavLink>
-              <NavLink href="#testimonials">Public APIs</NavLink>
-              <NavLink href="#pricing">Pricing</NavLink>
+              <NavLink href="#api-network">API Network</NavLink>
+              <NavLink href="#contact-us">Contact Us</NavLink>
+              <NavLink href="#contact-us">Join Our Community</NavLink>
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            <div className="hidden md:block">
-              <NavLink href="/login">Sign in</NavLink>
-            </div>
             <Button href="/register" color="white">
-              <span>Try RecipeUI for free</span>
+              <span>Try RecipeUI</span>
             </Button>
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
