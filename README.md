@@ -1,5 +1,5 @@
 # RecipeUI
-RecipeUI is an open source playground for testing APIs. Our mission is to make it stupidly simple for developers to load an API and then share their API templates as "Recipes." 
+RecipeUI is an open source Postman alternative for teams. Designed for the whole team (devs, PMs, QA, Ops), anyone can test APIs in seconds with just a click of a button.
 
 Try us out [www.recipeui.com](https://recipeui.com/)
 
@@ -28,9 +28,9 @@ We need help in three ways and they don't require coding!
 
 
 ## Open Source Philosophy
-We are open sourced because we want to be transparent about how RecipeUI is built. We invite people to contribute to our repo in many ways that don't require coding experience! Simplest thing we can ask for is suggesting API's to add on to our platform or writing the API spec itself as JSON inside of our cookbook and we'll happily give you a shout out.
+API requests can contain sensitive data, especially internals APIs, so we want to be transparent about how RecipeUI is built and how we handle data. We invite people to contribute to our repo in many ways that don't require coding experience! Simplest thing we can ask for is suggesting API's to add on to our platform or writing the API spec itself as JSON inside of our cookbook and we'll happily give you a shout out.
 
-To be upfront, we want our product to be free for personal use cases, but we do have a plan to charge for enterprise teams. Our history of building recipes started internally because we wanted to make the lives of our teammates at Meta and Robinhood easier. Nothing made my teammates happier when they stopped sending me scripts on slack and started using this ugly internal UI tool I built for them. Eventually, we want to help teams build private recipes that they can quickly share with teammates to setup workflows in seconds.
+To be upfront, we want our product to be free for personal use cases, but we do have a plan to charge for enterprise teams. Our history of building recipes started internally because we wanted to make the lives of our teammates at Meta and Robinhood easier. Nothing made our teammates happier when they stopped sending me scripts on slack and started using this ugly internal UI tool we built for them. Eventually, we want to help teams build private recipes that they can quickly share with teammates to setup workflows in seconds.
 
 How about our plans for everyone else? Well I think that's up to the community to decide! I think it would be pretty cool if people didn't just test APIs on our platform, but built their own apps or APIs.
 
