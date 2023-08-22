@@ -21,32 +21,38 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   let defaultFormData: Partial<OnboardingFormData> = {};
-  if (user?.app_metadata.provider === "github" && user.user_metadata) {
-    defaultFormData = {
-      first: user.user_metadata.name.split(" ")[0],
-      last: user.user_metadata.name.split(" ")[1],
-      username: user.user_metadata.user_name,
-      email: user.email,
-      profile_pic: user.user_metadata.avatar_url,
-    };
-  } else if (
-    user?.app_metadata.provider === "google" &&
-    user.user_metadata &&
-    Object.keys(user.user_metadata).length > 0
-  ) {
-    const fullName =
-      user.user_metadata.full_name || user.user_metadata.name || "";
 
-    const [first, last] = fullName.split(" ");
-    const possibleUsername = first + last;
+  try {
+    if (user?.app_metadata.provider === "github" && user.user_metadata) {
+      defaultFormData = {
+        first: user.user_metadata?.name?.split(" ")[0],
+        last: user.user_metadata?.name?.split(" ")[1],
+        username: user.user_metadata?.user_name,
+        email: user.email,
+        profile_pic: user.user_metadata?.avatar_url,
+      };
+    } else if (
+      user?.app_metadata.provider === "google" &&
+      user.user_metadata &&
+      Object.keys(user.user_metadata).length > 0
+    ) {
+      const fullName =
+        user.user_metadata.full_name || user.user_metadata.name || "";
 
-    defaultFormData = {
-      first: first,
-      last: last,
-      username: possibleUsername,
-      email: user.email,
-      profile_pic: user.user_metadata.picture,
-    };
+      const [first, last] = fullName.split(" ");
+      const possibleUsername = first + last;
+
+      defaultFormData = {
+        first: first,
+        last: last,
+        username: possibleUsername,
+        email: user.email,
+        profile_pic: user.user_metadata.picture,
+      };
+    }
+  } catch (err) {
+    // TODO Sentry logging
+    console.error(err);
   }
 
   const [userError, setUserError] = useState<string | null>(null);

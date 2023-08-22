@@ -87,5 +87,3 @@ jobs:
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           args: ${{ matrix.settings.args }}
-          releaseDraft: true
-          prerelease: true
