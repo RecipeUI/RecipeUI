@@ -19,7 +19,11 @@ export function HeroCTA() {
           </div>
         </div>
         <div className="mt-10 flex justify-center gap-x-6">
-          <Button color="white" className="text-[black]">
+          <Button
+            color="white"
+            className="text-[black]"
+            href="https://recipeui.com/"
+          >
             Check it out at RecipeUI
           </Button>
         </div>
