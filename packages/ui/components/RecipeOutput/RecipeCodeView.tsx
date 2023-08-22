@@ -8,6 +8,7 @@ import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
 import { Recipe } from "types/database";
 import { RecipeParamType } from "types/enums";
+import { useGenerateSnippet } from "./har";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
@@ -32,6 +33,8 @@ export function RecipeCodeView() {
   const [codeView, setCodeView] = useState(CodeView.CURL);
   const [output, setOutput] = useState("Make a request first!");
   const selectedRecipe = useContext(RecipeContext)!;
+
+  const _output = useGenerateSnippet(codeView, requestInfo)
 
   const hasFileBinary = (
     selectedRecipe as Recipe
@@ -89,7 +92,7 @@ export function RecipeCodeView() {
       )}
       <CodeMirror
         className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-        value={output}
+        value={_output ?? ""}
         basicSetup={codeMirrorSetup}
         readOnly={true}
         theme={"dark"}
