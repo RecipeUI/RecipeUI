@@ -44,7 +44,7 @@ I'll try to add support for this ASAP. Currently, the app is in an Alpha phase a
 
 ## Telemetry
 
-You can find all areas we track anonymously on Posthog by looking at the file [posthog.ts](./ui/utils/constants/posthog.ts)
+You can find all areas we track anonymously on Posthog by looking at the file [posthog.ts](./packages/ui/utils/constants/posthog.ts)
 
 We track project visits, recipe sharing, and recipe usage. We don't store any authorization and tracking is anonymized (to the extent Posthog helps with). We track this info because it'll help us provide a better user experience and also give us signal on projects or recipes to focus on.
 
