@@ -35,7 +35,7 @@ export function Navbar() {
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
 
   return (
-    <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-20 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600">
+    <div className="py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-0 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600">
       <div />
       <ul className="menu menu-horizontal px-1 dark:text-white space-x-2">
         <li className="">
