@@ -227,7 +227,11 @@ export function RecipeSearchButton() {
 
     // We need to reformat it as it was originally
 
-    let clonedBody = structuredClone(body);
+    let clonedBody =
+      body instanceof FormData
+        ? { form: "File binary" }
+        : structuredClone(body);
+
     let clonedHeaders = structuredClone(headers);
     let clonedUrl = new URL(path + url.search);
 

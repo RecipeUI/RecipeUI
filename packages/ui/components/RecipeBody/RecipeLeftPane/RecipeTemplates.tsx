@@ -139,7 +139,7 @@ export function UserTemplates() {
             <span className="">{`${project.title}'s`}</span> recipes
           </>
         ) : (
-          "Your"
+          "Your Recipes"
         )}
       </h1>
       <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
