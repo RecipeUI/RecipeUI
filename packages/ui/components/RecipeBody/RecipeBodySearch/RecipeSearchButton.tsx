@@ -365,7 +365,12 @@ export function RecipeSearchButton() {
 
         // If we have to deal with CORS, then we need a server or proxy.
         if (recipe.options?.cors === true) {
-          nativeFetch(fetchPayload).then(resolve).catch(reject);
+          nativeFetch(fetchPayload)
+            .then((res) => {
+              console.log("in here");
+              resolve(res);
+            })
+            .catch(reject);
           return;
         }
 
@@ -421,8 +426,9 @@ export function RecipeSearchButton() {
         requestInfo,
       });
     } catch (e) {
+      console.error(e);
       let output =
-        "Something went wrong. Can you report this issue to us at team@recipeui.com";
+        "Something went wrong. Can you report this issue to us on our discord?";
 
       if ((e as Error)?.message === RecipeError.AbortedRequest) {
         output = "Request cancelled.";
