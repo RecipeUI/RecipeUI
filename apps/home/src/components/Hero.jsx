@@ -19,9 +19,11 @@ export function Hero() {
         The API tool <span className="block sm:inline">for teams</span>
       </h1>
       <p className="mx-auto mt-6 max-w-3xl text-lg tracking-tight text-slate-300">
-        RecipeUI is an open source Postman alternative.{' '}
+        RecipeUI is an open source Postman alternative.
         <br className="hidden sm:block" />
-        Built for everyone from Devs to PMs to QA. Test APIs in seconds.
+        APIs made easy, no coding experience required.
+        <br className="hidden sm:block" />
+        Built for everyone from PMs to QA to Devs.
       </p>
       <HeroButtons />
       <div className="mt-10 flex items-center justify-center">
