@@ -94,7 +94,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
             setLoadingTemplate(template);
           }}
         >
-          Use
+          Mock
         </button>
       </div>
     </div>

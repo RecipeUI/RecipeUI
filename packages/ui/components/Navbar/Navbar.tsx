@@ -40,7 +40,7 @@ export function Navbar() {
   return (
     <div
       className={classNames(
-        "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-1 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
+        "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-2 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
       )}
     >
       <div className="flex">
@@ -89,7 +89,7 @@ export function Navbar() {
           </Link>
         </li>
         {pathname !== "/" && (
-          <li>
+          <li className="hidden sm:block">
             <Link
               href="/"
               className="btn btn-ghost btn-sm font-sm text-xs"
@@ -154,7 +154,21 @@ function NavMenu({ user }: { user: User }) {
           </p>
         </li>
         <div className="divider my-0 px-2" />
-
+        <li className="">
+          <Link
+            href="/"
+            className=""
+            target="_blank"
+            as=""
+            onClick={() => {
+              // if (isTauri) {
+              //   setDesktopPage(null);
+              // }
+            }}
+          >
+            Home
+          </Link>
+        </li>
         <li>
           <button
             onClick={() => {

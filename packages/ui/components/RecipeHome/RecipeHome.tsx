@@ -45,7 +45,7 @@ export function RecipeHome({
   }, [globalProjects]);
 
   return (
-    <div className="-mt-6 sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
+    <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
       {projects.length > 0 && (
         <MarketplaceSection header="Your Projects" projects={projects} />
       )}

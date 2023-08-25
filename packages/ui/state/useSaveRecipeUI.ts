@@ -34,8 +34,8 @@ export function useSaveRecipeUI() {
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
     {
-      currentSession: null,
-      sessions: [],
+      // currentSession: null,
+      // sessions: [],
       ...getEmptyParameters(),
     }
   );
@@ -129,24 +129,24 @@ export function useSaveRecipeUI() {
   useEffect(() => {
     if (projectId || shareTemplateIdParam || username) return;
 
-    if ((sessionIdParam as string) && localSave?.sessions) {
-      const session = localSave.sessions.find((s) => s.id === sessionIdParam);
+    // if ((sessionIdParam as string) && localSave?.sessions) {
+    //   const session = localSave.sessions.find((s) => s.id === sessionIdParam);
 
-      if (!session) {
-        console.debug(
-          "URL has a session that no longer exists",
-          sessionIdParam
-        );
-        router.push("/");
-        return;
-      }
+    //   if (!session) {
+    //     console.debug(
+    //       "URL has a session that no longer exists",
+    //       sessionIdParam
+    //     );
+    //     router.push("/");
+    //     return;
+    //   }
 
-      setCurrentSession(session);
-    } else if (!sessionIdParam && currentSession) {
-      console.debug("URL has no session, but locally we should");
-      setCurrentSession(null);
-      router.push("/");
-    }
+    //   setCurrentSession(session);
+    // } else if (!sessionIdParam && currentSession) {
+    //   console.debug("URL has no session, but locally we should");
+    //   setCurrentSession(null);
+    //   router.push("/");
+    // }
   }, []);
 
   const isTauri = useIsTauri();
