@@ -21,7 +21,7 @@ export function Hero() {
       <p className="mx-auto mt-6 max-w-3xl text-lg tracking-tight text-slate-300">
         RecipeUI is an open source Postman alternative.
         <br className="hidden sm:block" />
-        APIs made easy, no coding experience required.
+        APIs made easy, no coding experience or required.
         <br className="hidden sm:block" />
         Built for everyone from PMs to QA to Devs.
       </p>

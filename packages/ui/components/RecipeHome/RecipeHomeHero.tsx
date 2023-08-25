@@ -12,10 +12,10 @@ export function RecipeHomeHero() {
 
   return (
     <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/80 p-6 sm:p-8 rounded-md mb-4 dark:text-black">
-      <h1 className="font-bold text-xl">Use APIs in seconds</h1>
+      <h1 className="font-bold text-xl">API Playground</h1>
       <p className="mt-2 sm:text-base">
         {
-          "Run the APIs below immediately, no coding experience required. See how we're making APIs easier for teams and developers of all backgrounds."
+          "Run the APIs below immediately, no coding experience or auth required. See how we're making APIs easier for teams and developers of all backgrounds."
         }
       </p>
       <div className="mt-4 flex-col sm:flex-row gap-2 hidden sm:flex">
@@ -34,11 +34,11 @@ export function RecipeHomeHero() {
         >
           Try OpenAI
         </button>
-        {!isTauri && (
+        {/* {!isTauri && (
           <Link className="btn btn-neutral" href="/download">
             Download Desktop
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );

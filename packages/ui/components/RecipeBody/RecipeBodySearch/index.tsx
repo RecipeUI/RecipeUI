@@ -190,6 +190,7 @@ export function RecipeBodySearch() {
                 // currentSession && "pointer-events-none"
               )}
               {...getInputProps()}
+              {...(currentSession && { value: selectedRecipe?.path })}
             />
           </div>
           {currentSession != null && currentSessionRecipe != null && (

@@ -74,10 +74,8 @@ function ProjectHomeBox({
         difference < 300000 && "border-accent"
       )}
       onClick={() => {
-        const session = addSession(recipe);
-
         if (!isTauri) {
-          router.push(`/?${getURLParamsForSession(session)}`);
+          router.push(`/a/${recipe.id}`);
         }
       }}
     >

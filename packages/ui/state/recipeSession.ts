@@ -153,10 +153,11 @@ export const createDesktopSlice: StateCreator<
   };
 };
 
-export type LocalStorageState = {
-  sessions: RecipeSession[];
-  currentSession: RecipeSessionSlice["currentSession"];
-} & RecipeParameters;
+export type LocalStorageState = RecipeParameters;
+// {
+//   sessions: RecipeSession[];
+//   currentSession: RecipeSessionSlice["currentSession"];
+// }
 
 const createRecipeSessionSlice: StateCreator<
   Slices,
@@ -197,7 +198,7 @@ const createRecipeSessionSlice: StateCreator<
           requestBody: oldParams.requestBody,
           queryParams: oldParams.queryParams,
           bodyRoute: RecipeBodyRoute.Parameters,
-          outputTab: hasOutput ? RecipeOutputTab.Output : RecipeOutputTab.Docs,
+          outputTab: RecipeOutputTab.Output,
           requestInfo: null,
           desktopPage: null,
         };
@@ -424,7 +425,7 @@ const createRecipeOutputSlice: StateCreator<
       });
     },
 
-    outputTab: RecipeOutputTab.Docs,
+    outputTab: RecipeOutputTab.Output,
     setOutputTab: (tab) => set(() => ({ outputTab: tab })),
 
     loadingTemplate: null,

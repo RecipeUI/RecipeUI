@@ -61,11 +61,11 @@ export function RecipeHome({
         description="API key not required -> these APIs can be run right away!"
         projects={free}
       />
-      <MarketplaceSection
+      {/* <MarketplaceSection
         header="YCombinator"
         description="We are part of YC S23! The first few recipes were ones we built internally at Robinhood and Meta to save our coworkers time. Check out these API's from our YC family."
         projects={ycombinator}
-      />
+      /> */}
       {more.length > 0 && (
         <MarketplaceSection
           header="Discover"

@@ -40,3 +40,20 @@ export async function fetchProjectPage({
     projectName,
   };
 }
+
+export async function fetchProject({
+  project,
+  supabase,
+}: {
+  project: string;
+  supabase: SupabaseClient<Database>;
+}) {
+  const { data: projectInfo } = await supabase
+    .from("project")
+    .select()
+    .ilike("project", `%${project}%`)
+    .limit(1)
+    .single();
+
+  return projectInfo;
+}

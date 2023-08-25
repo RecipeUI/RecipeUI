@@ -13,7 +13,7 @@ import classNames from "classnames";
 
 import { Recipe, RecipeProject, UserTemplatePreview } from "types/database";
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { getURLParamsForSession } from "../../utils/main";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
@@ -91,25 +91,15 @@ export function RecipeHomeContainer({
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
           <RecipeNativeFetch.Provider value={fetchServer}>
-            {!hasSession && <RecipeHomeHero />}
-            <RecipeBodySearch />
-            {hasSession ? (
-              <RecipeBody />
-            ) : (
-              <>
-                <RecipeHome
-                  globalProjects={globalProjects}
-                  projects={projects}
-                />
-                {showShareModal && sharedTemplate && (
-                  <ShareInviteModal
-                    template={sharedTemplate}
-                    onClose={() => {
-                      setShowShareModal(false);
-                    }}
-                  />
-                )}
-              </>
+            <RecipeHomeHero />
+            <RecipeHome globalProjects={globalProjects} projects={projects} />
+            {showShareModal && sharedTemplate && (
+              <ShareInviteModal
+                template={sharedTemplate}
+                onClose={() => {
+                  setShowShareModal(false);
+                }}
+              />
             )}
           </RecipeNativeFetch.Provider>
         </RecipeProjectContext.Provider>

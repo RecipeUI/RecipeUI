@@ -3,9 +3,9 @@ import "./initPosthog";
 import "ui/css/globals.css";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
-import { Navbar } from "ui/components/Navbar/Navbar";
 import { RecipeSidebar } from "ui/components/RecipeSidebar";
 import { Suspense } from "react";
+import { RecipeLayout } from "./RecipeLayout";
 
 const sora = Sora({ subsets: ["latin"] });
 
@@ -59,13 +59,7 @@ export default function RootLayout({
       </Suspense>
       <body className={sora.className}>
         <Providers>
-          <div className="w-full h-screen flex overflow-y-auto">
-            <RecipeSidebar />
-            <div className="flex flex-1 flex-col overflow-y-scroll">
-              <Navbar />
-              {children}
-            </div>
-          </div>
+          <RecipeLayout>{children}</RecipeLayout>
         </Providers>
       </body>
     </html>

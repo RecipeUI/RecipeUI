@@ -69,7 +69,7 @@ export function useSaveRecipeUI() {
     //   router.push(`/?${getURLParamsForSession(localSave.currentSession)}`);
     //   setCurrentSession(localSave.currentSession);
     // }
-    if (localSave.sessions) setSessions(localSave.sessions);
+    // if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);
     if (localSave.urlParams) setUrlParams(localSave.urlParams);
@@ -154,8 +154,8 @@ export function useSaveRecipeUI() {
   useInterval(
     () => {
       setLocalSave({
-        currentSession,
-        sessions,
+        // currentSession,
+        // sessions,
         requestBody,
         queryParams,
         urlParams,
