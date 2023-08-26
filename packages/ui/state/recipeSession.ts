@@ -85,8 +85,10 @@ interface RecipeOutputSlice {
   outputTab: RecipeOutputTab;
   setOutputTab: (tab: RecipeOutputTab) => void;
 
-  loadingTemplate: RecipeTemplate | null;
-  setLoadingTemplate: (template: RecipeTemplate | null) => void;
+  loadingTemplate: (RecipeTemplate & { speedFactor?: number }) | null;
+  setLoadingTemplate: (
+    template: (RecipeTemplate & { speedFactor?: number }) | null
+  ) => void;
 }
 
 interface RecipeBodySlice {

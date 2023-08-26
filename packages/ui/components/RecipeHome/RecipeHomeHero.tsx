@@ -11,9 +11,9 @@ export function RecipeHomeHero() {
   const isTauri = useIsTauri();
 
   return (
-    <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/80 p-6 sm:p-8 rounded-md mb-4 dark:text-black">
+    <div className="sm:block sm:m-4 bg-yellow-200 dark:bg-yellow-200/80 p-6 sm:p-8 rounded-md  mb-6 sm:mb-4 dark:text-black">
       <h1 className="font-bold text-xl">API Playground</h1>
-      <p className="mt-2 sm:text-base">
+      <p className="mt-2 text-sm sm:text-base">
         {
           "Run the APIs below immediately, no coding experience or auth required. See how we're making APIs easier for teams and developers of all backgrounds."
         }

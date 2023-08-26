@@ -60,8 +60,8 @@ export function RecipeParameterTab() {
                     <hr />
                     <h3 className="font-bold mb-2">Recipe Playground</h3>
                     <p>
-                      You can use recipes below, but to truly enjoy the most of
-                      this API then configure auth.
+                      Mock with recipes below or setup auth to experience the
+                      endpoint fully.
                     </p>
                     <button
                       className="btn btn-sm btn-neutral"
@@ -69,7 +69,7 @@ export function RecipeParameterTab() {
                         setBodyRoute(RecipeBodyRoute.Templates);
                       }}
                     >
-                      Test more recipes
+                      Mock with recipes
                     </button>
                   </>
                 )}

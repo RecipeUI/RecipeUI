@@ -64,7 +64,7 @@ export function useLoadingTemplate() {
       paramSchema,
       updateFunction,
       path,
-      speedFactor = 1,
+      speedFactor = loadingTemplate?.speedFactor ?? 1,
     }: {
       paramName: string;
       paramValue: unknown;

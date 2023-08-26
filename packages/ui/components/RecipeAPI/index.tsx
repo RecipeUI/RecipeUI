@@ -27,10 +27,14 @@ export function RecipeAPI({
     (state) => state.setCurrentSession
   );
 
+  const clearOutput = useRecipeSessionStore((state) => state.clearOutput);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (recipe) {
+      clearOutput("playground");
+
       setCurrentSession({
         id: "playground",
         name: "playground",
@@ -59,7 +63,7 @@ export function RecipeAPI({
   }
 
   return (
-    <div className={classNames("flex-1 flex flex-col")}>
+    <div className={classNames("flex-1 flex flex-col z-0")}>
       <RecipeContext.Provider value={recipe}>
         <RecipeProjectContext.Provider value={project}>
           <RecipeNativeFetch.Provider value={fetchServer}>

@@ -27,6 +27,11 @@ import { cloneTemplate, deleteTemplate } from "../RecipeBodySearch/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
+import {
+  EllipsisHorizontalCircleIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/outline";
+import { useSecretsFromSM } from "../../../state/recipeAuth";
 
 export function RecipeTemplatesTab() {
   return (
@@ -39,6 +44,7 @@ export function RecipeTemplatesTab() {
   );
 }
 
+const AuthBlock = `You need to setup authentication. Consider the mock option or setting up auth in the Config tab.`;
 export function StarterTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
   const templates = selectedRecipe.templates || [];
@@ -49,8 +55,8 @@ export function StarterTemplates() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">Starter Recipes</h1>
-      <p className="mt-2">Use the recipes below to see how to use this API!</p>
+      <h1 className="text-xl font-bold">Community Recipes</h1>
+      <p className="mt-2">Use the example below to see how to use this API.</p>
       <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
         {templates.map((template) => (
           <StarterTemplateItem key={template.title} template={template} />
@@ -70,6 +76,33 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
   const selectedRecipe = useContext(RecipeContext)!;
   const posthog = usePostHog();
 
+  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
+  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
+  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
+  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
+  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
+
+  const setTemplate = async () => {
+    const templateInfo = template;
+
+    if (templateInfo.requestBody) {
+      setRequestBody(templateInfo.requestBody);
+    }
+
+    if (templateInfo.queryParams) {
+      setQueryParams(templateInfo.queryParams);
+    }
+
+    if (templateInfo.urlParams) {
+      setUrlParams(templateInfo.urlParams);
+    }
+
+    setCurrentTab(RecipeOutputTab.Docs);
+    setBodyRoute(RecipeBodyRoute.Parameters);
+  };
+
+  const secretInfo = useSecretsFromSM();
+
   return (
     <div
       className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default"
@@ -78,7 +111,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
       <h3 className="font-bold">{template.title}</h3>
       <p className="text-sm line-clamp-3">{template.description}</p>
       <div className="flex-1" />
-      <div className="flex justify-between">
+      <div className="flex space-x-2">
         <button
           className={classNames(
             "btn btn-sm btn-neutral w-fit",
@@ -95,6 +128,35 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
           }}
         >
           Mock
+        </button>
+        <button
+          className={classNames(
+            "btn btn-sm btn-neutral",
+            loadingTemplate && "btn-disabled"
+          )}
+          onClick={async () => {
+            if (secretInfo && !secretInfo.hasAllSecrets) {
+              alert(AuthBlock);
+              return;
+            }
+
+            await setTemplate();
+
+            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
+              template_id: "starter",
+              template_project: selectedRecipe.project,
+              recipe_id: selectedRecipe.id,
+              recipe_path: selectedRecipe.path,
+            });
+
+            setTimeout(() => {
+              document
+                .getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)
+                ?.click();
+            }, 500);
+          }}
+        >
+          Send
         </button>
       </div>
     </div>
@@ -192,15 +254,145 @@ function UserTemplateItem({
   const isTauri = useIsTauri();
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const supabase = useSupabaseClient();
+
+  const setTemplate = async () => {
+    const templateInfo = await getTemplate(template.id, supabase);
+
+    if (!templateInfo) {
+      alert("Failed to find template");
+      return;
+    }
+
+    if (templateInfo.requestBody) {
+      setRequestBody(templateInfo.requestBody);
+    }
+
+    if (templateInfo.queryParams) {
+      setQueryParams(templateInfo.queryParams);
+    }
+
+    if (templateInfo.urlParams) {
+      setUrlParams(templateInfo.urlParams);
+    }
+
+    setCurrentTab(RecipeOutputTab.Docs);
+    setBodyRoute(RecipeBodyRoute.Parameters);
+  };
+  const secretInfo = useSecretsFromSM();
+
   return (
     <div
       className={classNames(
-        "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default",
+        "border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default relative",
         newTemplateId === String(template.id) &&
           "!border-accent !border-4 border-dashed "
       )}
       key={`${template.id}`}
     >
+      <div className="absolute top-2 right-2 mr-1 dropdown dropdown-left  sm:inline-block cursor-pointer">
+        <label
+          tabIndex={0}
+          className={classNames(loadingTemplate && "btn-disabled")}
+        >
+          <EllipsisHorizontalIcon className="w-6 h-6" />
+        </label>
+        <ul
+          tabIndex={0}
+          className="dropdown-content  menu  shadow rounded-box  mt-1 grid  overflow-auto bg-base-100 text-xs r-0 top-5"
+        >
+          <li>
+            <button
+              className=""
+              onClick={async () => {
+                await setTemplate();
+
+                posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+                  template_id: template.id,
+                  template_project: selectedRecipe.project,
+                  recipe_id: selectedRecipe.id,
+                  recipe_path: selectedRecipe.path,
+                });
+              }}
+            >
+              PREFILL
+            </button>
+          </li>
+          <li>
+            <button
+              className={classNames()}
+              onClick={async () => {
+                posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
+                  template_id: template.id,
+                  template_project: selectedRecipe.project,
+                  recipe_id: selectedRecipe.id,
+                  recipe_path: selectedRecipe.path,
+                });
+
+                const templateInfo = await getTemplate(template.id, supabase);
+                if (templateInfo) {
+                  setLoadingTemplate(templateInfo);
+                } else {
+                  alert("Failed to find template");
+                }
+              }}
+            >
+              MOCK
+            </button>
+          </li>
+
+          <li>
+            <ShareRecipeButton template={template} />
+          </li>
+          {(template.original_author.user_id === user?.user_id ||
+            template.author_id === user?.user_id) && (
+            <li>
+              <button
+                className=""
+                onClick={async () => {
+                  if (
+                    !(await confirm("Are you sure you want to delete this?"))
+                  ) {
+                    return;
+                  }
+                  if (isLocalFork) {
+                    setForkedTemplate(null);
+                    return;
+                  }
+
+                  const deletedTemplateRes = await deleteTemplate(
+                    template.id,
+                    supabase
+                  );
+
+                  if (deletedTemplateRes) {
+                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE, {
+                      template_id: template.id,
+                      template_project: selectedRecipe.project,
+                      recipe_id: selectedRecipe.id,
+                      recipe_path: selectedRecipe.path,
+                    });
+
+                    if (isTauri) {
+                      setTimeout(() => {
+                        queryClient.invalidateQueries({
+                          queryKey: [QueryKey.RecipesHomeView],
+                        });
+                      }, 0);
+                    } else {
+                      router.refresh();
+                    }
+
+                    alert("Recipe deleted");
+                    return;
+                  }
+                }}
+              >
+                DELETE
+              </button>
+            </li>
+          )}
+        </ul>
+      </div>
       {!isTeam ? (
         <>
           {(!user || template.original_author.user_id !== user.user_id) && (
@@ -231,181 +423,34 @@ function UserTemplateItem({
       <div className="flex space-x-1  sm:block sm:space-x-2">
         <button
           className={classNames(
-            "btn btn-sm btn-neutral w-fit",
+            "btn btn-sm btn-neutral",
             loadingTemplate && "btn-disabled"
           )}
           onClick={async () => {
-            posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
+            if (secretInfo && !secretInfo.hasAllSecrets) {
+              alert(AuthBlock);
+              return;
+            }
+
+            await setTemplate();
+
+            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
               template_id: template.id,
               template_project: selectedRecipe.project,
               recipe_id: selectedRecipe.id,
               recipe_path: selectedRecipe.path,
             });
 
-            const templateInfo = await getTemplate(template.id, supabase);
-            if (templateInfo) {
-              setLoadingTemplate(templateInfo);
-            } else {
-              alert("Failed to find template");
-            }
+            // setIsSending(true, RecipeOutputTab.Docs);
+            setTimeout(() => {
+              document
+                .getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)
+                ?.click();
+            }, 500);
           }}
         >
-          Use
+          Send
         </button>
-
-        <div
-          className="dropdown hidden sm:inline-block"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <label
-            tabIndex={0}
-            className={classNames(
-              "btn btn-sm btn-neutral",
-              loadingTemplate && "btn-disabled"
-            )}
-          >
-            Options
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content  z-20  menu  shadow rounded-box bg-base-300 gap-2 w-[180px] mt-1 grid grid-cols-2 overflow-auto"
-          >
-            <li className="">
-              <button
-                className="btn btn-sm btn-neutral w-full"
-                onClick={async () => {
-                  const templateInfo = await getTemplate(template.id, supabase);
-
-                  if (!templateInfo) {
-                    alert("Failed to find template");
-                    return;
-                  }
-
-                  if (templateInfo.requestBody) {
-                    setRequestBody(templateInfo.requestBody);
-                  }
-
-                  if (templateInfo.queryParams) {
-                    setQueryParams(templateInfo.queryParams);
-                  }
-
-                  if (templateInfo.urlParams) {
-                    setUrlParams(templateInfo.urlParams);
-                  }
-
-                  setCurrentTab(RecipeOutputTab.Docs);
-                  setBodyRoute(RecipeBodyRoute.Parameters);
-
-                  posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
-                    template_id: template.id,
-                    template_project: selectedRecipe.project,
-                    recipe_id: selectedRecipe.id,
-                    recipe_path: selectedRecipe.path,
-                  });
-
-                  setTimeout(() => {
-                    document
-                      .getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)
-                      ?.click();
-                  }, 500);
-                }}
-              >
-                Send
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-sm btn-neutral w-full"
-                onClick={async () => {
-                  const templateInfo = await getTemplate(template.id, supabase);
-
-                  if (!templateInfo) {
-                    alert("Failed to find template");
-                    return;
-                  }
-
-                  if (templateInfo.requestBody) {
-                    setRequestBody(templateInfo.requestBody);
-                  }
-
-                  if (templateInfo.queryParams) {
-                    setQueryParams(templateInfo.queryParams);
-                  }
-
-                  if (templateInfo.urlParams) {
-                    setUrlParams(templateInfo.urlParams);
-                  }
-
-                  setCurrentTab(RecipeOutputTab.Docs);
-                  setBodyRoute(RecipeBodyRoute.Parameters);
-
-                  posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-                    template_id: template.id,
-                    template_project: selectedRecipe.project,
-                    recipe_id: selectedRecipe.id,
-                    recipe_path: selectedRecipe.path,
-                  });
-                }}
-              >
-                Prefill
-              </button>
-            </li>
-
-            <li>
-              <ShareRecipeButton template={template} />
-            </li>
-            {(template.original_author.user_id === user?.user_id ||
-              template.author_id === user?.user_id) && (
-              <li>
-                <button
-                  className="btn btn-sm btn-neutral w-full z-40"
-                  onClick={async () => {
-                    if (
-                      !(await confirm("Are you sure you want to delete this?"))
-                    ) {
-                      return;
-                    }
-                    if (isLocalFork) {
-                      setForkedTemplate(null);
-                      return;
-                    }
-
-                    const deletedTemplateRes = await deleteTemplate(
-                      template.id,
-                      supabase
-                    );
-
-                    if (deletedTemplateRes) {
-                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE, {
-                        template_id: template.id,
-                        template_project: selectedRecipe.project,
-                        recipe_id: selectedRecipe.id,
-                        recipe_path: selectedRecipe.path,
-                      });
-
-                      if (isTauri) {
-                        setTimeout(() => {
-                          queryClient.invalidateQueries({
-                            queryKey: [QueryKey.RecipesHomeView],
-                          });
-                        }, 0);
-                      } else {
-                        router.refresh();
-                      }
-
-                      alert("Recipe deleted");
-                      return;
-                    }
-                  }}
-                >
-                  Del
-                </button>
-              </li>
-            )}
-          </ul>
-        </div>
       </div>
     </div>
   );
@@ -417,12 +462,12 @@ function ShareRecipeButton({ template }: { template: UserTemplatePreview }) {
   return (
     <>
       <button
-        className="btn btn-sm btn-neutral w-full"
+        className=""
         onClick={() => {
           setShowModal(true);
         }}
       >
-        Share
+        SHARE
       </button>
       {showModal && (
         <ShareModal

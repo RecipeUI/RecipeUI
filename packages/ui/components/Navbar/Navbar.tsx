@@ -40,7 +40,7 @@ export function Navbar() {
   return (
     <div
       className={classNames(
-        "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-2 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
+        "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-10 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
       )}
     >
       <div className="flex">
@@ -54,8 +54,8 @@ export function Navbar() {
           }}
         >
           <svg
-            width="27"
-            height="28"
+            width="23"
+            height="23 "
             viewBox="0 0 27 28"
             className="fill-black dark:fill-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -72,11 +72,13 @@ export function Navbar() {
               </clipPath>
             </defs>
           </svg>
-          <h1 className="ml-2 dark:text-white font-bold text-lg">RecipeUI</h1>
+          <h1 className="ml-2 dark:text-white font-bold sm:block hidden">
+            RecipeUI
+          </h1>
         </Link>
       </div>
       <div />
-      <ul className="menu menu-horizontal px-1 dark:text-white space-x-2">
+      <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
         <li className="">
           <Link
             href="https://github.com/RecipeUI/RecipeUI"
