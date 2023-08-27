@@ -24,35 +24,6 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 */
 
 export function useSaveRecipeUI() {
-  const searchParams = useSearchParams();
-  const sessionIdParam = searchParams.get("sessionId");
-
-  const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
-    SESSION_HYDRATION_KEY,
-    {
-      ...getEmptyParameters(),
-    }
-  );
-
-  const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const setQueryParams = useRecipeSessionStore((state) => state.setQueryParams);
-  const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const setUrlParams = useRecipeSessionStore((state) => state.setUrlParams);
-  const isMobile = useIsMobile();
-  // On mount, hydrate from local storage
-
-  useEffect(() => {
-    console.log("Hydrating from local storage");
-
-    if (!localSave || isMobile) return;
-
-    if (localSave.requestBody) setRequestBody(localSave.requestBody);
-    if (localSave.queryParams) setQueryParams(localSave.queryParams);
-    if (localSave.urlParams) setUrlParams(localSave.urlParams);
-  }, []);
-
   const supabase = useSupabaseClient();
   const setUserSession = useRecipeSessionStore((state) => state.setUserSession);
 
@@ -104,16 +75,16 @@ export function useSaveRecipeUI() {
 
   const router = useRouter();
 
-  const isTauri = useIsTauri();
-  // Save changes every POLLING_FACTOR seconds
-  useInterval(
-    () => {
-      setLocalSave({
-        requestBody,
-        queryParams,
-        urlParams,
-      });
-    },
-    isTauri ? GLOBAL_POLLING_FACTOR * 3 : GLOBAL_POLLING_FACTOR
-  );
+  // const isTauri = useIsTauri();
+  // // Save changes every POLLING_FACTOR seconds
+  // useInterval(
+  //   () => {
+  //     setLocalSave({
+  //       requestBody,
+  //       queryParams,
+  //       urlParams,
+  //     });
+  //   },
+  //   isTauri ? GLOBAL_POLLING_FACTOR * 3 : GLOBAL_POLLING_FACTOR
+  // );
 }

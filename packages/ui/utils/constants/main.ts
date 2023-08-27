@@ -42,6 +42,7 @@ export interface ${API_TYPE_NAMES.APIRequestParams} {
   //    content: string;
   // }[];
   // max_tokens?: number;
+  // stream?: boolean;
 }
 `.trim();
 
