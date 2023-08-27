@@ -240,6 +240,9 @@ importers:
       '@types/js-yaml':
         specifier: ^4.0.5
         version: 4.0.5
+      '@types/json-schema':
+        specifier: ^7.0.12
+        version: 7.0.12
       '@types/node':
         specifier: 20.4.8
         version: 20.4.8
@@ -424,6 +427,9 @@ importers:
       '@types/js-yaml':
         specifier: ^4.0.5
         version: 4.0.5
+      '@types/json-schema':
+        specifier: ^7.0.12
+        version: 7.0.12
       '@types/lodash.debounce':
         specifier: ^4.0.7
         version: 4.0.7

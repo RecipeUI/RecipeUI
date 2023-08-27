@@ -17,6 +17,8 @@ import { produce } from "immer";
 import { RecipeMethod, RecipeMutationContentType } from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
+import { JSONSchema6, JSONSchema6Object } from "json-schema";
+import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
 
 export interface RecipeSession {
   id: string;
@@ -54,6 +56,7 @@ export enum RecipeBodyRoute {
 export enum RecipeOutputTab {
   Output = "Output",
   Docs = "Docs",
+  DocTwo = "Doc",
   Code = "Code",
 }
 
@@ -126,8 +129,19 @@ interface RecipeEditorSlice {
   editorBodySchemaType: string;
   setEditorBodySchemaType: (editorBodySchemaType: string) => void;
 
-  editorBodySchemaJson: JSONBody;
-  setEditorBodySchemaJson: (editorBodySchemaJson: JSONBody) => void;
+  editorBodySchemaJson: JSONSchema6;
+  setEditorBodySchemaJson: (editorBodySchemaJson: JSONSchema6) => void;
+  updateEditorBodySchemaJson: (props: {
+    path: string;
+    update: JSONSchema6;
+    merge: boolean;
+  }) => void;
+
+  editorQuerySchemaType: string;
+  setEditorQuerySchemaType: (editorQuerySchemaType: string) => void;
+
+  editorQuerySchemaJSON: JSONSchema6;
+  setEditorQuerySchemaJSON: (editorQuerySchemaJSON: JSONSchema6) => void;
 
   editorBodyType: RecipeMutationContentType | null;
   setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
@@ -173,15 +187,52 @@ export const createRecipeEditorSlice: StateCreator<
     editorBodyType: RecipeMutationContentType.JSON,
     setEditorBodyType: (editorBodyType) => set(() => ({ editorBodyType })),
 
-    editorBodySchemaType: "export interface APIRequest {\n\n}",
+    editorBodySchemaType: API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE,
+    editorQuerySchemaType: API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE,
 
     setEditorBodySchemaType(editorBodySchemaType) {
       set(() => ({ editorBodySchemaType }));
+    },
+    setEditorQuerySchemaType(editorQuerySchemaType) {
+      set(() => ({ editorQuerySchemaType }));
     },
 
     editorBodySchemaJson: {},
     setEditorBodySchemaJson(editorBodySchemaJson) {
       set(() => ({ editorBodySchemaJson }));
+    },
+    editorQuerySchemaJSON: {},
+    setEditorQuerySchemaJSON(editorQuerySchemaJSON) {
+      set(() => ({ editorQuerySchemaJSON }));
+    },
+
+    updateEditorBodySchemaJson({ path, update, merge = true }) {
+      set((prevState) => {
+        const nextState = produce(prevState.editorBodySchemaJson, (draft) => {
+          const paths = path.split(".");
+
+          let destination = draft;
+
+          try {
+            for (let i = 0; i < paths.length - 1; i++) {
+              const inner_path = paths[i];
+
+              // @ts-ignore
+              destination = destination[inner_path] || {};
+            }
+
+            const finalPath = paths[paths.length - 1];
+
+            // @ts-ignore
+            destination[finalPath] = merge
+              ? // @ts-ignore
+                { ...destination[finalPath], ...update }
+              : update;
+          } catch (e) {}
+        });
+
+        return { editorBodySchemaJson: nextState };
+      });
     },
   };
 };

@@ -3,40 +3,8 @@
 import { RecipeMutationContentType } from "types/enums";
 import { useRecipeSessionStore } from "ui/state/recipeSession";
 
-export function EditorBody() {
-  const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
-  const setEditorBodyType = useRecipeSessionStore(
-    (state) => state.setEditorBodyType
-  );
-
-  return (
-    <div className="flex-1 overflow-x-auto sm:block hidden z-20">
-      {editorBodyType === null && (
-        <select
-          className="select select-bordered w-full max-w-xs m-4"
-          onChange={(e) => {
-            setEditorBodyType(
-              (e.target.value || null) as RecipeMutationContentType
-            );
-          }}
-        >
-          <option value={undefined}>None</option>
-          <option value={RecipeMutationContentType.JSON}>JSON Body</option>
-          <option value={RecipeMutationContentType.FormData}>
-            FormData Body
-          </option>
-        </select>
-      )}
-
-      {editorBodyType === RecipeMutationContentType.JSON && (
-        <JSONEditorContainer />
-      )}
-    </div>
-  );
-}
-
 import MonacoEditor from "@monaco-editor/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
@@ -49,37 +17,56 @@ import {
   handleEditorWillMount,
 } from "@/app/editor/EditorViewWithSchema";
 
-export const JSONEditorContainer = () => {
-  const editorBody = useRecipeSessionStore((state) => state.editorBody);
-  const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
-
-  const editorBodySchemaJSON = useRecipeSessionStore(
-    (state) => state.editorBodySchemaJson
+export const EditorQuery = () => {
+  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
+  const setEditorQuery = useRecipeSessionStore((state) => state.setEditorQuery);
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+  const editorQuerySchemaJSON = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaJSON
   );
 
+  const isEmpty = !editorQuery;
+
+  const newQueryChanges = useDebounce(editorQuery, 500);
+  const urlParams = useMemo(() => {
+    if (!newQueryChanges) return "Enter query params as key value pairs below";
+
+    try {
+      const params = JSON.parse(newQueryChanges) as Record<string, string>;
+
+      return `${editorUrl}?${new URLSearchParams(params).toString()}`;
+    } catch (e) {
+      return "Invalid query params";
+    }
+  }, [editorUrl, newQueryChanges]);
+
   return (
-    <div className="grid grid-rows-2 flex-1 h-full z-20">
+    <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20">
+      <div className="p-2 px-8 text-sm">
+        {isEmpty ? "Enter query params as key value pairs below" : urlParams}
+      </div>
       <EditorViewWithSchema
-        value={editorBody}
-        setValue={setEditorBody}
-        jsonSchema={editorBodySchemaJSON}
+        value={editorQuery}
+        setValue={setEditorQuery}
+        jsonSchema={editorQuerySchemaJSON}
       />
-      <JSONEditorType />
+      <EditorType />
     </div>
   );
 };
 
-export const JSONEditorType = () => {
+const EditorType = () => {
   const { isDarkMode } = useDarkMode();
   const schemaType = useRecipeSessionStore(
-    (state) => state.editorBodySchemaType
+    (state) => state.editorQuerySchemaType
   );
   const editSchemaType = useRecipeSessionStore(
-    (state) => state.setEditorBodySchemaType
+    (state) => state.setEditorQuerySchemaType
   );
   const editSchemaJSON = useRecipeSessionStore(
-    (state) => state.setEditorBodySchemaJson
+    (state) => state.setEditorQuerySchemaJSON
   );
+
   const [hasChanged, setHasChanged] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -114,7 +101,7 @@ export const JSONEditorType = () => {
         .then(async (res) => {
           const value = await res.json();
           editSchemaJSON(
-            value.definitions[API_TYPE_NAMES.APIRequestParams] || {
+            value.definitions[API_TYPE_NAMES.APIQueryParams] || {
               additionalProperties: true,
               type: "object",
             }

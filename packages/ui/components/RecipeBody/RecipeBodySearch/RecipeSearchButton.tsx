@@ -319,7 +319,6 @@ export function RecipeSearchButton() {
         let content = "";
         const textDecoder = new TextDecoder("utf-8");
 
-        console.log(" in here");
         if (!res.body) {
           throw new Error("No body found.");
         }

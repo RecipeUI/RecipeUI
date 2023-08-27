@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
+    "@types/json-schema": "^7.0.12",
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",

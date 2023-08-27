@@ -10,6 +10,7 @@ import { EDITOR_NEW_SESSION_ID } from "ui/utils/constants/main";
 import { v4 as uuidv4 } from "uuid";
 import { EditorBody } from "./EditorBody";
 import { EditHeaders } from "./EditHeaders";
+import { EditorQuery } from "@/app/editor/EditorQuery";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -72,6 +73,7 @@ function EditorPage() {
 
       <div className="flex-1 border-t border-t-slate-200 dark:border-t-slate-600  sm:flex-row flex flex-col overflow-auto">
         {bodyRoute === RecipeBodyRoute.Body && <EditorBody />}
+        {bodyRoute === RecipeBodyRoute.Query && <EditorQuery />}
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         <RecipeOutput />
       </div>

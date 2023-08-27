@@ -8,6 +8,7 @@ import { useEffect, useMemo } from "react";
 
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
 import { RecipeCodeView } from "./RecipeCodeView";
+import { RecipeEditDocs } from "./RecipeEditDocs";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
@@ -40,6 +41,7 @@ export function RecipeOutput() {
     };
   }, [currentTab, setCurrentTab]);
 
+  const editorMode = useRecipeSessionStore((state) => state.editorMode);
   const tabs = useMemo(() => {
     if (
       Object.keys(output).length === 0 &&
@@ -48,16 +50,19 @@ export function RecipeOutput() {
       return [];
     }
 
-    const _tabs = [RecipeOutputTab.Docs, RecipeOutputTab.Output];
+    const _tabs = editorMode
+      ? [RecipeOutputTab.DocTwo, RecipeOutputTab.Output]
+      : [RecipeOutputTab.Docs, RecipeOutputTab.Output];
 
     _tabs.push(RecipeOutputTab.Code);
 
     return _tabs;
-  }, [output, currentTab]);
+  }, [output, currentTab, editorMode]);
 
   return (
     <div className="flex-1 relative border-t sm:border-l border-slate-200 dark:border-slate-600 sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
+      {currentTab === RecipeOutputTab.DocTwo && <RecipeEditDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {currentTab === RecipeOutputTab.Code && <RecipeCodeView />}
       {!loadingTemplate && tabs.length && (
