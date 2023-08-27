@@ -14,7 +14,7 @@ import { get, set, del } from "idb-keyval";
 import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
-import { RecipeMethod } from "types/enums";
+import { RecipeMethod, RecipeMutationContentType } from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
 
@@ -31,6 +31,7 @@ interface RecipeSessionSlice {
 
   setSessions: (sessions: RecipeSession[]) => void;
   setCurrentSession: (session: RecipeSession | null) => void;
+  updateCurrentSessionMethod: (method: RecipeMethod) => void;
   updateSessionName: (session: RecipeSession, name: string) => void;
 
   addSession: (
@@ -43,6 +44,11 @@ export enum RecipeBodyRoute {
   Parameters = "Parameters",
   Templates = "Recipes",
   Config = "Config",
+
+  // EDITOR Routes
+  Body = "Body",
+  Query = "Query",
+  Headers = "Headers",
 }
 
 export enum RecipeOutputTab {
@@ -92,6 +98,94 @@ interface RecipeOutputSlice {
   ) => void;
 }
 
+interface RequestHeader {
+  name: string;
+  value: string;
+  sensitive?: boolean;
+}
+
+interface RecipeEditorSlice {
+  editorMode: boolean;
+  setEditorMode: (editorModeOn: boolean) => void;
+
+  editorUrl: string;
+  setEditorUrl: (url: string) => void;
+
+  editorMethod: RecipeMethod;
+  setEditorMethod: (editorMethod: RecipeMethod) => void;
+
+  editorBody: string;
+  setEditorBody: (editorBody: string) => void;
+
+  editorQuery: string;
+  setEditorQuery: (editorQuery: string) => void;
+
+  editorHeaders: RequestHeader[];
+  setEditorHeaders: (editorHeaders: RequestHeader[]) => void;
+
+  editorBodySchemaType: string;
+  setEditorBodySchemaType: (editorBodySchemaType: string) => void;
+
+  editorBodySchemaJson: JSONBody;
+  setEditorBodySchemaJson: (editorBodySchemaJson: JSONBody) => void;
+
+  editorBodyType: RecipeMutationContentType | null;
+  setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
+}
+
+function getContentTypeHeader() {
+  return {
+    name: "Content-Type",
+    value: "application/json",
+  };
+}
+
+export const createRecipeEditorSlice: StateCreator<
+  Slices,
+  [],
+  [],
+  RecipeEditorSlice
+> = (set) => {
+  return {
+    editorMode: false,
+    setEditorMode: (editorModeOn) => set(() => ({ editorMode: editorModeOn })),
+
+    editorUrl: "",
+    setEditorUrl: (url) => set(() => ({ editorUrl: url })),
+
+    editorMethod: RecipeMethod.GET,
+    setEditorMethod: (editorMethod: RecipeMethod) =>
+      set(() => ({ editorMethod })),
+
+    editorBody: "{}",
+    setEditorBody: (editorBody) => set(() => ({ editorBody })),
+
+    editorQuery: "",
+    setEditorQuery: (editorQuery) => set(() => ({ editorQuery })),
+
+    editorHeaders: [
+      {
+        ...getContentTypeHeader(),
+      },
+    ],
+    setEditorHeaders: (editorHeaders) => set(() => ({ editorHeaders })),
+
+    editorBodyType: RecipeMutationContentType.JSON,
+    setEditorBodyType: (editorBodyType) => set(() => ({ editorBodyType })),
+
+    editorBodySchemaType: "export interface APIRequest {\n\n}",
+
+    setEditorBodySchemaType(editorBodySchemaType) {
+      set(() => ({ editorBodySchemaType }));
+    },
+
+    editorBodySchemaJson: {},
+    setEditorBodySchemaJson(editorBodySchemaJson) {
+      set(() => ({ editorBodySchemaJson }));
+    },
+  };
+};
+
 interface RecipeBodySlice {
   bodyRoute: RecipeBodyRoute;
   setBodyRoute: (route: RecipeBodyRoute) => void;
@@ -139,7 +233,8 @@ type Slices = RecipeSessionSlice &
   RecipeOutputSlice &
   FileManagerSlice &
   UserSessionSlice &
-  DesktopStateSlice;
+  DesktopStateSlice &
+  RecipeEditorSlice;
 
 export const createDesktopSlice: StateCreator<
   Slices,
@@ -214,6 +309,25 @@ const createRecipeSessionSlice: StateCreator<
         };
       }),
 
+    updateCurrentSessionMethod(method) {
+      set((prevState) => {
+        if (!prevState.currentSession) return {};
+
+        const sessions = prevState.sessions.map((s) => {
+          if (s.id === prevState.currentSession?.id) {
+            return {
+              ...s,
+              recipeMethod: method,
+            };
+          }
+          return s;
+        });
+
+        return {
+          sessions,
+        };
+      });
+    },
     addSession: (selectedRecipe) => {
       const newSession: RecipeSession = {
         id: uuidv4(),
@@ -480,6 +594,7 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createFileManagerSlice(...a),
   ...createUserSessionSlice(...a),
   ...createDesktopSlice(...a),
+  ...createRecipeEditorSlice(...a),
 }));
 
 export const GLOBAL_POLLING_FACTOR = 10000;

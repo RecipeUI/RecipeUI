@@ -24,3 +24,4 @@ export const FORM_LINKS = {
 };
 
 export const PLAYGROUND_SESSION_ID = "playgroundSessionId";
+export const EDITOR_NEW_SESSION_ID = "NEW_SESSION_ID";

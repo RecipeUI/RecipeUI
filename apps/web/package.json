@@ -10,6 +10,8 @@
     "lint": "pnpm run check-types && next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.18",
+    "@monaco-editor/react": "^4.5.2",
     "@supabase/auth-helpers-nextjs": "^0.7.4",
     "@supabase/supabase-js": "^2.31.0",
     "@tanstack/react-query": "^4.32.6",
@@ -17,6 +19,7 @@
     "classnames": "^2.3.2",
     "daisyui": "^3.5.0",
     "eslint-config-custom": "workspace:*",
+    "immer": "^10.0.2",
     "next": "13.4.12",
     "openapi-parser-js": "workspace:*",
     "postcss": "^8.4.27",
@@ -26,13 +29,15 @@
     "react-hook-form": "^7.45.4",
     "tailwindcss": "^3.3.3",
     "ui": "workspace:*",
-    "usehooks-ts": "^2.9.1"
+    "usehooks-ts": "^2.9.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "10.4.14",

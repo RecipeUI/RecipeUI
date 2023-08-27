@@ -135,18 +135,20 @@ export function RecipeOutputConsole() {
           <OutputModule
             title="Response"
             body={
-              <CodeMirror
-                readOnly={true}
-                value={
-                  selectedRecipe?.options?.streaming
-                    ? (output["content"] as string) || ""
-                    : JSON.stringify(output, null, 2)
-                }
-                className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-                basicSetup={codeMirrorSetup}
-                theme={"dark"}
-                extensions={extensions}
-              />
+              Object.keys(output).length > 0 ? (
+                <CodeMirror
+                  readOnly={true}
+                  value={
+                    selectedRecipe?.options?.streaming
+                      ? (output["content"] as string) || ""
+                      : JSON.stringify(output, null, 2)
+                  }
+                  className="h-full !outline-none border-none max-w-sm sm:max-w-none"
+                  basicSetup={codeMirrorSetup}
+                  theme={"dark"}
+                  extensions={extensions}
+                />
+              ) : null
             }
           />
         </>

@@ -14,11 +14,16 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeOutputType } from "types/database";
-import { RecipeAuthType, RecipeError } from "types/enums";
+import {
+  RecipeAuthType,
+  RecipeError,
+  RecipeMutationContentType,
+} from "types/enums";
 import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
+import { usePathname } from "next/navigation";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -33,12 +38,19 @@ export function RecipeSearchButton() {
   const queryParams = useRecipeSessionStore((store) => store.queryParams);
   const urlParams = useRecipeSessionStore((store) => store.urlParams);
   const fetchRejectRef = useRef<((val: any) => void) | null>(null);
-  const recipe = useContext(RecipeContext)!;
+  const _recipe = useContext(RecipeContext);
 
   const secretInfo = useSecretsFromSM();
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
+
+  const editorMode = useRecipeSessionStore((state) => state.editorMode);
+  const editorBody = useRecipeSessionStore((state) => state.editorBody);
+  const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
+  const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+  const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -60,6 +72,43 @@ export function RecipeSearchButton() {
       alert("Please wait for the template to finish loading.");
       return;
     }
+
+    const recipe = editorMode
+      ? {
+          id: currentSession.id,
+          title: "API",
+          project: "Personal",
+          method: editorMethod,
+          path: editorUrl,
+          auth: null,
+          options: {},
+        }
+      : _recipe!;
+
+    let fetchRequestBody: Record<string, unknown> | FormData | undefined =
+      undefined;
+    let fetchHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    let SCHEMA_CONTENT_TYPE =
+      ("requestBody" in recipe && recipe.requestBody?.contentType) || null;
+
+    if (editorMode) {
+      if (editorBodyType === RecipeMutationContentType.JSON) {
+        fetchRequestBody = JSON.parse(editorBody);
+      }
+
+      fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
+        acc[name] = value;
+        return acc;
+      }, {} as Record<string, string>);
+
+      SCHEMA_CONTENT_TYPE = editorBodyType;
+    }
+
+    let fetchMethod = recipe.method;
+    let path = recipe.path;
 
     const startTime = performance.now();
 
@@ -84,12 +133,6 @@ export function RecipeSearchButton() {
 
       return;
     }
-
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    let path = recipe.path;
 
     if ("urlParams" in recipe && recipe.urlParams != undefined) {
       for (const { name: key, ...schema } of recipe.urlParams) {
@@ -122,7 +165,7 @@ export function RecipeSearchButton() {
       const primaryToken = secretInfo.secrets[recipe.auth];
 
       if (recipe.auth === RecipeAuthType.Bearer) {
-        headers["Authorization"] = `Bearer ${primaryToken}`;
+        fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
       }
 
       if (recipe.auth === RecipeAuthType.Query) {
@@ -142,25 +185,23 @@ export function RecipeSearchButton() {
       }
 
       if (recipe.auth === RecipeAuthType.ClientID) {
-        headers["Authorization"] = `Client-ID ${primaryToken}`;
+        fetchHeaders["Authorization"] = `Client-ID ${primaryToken}`;
       }
 
       if (recipe.auth === RecipeAuthType.Token) {
-        headers["Authorization"] = `Token ${primaryToken}`;
+        fetchHeaders["Authorization"] = `Token ${primaryToken}`;
       }
 
       if (recipe.auth === RecipeAuthType.Custom) {
         for (const simpleHeader of secretInfo.simpleHeaders) {
-          headers[simpleHeader] = secretInfo.secrets[simpleHeader]!;
+          fetchHeaders[simpleHeader] = secretInfo.secrets[simpleHeader]!;
         }
       }
     }
-    let body: undefined | Record<string, unknown> | FormData;
-    const SCHEMA_CONTENT_TYPE =
-      "requestBody" in recipe && recipe.requestBody?.contentType;
 
     // TODO: We can have very strict validation eventually
     if (
+      !editorMode &&
       "requestBody" in recipe &&
       recipe.requestBody &&
       "objectSchema" in recipe.requestBody &&
@@ -177,21 +218,20 @@ export function RecipeSearchButton() {
         return;
       }
 
-      const _requestBody = { ...requestBody };
-      if (recipe.options?.streaming === true) {
-        _requestBody.stream = true;
-      }
-
       if (SCHEMA_CONTENT_TYPE === "application/json") {
-        body = _requestBody;
+        fetchRequestBody = requestBody;
+
+        if (recipe.options?.streaming === true) {
+          fetchRequestBody.stream = true;
+        }
       } else if (SCHEMA_CONTENT_TYPE === "multipart/form-data") {
         // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
-        delete headers["Content-Type"];
+        delete fetchHeaders["Content-Type"];
 
         const formData = new FormData();
 
-        for (const key in _requestBody) {
-          let payload = _requestBody[key];
+        for (const key in requestBody) {
+          let payload = requestBody[key];
 
           if (typeof payload === "object" && payload !== null) {
             payload = JSON.stringify(payload);
@@ -209,7 +249,7 @@ export function RecipeSearchButton() {
 
           formData.append(key, payload as string | Blob);
         }
-        body = formData;
+        fetchRequestBody = formData;
       }
     }
 
@@ -228,11 +268,11 @@ export function RecipeSearchButton() {
     // We need to reformat it as it was originally
 
     let clonedBody =
-      body instanceof FormData
+      fetchRequestBody instanceof FormData
         ? { form: "File binary" }
-        : structuredClone(body);
+        : structuredClone(fetchRequestBody);
 
-    let clonedHeaders = structuredClone(headers);
+    let clonedHeaders = structuredClone(fetchHeaders);
     let clonedUrl = new URL(path + url.search);
 
     let infoOptions: Record<string, unknown> = {};
@@ -242,15 +282,10 @@ export function RecipeSearchButton() {
       delete clonedBody.stream;
     }
 
-    if ("recipe-domain" in headers) {
-      infoOptions.cors = true;
-      delete clonedHeaders["recipe-domain"];
-    }
-
     const requestInfo = {
       url: clonedUrl,
       payload: {
-        method: recipe.method,
+        method: fetchMethod,
         headers: clonedHeaders,
         body: clonedBody,
       },
@@ -261,22 +296,30 @@ export function RecipeSearchButton() {
       setIsSending(true, RecipeOutputTab.Output);
 
       const payload = {
-        method: recipe.method,
-        headers,
+        method: fetchMethod,
+        headers: fetchHeaders,
         body:
           SCHEMA_CONTENT_TYPE === "application/json"
-            ? JSON.stringify(body)
-            : (body as FormData | undefined),
+            ? JSON.stringify(fetchRequestBody)
+            : (fetchRequestBody as FormData | undefined),
       };
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
       // Streaming is unique edge case. We'll have to port this over to Server's later
-      if (recipe.options?.streaming === true) {
+      if (
+        (recipe.options &&
+          "streaming" in recipe.options &&
+          recipe.options.streaming === true) ||
+        (fetchRequestBody &&
+          "stream" in fetchRequestBody &&
+          fetchRequestBody.stream === true)
+      ) {
         const res = await fetch(url, payload);
         let content = "";
         const textDecoder = new TextDecoder("utf-8");
 
+        console.log(" in here");
         if (!res.body) {
           throw new Error("No body found.");
         }
@@ -294,7 +337,6 @@ export function RecipeSearchButton() {
             .map((line) => JSON.parse(line));
 
           for (const chunk of chunks) {
-            // Avoid empty line after single backtick
             const contentChunk = (chunk.choices[0].delta.content ?? "").replace(
               /^`\s*/,
               "`"
@@ -363,18 +405,11 @@ export function RecipeSearchButton() {
           },
         };
 
-        // If we have to deal with CORS, then we need a server or proxy.
-        if (recipe.options?.cors === true) {
-          nativeFetch(fetchPayload)
-            .then((res) => {
-              console.log("in here");
-              resolve(res);
-            })
-            .catch(reject);
-          return;
-        }
-
-        simpleFetch();
+        nativeFetch(fetchPayload)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch(reject);
       });
 
       let output: Record<string, unknown> = {};
