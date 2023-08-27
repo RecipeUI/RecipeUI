@@ -15,13 +15,7 @@ import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import classNames from "classnames";
 
 export function Navbar() {
-  const router = useRouter();
-  const path = usePathname();
-
   const userSession = useRecipeSessionStore((state) => state.userSession);
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
 
   const [showForm, setShowForm] = useState(true);
 

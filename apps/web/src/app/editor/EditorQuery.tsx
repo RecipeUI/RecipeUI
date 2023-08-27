@@ -1,6 +1,5 @@
 "use client";
 
-import { RecipeMutationContentType } from "types/enums";
 import { useRecipeSessionStore } from "ui/state/recipeSession";
 
 import MonacoEditor from "@monaco-editor/react";
@@ -40,17 +39,19 @@ export const EditorQuery = () => {
     }
   }, [editorUrl, newQueryChanges]);
 
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20">
       <div className="p-2 px-8 text-sm">
-        {isEmpty ? "Enter query params as key value pairs below" : urlParams}
+        {isEmpty ? "Enter query params as a key value object below" : urlParams}
       </div>
       <EditorViewWithSchema
         value={editorQuery}
         setValue={setEditorQuery}
         jsonSchema={editorQuerySchemaJSON}
       />
-      <EditorType />
+      <EditorType key={currentSession?.id || "default"} />
     </div>
   );
 };

@@ -54,9 +54,10 @@ export const JSONEditorContainer = () => {
   const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
 
   const editorBodySchemaJSON = useRecipeSessionStore(
-    (state) => state.editorBodySchemaJson
+    (state) => state.editorBodySchemaJSON
   );
 
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
   return (
     <div className="grid grid-rows-2 flex-1 h-full z-20">
       <EditorViewWithSchema
@@ -64,7 +65,7 @@ export const JSONEditorContainer = () => {
         setValue={setEditorBody}
         jsonSchema={editorBodySchemaJSON}
       />
-      <JSONEditorType />
+      <JSONEditorType key={currentSession?.id || "default"} />
     </div>
   );
 };
@@ -78,7 +79,7 @@ export const JSONEditorType = () => {
     (state) => state.setEditorBodySchemaType
   );
   const editSchemaJSON = useRecipeSessionStore(
-    (state) => state.setEditorBodySchemaJson
+    (state) => state.setEditorBodySchemaJSON
   );
   const [hasChanged, setHasChanged] = useState(false);
   const [refreshing, setRefreshing] = useState(false);

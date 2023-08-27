@@ -123,7 +123,7 @@ export function RecipeHomeSidebar() {
               <button
                 className=""
                 onClick={() => {
-                  setCurrentSession(sessions[0]);
+                  setCurrentSession(sessions[0], false);
 
                   if (!isTauri) {
                     router.push(

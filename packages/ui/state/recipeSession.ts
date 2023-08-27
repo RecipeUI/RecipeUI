@@ -8,9 +8,9 @@ import {
   RecipeParameters,
   RecipeProject,
   RecipeTemplate,
+  RequestHeader,
   User,
 } from "types/database";
-import { get, set, del } from "idb-keyval";
 import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
@@ -19,12 +19,25 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
 import { JSONSchema6, JSONSchema6Object } from "json-schema";
 import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
+import {
+  deleteConfigForSessionStore,
+  deleteParametersForSessionStore,
+  setConfigForSessionStore,
+  setParametersForSessionStore,
+} from "./apiSession";
 
+import merge from "lodash.merge";
 export interface RecipeSession {
   id: string;
   name: string;
   recipeId?: number;
   apiMethod: RecipeMethod;
+  folderId?: string;
+}
+
+export interface RecipeSessionFolder {
+  id: string;
+  name: string;
 }
 
 interface RecipeSessionSlice {
@@ -32,14 +45,19 @@ interface RecipeSessionSlice {
   sessions: RecipeSession[];
 
   setSessions: (sessions: RecipeSession[]) => void;
-  setCurrentSession: (session: RecipeSession | null) => void;
+  setCurrentSession: (
+    session: RecipeSession | null,
+    editorMode?: boolean
+  ) => void;
   updateCurrentSessionMethod: (method: RecipeMethod) => void;
   updateSessionName: (session: RecipeSession, name: string) => void;
 
   addSession: (
     selectedRecipe: Pick<Recipe, "title" | "id" | "method">
   ) => RecipeSession;
-  closeSession: (session: RecipeSession) => void;
+  closeSession: (session: RecipeSession) => RecipeSession | undefined;
+
+  addEditorSession: (session?: RecipeSession) => void;
 }
 
 export enum RecipeBodyRoute {
@@ -100,12 +118,20 @@ interface RecipeOutputSlice {
     template: (RecipeTemplate & { speedFactor?: number }) | null
   ) => void;
 }
-
-interface RequestHeader {
-  name: string;
-  value: string;
-  sensitive?: boolean;
-}
+type EditorSliceValues = Pick<
+  RecipeEditorSlice,
+  | "editorMode"
+  | "editorUrl"
+  | "editorMethod"
+  | "editorBody"
+  | "editorQuery"
+  | "editorHeaders"
+  | "editorBodyType"
+  | "editorBodySchemaType"
+  | "editorQuerySchemaType"
+  | "editorBodySchemaJSON"
+  | "editorQuerySchemaJSON"
+>;
 
 interface RecipeEditorSlice {
   editorMode: boolean;
@@ -129,9 +155,9 @@ interface RecipeEditorSlice {
   editorBodySchemaType: string;
   setEditorBodySchemaType: (editorBodySchemaType: string) => void;
 
-  editorBodySchemaJson: JSONSchema6;
-  setEditorBodySchemaJson: (editorBodySchemaJson: JSONSchema6) => void;
-  updateEditorBodySchemaJson: (props: {
+  editorBodySchemaJSON: JSONSchema6;
+  setEditorBodySchemaJSON: (editorBodySchemaJson: JSONSchema6) => void;
+  updateEditorBodySchemaJSON: (props: {
     path: string;
     update: JSONSchema6;
     merge: boolean;
@@ -145,6 +171,14 @@ interface RecipeEditorSlice {
 
   editorBodyType: RecipeMutationContentType | null;
   setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
+
+  initializeEditorSession: (
+    editorSession: Partial<
+      EditorSliceValues & { currentSession: RecipeSession }
+    >
+  ) => void;
+
+  saveEditorSession: () => void;
 }
 
 function getContentTypeHeader() {
@@ -154,61 +188,124 @@ function getContentTypeHeader() {
   };
 }
 
-export const createRecipeEditorSlice: StateCreator<
-  Slices,
-  [],
-  [],
-  RecipeEditorSlice
-> = (set) => {
+function savePrevSessionPre(prevState: Slices) {
+  const currentSessionId = prevState.currentSession?.id;
+  if (!currentSessionId) return;
+
+  const {
+    editorBody,
+    editorQuery,
+    editorHeaders,
+
+    editorUrl,
+    editorMethod,
+    editorBodyType,
+    editorBodySchemaType,
+    editorBodySchemaJSON,
+    editorQuerySchemaType,
+    editorQuerySchemaJSON,
+  } = prevState;
+
+  setParametersForSessionStore(currentSessionId, {
+    editorBody,
+    editorQuery,
+    editorHeaders,
+  });
+
+  setConfigForSessionStore(currentSessionId, {
+    editorUrl,
+    editorMethod,
+    editorBodyType,
+    editorBodySchemaType,
+    editorBodySchemaJSON,
+    editorQuerySchemaType,
+    editorQuerySchemaJSON,
+  });
+}
+
+function resetEditorSlice(): EditorSliceValues {
   return {
     editorMode: false,
-    setEditorMode: (editorModeOn) => set(() => ({ editorMode: editorModeOn })),
-
     editorUrl: "",
-    setEditorUrl: (url) => set(() => ({ editorUrl: url })),
-
     editorMethod: RecipeMethod.GET,
-    setEditorMethod: (editorMethod: RecipeMethod) =>
-      set(() => ({ editorMethod })),
-
     editorBody: "{}",
-    setEditorBody: (editorBody) => set(() => ({ editorBody })),
-
     editorQuery: "",
-    setEditorQuery: (editorQuery) => set(() => ({ editorQuery })),
-
     editorHeaders: [
       {
         ...getContentTypeHeader(),
       },
     ],
-    setEditorHeaders: (editorHeaders) => set(() => ({ editorHeaders })),
-
     editorBodyType: RecipeMutationContentType.JSON,
-    setEditorBodyType: (editorBodyType) => set(() => ({ editorBodyType })),
-
     editorBodySchemaType: API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE,
     editorQuerySchemaType: API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE,
+    editorBodySchemaJSON: {},
+    editorQuerySchemaJSON: {},
+  };
+}
 
+export const createRecipeEditorSlice: StateCreator<
+  Slices,
+  [],
+  [],
+  RecipeEditorSlice
+> = (set, get) => {
+  return {
+    ...resetEditorSlice(),
+    initializeEditorSession: (editorSession) => {
+      set((prevState) => {
+        savePrevSessionPre(prevState);
+
+        return {
+          ...editorSession,
+          bodyRoute: RecipeBodyRoute.Body,
+          outputTab: RecipeOutputTab.Output,
+          requestInfo: null,
+          desktopPage: null,
+          editorMode: true,
+        };
+      });
+    },
+    saveEditorSession: () => {
+      set((prevState) => {
+        savePrevSessionPre(prevState);
+
+        return {};
+      });
+    },
+
+    setEditorMode: (editorModeOn) => set(() => ({ editorMode: editorModeOn })),
+    setEditorUrl: (url) => set(() => ({ editorUrl: url })),
+    setEditorMethod: (editorMethod: RecipeMethod) =>
+      set(() => ({ editorMethod })),
+    setEditorBody: (editorBody) => set(() => ({ editorBody })),
+    setEditorQuery: (editorQuery) => set(() => ({ editorQuery })),
+    setEditorHeaders: (editorHeaders) => set(() => ({ editorHeaders })),
+    setEditorBodyType: (editorBodyType) => set(() => ({ editorBodyType })),
     setEditorBodySchemaType(editorBodySchemaType) {
       set(() => ({ editorBodySchemaType }));
     },
     setEditorQuerySchemaType(editorQuerySchemaType) {
       set(() => ({ editorQuerySchemaType }));
     },
-
-    editorBodySchemaJson: {},
-    setEditorBodySchemaJson(editorBodySchemaJson) {
-      set(() => ({ editorBodySchemaJson }));
+    setEditorBodySchemaJSON(editorBodySchemaJson) {
+      set((prevState) => ({
+        editorBodySchemaJSON: merge(
+          prevState.editorBodySchemaJSON,
+          editorBodySchemaJson
+        ),
+      }));
     },
-    editorQuerySchemaJSON: {},
     setEditorQuerySchemaJSON(editorQuerySchemaJSON) {
-      set(() => ({ editorQuerySchemaJSON }));
+      set((prevState) => ({
+        editorQuerySchemaJSON: merge(
+          prevState.editorQuerySchemaJSON,
+          editorQuerySchemaJSON
+        ),
+      }));
     },
-
-    updateEditorBodySchemaJson({ path, update, merge = true }) {
+    updateEditorBodySchemaJSON({ path, update, merge = true }) {
       set((prevState) => {
-        const nextState = produce(prevState.editorBodySchemaJson, (draft) => {
+        const nextState = produce(prevState.editorBodySchemaJSON, (draft) => {
           const paths = path.split(".");
 
           let destination = draft;
@@ -231,7 +328,7 @@ export const createRecipeEditorSlice: StateCreator<
           } catch (e) {}
         });
 
-        return { editorBodySchemaJson: nextState };
+        return { editorBodySchemaJSON: nextState };
       });
     },
   };
@@ -321,22 +418,14 @@ const createRecipeSessionSlice: StateCreator<
 
     // TODO: Need a more failsafe way of doing this....
     // IT IS IMPORTANT TO PRESERVE THE CURRENT SESSION REQUEST LOCALLY WHEN CHANGING SESSIONS
-    setCurrentSession: (session) =>
-      set((prevState) => {
-        if (prevState.currentSession) {
-          preserveSessionParamsToLocal({
-            sessionId: prevState.currentSession.id,
-            params: {
-              requestBody: prevState.requestBody,
-              queryParams: prevState.queryParams,
-              urlParams: prevState.urlParams,
-            },
-          });
-        }
-
+    setCurrentSession: (session, editorMode = true) =>
+      set(() => {
         return {
           currentSession: session,
-          bodyRoute: RecipeBodyRoute.Parameters,
+          editorMode,
+          bodyRoute: editorMode
+            ? RecipeBodyRoute.Body
+            : RecipeBodyRoute.Parameters,
           outputTab: RecipeOutputTab.Output,
           requestInfo: null,
           desktopPage: null,
@@ -387,17 +476,6 @@ const createRecipeSessionSlice: StateCreator<
         apiMethod: selectedRecipe.method,
       };
       set((prevState) => {
-        if (prevState.currentSession) {
-          preserveSessionParamsToLocal({
-            sessionId: prevState.currentSession.id,
-            params: {
-              requestBody: prevState.requestBody,
-              queryParams: prevState.queryParams,
-              urlParams: prevState.urlParams,
-            },
-          });
-        }
-
         return {
           bodyRoute: RecipeBodyRoute.Parameters,
           currentSession: newSession,
@@ -410,9 +488,36 @@ const createRecipeSessionSlice: StateCreator<
       });
       return newSession;
     },
-    closeSession: (session) =>
+
+    addEditorSession(session?: RecipeSession) {
+      const newSession: RecipeSession = session ?? {
+        id: uuidv4(),
+        name: "New Session",
+        apiMethod: RecipeMethod.GET,
+      };
+
       set((prevState) => {
-        deleteParamsForSessionIdFromLocal(session.id);
+        return {
+          ...getEmptyParameters(),
+          ...resetEditorSlice(),
+          bodyRoute: RecipeBodyRoute.Body,
+          currentSession: newSession,
+          sessions: [...prevState.sessions, newSession],
+          outputTab: RecipeOutputTab.Output,
+          requestInfo: null,
+          desktopPage: null,
+          editorMode: true,
+        };
+      });
+      return newSession;
+    },
+
+    closeSession: (session) => {
+      let nextSessionReturn: RecipeSession | undefined;
+
+      set((prevState) => {
+        deleteParametersForSessionStore(session.id);
+        deleteConfigForSessionStore(session.id);
 
         let nextSessionIndex = -1;
         const sessions = prevState.sessions.filter((s, i) => {
@@ -428,20 +533,18 @@ const createRecipeSessionSlice: StateCreator<
 
         const nextSession = prevState.sessions[nextSessionIndex];
 
-        if (!nextSession) {
-          return {
-            currentSession: null,
-            sessions,
-          };
-        }
+        nextSessionReturn = nextSession;
 
         return {
-          bodyRoute: RecipeBodyRoute.Parameters,
-          currentSession: nextSession,
+          currentSession: null,
           sessions,
+          ...resetEditorSlice(),
           ...getEmptyParameters(),
         };
-      }),
+      });
+
+      return nextSessionReturn;
+    },
   };
 };
 
@@ -648,59 +751,8 @@ export const useRecipeSessionStore = create<Slices>()((...a) => ({
   ...createRecipeEditorSlice(...a),
 }));
 
-export const GLOBAL_POLLING_FACTOR = 10000;
+export const GLOBAL_POLLING_FACTOR = 5000;
 export const SESSION_HYDRATION_KEY = "SESSION_HYDRATION_KEY";
-const RECIPE_BODY_PARAMS_KEY_PREFIX = "RECIPE_BODY_PARAMS_";
-const RECIPE_QUERY_PARAMS_KEY_PREFIX = "RECIPE_QUERY_PARAMS_";
-const RECIPE_URL_PARAMS_KEY_PREFIX = "RECIPE_URL_PARAMS_";
-
-function getRecipeBodyParamsKey(recipeId: string) {
-  return RECIPE_BODY_PARAMS_KEY_PREFIX + recipeId;
-}
-
-function getRecipeQueryParamsKey(recipeId: string) {
-  return RECIPE_QUERY_PARAMS_KEY_PREFIX + recipeId;
-}
-
-function getRecipeUrlParamsKey(recipeId: string) {
-  return RECIPE_URL_PARAMS_KEY_PREFIX + recipeId;
-}
-
-// We only need to save the session when we change tabs
-function preserveSessionParamsToLocal({
-  sessionId,
-  params: { requestBody, queryParams, urlParams },
-}: {
-  sessionId: string;
-  params: RecipeParameters;
-}) {
-  set(getRecipeBodyParamsKey(sessionId), requestBody);
-  set(getRecipeQueryParamsKey(sessionId), queryParams);
-  set(getRecipeUrlParamsKey(sessionId), urlParams);
-}
-
-async function retrieveParamsForSessionIdFromLocal(
-  sessionId: string
-): Promise<RecipeParameters> {
-  const [requestBody, queryParams, urlParams] = await Promise.all([
-    get(getRecipeBodyParamsKey(sessionId)) || {},
-    get(getRecipeQueryParamsKey(sessionId)) || {},
-    get(getRecipeUrlParamsKey(sessionId)) || {},
-  ]);
-
-  return {
-    requestBody,
-    queryParams,
-    urlParams,
-  };
-}
-
-function deleteParamsForSessionIdFromLocal(sessionId: string) {
-  del(getRecipeBodyParamsKey(sessionId));
-  del(getRecipeQueryParamsKey(sessionId));
-  del(getRecipeUrlParamsKey(sessionId));
-}
-
 export const RecipeContext = createContext<Recipe | null>(null);
 
 export const RecipeProjectContext = createContext<RecipeProject | null>(null);

@@ -1,10 +1,11 @@
 import classNames from "classnames";
 import {
+  RecipeContext,
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { RecipeDocs } from "./RecipeDocs";
-import { useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
 import { RecipeCodeView } from "./RecipeCodeView";
@@ -19,6 +20,7 @@ export function RecipeOutput() {
     (state) => state.loadingTemplate
   );
 
+  const recipe = useContext(RecipeContext);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey) {

@@ -6,7 +6,7 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 
 export function RecipeEditDocs() {
-  const schema = useRecipeSessionStore((state) => state.editorBodySchemaJson);
+  const schema = useRecipeSessionStore((state) => state.editorBodySchemaJSON);
 
   return (
     <div
@@ -19,6 +19,10 @@ export function RecipeEditDocs() {
         <h3 className="text-xl mb-4 font-bold">Request Body</h3>
         <ObjectDocContainer definition={schema} path="" />
       </div>
+
+      <pre>
+        <code>{JSON.stringify(schema, null, 2)}</code>
+      </pre>
     </div>
   );
 }
@@ -85,7 +89,7 @@ function DocContainer({
 
   const [editing, setEditing] = useState(false);
   const updateEditorBodySchemaJson = useRecipeSessionStore(
-    (state) => state.updateEditorBodySchemaJson
+    (state) => state.updateEditorBodySchemaJSON
   );
 
   const isPrimitive =

@@ -12,8 +12,7 @@ import classNames from "classnames";
 
 import { Recipe, RecipeProject } from "types/database";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
-import { useEffect, useState } from "react";
-import { Loading } from "../Loading";
+import { useEffect } from "react";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 
 export function RecipeAPI({
@@ -23,33 +22,26 @@ export function RecipeAPI({
   project?: RecipeProject | null;
   recipe?: Recipe | null;
 }) {
-  const session = useRecipeSessionStore((state) => state.currentSession);
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
 
   const clearOutput = useRecipeSessionStore((state) => state.clearOutput);
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (recipe) {
-      clearOutput(PLAYGROUND_SESSION_ID);
-
-      setCurrentSession({
-        id: PLAYGROUND_SESSION_ID,
-        name: PLAYGROUND_SESSION_ID,
-        recipeId: recipe.id,
-        apiMethod: recipe.method,
-      });
+      setCurrentSession(
+        {
+          id: PLAYGROUND_SESSION_ID,
+          name: recipe.title,
+          apiMethod: recipe.method,
+          recipeId: recipe.id,
+        },
+        false
+      );
     }
-
-    setLoading(false);
+    clearOutput(PLAYGROUND_SESSION_ID);
   }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
 
   if (!project || !recipe) {
     return (

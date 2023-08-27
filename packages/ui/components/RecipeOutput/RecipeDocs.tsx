@@ -40,7 +40,7 @@ export function RecipeDocs() {
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 py-6 overflow-y-auto",
+        "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700",
         loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >
@@ -114,7 +114,7 @@ function RecipeQueryDocsContainer({
   }
 
   return (
-    <div className="my-4">
+    <div className="my-4 ">
       {showHeader && <h3 className="mb-2 text-sm">Query Params</h3>}
       <div
         className={classNames(

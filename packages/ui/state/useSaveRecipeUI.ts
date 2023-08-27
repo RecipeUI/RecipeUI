@@ -1,27 +1,14 @@
-import {
-  GLOBAL_POLLING_FACTOR,
-  LocalStorageState,
-  SESSION_HYDRATION_KEY,
-  getEmptyParameters,
-  useRecipeSessionStore,
-} from "./recipeSession";
+import { useRecipeSessionStore } from "./recipeSession";
 
 import Cookie from "js-cookie";
 
-import { useInterval, useLocalStorage } from "usehooks-ts";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { useIsMobile } from "../../ui/hooks";
 import { APP_COOKIE } from "../utils/constants/main";
-import { useIsTauri } from "../hooks/useIsTauri";
 import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
-
-/*
-This is definitely a naive, unoptimized, approach to storing data locally.
-
-Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
-*/
+import { shallow } from "zustand/shallow";
+import { useDebounce } from "usehooks-ts";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -30,10 +17,12 @@ export function useSaveRecipeUI() {
   const setOnboarding = useRecipeSessionStore((state) => state.setOnboarding);
   const setUser = useRecipeSessionStore((state) => state.setUser);
 
+  const router = useRouter();
+
   useEffect(() => {
     setOnboarding(false);
 
-    console.debug("Initializinag");
+    console.debug("Initializing");
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.debug(session, event);
@@ -73,18 +62,27 @@ export function useSaveRecipeUI() {
     });
   }, []);
 
-  const router = useRouter();
+  const newState = useRecipeSessionStore(
+    (state) => ({
+      editorBody: state.editorBody,
+      editorQuery: state.editorQuery,
+      editorHeaders: state.editorHeaders,
 
-  // const isTauri = useIsTauri();
-  // // Save changes every POLLING_FACTOR seconds
-  // useInterval(
-  //   () => {
-  //     setLocalSave({
-  //       requestBody,
-  //       queryParams,
-  //       urlParams,
-  //     });
-  //   },
-  //   isTauri ? GLOBAL_POLLING_FACTOR * 3 : GLOBAL_POLLING_FACTOR
-  // );
+      editorUrl: state.editorUrl,
+      editorMethod: state.editorMethod,
+      editorBodyType: state.editorBodyType,
+      editorBodySchemaType: state.editorBodySchemaType,
+      editorBodySchemaJSON: state.editorBodySchemaJSON,
+      editorQuerySchemaType: state.editorQuerySchemaType,
+      editorQuerySchemaJSON: state.editorQuerySchemaJSON,
+    }),
+    shallow
+  );
+
+  const debouncedStateChanges = useDebounce(newState, 5000);
+  const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
+  useEffect(() => {
+    saveSession();
+    console.debug("Saving changes");
+  }, [debouncedStateChanges]);
 }

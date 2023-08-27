@@ -79,9 +79,6 @@ export function RecipeBody() {
   }, [isMobile, setBodyRoute]);
 
   const router = useRouter();
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
 
   if (routes.length === 0) {
     return null;
@@ -108,7 +105,6 @@ export function RecipeBody() {
         <div
           className={"font-bold text-sm cursor-pointer sm:hidden"}
           onClick={() => {
-            setCurrentSession(null);
             router.push("/");
           }}
         >

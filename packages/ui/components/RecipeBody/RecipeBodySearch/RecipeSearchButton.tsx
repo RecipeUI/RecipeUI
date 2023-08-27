@@ -316,6 +316,22 @@ export function RecipeSearchButton() {
           fetchRequestBody.stream === true)
       ) {
         const res = await fetch(url, payload);
+
+        if (res.status >= 400) {
+          const errorResponse = await res.json();
+
+          console.log("in here", errorResponse, currentSession);
+          if (errorResponse) {
+            setOutput(currentSession.id, {
+              output:
+                typeof errorResponse === "string"
+                  ? JSON.stringify(errorResponse)
+                  : errorResponse,
+              type: RecipeOutputType.Error,
+            });
+            return false;
+          }
+        }
         let content = "";
         const textDecoder = new TextDecoder("utf-8");
 

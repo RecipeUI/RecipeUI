@@ -140,7 +140,8 @@ export function RecipeOutputConsole() {
                   readOnly={true}
                   value={
                     selectedRecipe?.options?.streaming
-                      ? (output["content"] as string) || ""
+                      ? (output["content"] as string) ||
+                        JSON.stringify(output, null, 2)
                       : JSON.stringify(output, null, 2)
                   }
                   className="h-full !outline-none border-none max-w-sm sm:max-w-none"

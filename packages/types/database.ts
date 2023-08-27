@@ -241,3 +241,9 @@ export type RecipeParameters = {
   queryParams: JSONBody;
   urlParams: JSONBody;
 };
+
+export interface RequestHeader {
+  name: string;
+  value: string;
+  sensitive?: boolean;
+}
