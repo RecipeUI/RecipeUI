@@ -23,8 +23,8 @@ import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
 export interface RecipeSession {
   id: string;
   name: string;
-  recipeId: number;
-  recipeMethod: RecipeMethod;
+  recipeId?: number;
+  apiMethod: RecipeMethod;
 }
 
 interface RecipeSessionSlice {
@@ -368,7 +368,7 @@ const createRecipeSessionSlice: StateCreator<
           if (s.id === prevState.currentSession?.id) {
             return {
               ...s,
-              recipeMethod: method,
+              apiMethod: method,
             };
           }
           return s;
@@ -384,7 +384,7 @@ const createRecipeSessionSlice: StateCreator<
         id: uuidv4(),
         name: selectedRecipe.title,
         recipeId: selectedRecipe.id,
-        recipeMethod: selectedRecipe.method,
+        apiMethod: selectedRecipe.method,
       };
       set((prevState) => {
         if (prevState.currentSession) {

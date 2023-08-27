@@ -40,7 +40,7 @@ export function RecipeAPI({
         id: PLAYGROUND_SESSION_ID,
         name: PLAYGROUND_SESSION_ID,
         recipeId: recipe.id,
-        recipeMethod: recipe.method,
+        apiMethod: recipe.method,
       });
     }
 

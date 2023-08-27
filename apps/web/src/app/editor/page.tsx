@@ -35,7 +35,7 @@ function EditorPage() {
       id: newId,
       name: "New Session",
       recipeId: 1,
-      recipeMethod: RecipeMethod.GET,
+      apiMethod: RecipeMethod.GET,
     });
 
     setBodyRoute(RecipeBodyRoute.Body);

@@ -44,14 +44,6 @@ export function RecipeHomeContainer({
     return sessions.find((session) => session.id === sessionId);
   }, [sessions, sessionId]);
 
-  useEffect(() => {
-    // Lets make it so that the recipe is always correct. If there is no session active, we will create a new one.
-    if (currentSession && recipe && currentSession.recipeId != recipe.id) {
-      const newSession = addSession(recipe);
-      router.push(`/?${getURLParamsForSession(newSession)}`);
-    }
-  }, [addSession, currentSession, recipe, router]);
-
   const [localForked, setLocalForked] = useLocalStorage(
     UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
     ""
