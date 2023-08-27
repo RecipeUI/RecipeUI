@@ -1,6 +1,7 @@
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 
 import {
+  JSONBody,
   Recipe,
   RecipeOptions,
   RecipeOutputType,
@@ -9,7 +10,7 @@ import {
   RecipeTemplate,
   User,
 } from "types/database";
-
+import { get, set, del } from "idb-keyval";
 import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
@@ -187,18 +188,8 @@ const createRecipeSessionSlice: StateCreator<
           });
         }
 
-        const oldParams = session
-          ? retrieveParamsForSessionIdFromLocal(session.id)
-          : getEmptyParameters();
-
-        const hasOutput = session
-          ? prevState.outputManager[session.id] !== undefined
-          : false;
-
         return {
           currentSession: session,
-          requestBody: oldParams.requestBody,
-          queryParams: oldParams.queryParams,
           bodyRoute: RecipeBodyRoute.Parameters,
           outputTab: RecipeOutputTab.Output,
           requestInfo: null,
@@ -279,16 +270,11 @@ const createRecipeSessionSlice: StateCreator<
           };
         }
 
-        const oldParams = nextSession
-          ? retrieveParamsForSessionIdFromLocal(nextSession.id)
-          : getEmptyParameters();
-
         return {
           bodyRoute: RecipeBodyRoute.Parameters,
           currentSession: nextSession,
           sessions,
-          requestBody: oldParams.requestBody,
-          queryParams: oldParams.queryParams,
+          ...getEmptyParameters(),
         };
       }),
   };
@@ -522,40 +508,31 @@ function preserveSessionParamsToLocal({
   sessionId: string;
   params: RecipeParameters;
 }) {
-  localStorage.setItem(
-    getRecipeBodyParamsKey(sessionId),
-    JSON.stringify(requestBody)
-  );
-  localStorage.setItem(
-    getRecipeQueryParamsKey(sessionId),
-    JSON.stringify(queryParams)
-  );
-  localStorage.setItem(
-    getRecipeUrlParamsKey(sessionId),
-    JSON.stringify(urlParams)
-  );
+  set(getRecipeBodyParamsKey(sessionId), requestBody);
+  set(getRecipeQueryParamsKey(sessionId), queryParams);
+  set(getRecipeUrlParamsKey(sessionId), urlParams);
 }
 
-function retrieveParamsForSessionIdFromLocal(
+async function retrieveParamsForSessionIdFromLocal(
   sessionId: string
-): RecipeParameters {
+): Promise<RecipeParameters> {
+  const [requestBody, queryParams, urlParams] = await Promise.all([
+    get(getRecipeBodyParamsKey(sessionId)) || {},
+    get(getRecipeQueryParamsKey(sessionId)) || {},
+    get(getRecipeUrlParamsKey(sessionId)) || {},
+  ]);
+
   return {
-    requestBody: JSON.parse(
-      localStorage.getItem(getRecipeBodyParamsKey(sessionId)) || "{}"
-    ),
-    queryParams: JSON.parse(
-      localStorage.getItem(getRecipeQueryParamsKey(sessionId)) || "{}"
-    ),
-    urlParams: JSON.parse(
-      localStorage.getItem(getRecipeUrlParamsKey(sessionId)) || "{}"
-    ),
+    requestBody,
+    queryParams,
+    urlParams,
   };
 }
 
 function deleteParamsForSessionIdFromLocal(sessionId: string) {
-  localStorage.removeItem(getRecipeBodyParamsKey(sessionId));
-  localStorage.removeItem(getRecipeQueryParamsKey(sessionId));
-  localStorage.removeItem(getRecipeUrlParamsKey(sessionId));
+  del(getRecipeBodyParamsKey(sessionId));
+  del(getRecipeQueryParamsKey(sessionId));
+  del(getRecipeUrlParamsKey(sessionId));
 }
 
 export const RecipeContext = createContext<Recipe | null>(null);

@@ -21,6 +21,7 @@
     "daisyui": "^3.5.0",
     "downshift": "^8.0.0",
     "fuse.js": "^6.6.2",
+    "idb-keyval": "^6.2.1",
     "immer": "^10.0.2",
     "js-cookie": "^3.0.5",
     "js-yaml": "^4.1.0",

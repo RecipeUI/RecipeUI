@@ -3,7 +3,6 @@ import "./initPosthog";
 import "ui/css/globals.css";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
-import { RecipeSidebar } from "ui/components/RecipeSidebar";
 import { Suspense } from "react";
 import { RecipeLayout } from "./RecipeLayout";
 

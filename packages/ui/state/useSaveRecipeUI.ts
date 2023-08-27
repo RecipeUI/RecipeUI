@@ -1,5 +1,3 @@
-import { Database, Recipe } from "types/database";
-
 import {
   GLOBAL_POLLING_FACTOR,
   LocalStorageState,
@@ -26,26 +24,16 @@ Basically, save everything relevant to use every GLOBAL_POLLING_FACTOR seconds.
 */
 
 export function useSaveRecipeUI() {
-  const { username } = useParams();
-  const { project: projectId, recipe: shareTemplateIdParam } = useParams();
   const searchParams = useSearchParams();
   const sessionIdParam = searchParams.get("sessionId");
 
   const [localSave, setLocalSave] = useLocalStorage<LocalStorageState | null>(
     SESSION_HYDRATION_KEY,
     {
-      // currentSession: null,
-      // sessions: [],
       ...getEmptyParameters(),
     }
   );
 
-  const sessions = useRecipeSessionStore((state) => state.sessions);
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const setSessions = useRecipeSessionStore((state) => state.setSessions);
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
   const setRequestBody = useRecipeSessionStore((state) => state.setRequestBody);
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
@@ -60,16 +48,6 @@ export function useSaveRecipeUI() {
 
     if (!localSave || isMobile) return;
 
-    // if (
-    //   localSave.currentSession &&
-    //   !projectId &&
-    //   !shareTemplateIdParam &&
-    //   !username
-    // ) {
-    //   router.push(`/?${getURLParamsForSession(localSave.currentSession)}`);
-    //   setCurrentSession(localSave.currentSession);
-    // }
-    // if (localSave.sessions) setSessions(localSave.sessions);
     if (localSave.requestBody) setRequestBody(localSave.requestBody);
     if (localSave.queryParams) setQueryParams(localSave.queryParams);
     if (localSave.urlParams) setUrlParams(localSave.urlParams);
@@ -126,36 +104,11 @@ export function useSaveRecipeUI() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (projectId || shareTemplateIdParam || username) return;
-
-    // if ((sessionIdParam as string) && localSave?.sessions) {
-    //   const session = localSave.sessions.find((s) => s.id === sessionIdParam);
-
-    //   if (!session) {
-    //     console.debug(
-    //       "URL has a session that no longer exists",
-    //       sessionIdParam
-    //     );
-    //     router.push("/");
-    //     return;
-    //   }
-
-    //   setCurrentSession(session);
-    // } else if (!sessionIdParam && currentSession) {
-    //   console.debug("URL has no session, but locally we should");
-    //   setCurrentSession(null);
-    //   router.push("/");
-    // }
-  }, []);
-
   const isTauri = useIsTauri();
   // Save changes every POLLING_FACTOR seconds
   useInterval(
     () => {
       setLocalSave({
-        // currentSession,
-        // sessions,
         requestBody,
         queryParams,
         urlParams,

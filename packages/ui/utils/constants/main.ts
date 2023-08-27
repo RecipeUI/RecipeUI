@@ -22,3 +22,5 @@ export const DB_FUNC_ERRORS = {
 export const FORM_LINKS = {
   RECIPEUI_PRO: "https://forms.gle/qVbwVWEtk6RPhuP46",
 };
+
+export const PLAYGROUND_SESSION_ID = "playgroundSessionId";

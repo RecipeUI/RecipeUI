@@ -351,6 +351,9 @@ importers:
       fuse.js:
         specifier: ^6.6.2
         version: 6.6.2
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.1
       immer:
         specifier: ^10.0.2
         version: 10.0.2
@@ -7736,6 +7739,10 @@ packages:
       postcss: ^8.1.0
     dependencies:
       postcss: 8.4.28
+    dev: false
+
+  /idb-keyval@6.2.1:
+    resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
     dev: false
 
   /ieee754@1.2.1:

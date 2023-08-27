@@ -14,6 +14,7 @@ import { Recipe, RecipeProject } from "types/database";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 import { useEffect, useState } from "react";
 import { Loading } from "../Loading";
+import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 
 export function RecipeAPI({
   recipe,
@@ -33,11 +34,11 @@ export function RecipeAPI({
 
   useEffect(() => {
     if (recipe) {
-      clearOutput("playground");
+      clearOutput(PLAYGROUND_SESSION_ID);
 
       setCurrentSession({
-        id: "playground",
-        name: "playground",
+        id: PLAYGROUND_SESSION_ID,
+        name: PLAYGROUND_SESSION_ID,
         recipeId: recipe.id,
         recipeMethod: recipe.method,
       });
