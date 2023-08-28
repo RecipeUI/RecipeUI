@@ -64,7 +64,7 @@ interface RecipeSessionSlice {
   ) => RecipeSession;
   closeSession: (session: RecipeSession) => RecipeSession | undefined;
 
-  addEditorSession: (session?: RecipeSession) => void;
+  addEditorSession: (session?: RecipeSession) => RecipeSession;
 }
 
 export enum RecipeBodyRoute {
@@ -111,7 +111,7 @@ export interface RecipeRequestInfo {
 
 interface RecipeOutputSlice {
   isSending: boolean;
-  setIsSending: (isSending: boolean, outputTab: RecipeOutputTab) => void;
+  setIsSending: (isSending: boolean, outputTab?: RecipeOutputTab) => void;
 
   outputManager: Record<string, SessionOutput>;
   getOutput: () => SessionOutput;
@@ -141,9 +141,16 @@ export type EditorSliceValues = Pick<
   | "editorBodySchemaJSON"
   | "editorQuerySchemaJSON"
   | "editorAuth"
+  | "editorHeader"
 >;
 
-interface RecipeEditorSlice {
+export interface RecipeEditorSlice {
+  editorHeader: {
+    title: string;
+    description: string;
+  };
+  setEditorHeader: (header: { title: string; description: string }) => void;
+
   editorMode: boolean;
   setEditorMode: (editorModeOn: boolean) => void;
 
@@ -178,6 +185,11 @@ interface RecipeEditorSlice {
 
   editorQuerySchemaJSON: JSONSchema6;
   setEditorQuerySchemaJSON: (editorQuerySchemaJSON: JSONSchema6) => void;
+  updateEditorQuerySchemaJSON: (props: {
+    path: string;
+    update: JSONSchema6;
+    merge: boolean;
+  }) => void;
 
   editorBodyType: RecipeMutationContentType | null;
   setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
@@ -201,7 +213,7 @@ interface RecipeEditorSlice {
     } | null
   ) => void;
 
-  saveEditorSession: () => void;
+  saveEditorSession: () => Promise<void>;
 }
 
 // Destination is the final schema that's correct
@@ -253,6 +265,22 @@ function mergePreserveDocs({
           }
         });
       }
+
+      if (d.definitions && s.definitions) {
+        Object.keys(d.definitions).forEach((key) => {
+          let dDefinition = d.definitions?.[key];
+          let sDefinition = s.definitions?.[key];
+
+          if (
+            dDefinition &&
+            sDefinition &&
+            isSchema(dDefinition) &&
+            isSchema(sDefinition)
+          ) {
+            recur(dDefinition, sDefinition);
+          }
+        });
+      }
     }
 
     recur(draft, source);
@@ -266,7 +294,7 @@ function getContentTypeHeader() {
   };
 }
 
-function savePrevSessionPre(prevState: Slices) {
+async function savePrevSessionPre(prevState: Slices) {
   const currentSession = prevState.currentSession;
   if (!currentSession) return;
 
@@ -284,9 +312,10 @@ function savePrevSessionPre(prevState: Slices) {
     editorQuerySchemaType,
     editorQuerySchemaJSON,
     editorAuth,
+    editorHeader,
   } = prevState;
 
-  setParametersForSessionStore({
+  await setParametersForSessionStore({
     session: currentSessionId,
     parameters: {
       editorBody,
@@ -295,7 +324,7 @@ function savePrevSessionPre(prevState: Slices) {
     },
   });
 
-  setConfigForSessionStore({
+  await setConfigForSessionStore({
     recipeId: currentRecipeId,
     config: {
       editorUrl,
@@ -306,12 +335,17 @@ function savePrevSessionPre(prevState: Slices) {
       editorQuerySchemaType,
       editorQuerySchemaJSON,
       editorAuth,
+      editorHeader,
     },
   });
 }
 
 function resetEditorSlice(): EditorSliceValues {
   return {
+    editorHeader: {
+      title: "Title of API",
+      description: "Describe this API",
+    },
     editorMode: false,
     editorUrl: "",
     editorMethod: RecipeMethod.GET,
@@ -353,11 +387,22 @@ export const createRecipeEditorSlice: StateCreator<
         };
       });
     },
-    saveEditorSession: () => {
-      set((prevState) => {
-        savePrevSessionPre(prevState);
 
-        return {};
+    setEditorHeader(header) {
+      set(() => ({ editorHeader: header }));
+    },
+
+    saveEditorSession: () => {
+      return new Promise((resolve) => {
+        set((prevState) => {
+          savePrevSessionPre(prevState)
+            .then(() => {
+              resolve();
+            })
+            .finally(() => resolve());
+
+          return {};
+        });
       });
     },
 
@@ -379,7 +424,7 @@ export const createRecipeEditorSlice: StateCreator<
       set((prevState) => ({
         editorBodySchemaJSON: mergePreserveDocs({
           destination: editorBodySchemaJson,
-          source: prevState.editorBodySchemaJSON,
+          source: prevState.editorBodySchemaJSON || {},
         }),
       }));
     },
@@ -387,7 +432,7 @@ export const createRecipeEditorSlice: StateCreator<
       set((prevState) => ({
         editorQuerySchemaJSON: mergePreserveDocs({
           destination: editorQuerySchemaJSON,
-          source: prevState.editorQuerySchemaJSON,
+          source: prevState.editorQuerySchemaJSON || {},
         }),
       }));
     },
@@ -417,6 +462,35 @@ export const createRecipeEditorSlice: StateCreator<
         });
 
         return { editorBodySchemaJSON: nextState };
+      });
+    },
+
+    updateEditorQuerySchemaJSON({ path, update, merge = true }) {
+      set((prevState) => {
+        const nextState = produce(prevState.editorQuerySchemaJSON, (draft) => {
+          const paths = path.split(".");
+
+          let destination = draft;
+
+          try {
+            for (let i = 0; i < paths.length - 1; i++) {
+              const inner_path = paths[i];
+
+              // @ts-ignore
+              destination = destination[inner_path] || {};
+            }
+
+            const finalPath = paths[paths.length - 1];
+
+            // @ts-ignore
+            destination[finalPath] = merge
+              ? // @ts-ignore
+                { ...destination[finalPath], ...update }
+              : update;
+          } catch (e) {}
+        });
+
+        return { editorQuerySchemaJSON: nextState };
       });
     },
 
@@ -629,10 +703,10 @@ const createRecipeSessionSlice: StateCreator<
         nextSessionReturn = nextSession;
 
         return {
-          currentSession: null,
-          sessions,
           ...resetEditorSlice(),
           ...getEmptyParameters(),
+          currentSession: null,
+          sessions,
         };
       });
 
@@ -728,7 +802,7 @@ const createRecipeOutputSlice: StateCreator<
     setIsSending: (isSending, outputTab) =>
       set(() => ({
         isSending,
-        outputTab,
+        ...(outputTab ? { outputTab } : {}),
       })),
 
     outputManager: {},

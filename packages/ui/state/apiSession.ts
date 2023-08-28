@@ -27,6 +27,10 @@ interface APISessionConfig {
     type: RecipeAuthType;
     docs?: string;
   } | null;
+  editorHeader: {
+    title: string;
+    description: string;
+  };
 }
 
 enum APIStore {
@@ -95,7 +99,6 @@ async function getSecretStore() {
 }
 
 export async function getSessionsFromStore() {
-  console.log("Store", (await db).name);
   return (await db)
     .transaction(APIStore.Sessions, "readwrite")
     .store.get("sessions");
@@ -161,8 +164,17 @@ export async function deleteConfigForSessionStore({
 }: {
   recipeId: string | number;
 }) {
-  const store = await getConfigStore();
-  return store.delete(String(recipeId));
+  // We need to be careful here. We should check first if there are any sessions that rely on these
+  const sessions = await getSessionsFromStore();
+
+  const sessionsWithRecipeId = sessions!.filter(
+    (session) => session.recipeId === recipeId
+  ).length;
+
+  if (sessionsWithRecipeId === 1) {
+    const store = await getConfigStore();
+    return store.delete(String(recipeId));
+  }
 }
 
 export async function getSecret({

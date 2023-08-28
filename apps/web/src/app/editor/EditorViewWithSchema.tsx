@@ -73,7 +73,7 @@ export function AutoSaveError({
         (refreshing ? (
           <ArrowPathIcon className="w-6 h-6 animate-spin" />
         ) : (
-          "Autosaving..."
+          <ArrowPathIcon className="w-6 h-6 animate-spin" />
         ))}
       {hasError && "Bad types"}
     </div>

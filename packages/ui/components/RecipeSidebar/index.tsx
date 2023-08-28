@@ -10,7 +10,11 @@ import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
-import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Cog6ToothIcon,
+  PlusCircleIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { RecipeHomeSidebar } from "./RecipeHomeSidebar";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import {
@@ -19,6 +23,8 @@ import {
   getSessionsFromStore,
   saveSessionToStore,
 } from "../../state/apiSession";
+import { Modal } from "../Modal";
+import { v4 as uuidv4 } from "uuid";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -113,82 +119,238 @@ function SessionTab({
   const initializeEditorSession = useRecipeSessionStore(
     (state) => state.initializeEditorSession
   );
+  const saveEditorSession = useRecipeSessionStore(
+    (state) => state.saveEditorSession
+  );
+
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   return (
-    <button
-      ref={hoverRef}
-      key={session.id}
-      className={classNames(
-        "px-4 py-2 text-xs w-full text-start relative flex",
-        isCurrentSession && "bg-gray-400 text-white"
-      )}
-      onClick={async () => {
-        if (!isCurrentSession) {
-          const parameters = await getParametersForSessionStore({
-            session: session.id,
-          });
-          const config = await getConfigForSessionStore({
-            recipeId: session.recipeId,
-          });
+    <>
+      <button
+        ref={hoverRef}
+        key={session.id}
+        className={classNames(
+          "pl-4 py-2 text-xs w-full text-start relative flex overflow-x-clip",
+          isCurrentSession && "bg-gray-400 text-white"
+        )}
+        onClick={async () => {
+          if (isCurrentSession) return;
 
-          initializeEditorSession({
-            currentSession: session,
-            ...parameters,
-            ...config,
+          saveEditorSession().then(async () => {
+            const parameters = await getParametersForSessionStore({
+              session: session.id,
+            });
+            const config = await getConfigForSessionStore({
+              recipeId: session.recipeId,
+            });
+
+            initializeEditorSession({
+              currentSession: session,
+              ...parameters,
+              ...config,
+            });
           });
+        }}
+      >
+        {!isEditing && (
+          <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
+        )}
+        {isEditing ? (
+          <input
+            className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4"
+            onBlur={onUpdateSessionName}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onUpdateSessionName();
+            }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        ) : (
+          <h4 className="ml-2">{session.name}</h4>
+        )}
 
-          return;
-        }
+        {isHover && !isEditing && (
+          <div
+            className="absolute dropdown cursor-pointer w-fit right-0 z-40 top-0 bottom-0 bg-black justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            <label
+              tabIndex={0}
+              className="cursor-pointer flex justify-center items-center  h-full px-2"
+            >
+              <Cog6ToothIcon className="w-4 h-4 " />
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content z-40  shadow bg-base-100 rounded-lg bg-base-300 w-fit border right-0 top-8 text-end text-sm"
+            >
+              <li>
+                <a
+                  onClick={() => {
+                    setShowDuplicateModal(true);
+                  }}
+                >
+                  Duplicate
+                </a>
+              </li>
+              <li className="">
+                <a
+                  className=""
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit
+                </a>
+              </li>
+              <li>
+                <a
+                  className=""
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const nextSession = closeSession(session);
 
-        if (!isEditing) {
-          setIsEditing(true);
-          return;
-        }
-      }}
-    >
-      <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
-      {isEditing ? (
-        <input
-          className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 w-full"
-          onBlur={onUpdateSessionName}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") onUpdateSessionName();
-          }}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+                    if (nextSession) {
+                      const parameters = await getParametersForSessionStore({
+                        session: session.id,
+                      });
+                      const config = await getConfigForSessionStore({
+                        recipeId: session.recipeId,
+                      });
+                      initializeEditorSession({
+                        currentSession: nextSession,
+                        ...parameters,
+                        ...config,
+                      });
+                    }
+                  }}
+                >
+                  <span className="">Close</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        )}
+      </button>
+      {showDuplicateModal && (
+        <DuplicateModal
+          onClose={() => setShowDuplicateModal(false)}
+          session={session}
         />
-      ) : (
-        <h4 className="ml-2">{session.name}</h4>
       )}
-      {isCurrentSession && (
-        <div className="absolute top-0 left-0 bottom-0 bg-gray-600 w-1" />
-      )}
-      {isHover && !isEditing && (
-        <div
-          className="absolute right-0 top-0 bottom-0 flex w-8 justify-center items-center  hover:bg-red-600 hover:text-white cursor-pointer"
-          onClick={async (e) => {
-            e.stopPropagation();
-            const nextSession = closeSession(session);
+    </>
+  );
+}
 
-            if (nextSession) {
-              const parameters = await getParametersForSessionStore({
-                session: session.id,
-              });
-              const config = await getConfigForSessionStore({
-                recipeId: session.recipeId,
-              });
+function DuplicateModal({
+  onClose,
+  session,
+}: {
+  onClose: () => void;
+  session: RecipeSession;
+}) {
+  const [sessionName, setSessionName] = useState(session.name + " copy");
+  const [isRecipeCopy, setIsRecipeCopy] = useState(true);
 
-              initializeEditorSession({
-                currentSession: nextSession,
-                ...parameters,
-                ...config,
-              });
-            }
-          }}
-        >
-          <XMarkIcon className="w-4 h-4" />
+  const initializeEditorSession = useRecipeSessionStore(
+    (state) => state.initializeEditorSession
+  );
+
+  const addEditorSession = useRecipeSessionStore(
+    (state) => state.addEditorSession
+  );
+
+  const onSubmit = () => {
+    if (!sessionName) {
+      alert("Please enter a session name");
+      return;
+    }
+
+    const newSession: RecipeSession = addEditorSession({
+      ...session,
+      id: uuidv4(),
+      name: sessionName,
+      recipeId: isRecipeCopy ? session.recipeId : uuidv4(),
+    });
+
+    setTimeout(async () => {
+      const parameters = await getParametersForSessionStore({
+        session: session.id,
+      });
+      const config = await getConfigForSessionStore({
+        recipeId: session.recipeId,
+      });
+
+      initializeEditorSession({
+        currentSession: newSession,
+        ...parameters,
+        ...config,
+      });
+
+      onClose();
+    }, 0);
+  };
+
+  return (
+    <Modal header="Duplicate Modal" onClose={onClose}>
+      <div className="mt-4 flex flex-col space-y-2">
+        <label>Session Name</label>
+        <input
+          type="text"
+          className="input input-bordered input-sm"
+          value={sessionName}
+          onChange={(e) => setSessionName(e.target.value)}
+        />
+      </div>
+      <div className="mt-4">
+        <label>Duplication Type</label>
+        <div className="grid grid-cols-2 gap-x-4 mt-2">
+          <DuplicateCopyButton
+            title="Deep Copy"
+            description="Simple hard copy of all parameters and documentation."
+            selected={!isRecipeCopy}
+            onClick={() => setIsRecipeCopy(false)}
+          />
+          <DuplicateCopyButton
+            title="Recipe Copy"
+            description="Link the types, auth, and documentation with this API."
+            selected={isRecipeCopy}
+            onClick={() => setIsRecipeCopy(true)}
+          />
         </div>
+      </div>
+      <button className="mt-4 btn btn-accent" onClick={onSubmit}>
+        Duplicate
+      </button>
+    </Modal>
+  );
+}
+
+function DuplicateCopyButton({
+  selected,
+  title,
+  description,
+  onClick,
+}: {
+  selected: boolean;
+  title: string;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className={classNames(
+        "p-4 py-2 border rounded-md  flex items-start flex-col",
+        selected && "border-accent"
       )}
+      onClick={onClick}
+    >
+      <span className="font-bold text-sm">{title}</span>
+      <p className="text-xs text-start">{description}</p>
     </button>
   );
 }

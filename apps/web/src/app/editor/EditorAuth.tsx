@@ -70,7 +70,7 @@ export function EditorAuth() {
               )}
               placeholder={
                 editorAuth.type === RecipeAuthType.Bearer
-                  ? "Bearer token here. Do not include 'Bearer' prefix."
+                  ? "Bearer token here. Do not include the prefix word 'Bearer'."
                   : "Input secret here"
               }
               value={secret}

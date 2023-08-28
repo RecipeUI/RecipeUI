@@ -52,6 +52,7 @@ export function RecipeSearchButton() {
   const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
   const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
+  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -62,7 +63,7 @@ export function RecipeSearchButton() {
         false,
         success === undefined
           ? editorMode
-            ? RecipeOutputTab.DocTwo
+            ? undefined
             : RecipeOutputTab.Docs
           : RecipeOutputTab.Output
       );
@@ -262,8 +263,12 @@ export function RecipeSearchButton() {
       }
     }
 
-    for (const key in queryParams) {
-      const value = queryParams[key];
+    const _queryParams = editorMode
+      ? (JSON.parse(editorQuery || "{}") as Record<string, string>)
+      : queryParams;
+
+    for (const key in _queryParams) {
+      const value = _queryParams[key];
       if (!value) continue;
 
       if (typeof value === "object") {
@@ -329,7 +334,6 @@ export function RecipeSearchButton() {
         if (res.status >= 400) {
           const errorResponse = await res.json();
 
-          console.log("in here", errorResponse, currentSession);
           if (errorResponse) {
             setOutput(currentSession.id, {
               output:

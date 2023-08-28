@@ -1,54 +1,191 @@
 import classNames from "classnames";
 
-import { useRecipeSessionStore } from "../../state/recipeSession";
-import { ReactNode, useState } from "react";
+import {
+  RecipeBodyRoute,
+  RecipeEditorSlice,
+  useRecipeSessionStore,
+} from "../../state/recipeSession";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 
+const DefinitionContext = createContext<{
+  definitions: JSONSchema6["definitions"];
+  updater: RecipeEditorSlice["updateEditorBodySchemaJSON"];
+}>({
+  definitions: undefined,
+  updater: {} as RecipeEditorSlice["updateEditorBodySchemaJSON"],
+});
+
 export function RecipeEditDocs() {
-  const schema = useRecipeSessionStore((state) => state.editorBodySchemaJSON);
+  const bodySchema = useRecipeSessionStore(
+    (state) => state.editorBodySchemaJSON
+  );
+  const querySchema = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaJSON
+  );
+  const updateEditorBodySchemaJSON = useRecipeSessionStore(
+    (state) => state.updateEditorBodySchemaJSON
+  );
+  const updateEditorQuerySchemaJSON = useRecipeSessionStore(
+    (state) => state.updateEditorQuerySchemaJSON
+  );
+
+  const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
+
+  const requestBody = (
+    <div className="py-4" id="docRequestBody">
+      <h3 className="text-lg mb-4 font-bold">Request Body</h3>
+      <DefinitionContext.Provider
+        value={{
+          definitions: bodySchema?.definitions,
+          updater: updateEditorBodySchemaJSON,
+        }}
+      >
+        <ObjectDocContainer schema={bodySchema} path="" />
+      </DefinitionContext.Provider>
+    </div>
+  );
+
+  const queryParams = (
+    <div className="py-4" id="docQueryBody">
+      <h3 className="text-lg mb-4 font-bold">Query Params</h3>
+      <DefinitionContext.Provider
+        value={{
+          definitions: querySchema?.definitions,
+          updater: updateEditorQuerySchemaJSON,
+        }}
+      >
+        <ObjectDocContainer schema={querySchema} path="" />
+      </DefinitionContext.Provider>
+    </div>
+  );
 
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 overflow-y-auto bg-gray-800 dark:bg-gray-700"
+        "sm:absolute inset-0 px-4 overflow-y-auto bg-gray-800 dark:bg-gray-700 pb-8 pt-4  dark:text-gray-400"
         // loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >
-      <div className="my-4">
-        <h3 className="text-xl mb-4 font-bold">Request Body</h3>
-        <ObjectDocContainer definition={schema} path="" />
-      </div>
+      <EditorHeader />
+      {bodyRoute === RecipeBodyRoute.Query ? (
+        <>
+          {queryParams}
+          {requestBody}
+        </>
+      ) : (
+        <>
+          {requestBody}
+          {queryParams}
+        </>
+      )}
+    </div>
+  );
+}
 
-      <pre>
-        <code>{JSON.stringify(schema, null, 2)}</code>
-      </pre>
+function EditorHeader() {
+  const editorHeader = useRecipeSessionStore((state) => state.editorHeader);
+  const setEditorHeader = useRecipeSessionStore(
+    (state) => state.setEditorHeader
+  );
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(editorHeader.title);
+  const [description, setDescription] = useState(editorHeader.description);
+
+  return (
+    <div className="mb-4">
+      {!editing ? (
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            setEditing(true);
+          }}
+        >
+          <h2 className="text-2xl font-bold flex items-center">
+            {title}
+            <PencilSquareIcon className="w-6 h-6 ml-2 mb-1" />
+          </h2>
+          <p className="text-sm">{description}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col space-y-2">
+          <input
+            type="text"
+            className="input input-bordered"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <textarea
+            className="textarea textarea-sm textarea-bordered "
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <button
+            className="btn btn-accent w-fit btn-sm"
+            onClick={() => {
+              setEditorHeader({
+                title,
+                description,
+              });
+              setEditing(false);
+            }}
+          >
+            Save
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 function ObjectDocContainer({
-  definition,
+  schema,
   path,
 }: {
-  definition: JSONSchema6;
+  schema: JSONSchema6;
   path: string;
 }) {
-  if (!definition.properties) {
+  const { definitions } = useContext(DefinitionContext);
+
+  if (schema && "$ref" in schema) {
+    const objectDefinition = schema!["$ref"];
+    if (!objectDefinition) return null;
+
+    const referenceName = objectDefinition.split("#/definitions/").pop()!;
+    const innerSchema = definitions![referenceName];
+
+    if (typeof innerSchema == "boolean") return null;
+
+    return (
+      <ObjectDocContainer
+        schema={innerSchema}
+        path={`definitions.${referenceName}`}
+      />
+    );
+  }
+
+  if (!schema?.properties) {
     return <></>;
   }
 
   return (
     <>
-      {Object.keys(definition.properties).map((paramName) => {
-        const required =
-          definition.required && definition.required.includes(paramName);
+      {Object.keys(schema.properties).map((paramName) => {
+        const required = schema.required && schema.required.includes(paramName);
 
         return (
           <DocContainer
             key={paramName}
             paramName={paramName}
-            definition={definition.properties![paramName] as JSONSchema6}
+            definition={schema.properties![paramName] as JSONSchema6}
             required={!!required}
             path={
               path
@@ -88,10 +225,7 @@ function DocContainer({
   const [maxNumber, setMaxNumber] = useState(definition.maximum);
 
   const [editing, setEditing] = useState(false);
-  const updateEditorBodySchemaJson = useRecipeSessionStore(
-    (state) => state.updateEditorBodySchemaJSON
-  );
-
+  const { updater } = useContext(DefinitionContext);
   const isPrimitive =
     typeof definition.type === "string" &&
     ["string", "number", "integer", "boolean"].includes(definition.type);
@@ -222,7 +356,7 @@ function DocContainer({
                 }
               }
 
-              updateEditorBodySchemaJson({
+              updater({
                 path: path,
                 update: {
                   description: description || undefined,
@@ -261,7 +395,7 @@ function DocContainer({
       {items && !Array.isArray(items) ? (
         <div className="my-4">
           <ObjectDocContainer
-            definition={items as JSONSchema6}
+            schema={items as JSONSchema6}
             path={`${path}.items`}
           />
         </div>

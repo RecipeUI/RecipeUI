@@ -42,7 +42,10 @@ import {
   DARKTHEME_SETTINGS,
   DEFAULT_MONACO_OPTIONS,
 } from "@/app/editor/common";
-import { API_TYPE_NAMES } from "ui/utils/constants/main";
+import {
+  API_LOCAL_PROCESSING_URLS,
+  API_TYPE_NAMES,
+} from "ui/utils/constants/main";
 import {
   AutoSaveError,
   EditorViewWithSchema,
@@ -105,7 +108,7 @@ export const JSONEditorType = () => {
 
       // We have to migrate off of here eventually
       // Will mod this package so that it doesn't need a server
-      fetch("https://recipe-translator.fly.dev/ts-to-jsonschema", {
+      fetch(API_LOCAL_PROCESSING_URLS.TS_TO_JSON, {
         body: JSON.stringify({ types: schemaType }),
         method: "POST",
         headers: {
@@ -114,14 +117,10 @@ export const JSONEditorType = () => {
       })
         .then(async (res) => {
           const value = await res.json();
-          editSchemaJSON(
-            value.definitions[API_TYPE_NAMES.APIRequestParams] || {
-              additionalProperties: true,
-              type: "object",
-            }
-          );
+          editSchemaJSON(value);
         })
         .catch((err) => {
+          console.error(err);
           setHasError(true);
           setTimeout(() => {
             setHasError(false);

@@ -11,13 +11,15 @@ import { useContext } from "react";
 import { RecipeMethod } from "types/enums";
 
 export function RecipeEditBodySearch() {
-  const selectedRecipe = useContext(RecipeContext)!;
-
   const url = useRecipeSessionStore((state) => state.editorUrl);
   const setUrl = useRecipeSessionStore((state) => state.setEditorUrl);
 
   const method = useRecipeSessionStore((state) => state.editorMethod);
   const setMethod = useRecipeSessionStore((state) => state.setEditorMethod);
+
+  const updateSessionMethod = useRecipeSessionStore(
+    (state) => state.updateCurrentSessionMethod
+  );
 
   return (
     <div className={classNames("p-4 z-0")}>
@@ -32,6 +34,7 @@ export function RecipeEditBodySearch() {
               className="select select-sm"
               onChange={(e) => {
                 setMethod(e.target.value as RecipeMethod);
+                updateSessionMethod(e.target.value as RecipeMethod);
               }}
               value={method}
             >

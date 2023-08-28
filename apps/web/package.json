@@ -20,6 +20,7 @@
     "daisyui": "^3.5.0",
     "eslint-config-custom": "workspace:*",
     "immer": "^10.0.2",
+    "json5": "^2.2.3",
     "next": "13.4.12",
     "postcss": "^8.4.27",
     "random-word-slugs": "^0.1.7",

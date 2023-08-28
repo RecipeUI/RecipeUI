@@ -60,3 +60,11 @@ export const API_SAMPLES = {
   API_SAMPLE_REQUEST_BODY_TYPE,
   API_SAMPLE_QUERY_PARAMS_TYPE,
 };
+
+const baseURL = "https://recipe-proxy-node.fly.dev";
+// const baseURL = "http://localhost:3000";
+
+export const API_LOCAL_PROCESSING_URLS = {
+  JSON_TO_TS: `${baseURL}/json-to-ts`,
+  TS_TO_JSON: `${baseURL}/ts-to-jsonschema`,
+};
