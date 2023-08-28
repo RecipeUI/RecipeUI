@@ -50,6 +50,34 @@ export enum RecipeOutputTab {
   Code = "Code",
 }
 
+export enum CodeView {
+  CURL = "cURL",
+  JavaScriptFetch = "JavaScript - Fetch",
+  JavaScriptAxios = "JavaScript - Axios",
+  PythonHttpClient = "Python - http.client",
+  PythonRequestLib = "Python - requests",
+}
+
+export type ConvertTargets =
+  | "c"
+  | "clojure"
+  | "csharp"
+  | "go"
+  | "http"
+  | "java"
+  | "javascript"
+  | "kotlin"
+  | "node"
+  | "objc"
+  | "ocaml"
+  | "php"
+  | "powershell"
+  | "python"
+  | "r"
+  | "ruby"
+  | "shell"
+  | "swift";
+
 export const getEmptyParameters = (): RecipeParameters => ({
   requestBody: {},
   queryParams: {},
