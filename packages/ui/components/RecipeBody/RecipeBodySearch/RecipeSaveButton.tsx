@@ -20,7 +20,7 @@ import { createTemplate } from "./actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { useIsTauri } from "../../../hooks/useIsTauri";
-import { getURLParamsForSession } from "../../../utils/main";
+import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 
 export function RecipeSaveButton() {
@@ -269,11 +269,6 @@ export function SuccessAnimation({
         } else {
           if (needsSession) {
             const newSession = addSession(recipe);
-            router.push(
-              `/?${getURLParamsForSession(newSession, {
-                newTemplateId: String(newTemplateId),
-              })}`
-            );
           } else {
             const newParams = new URLSearchParams(
               (searchParams as unknown as URLSearchParams) || undefined

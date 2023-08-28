@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 export default async function Home({
   searchParams,
-  ...props
 }: {
   searchParams: {
     sessionId?: string;
@@ -18,12 +17,6 @@ export default async function Home({
     test?: string;
   };
 }) {
-  const { sessionId, recipeId } = searchParams;
-
-  if (recipeId == null && sessionId) {
-    redirect("/");
-  }
-
   const supabase = createServerComponentClient<Database>({
     cookies,
   });
@@ -42,16 +35,11 @@ export default async function Home({
     supabase,
   });
 
-  if (recipeId && !recipe) {
-    redirect("/");
-  }
-
   return (
     <RecipeHomeContainer
       globalProjects={globalProjects}
       projects={userProjects}
       recipe={recipe || undefined}
-      sessionId={sessionId}
     />
   );
 }

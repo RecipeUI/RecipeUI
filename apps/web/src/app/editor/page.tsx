@@ -14,11 +14,13 @@ import {
   getParametersForSessionStore,
 } from "ui/state/apiSession";
 import { Loading } from "ui/components/Loading";
+import { EditorAuth } from "@/app/editor/EditorAuth";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
   RecipeBodyRoute.Query,
   RecipeBodyRoute.Headers,
+  RecipeBodyRoute.Auth,
 ];
 
 function EditorPage() {
@@ -131,6 +133,7 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Body && <EditorBody />}
         {bodyRoute === RecipeBodyRoute.Query && <EditorQuery />}
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
+        {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
         <RecipeOutput />
       </div>
     </div>

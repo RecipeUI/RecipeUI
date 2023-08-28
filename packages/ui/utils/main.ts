@@ -89,17 +89,6 @@ export function getDefaultValue<T>(
   return null;
 }
 
-export function getURLParamsForSession(
-  session: RecipeSession,
-  moreParams?: Record<string, string>
-) {
-  return new URLSearchParams({
-    sessionId: session.id,
-    recipeId: String(session.recipeId),
-    ...moreParams,
-  }).toString();
-}
-
 export function getUrl() {
   let url =
     process?.env?.NEXT_PUBLIC_HOST ?? // Set this to your site URL in production env.

@@ -5,9 +5,8 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { useEffect, useRef, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
 import classNames from "classnames";
-import { getURLParamsForSession } from "../../utils/main";
+import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
@@ -125,8 +124,12 @@ function SessionTab({
       )}
       onClick={async () => {
         if (!isCurrentSession) {
-          const parameters = await getParametersForSessionStore(session.id);
-          const config = await getConfigForSessionStore(session.id);
+          const parameters = await getParametersForSessionStore({
+            session: session.id,
+          });
+          const config = await getConfigForSessionStore({
+            recipeId: session.recipeId,
+          });
 
           initializeEditorSession({
             currentSession: session,
@@ -168,8 +171,12 @@ function SessionTab({
             const nextSession = closeSession(session);
 
             if (nextSession) {
-              const parameters = await getParametersForSessionStore(session.id);
-              const config = await getConfigForSessionStore(session.id);
+              const parameters = await getParametersForSessionStore({
+                session: session.id,
+              });
+              const config = await getConfigForSessionStore({
+                recipeId: session.recipeId,
+              });
 
               initializeEditorSession({
                 currentSession: nextSession,

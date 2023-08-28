@@ -24,6 +24,7 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { usePathname } from "next/navigation";
+import { getSecret } from "../../../state/apiSession";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -40,7 +41,6 @@ export function RecipeSearchButton() {
   const fetchRejectRef = useRef<((val: any) => void) | null>(null);
   const _recipe = useContext(RecipeContext);
 
-  const secretInfo = useSecretsFromSM();
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
@@ -51,6 +51,7 @@ export function RecipeSearchButton() {
   const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
   const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
   const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
+  const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -59,7 +60,11 @@ export function RecipeSearchButton() {
     setTimeout(() => {
       setIsSending(
         false,
-        success === undefined ? RecipeOutputTab.Docs : RecipeOutputTab.Output
+        success === undefined
+          ? editorMode
+            ? RecipeOutputTab.DocTwo
+            : RecipeOutputTab.Docs
+          : RecipeOutputTab.Output
       );
     }, 500);
   };
@@ -80,7 +85,7 @@ export function RecipeSearchButton() {
           project: "Personal",
           method: editorMethod,
           path: editorUrl,
-          auth: null,
+          auth: editorAuth?.type,
           options: {},
         }
       : _recipe!;
@@ -157,27 +162,37 @@ export function RecipeSearchButton() {
     let url = new URL(path);
 
     if (recipe.auth) {
-      if (!secretInfo?.hasAllSecrets) {
-        alert("Please setup authentication first.");
+      const primaryToken = await getSecret({
+        secretId: currentSession.recipeId,
+      });
+
+      if (!primaryToken) {
+        await alert("Please setup authentication first.");
         return;
       }
-
-      const primaryToken = secretInfo.secrets[recipe.auth];
 
       if (recipe.auth === RecipeAuthType.Bearer) {
         fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
       }
 
       if (recipe.auth === RecipeAuthType.Query) {
-        // Need to find name of query param
-        const QUERY_KEY_NAME = recipe.options?.auth?.find(
-          (auth) => auth.type === RecipeAuthType.Query
-        )?.payload.name;
+        let QUERY_KEY_NAME: string | undefined;
+        if (editorAuth?.type === RecipeAuthType.Query && editorAuth?.meta) {
+          QUERY_KEY_NAME = editorAuth.meta;
+        }
+
+        if (
+          "options" in recipe &&
+          recipe.options &&
+          "auth" in recipe?.options
+        ) {
+          QUERY_KEY_NAME = recipe.options?.auth?.find(
+            (auth) => auth.type === RecipeAuthType.Query
+          )?.payload.name;
+        }
 
         if (!QUERY_KEY_NAME) {
-          alert(
-            "The auth for this recipe is not setup correctly. Please contact us at team@recipeui.com"
-          );
+          alert("The auth for this recipe is not setup correctly.");
           return;
         }
 
@@ -190,12 +205,6 @@ export function RecipeSearchButton() {
 
       if (recipe.auth === RecipeAuthType.Token) {
         fetchHeaders["Authorization"] = `Token ${primaryToken}`;
-      }
-
-      if (recipe.auth === RecipeAuthType.Custom) {
-        for (const simpleHeader of secretInfo.simpleHeaders) {
-          fetchHeaders[simpleHeader] = secretInfo.secrets[simpleHeader]!;
-        }
       }
     }
 

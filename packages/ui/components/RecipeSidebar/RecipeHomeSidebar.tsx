@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { getURLParamsForSession } from "../../utils/main";
 import classNames from "classnames";
 import Link from "next/link";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
@@ -120,20 +119,7 @@ export function RecipeHomeSidebar() {
           )}
           {sessions.length > 0 && (
             <li>
-              <button
-                className=""
-                onClick={() => {
-                  setCurrentSession(sessions[0], false);
-
-                  if (!isTauri) {
-                    router.push(
-                      `/?${new URLSearchParams(
-                        getURLParamsForSession(sessions[0])
-                      ).toString()}`
-                    );
-                  }
-                }}
-              >
+              <button className="" onClick={() => {}}>
                 View sessions
               </button>
             </li>

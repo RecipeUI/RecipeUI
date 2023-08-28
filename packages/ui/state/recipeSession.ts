@@ -14,10 +14,18 @@ import {
 import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
-import { RecipeMethod, RecipeMutationContentType } from "types/enums";
+import {
+  RecipeAuthType,
+  RecipeMethod,
+  RecipeMutationContentType,
+} from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
-import { JSONSchema6, JSONSchema6Object } from "json-schema";
+import {
+  JSONSchema6,
+  JSONSchema6Definition,
+  JSONSchema6Object,
+} from "json-schema";
 import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
 import {
   deleteConfigForSessionStore,
@@ -26,11 +34,10 @@ import {
   setParametersForSessionStore,
 } from "./apiSession";
 
-import merge from "lodash.merge";
 export interface RecipeSession {
   id: string;
   name: string;
-  recipeId?: number;
+  recipeId: number | string;
   apiMethod: RecipeMethod;
   folderId?: string;
 }
@@ -69,6 +76,7 @@ export enum RecipeBodyRoute {
   Body = "Body",
   Query = "Query",
   Headers = "Headers",
+  Auth = "Auth",
 }
 
 export enum RecipeOutputTab {
@@ -118,7 +126,8 @@ interface RecipeOutputSlice {
     template: (RecipeTemplate & { speedFactor?: number }) | null
   ) => void;
 }
-type EditorSliceValues = Pick<
+
+export type EditorSliceValues = Pick<
   RecipeEditorSlice,
   | "editorMode"
   | "editorUrl"
@@ -131,6 +140,7 @@ type EditorSliceValues = Pick<
   | "editorQuerySchemaType"
   | "editorBodySchemaJSON"
   | "editorQuerySchemaJSON"
+  | "editorAuth"
 >;
 
 interface RecipeEditorSlice {
@@ -178,7 +188,75 @@ interface RecipeEditorSlice {
     >
   ) => void;
 
+  editorAuth: {
+    meta?: string;
+    type: RecipeAuthType;
+    docs?: string;
+  } | null;
+  setEditorAuth: (
+    editorAuth: {
+      meta?: string;
+      type: RecipeAuthType;
+      docs?: string;
+    } | null
+  ) => void;
+
   saveEditorSession: () => void;
+}
+
+// Destination is the final schema that's correct
+// Source is the schema that might have old docs
+// This is also hilariously a leetcode symmetrical tree problem
+function mergePreserveDocs({
+  destination,
+  source,
+}: {
+  destination: JSONSchema6;
+  source: JSONSchema6;
+}) {
+  function isSchema(item: JSONSchema6Definition): item is JSONSchema6 {
+    return typeof item !== "boolean";
+  }
+
+  return produce(destination, (draft) => {
+    function recur(d: JSONSchema6, s: JSONSchema6) {
+      if (s.description) d.description = s.description;
+      if (s.minimum) d.minimum = s.minimum;
+      if (s.maximum) d.maximum = s.maximum;
+      if (s.default) d.default = s.default;
+
+      if (d.items && s.items) {
+        if (Array.isArray(d.items) && Array.isArray(s.items)) {
+          for (let i = 0; i < d.items.length; i++) {
+            const dItem = d.items[i];
+            const sItem = s.items[i];
+
+            if (isSchema(dItem) && isSchema(sItem)) {
+              recur(dItem, sItem);
+            }
+          }
+        }
+      }
+
+      if (d.properties && s.properties) {
+        Object.keys(d.properties).forEach((key) => {
+          let dDefinition = d.properties?.[key];
+          let sDefinition = s.properties?.[key];
+
+          if (
+            dDefinition &&
+            sDefinition &&
+            isSchema(dDefinition) &&
+            isSchema(sDefinition)
+          ) {
+            recur(dDefinition, sDefinition);
+          }
+        });
+      }
+    }
+
+    recur(draft, source);
+  });
 }
 
 function getContentTypeHeader() {
@@ -189,9 +267,10 @@ function getContentTypeHeader() {
 }
 
 function savePrevSessionPre(prevState: Slices) {
-  const currentSessionId = prevState.currentSession?.id;
-  if (!currentSessionId) return;
+  const currentSession = prevState.currentSession;
+  if (!currentSession) return;
 
+  const { id: currentSessionId, recipeId: currentRecipeId } = currentSession;
   const {
     editorBody,
     editorQuery,
@@ -204,22 +283,30 @@ function savePrevSessionPre(prevState: Slices) {
     editorBodySchemaJSON,
     editorQuerySchemaType,
     editorQuerySchemaJSON,
+    editorAuth,
   } = prevState;
 
-  setParametersForSessionStore(currentSessionId, {
-    editorBody,
-    editorQuery,
-    editorHeaders,
+  setParametersForSessionStore({
+    session: currentSessionId,
+    parameters: {
+      editorBody,
+      editorQuery,
+      editorHeaders,
+    },
   });
 
-  setConfigForSessionStore(currentSessionId, {
-    editorUrl,
-    editorMethod,
-    editorBodyType,
-    editorBodySchemaType,
-    editorBodySchemaJSON,
-    editorQuerySchemaType,
-    editorQuerySchemaJSON,
+  setConfigForSessionStore({
+    recipeId: currentRecipeId,
+    config: {
+      editorUrl,
+      editorMethod,
+      editorBodyType,
+      editorBodySchemaType,
+      editorBodySchemaJSON,
+      editorQuerySchemaType,
+      editorQuerySchemaJSON,
+      editorAuth,
+    },
   });
 }
 
@@ -240,6 +327,7 @@ function resetEditorSlice(): EditorSliceValues {
     editorQuerySchemaType: API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE,
     editorBodySchemaJSON: {},
     editorQuerySchemaJSON: {},
+    editorAuth: null,
   };
 }
 
@@ -289,18 +377,18 @@ export const createRecipeEditorSlice: StateCreator<
     },
     setEditorBodySchemaJSON(editorBodySchemaJson) {
       set((prevState) => ({
-        editorBodySchemaJSON: merge(
-          prevState.editorBodySchemaJSON,
-          editorBodySchemaJson
-        ),
+        editorBodySchemaJSON: mergePreserveDocs({
+          destination: editorBodySchemaJson,
+          source: prevState.editorBodySchemaJSON,
+        }),
       }));
     },
     setEditorQuerySchemaJSON(editorQuerySchemaJSON) {
       set((prevState) => ({
-        editorQuerySchemaJSON: merge(
-          prevState.editorQuerySchemaJSON,
-          editorQuerySchemaJSON
-        ),
+        editorQuerySchemaJSON: mergePreserveDocs({
+          destination: editorQuerySchemaJSON,
+          source: prevState.editorQuerySchemaJSON,
+        }),
       }));
     },
     updateEditorBodySchemaJSON({ path, update, merge = true }) {
@@ -330,6 +418,10 @@ export const createRecipeEditorSlice: StateCreator<
 
         return { editorBodySchemaJSON: nextState };
       });
+    },
+
+    setEditorAuth(editorAuth) {
+      set(() => ({ editorAuth }));
     },
   };
 };
@@ -494,6 +586,7 @@ const createRecipeSessionSlice: StateCreator<
         id: uuidv4(),
         name: "New Session",
         apiMethod: RecipeMethod.GET,
+        recipeId: uuidv4(),
       };
 
       set((prevState) => {
@@ -516,8 +609,8 @@ const createRecipeSessionSlice: StateCreator<
       let nextSessionReturn: RecipeSession | undefined;
 
       set((prevState) => {
-        deleteParametersForSessionStore(session.id);
-        deleteConfigForSessionStore(session.id);
+        deleteParametersForSessionStore({ session: session.id });
+        deleteConfigForSessionStore({ recipeId: session.recipeId });
 
         let nextSessionIndex = -1;
         const sessions = prevState.sessions.filter((s, i) => {
