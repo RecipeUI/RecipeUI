@@ -192,7 +192,7 @@ interface RecipeTemplateOutput {
 
 export interface UserTemplatePreview {
   alias: string;
-  id: number;
+  id: string;
   created_at: string;
   title: string;
   description: string;

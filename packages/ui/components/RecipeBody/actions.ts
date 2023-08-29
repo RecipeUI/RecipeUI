@@ -4,7 +4,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database, UserTemplate } from "types/database";
 
 export async function getTemplate(
-  templateId: number,
+  templateId: string,
   supabase: SupabaseClient<Database>
 ) {
   //   This should already have RLS

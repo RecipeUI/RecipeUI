@@ -25,7 +25,7 @@ export async function createTemplate(
 }
 
 export async function deleteTemplate(
-  templateId: number,
+  templateId: string,
   supabase: SupabaseClient<Database>
 ) {
   const { error, status, statusText } = await supabase
@@ -37,7 +37,7 @@ export async function deleteTemplate(
 }
 
 export async function cloneTemplate(
-  templateId: number,
+  templateId: string,
   supabase: SupabaseClient<Database>
 ) {
   const { data: oldTemplateData } = await supabase

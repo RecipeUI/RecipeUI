@@ -33,7 +33,7 @@ export async function fetchHome({
     globalProjects,
     userProjects,
     recipe: recipeId
-      ? await fetchHomeRecipe({ recipeId: Number(recipeId), supabase })
+      ? await fetchHomeRecipe({ recipeId: recipeId, supabase })
       : null,
   };
 }
@@ -42,7 +42,7 @@ export async function fetchHomeRecipe({
   recipeId,
   supabase,
 }: {
-  recipeId: number;
+  recipeId: string;
   supabase: HomeFetcher["supabase"];
 }) {
   const response = recipeId

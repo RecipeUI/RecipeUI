@@ -37,7 +37,7 @@ import {
 export interface RecipeSession {
   id: string;
   name: string;
-  recipeId: number | string;
+  recipeId: string;
   apiMethod: RecipeMethod;
   folderId?: string;
 }

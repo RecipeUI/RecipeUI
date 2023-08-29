@@ -115,7 +115,7 @@ export interface Database {
           auth: string | null
           author_id: string | null
           created_at: string | null
-          id: number
+          id: string
           method: Database["public"]["Enums"]["recipemethod"]
           options: Json | null
           path: string
@@ -128,13 +128,14 @@ export interface Database {
           templates: Json[] | null
           title: string
           urlParams: Json | null
+          version: number
           visibility: Database["public"]["Enums"]["visibility"]
         }
         Insert: {
           auth?: string | null
           author_id?: string | null
           created_at?: string | null
-          id?: number
+          id?: string
           method?: Database["public"]["Enums"]["recipemethod"]
           options?: Json | null
           path: string
@@ -147,13 +148,14 @@ export interface Database {
           templates?: Json[] | null
           title: string
           urlParams?: Json | null
+          version?: number
           visibility?: Database["public"]["Enums"]["visibility"]
         }
         Update: {
           auth?: string | null
           author_id?: string | null
           created_at?: string | null
-          id?: number
+          id?: string
           method?: Database["public"]["Enums"]["recipemethod"]
           options?: Json | null
           path?: string
@@ -166,6 +168,7 @@ export interface Database {
           templates?: Json[] | null
           title?: string
           urlParams?: Json | null
+          version?: number
           visibility?: Database["public"]["Enums"]["visibility"]
         }
         Relationships: [
@@ -189,17 +192,100 @@ export interface Database {
           }
         ]
       }
+      recipe_duplicate: {
+        Row: {
+          auth: string | null
+          author_id: string | null
+          created_at: string | null
+          id: string
+          method: Database["public"]["Enums"]["recipemethod"]
+          options: Json | null
+          path: string
+          project: string
+          queryParams: Json | null
+          rank: number | null
+          requestBody: Json | null
+          summary: string
+          tags: string[] | null
+          templates: Json[] | null
+          title: string
+          urlParams: Json | null
+          version: number
+          visibility: Database["public"]["Enums"]["visibility"]
+        }
+        Insert: {
+          auth?: string | null
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["recipemethod"]
+          options?: Json | null
+          path: string
+          project: string
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title: string
+          urlParams?: Json | null
+          version?: number
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Update: {
+          auth?: string | null
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["recipemethod"]
+          options?: Json | null
+          path?: string
+          project?: string
+          queryParams?: Json | null
+          rank?: number | null
+          requestBody?: Json | null
+          summary?: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title?: string
+          urlParams?: Json | null
+          version?: number
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_duplicate_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_duplicate_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_duplicate_project_fkey"
+            columns: ["project"]
+            referencedRelation: "project"
+            referencedColumns: ["project"]
+          }
+        ]
+      }
       template: {
         Row: {
           alias: string
           author_id: string
           created_at: string
           description: string
-          id: number
+          headers: Json | null
+          id: string
           original_author_id: string | null
           project: string
           queryParams: Json | null
-          recipe_id: number
+          recipe_id: string
           replay: Json | null
           requestBody: Json | null
           title: string
@@ -211,11 +297,12 @@ export interface Database {
           author_id: string
           created_at?: string
           description: string
-          id?: number
+          headers?: Json | null
+          id?: string
           original_author_id?: string | null
           project: string
           queryParams?: Json | null
-          recipe_id: number
+          recipe_id: string
           replay?: Json | null
           requestBody?: Json | null
           title: string
@@ -227,11 +314,12 @@ export interface Database {
           author_id?: string
           created_at?: string
           description?: string
-          id?: number
+          headers?: Json | null
+          id?: string
           original_author_id?: string | null
           project?: string
           queryParams?: Json | null
-          recipe_id?: number
+          recipe_id?: string
           replay?: Json | null
           requestBody?: Json | null
           title?: string
@@ -268,18 +356,6 @@ export interface Database {
             columns: ["project"]
             referencedRelation: "project"
             referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe_view"
-            referencedColumns: ["id"]
           }
         ]
       }
@@ -288,25 +364,25 @@ export interface Database {
           created_at: string
           id: number
           new_author_id: string
-          new_template: number
+          new_template: string
           original_author_id: string
-          original_template: number
+          original_template: string
         }
         Insert: {
           created_at?: string
           id?: number
           new_author_id: string
-          new_template: number
+          new_template?: string
           original_author_id: string
-          original_template: number
+          original_template?: string
         }
         Update: {
           created_at?: string
           id?: number
           new_author_id?: string
-          new_template?: number
+          new_template?: string
           original_author_id?: string
-          original_template?: number
+          original_template?: string
         }
         Relationships: [
           {
@@ -397,7 +473,7 @@ export interface Database {
           auth: string | null
           author_id: string | null
           created_at: string | null
-          id: number | null
+          id: string | null
           method: Database["public"]["Enums"]["recipemethod"] | null
           options: Json | null
           path: string | null
@@ -412,6 +488,7 @@ export interface Database {
           templates: Json[] | null
           title: string | null
           urlParams: Json | null
+          version: number | null
           visibility: Database["public"]["Enums"]["visibility"] | null
         }
         Relationships: [
@@ -441,14 +518,15 @@ export interface Database {
           author_id: string | null
           created_at: string | null
           description: string | null
-          id: number | null
+          headers: Json | null
+          id: string | null
           original_author: Json | null
           original_author_id: string | null
           project: string | null
           project_scope: Database["public"]["Enums"]["projectscope"] | null
           queryParams: Json | null
           recipe: Json | null
-          recipe_id: number | null
+          recipe_id: string | null
           replay: Json | null
           requestBody: Json | null
           title: string | null
@@ -485,18 +563,6 @@ export interface Database {
             columns: ["project"]
             referencedRelation: "project"
             referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "template_recipe_id_fkey"
-            columns: ["recipe_id"]
-            referencedRelation: "recipe_view"
-            referencedColumns: ["id"]
           }
         ]
       }

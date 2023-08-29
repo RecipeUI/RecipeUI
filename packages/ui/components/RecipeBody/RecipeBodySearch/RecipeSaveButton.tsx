@@ -91,7 +91,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
   });
 
   const [loading, setLoading] = useState(false);
-  const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
+  const [newTemplateId, setNewTemplateId] = useState<string | null>(null);
   const posthog = usePostHog();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -243,7 +243,7 @@ export function SuccessAnimation({
   ignoreAnimation,
 }: {
   onClose: () => void;
-  newTemplateId: number;
+  newTemplateId: string;
   passiveRecipe?: Pick<Recipe, "title" | "id" | "method">;
   ignoreAnimation?: boolean;
 }) {

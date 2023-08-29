@@ -22,7 +22,7 @@ export default async function APIPage({
   });
 
   const recipe = await fetchHomeRecipe({
-    recipeId: Number(api_id),
+    recipeId: api_id,
     supabase,
   });
 

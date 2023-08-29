@@ -537,7 +537,7 @@ export function ShareInviteModal({
   const posthog = usePostHog();
   const user = useRecipeSessionStore((state) => state.user);
 
-  const [newTemplateId, setNewTemplateId] = useState<number | null>(null);
+  const [newTemplateId, setNewTemplateId] = useState<string | null>(null);
   const [limitedForks, setLimitedForks] = useState(false);
 
   const [_, setForkedTemplate] = useLocalStorage<UserTemplatePreview | null>(
