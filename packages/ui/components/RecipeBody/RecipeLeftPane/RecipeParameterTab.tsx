@@ -396,14 +396,17 @@ function RecipeURLParamsv1() {
           return (
             <div
               key={key}
-              className={classNames(!value && isRequired && "text-error")}
+              className={classNames(
+                value === undefined && isRequired && "text-error"
+              )}
             >
               <span>{key}:</span>{" "}
               <span>
-                {value ||
-                  (isRequired
-                    ? "Setup this parameter in the docs pane"
-                    : "Optional")}
+                {value !== undefined
+                  ? value
+                  : isRequired
+                  ? "Setup this parameter in the docs pane"
+                  : "Optional"}
               </span>
             </div>
           );

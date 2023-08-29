@@ -662,7 +662,7 @@ const createRecipeSessionSlice: StateCreator<
     setCurrentSession: (session, editorMode = true) =>
       set(() => {
         return {
-          ...(editorMode ? getEmptyParameters() : {}),
+          ...(editorMode ? getEmptyParameters() : getEmptyParameters()),
           currentSession: session,
           editorMode,
           bodyRoute: editorMode

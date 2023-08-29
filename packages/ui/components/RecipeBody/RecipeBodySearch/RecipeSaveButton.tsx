@@ -34,6 +34,7 @@ export function RecipeSaveButton() {
   if (!hasValidResponse || isSending) {
     return null;
   }
+  return null;
 
   return (
     <>

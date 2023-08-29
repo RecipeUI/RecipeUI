@@ -448,7 +448,6 @@ export function useLoadingTemplatev1() {
     }) {
       t += 12.5;
 
-      console.log({ paramSchema, paramName });
       if (
         paramSchema.type === RecipeParamType.Array &&
         Array.isArray(paramValue)

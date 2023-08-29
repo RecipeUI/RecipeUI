@@ -1062,9 +1062,15 @@ function RecipeUrlDocsContainer({
                   }}
                 >
                   <option className="none"></option>
+
                   {paramSchema.enum?.map((value) => {
                     return (
-                      <option key={value as string}>{value as string}</option>
+                      <option
+                        key={value as string}
+                        value={(value as string) || ""}
+                      >
+                        {value === "" ? "(none)" : (value as string)}
+                      </option>
                     );
                   })}
                 </select>

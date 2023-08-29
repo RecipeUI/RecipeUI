@@ -80,7 +80,7 @@ export function RecipeEditDocs() {
       <DefinitionContext.Provider
         value={{
           definitions: urlSchema.definitions,
-          updater: updateEditorQuerySchemaJSON,
+          updater: updateEditorURLSchemaJSON,
         }}
       >
         <ObjectDocContainer schema={urlSchema} path="" />

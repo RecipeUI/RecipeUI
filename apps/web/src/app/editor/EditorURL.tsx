@@ -83,7 +83,7 @@ export function EditorURLHighlight() {
             <span
               className={classNames(
                 "p-1 rounded-md text-white",
-                value ? "bg-accent" : "bg-error"
+                value !== undefined ? "bg-accent" : "bg-error"
               )}
             >{`{${wordWithoutBrackets}=${value}}`}</span>
           }

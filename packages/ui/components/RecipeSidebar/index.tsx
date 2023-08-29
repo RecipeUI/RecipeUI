@@ -217,11 +217,12 @@ function SessionTab({
                     setTimeout(async () => {
                       if (nextSession) {
                         const parameters = await getParametersForSessionStore({
-                          session: session.id,
+                          session: nextSession.id,
                         });
                         const config = await getConfigForSessionStore({
-                          recipeId: session.recipeId,
+                          recipeId: nextSession.recipeId,
                         });
+
                         initializeEditorSession({
                           currentSession: nextSession,
                           ...parameters,
