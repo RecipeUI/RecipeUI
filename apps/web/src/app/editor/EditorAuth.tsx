@@ -25,7 +25,6 @@ export function EditorAuth() {
   useEffect(() => {
     if (editorAuth === null) {
       setMeta("");
-      setDocs("");
     } else {
       setMeta(editorAuth.meta);
       setDocs(editorAuth.docs);
@@ -42,15 +41,27 @@ export function EditorAuth() {
     <div className="flex-1 ">
       {editorAuth !== null && (
         <div className="py-2 border-b p-4 pb-4">
-          {editorAuth.type === RecipeAuthType.Query && (
-            <AuthFormWrapper label="Query Param Name">
+          {[RecipeAuthType.Query, RecipeAuthType.Header].includes(
+            editorAuth.type
+          ) && (
+            <AuthFormWrapper
+              label={
+                editorAuth.type === RecipeAuthType.Header
+                  ? "Header Name"
+                  : `${editorAuth.type} Param Name`
+              }
+            >
               <input
                 type="text"
                 className={classNames(
                   "input input-bordered w-full input-sm",
                   !meta && "input-error"
                 )}
-                placeholder="Input secret here"
+                placeholder={
+                  editorAuth.type === RecipeAuthType.Header
+                    ? "e.g Authorization"
+                    : "e.g api_key"
+                }
                 value={meta}
                 onChange={(e) => {
                   if (!hasChanged) setHasChanged(true);
@@ -60,7 +71,7 @@ export function EditorAuth() {
               />
             </AuthFormWrapper>
           )}
-          <AuthFormWrapper label={`${editorAuth.type} Secret`}>
+          <AuthFormWrapper label={`${editorAuth.type} Value`}>
             <input
               type="text"
               className={classNames(
@@ -167,6 +178,17 @@ export function EditorAuth() {
           onClick={() => {
             setEditorAuth({
               type: RecipeAuthType.Query,
+              docs: editorAuth?.docs || "",
+            });
+          }}
+        />
+        <AuthButton
+          label="Header"
+          description="An API key in a header."
+          selected={editorAuth?.type === RecipeAuthType.Header}
+          onClick={() => {
+            setEditorAuth({
+              type: RecipeAuthType.Header,
               docs: editorAuth?.docs || "",
             });
           }}

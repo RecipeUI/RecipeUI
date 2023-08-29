@@ -21,71 +21,93 @@ import {
   handleEditorWillMount,
 } from "@/app/editor/EditorViewWithSchema";
 import { getIsEmptySchema } from "ui/utils/main";
-import { EditorURLHighlight } from "@/app/editor/EditorURL";
+import classNames from "classnames";
 
-export const EditorQuery = () => {
-  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
-  const setEditorQuery = useRecipeSessionStore((state) => state.setEditorQuery);
-  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
-  const editorQuerySchemaJSON = useRecipeSessionStore(
-    (state) => state.editorQuerySchemaJSON
+export const EditorURL = () => {
+  const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const setEditorURLCode = useRecipeSessionStore(
+    (state) => state.setEditorURLCode
   );
 
-  const isEmpty = !editorQuery;
-
-  const newQueryChanges = useDebounce(editorQuery, 500);
-  const urlQueryParams = useMemo(() => {
-    if (!newQueryChanges) return "Enter query params as key value pairs below";
-
-    try {
-      const params = JSON.parse(newQueryChanges) as Record<string, string>;
-
-      return `?${new URLSearchParams(params).toString()}`;
-    } catch (e) {
-      return "Invalid query params";
-    }
-  }, [editorUrl, newQueryChanges]);
+  const editorURLSchemaJSON = useRecipeSessionStore(
+    (state) => state.editorURLSchemaJSON
+  );
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-      <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto">
-        {isEmpty ? (
-          "Enter query params as a key value object below"
-        ) : (
-          <>
-            {editorUrl}?
-            <span className="mt-2 bg-accent p-1 rounded-md text-white w-fit">
-              {urlQueryParams}
-            </span>
-          </>
-        )}
+      <div className="p-2 px-8 text-sm border-b border-recipe-slate">
+        <EditorURLHighlight />
       </div>
-      {editorQuerySchemaJSON ? (
+      {editorURLSchemaJSON ? (
         <EditorViewWithSchema
-          value={editorQuery}
-          setValue={setEditorQuery}
-          jsonSchema={editorQuerySchemaJSON}
+          value={editorURLCode}
+          setValue={setEditorURLCode}
+          jsonSchema={editorURLSchemaJSON}
         />
       ) : (
-        <InitializeSchema type="query" />
+        <InitializeSchema type="url" />
       )}
       <EditorType key={currentSession?.id || "default"} />
     </div>
   );
 };
 
+export function EditorURLHighlight() {
+  const editorURL = useRecipeSessionStore((state) => state.editorUrl);
+  const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const debouncedURLCodeChanges = useDebounce(editorURLCode, 500);
+
+  const urlState: Record<string, string> = useMemo(() => {
+    try {
+      return JSON.parse(debouncedURLCodeChanges);
+    } catch (e) {
+      return {};
+    }
+  }, [debouncedURLCodeChanges]);
+
+  const matches = editorURL.match(/{(\w+)}/g);
+
+  const highlightedText = editorURL.split("/").map((word, i) => {
+    let match = matches?.find((m) => word.includes(m));
+    if (match) {
+      const wordWithoutBrackets = match.slice(1, -1);
+      const textAfterWord = word.split(match)[1];
+
+      const value = urlState[match];
+      return (
+        <span key={i}>
+          /
+          {
+            <span
+              className={classNames(
+                "p-1 rounded-md text-white",
+                value ? "bg-accent" : "bg-error"
+              )}
+            >{`{${wordWithoutBrackets}=${value}}`}</span>
+          }
+          {textAfterWord}
+        </span>
+      );
+    } else {
+      return <span key={i}>{i !== 0 ? "/" + word : word}</span>;
+    }
+  });
+
+  return <>{highlightedText}</>;
+}
+
 const EditorType = () => {
   const { isDarkMode } = useDarkMode();
   const schemaType = useRecipeSessionStore(
-    (state) => state.editorQuerySchemaType
+    (state) => state.editorURLSchemaType
   );
   const editSchemaType = useRecipeSessionStore(
-    (state) => state.setEditorQuerySchemaType
+    (state) => state.setEditorURLSchemaType
   );
   const editSchemaJSON = useRecipeSessionStore(
-    (state) => state.setEditorQuerySchemaJSON
+    (state) => state.setEditorURLSchemaJSON
   );
 
   const [hasChanged, setHasChanged] = useState(false);
@@ -145,7 +167,7 @@ const EditorType = () => {
   const [hasError, setHasError] = useState(false);
 
   if (!schemaType) {
-    return <InitializeSchema type="query" />;
+    return <InitializeSchema type="url" />;
   }
 
   return (

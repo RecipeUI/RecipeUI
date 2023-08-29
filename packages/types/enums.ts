@@ -34,7 +34,6 @@ export enum RecipeAuthType {
   OAuth = "oauth",
   Setup = "setup",
   Header = "header",
-  HeaderWithPrefix = "headerWithPrefix",
 }
 
 export enum RecipeMutationContentType {

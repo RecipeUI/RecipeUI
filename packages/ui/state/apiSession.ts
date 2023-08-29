@@ -21,9 +21,9 @@ interface APISessionConfig {
   editorUrl: string;
   editorMethod: RecipeMethod;
   editorBodyType: RecipeMutationContentType | null;
-  editorBodySchemaType: string;
+  editorBodySchemaType: string | null;
   editorBodySchemaJSON: JSONSchema6 | null;
-  editorQuerySchemaType: string;
+  editorQuerySchemaType: string | null;
   editorQuerySchemaJSON: JSONSchema6 | null;
   editorAuth: {
     meta?: string;
@@ -34,6 +34,10 @@ interface APISessionConfig {
     title: string;
     description: string;
   };
+
+  editorURLCode: string;
+  editorURLSchemaType: string | null;
+  editorURLSchemaJSON: JSONSchema6 | null;
 }
 
 enum APIStore {

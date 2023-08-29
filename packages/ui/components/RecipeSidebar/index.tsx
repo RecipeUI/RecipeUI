@@ -214,19 +214,21 @@ function SessionTab({
                     e.stopPropagation();
                     const nextSession = closeSession(session);
 
-                    if (nextSession) {
-                      const parameters = await getParametersForSessionStore({
-                        session: session.id,
-                      });
-                      const config = await getConfigForSessionStore({
-                        recipeId: session.recipeId,
-                      });
-                      initializeEditorSession({
-                        currentSession: nextSession,
-                        ...parameters,
-                        ...config,
-                      });
-                    }
+                    setTimeout(async () => {
+                      if (nextSession) {
+                        const parameters = await getParametersForSessionStore({
+                          session: session.id,
+                        });
+                        const config = await getConfigForSessionStore({
+                          recipeId: session.recipeId,
+                        });
+                        initializeEditorSession({
+                          currentSession: nextSession,
+                          ...parameters,
+                          ...config,
+                        });
+                      }
+                    }, 0);
                   }}
                 >
                   <span className="">Close</span>
@@ -325,7 +327,7 @@ function DuplicateModal({
           />
         </div>
       </div>
-      <button className="mt-4 btn btn-accent" onClick={onSubmit}>
+      <button className="mt-4 btn btn-neutral" onClick={onSubmit}>
         Duplicate
       </button>
     </Modal>
@@ -347,7 +349,7 @@ function DuplicateCopyButton({
     <button
       className={classNames(
         "p-4 py-2 border rounded-md  flex items-start flex-col",
-        selected && "border-accent"
+        selected && "!bg-accent border-none text-black"
       )}
       onClick={onClick}
     >

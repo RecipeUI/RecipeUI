@@ -40,7 +40,7 @@ export function EditorViewWithSchema({
 
   return (
     <MonacoEditor
-      className="border-t pt-2"
+      className="pt-2"
       language="json"
       theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
       value={value}
@@ -100,7 +100,7 @@ const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
     schemaValidation: "error",
     schemas: [
       {
-        uri: "API_REQUEST",
+        uri: monaco.Uri.parse("API_REQUEST").toString(),
         fileMatch: ["*"],
         schema: jsonSchema,
       },
@@ -108,24 +108,42 @@ const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
   });
 };
 
-export function InitializeSchema({ type }: { type: "query" | "body" }) {
+export function InitializeSchema({ type }: { type: "query" | "body" | "url" }) {
   const editQueryType = useRecipeSessionStore(
     (state) => state.setEditorQuerySchemaType
   );
   const editBodyType = useRecipeSessionStore(
     (state) => state.setEditorBodySchemaType
   );
+  const setEditorBodySchemaJSON = useRecipeSessionStore(
+    (state) => state.setEditorBodySchemaJSON
+  );
+  const setEditorQuerySchemaJSON = useRecipeSessionStore(
+    (state) => state.setEditorQuerySchemaJSON
+  );
+  const setEditorURLSchemaJSON = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaJSON
+  );
+
+  const setEditorURLSchemaType = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaType
+  );
 
   const onSubmit = () => {
     if (type === "query") {
       editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE);
+      setEditorQuerySchemaJSON({});
     } else if (type === "body") {
       editBodyType(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE);
+      setEditorBodySchemaJSON({});
+    } else if (type === "url") {
+      setEditorURLSchemaType(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE);
+      setEditorURLSchemaJSON({});
     }
   };
 
   return (
-    <div className="h-full flex justify-center items-center border-t">
+    <div className="h-full flex justify-center items-center border-t border-recipe-slate">
       <button className="btn btn-accent" onClick={onSubmit}>
         Initialize {type} schema
       </button>

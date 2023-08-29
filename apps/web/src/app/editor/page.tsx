@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "ui/components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "ui/components/RecipeSidebar";
 import {
@@ -25,6 +25,8 @@ import {
   API_LOCAL_PROCESSING_URLS,
   API_TYPE_NAMES,
 } from "ui/utils/constants/main";
+import { RecipeOptions } from "types/database";
+import { EditorURL } from "@/app/editor/EditorURL";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -229,15 +231,93 @@ function CoreEditor() {
     };
   }, [saveSession]);
 
-  // const test = useRecipeSessionStore((state) => {
-  //   console.log("test", state);
-  //   return null;
-  // });
+  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
+  const editorBody = useRecipeSessionStore((state) => state.editorBody);
+  const session = useRecipeSessionStore((state) => state.currentSession);
+
+  const test = useRecipeSessionStore((state) => {
+    const {
+      editorURLSchemaJSON,
+      editorURLSchemaType,
+      editorQuerySchemaJSON,
+      editorQuerySchemaType,
+      editorBodySchemaJSON,
+      editorBodySchemaType,
+    } = state;
+
+    console.log("state", {
+      editorURLSchemaJSON,
+      editorURLSchemaType,
+      editorQuerySchemaJSON,
+      editorQuerySchemaType,
+      editorBodySchemaJSON,
+      editorBodySchemaType,
+    });
+
+    if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
+      console.log({
+        auth: [
+          {
+            type: state.editorAuth.type,
+            payload: {
+              name: state.editorAuth.meta,
+            },
+          },
+        ],
+        ...(state.editorAuth.docs
+          ? {
+              docs: {
+                auth: state.editorAuth.docs,
+              },
+            }
+          : {}),
+      } as RecipeOptions);
+    }
+
+    return null;
+  });
+
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+  const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const setEditorURLCode = useRecipeSessionStore(
+    (state) => state.setEditorURLCode
+  );
+  const setEditorURLSchemaJSON = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaJSON
+  );
+  const setEditorURLSchemaType = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaType
+  );
+
+  useEffect(() => {
+    if ((!editorBody || editorBody === "{}") && editorQuery) {
+      setBodyRoute(RecipeBodyRoute.Query);
+    }
+  }, [session?.id]);
+
+  const BODY_ROUTES = useMemo(() => {
+    const hasURLParams = editorUrl.match(/{(\w+)}/g);
+
+    if (!hasURLParams && editorURLCode) {
+      setEditorURLCode("");
+      setEditorURLSchemaJSON(null);
+      setEditorURLSchemaType(null);
+      return [...EDITOR_ROUTES];
+    }
+
+    if (hasURLParams) {
+      return [...EDITOR_ROUTES, RecipeBodyRoute.URL];
+    }
+
+    // Lets also do cleanup if the person removes urlParams
+    return EDITOR_ROUTES;
+  }, [editorUrl]);
+
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
       <RecipeEditBodySearch />
       <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
-        {EDITOR_ROUTES.map((route) => {
+        {BODY_ROUTES.map((route) => {
           return (
             <div
               key={route}
@@ -259,6 +339,7 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Query && <EditorQuery />}
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
+        {bodyRoute === RecipeBodyRoute.URL && <EditorURL />}
         <RecipeOutput />
       </div>
     </div>

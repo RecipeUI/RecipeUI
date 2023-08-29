@@ -44,12 +44,16 @@ export function RecipeEditBodySearch() {
               <option value={RecipeMethod.DELETE}>{RecipeMethod.DELETE}</option>
             </select>
 
-            <input
-              placeholder="Enter URL here"
-              className={classNames("outline-none w-full dark:bg-transparent")}
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-            />
+            <div className="relative flex-1">
+              <input
+                placeholder="Enter URL here"
+                className={classNames(
+                  "outline-none w-full dark:bg-transparent z-10"
+                )}
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+              />
+            </div>
           </div>
           <div className="grid grid-flow-col gap-x-2">
             <RecipeSearchButton />

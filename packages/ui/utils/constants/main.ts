@@ -28,6 +28,7 @@ export const PLAYGROUND_SESSION_ID = "playgroundSessionId";
 export const API_TYPE_NAMES = {
   APIRequestParams: "APIRequestParams",
   APIQueryParams: "APIQueryParams",
+  APIUrlParams: "APIUrlParams",
 };
 
 const API_SAMPLE_REQUEST_BODY_TYPE = `
@@ -56,9 +57,21 @@ export interface ${API_TYPE_NAMES.APIQueryParams} {
 }
 `.trim();
 
+const API_SAMPLE_URL_PARAMS_TYPE = `
+// Define your url params with TypeScript.
+// This will add auto-complete (CMD+SPACE) and validation!
+
+
+export interface ${API_TYPE_NAMES.APIUrlParams} {
+  // "{sort}": "asc" | "desc";
+  // "{filter}": "top" | "new";
+}
+`.trim();
+
 export const API_SAMPLES = {
   API_SAMPLE_REQUEST_BODY_TYPE,
   API_SAMPLE_QUERY_PARAMS_TYPE,
+  API_SAMPLE_URL_PARAMS_TYPE,
 };
 
 const baseURL = "https://recipe-translator.fly.dev";

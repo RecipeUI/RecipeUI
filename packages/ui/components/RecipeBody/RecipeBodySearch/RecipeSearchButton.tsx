@@ -12,7 +12,7 @@ import {
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { RecipeOutputType } from "types/database";
+import { RecipeOptions, RecipeOutputType } from "types/database";
 import {
   RecipeAuthType,
   RecipeError,
@@ -52,6 +52,7 @@ export function RecipeSearchButton() {
   const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
+  const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
 
   const onSubmit = async () => {
     if (currentSession) clearOutput(currentSession.id);
@@ -87,6 +88,7 @@ export function RecipeSearchButton() {
           path: editorUrl,
           auth: editorAuth?.type,
           options: {},
+          version: 1,
         }
       : _recipe!;
 
@@ -115,6 +117,20 @@ export function RecipeSearchButton() {
     let fetchMethod = recipe.method;
     let path = recipe.path;
 
+    const matches = path.match(/{(\w+)}/g);
+    if ((editorMode || recipe.version === 1) && matches && matches.length > 0) {
+      try {
+        const urlState = editorMode ? JSON.parse(editorURLCode) : urlParams;
+
+        for (const key in urlState) {
+          path = path.replace(`${key}`, urlState[key]);
+        }
+      } catch (e) {
+        alert("Detected URL params, but could not parse them.");
+        return false;
+      }
+    }
+
     const startTime = performance.now();
 
     const recipeInfoLog = {
@@ -139,7 +155,11 @@ export function RecipeSearchButton() {
       return;
     }
 
-    if ("urlParams" in recipe && recipe.urlParams != undefined) {
+    if (
+      "urlParams" in recipe &&
+      recipe.urlParams != undefined &&
+      recipe.version !== 1
+    ) {
       for (const { name: key, ...schema } of recipe.urlParams) {
         const value = urlParams[key];
         if (value == undefined || value === "") {
@@ -175,24 +195,24 @@ export function RecipeSearchButton() {
         fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
       }
 
+      const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
+        (auth) => auth.type === recipe.auth
+      );
+
+      if (recipe.auth === RecipeAuthType.Header) {
+        const headerName = editorAuth?.meta || relevantOption?.payload.name;
+        if (!headerName) {
+          alert("The auth for this API is not setup correctly.");
+          return;
+        }
+
+        fetchHeaders[headerName!] = primaryToken;
+      }
+
       if (recipe.auth === RecipeAuthType.Query) {
-        let QUERY_KEY_NAME: string | undefined;
-        if (editorAuth?.type === RecipeAuthType.Query && editorAuth?.meta) {
-          QUERY_KEY_NAME = editorAuth.meta;
-        }
-
-        if (
-          "options" in recipe &&
-          recipe.options &&
-          "auth" in recipe?.options
-        ) {
-          QUERY_KEY_NAME = recipe.options?.auth?.find(
-            (auth) => auth.type === RecipeAuthType.Query
-          )?.payload.name;
-        }
-
+        let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
         if (!QUERY_KEY_NAME) {
-          alert("The auth for this recipe is not setup correctly.");
+          alert("The auth for this API is not setup correctly.");
           return;
         }
 
@@ -305,16 +325,29 @@ export function RecipeSearchButton() {
       options: infoOptions,
     };
 
+    if (
+      !(fetchRequestBody instanceof FormData) &&
+      typeof fetchRequestBody === "object"
+    ) {
+      if (Object.keys(fetchRequestBody).length === 0) {
+        fetchRequestBody = undefined;
+      }
+    }
+
     try {
       setIsSending(true, RecipeOutputTab.Output);
 
       const payload = {
         method: fetchMethod,
         headers: fetchHeaders,
-        body:
-          SCHEMA_CONTENT_TYPE === "application/json"
-            ? JSON.stringify(fetchRequestBody)
-            : (fetchRequestBody as FormData | undefined),
+        ...(fetchRequestBody
+          ? {
+              body:
+                SCHEMA_CONTENT_TYPE === "application/json"
+                  ? JSON.stringify(fetchRequestBody)
+                  : (fetchRequestBody as FormData | undefined),
+            }
+          : null),
       };
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
@@ -426,9 +459,10 @@ export function RecipeSearchButton() {
 
         const fetchPayload: FetchRequest = {
           url: url.toString(),
+          // @ts-expect-error Wrongly inferring body as formdata
           payload: {
             ...payload,
-            body: payload.body || undefined,
+            ...(payload.body ? { body: payload.body as string } : null),
           },
         };
 

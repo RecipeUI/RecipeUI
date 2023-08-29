@@ -64,7 +64,7 @@ export const JSONEditorContainer = () => {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   return (
-    <div className="grid grid-rows-2 flex-1 h-full z-20">
+    <div className="grid grid-rows-2 flex-1 h-full z-20 overflow-x-auto">
       {editorBodySchemaJSON ? (
         <EditorViewWithSchema
           value={editorBody}
@@ -154,7 +154,7 @@ export const JSONEditorType = () => {
   return (
     <div className="relative">
       <MonacoEditor
-        className="border-t pt-2"
+        className="border-t border-recipe-slate pt-2"
         language="typescript"
         theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
         value={schemaType}

@@ -90,6 +90,61 @@ export function getDefaultValue<T>(
   return null;
 }
 
+export function getDefaultValuev1<T>(
+  param: JSONSchema6,
+  { checkRequired = false, isRequired = false }
+): T | null | undefined {
+  if (checkRequired && !isRequired) {
+    return undefined;
+  } else if (param["default"] !== undefined) {
+    return param.default as T;
+  } else if (param.type === RecipeParamType.String) {
+    if (param.enum && param.enum.length > 0) {
+      return param.enum[0] as T;
+    }
+
+    return "" as T;
+  } else if (param.type === RecipeParamType.Number) {
+    return (param["minimum"] || param["maximum"] || 0) as T;
+  } else if (param.type === RecipeParamType.Boolean) {
+    return false as T;
+  }
+
+  // else if (param.type === RecipeParamType.Array) {
+  //   return [getDefaultValue(param.arraySchema)] as T;
+  // } else if (param.type === RecipeParamType.Object) {
+  //   const obj = {} as T;
+  //   for (const keySchema of param.objectSchema) {
+  //     const value = getDefaultValue(keySchema, true);
+  //     if (value !== undefined) {
+  //       // @ts-expect-error IDK what the type should be here
+  //       obj[keySchema.name] = value;
+  //     }
+  //   }
+  //   return obj as T;
+  // } else if (
+  //   // TODO: AllOf is wrong here in some cases
+  //   "variants" in param
+  // ) {
+  //   // Check to see if we can find an enum or default value in one of these
+  //   const hasEnumVariant = param.variants.find((variant) => "enum" in variant);
+  //   if (hasEnumVariant) {
+  //     return getDefaultValue(hasEnumVariant);
+  //   }
+
+  //   const hasVariantWithDefault = param.variants.find(
+  //     (variant) => variant.default != undefined
+  //   );
+  //   if (hasVariantWithDefault) {
+  //     return getDefaultValue(hasVariantWithDefault);
+  //   }
+
+  //   return getDefaultValue(param.variants[0]);
+  // }
+
+  return null;
+}
+
 export function getUrl() {
   let url =
     process?.env?.NEXT_PUBLIC_HOST ?? // Set this to your site URL in production env.

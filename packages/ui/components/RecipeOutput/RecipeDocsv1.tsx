@@ -15,84 +15,95 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { getDefaultValue, getValueInObjPath } from "../../utils/main";
+import {
+  getDefaultValue,
+  getDefaultValuev1,
+  getValueInObjPath,
+} from "../../utils/main";
 import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { JSONSchema6 } from "json-schema";
 
 export function RecipeDocsv1() {
   const selectedRecipe = useContext(RecipeContext)!;
 
-  const requestBody =
-    "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
+  // const requestBody =
+  //   "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
   const queryParams =
     "queryParams" in selectedRecipe ? selectedRecipe.queryParams : null;
 
   const urlParams =
     "urlParams" in selectedRecipe ? selectedRecipe.urlParams : null;
 
-  const hasMultipleParams =
-    [requestBody, queryParams, urlParams].filter((param) => param !== null)
-      .length > 1;
+  // const hasMultipleParams =
+  //   [requestBody, queryParams, urlParams].filter((param) => param !== null)
+  //     .length > 1;
+
+  const hasMultipleParams = false;
 
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
 
-  return null;
-  // return (
-  //   <div
-  //     className={classNames(
-  //       "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
-  //       loadingTemplate && "cursor-wait pointer-events-none"
-  //     )}
-  //   >
-  //     {loadingTemplate ? (
-  //       <>
-  //         <h1 className="text-md sm:text-lg font-bold flex items-center">
-  //           Mocking parameters for this example
-  //           <span className="loading loading-bars ml-2"></span>
-  //         </h1>
-  //       </>
-  //     ) : (
-  //       <>
-  //         <h1 className="text-lg sm:text-xl font-bold">
-  //           {selectedRecipe.title}
-  //         </h1>
-  //         {selectedRecipe.summary && (
-  //           <ReactMarkdown className="mt-2 recipe-md">
-  //             {selectedRecipe.summary}
-  //           </ReactMarkdown>
-  //         )}
-  //       </>
-  //     )}
+  return (
+    <div
+      className={classNames(
+        "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
+        "!bg-red-900",
+        loadingTemplate && "cursor-wait pointer-events-none"
+      )}
+    >
+      {loadingTemplate ? (
+        <>
+          <h1 className="text-md sm:text-lg font-bold flex items-center">
+            Mocking parameters for this example
+            <span className="loading loading-bars ml-2"></span>
+          </h1>
+        </>
+      ) : (
+        <>
+          <h1 className="text-lg sm:text-xl font-bold">
+            {selectedRecipe.title}
+          </h1>
+          {selectedRecipe.summary && (
+            <ReactMarkdown className="mt-2 recipe-md">
+              {selectedRecipe.summary}
+            </ReactMarkdown>
+          )}
+        </>
+      )}
 
-  //     {urlParams && (
-  //       <RecipeUrlDocsContainer
-  //         urlParamsSchema={urlParams}
-  //         showHeader={hasMultipleParams}
-  //       />
-  //     )}
-  //     {requestBody && "objectSchema" in requestBody && (
-  //       <RecipeDocsContainer
-  //         param={requestBody}
-  //         paramPath=""
-  //         showHeader={hasMultipleParams}
-  //       />
-  //     )}
-  //     {queryParams && (
-  //       <RecipeQueryDocsContainer
-  //         queryParams={queryParams}
-  //         showHeader={hasMultipleParams}
-  //       />
-  //     )}
-  //   </div>
-  // );
+      {urlParams && (
+        <RecipeUrlDocsContainer
+          urlParamsSchema={urlParams as unknown as JSONSchema6}
+          showHeader={hasMultipleParams}
+        />
+      )}
+      {/* {requestBody && "objectSchema" in requestBody && (
+        <RecipeDocsContainer
+          param={requestBody}
+          paramPath=""
+          showHeader={hasMultipleParams}
+        />
+      )} */}
+      {queryParams && (
+        <RecipeQueryDocsContainer
+          queryParams={queryParams as unknown as JSONSchema6}
+          showHeader={hasMultipleParams}
+        />
+      )}
+    </div>
+  );
 }
+type ExtendedJSONSchema6 = JSONSchema6 & {
+  name: string;
+  isRequired: boolean;
+};
 
 function RecipeQueryDocsContainer({
   queryParams,
   showHeader,
 }: {
-  queryParams: RecipeObjectSchemas;
+  queryParams: JSONSchema6;
   showHeader: boolean;
 }) {
   const loadingTemplate = useRecipeSessionStore(
@@ -102,11 +113,18 @@ function RecipeQueryDocsContainer({
     (state) => state.queryParams
   );
 
-  const addedAlready: RecipeObjectSchemas[number][] = [];
-  const remaining: RecipeObjectSchemas[number][] = [];
+  const addedAlready: ExtendedJSONSchema6[] = [];
+  const remaining: ExtendedJSONSchema6[] = [];
 
-  for (const paramSchema of queryParams) {
-    const paramName = paramSchema.name;
+  const properties = Object.keys(queryParams.properties || {});
+  for (const paramName of properties) {
+    const _paramSchema = queryParams.properties![paramName] as JSONSchema6;
+    const paramSchema = {
+      ..._paramSchema,
+      name: paramName,
+      isRequired: queryParams.required?.includes(paramName) || false,
+    };
+
     if (queryParamsPayload[paramName] !== undefined) {
       addedAlready.push(paramSchema);
     } else {
@@ -156,74 +174,74 @@ function RecipeQueryDocsContainer({
   );
 }
 
-function RecipeDocsContainer({
-  param,
-  paramPath,
-  showHeader,
-}: {
-  param: RecipeObjectParam;
-  paramPath: string;
-  showHeader: boolean;
-}) {
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const loadingTemplate = useRecipeSessionStore(
-    (state) => state.loadingTemplate
-  );
-  const addedAlready: [string, RecipeParam][] = [];
-  const remaining: [string, RecipeParam][] = [];
+// function RecipeDocsContainer({
+//   param,
+//   paramPath,
+//   showHeader,
+// }: {
+//   param: RecipeObjectParam;
+//   paramPath: string;
+//   showHeader: boolean;
+// }) {
+//   const requestBody = useRecipeSessionStore((state) => state.requestBody);
+//   const loadingTemplate = useRecipeSessionStore(
+//     (state) => state.loadingTemplate
+//   );
+//   const addedAlready: [string, RecipeParam][] = [];
+//   const remaining: [string, RecipeParam][] = [];
 
-  for (const paramSchema of param.objectSchema) {
-    const paramName = paramSchema.name;
-    if (requestBody[paramName] !== undefined) {
-      addedAlready.push([paramName, paramSchema]);
-    } else {
-      remaining.push([paramName, paramSchema]);
-    }
-  }
+//   for (const paramSchema of param.objectSchema) {
+//     const paramName = paramSchema.name;
+//     if (requestBody[paramName] !== undefined) {
+//       addedAlready.push([paramName, paramSchema]);
+//     } else {
+//       remaining.push([paramName, paramSchema]);
+//     }
+//   }
 
-  return (
-    <div className="my-4">
-      {showHeader && <h3 className="mb-2 text-sm">Request Params</h3>}
-      {addedAlready.length > 0 && (
-        <div
-          className={classNames(
-            remaining.length > 0 ? "mb-4" : "",
-            loadingTemplate &&
-              "animate-pulse  dark:text-white flex flex-col-reverse"
-          )}
-          id="recipe-added"
-        >
-          {addedAlready.map(([propertyName, paramSchema]) => {
-            return (
-              <RecipeDocsParamContainer
-                key={propertyName}
-                paramName={propertyName}
-                paramSchema={paramSchema}
-                paramPath={paramPath + "." + propertyName}
-                isQueryParam={false}
-              />
-            );
-          })}
-        </div>
-      )}
-      {!loadingTemplate && remaining.length > 0 && (
-        <div>
-          {remaining.map(([propertyName, paramSchema]) => {
-            return (
-              <RecipeDocsParamContainer
-                key={propertyName}
-                paramName={propertyName}
-                paramSchema={paramSchema}
-                paramPath={paramPath + "." + propertyName}
-                isQueryParam={false}
-              />
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+//   return (
+//     <div className="my-4">
+//       {showHeader && <h3 className="mb-2 text-sm">Request Params</h3>}
+//       {addedAlready.length > 0 && (
+//         <div
+//           className={classNames(
+//             remaining.length > 0 ? "mb-4" : "",
+//             loadingTemplate &&
+//               "animate-pulse  dark:text-white flex flex-col-reverse"
+//           )}
+//           id="recipe-added"
+//         >
+//           {addedAlready.map(([propertyName, paramSchema]) => {
+//             return (
+//               <RecipeDocsParamContainer
+//                 key={propertyName}
+//                 paramName={propertyName}
+//                 paramSchema={paramSchema}
+//                 paramPath={paramPath + "." + propertyName}
+//                 isQueryParam={false}
+//               />
+//             );
+//           })}
+//         </div>
+//       )}
+//       {!loadingTemplate && remaining.length > 0 && (
+//         <div>
+//           {remaining.map(([propertyName, paramSchema]) => {
+//             return (
+//               <RecipeDocsParamContainer
+//                 key={propertyName}
+//                 paramName={propertyName}
+//                 paramSchema={paramSchema}
+//                 paramPath={paramPath + "." + propertyName}
+//                 isQueryParam={false}
+//               />
+//             );
+//           })}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
 function getParamTypes(schema: RecipeVariedParam) {
   // Need to make this a set to remove duplicates
@@ -237,20 +255,16 @@ function RecipeDocObjectDefinition({
   showRequired = true,
 }: {
   paramName: string;
-  paramSchema: RecipeParam;
+  paramSchema: ExtendedJSONSchema6;
   showRequired?: boolean;
 }) {
-  const required = Boolean(paramSchema.required);
+  const required = Boolean(paramSchema.isRequired);
 
   return (
     <>
       <div className="space-x-4">
         <span className="font-bold">{paramName}</span>
-        <span className="text-sm">
-          {"variants" in paramSchema
-            ? getParamTypes(paramSchema).join(" or ")
-            : paramSchema.type}
-        </span>
+        <span className="text-sm">{paramSchema.type}</span>
         {showRequired && (
           <span
             className={classNames(
@@ -262,9 +276,10 @@ function RecipeDocObjectDefinition({
           </span>
         )}
       </div>
-      {paramSchema.type === RecipeParamType.Object && (
+      {/* TODO: Array param */}
+      {/* {paramSchema.type === RecipeParamType.Object && (
         <ArrayParamDocs objectSchema={paramSchema.objectSchema} />
-      )}
+      )} */}
     </>
   );
 }
@@ -276,7 +291,7 @@ function RecipeDocsParamContainer({
   paramPath,
   isQueryParam,
 }: {
-  paramSchema: RecipeParam;
+  paramSchema: ExtendedJSONSchema6;
   paramName: string;
   paramPath: string;
   isQueryParam: boolean;
@@ -329,7 +344,9 @@ function RecipeDocsParamContainer({
               } else {
                 updateParams({
                   path: paramPath,
-                  value: getDefaultValue(paramSchema),
+                  value: getDefaultValuev1(paramSchema, {
+                    isRequired: paramSchema.isRequired,
+                  }),
                 });
 
                 setTimeout(() => {
@@ -357,7 +374,7 @@ function RecipeDocsParamContainer({
           {paramSchema.description}
         </ReactMarkdown>
       )}
-      {paramSchema.type === RecipeParamType.Array &&
+      {/* {paramSchema.type === RecipeParamType.Array &&
         paramSchema.arraySchema.type === RecipeParamType.Object && (
           <>
             <button
@@ -377,7 +394,7 @@ function RecipeDocsParamContainer({
               />
             )}
           </>
-        )}
+        )} */}
 
       {paramState !== undefined && (
         <div className="mt-4">
@@ -392,50 +409,50 @@ function RecipeDocsParamContainer({
   );
 }
 
-function ArrayParamDocs({
-  objectSchema,
-}: {
-  objectSchema: RecipeObjectParam["objectSchema"];
-}) {
-  // const [showArraySchema, setShowArraySchema] = useState(false);
+// function ArrayParamDocs({
+//   objectSchema,
+// }: {
+//   objectSchema: RecipeObjectParam["objectSchema"];
+// }) {
+//   // const [showArraySchema, setShowArraySchema] = useState(false);
 
-  const definition = (
-    <div className="my-2">
-      {objectSchema.map((innerParamSchema) => {
-        const innerParamName = innerParamSchema.name;
+//   const definition = (
+//     <div className="my-2">
+//       {objectSchema.map((innerParamSchema) => {
+//         const innerParamName = innerParamSchema.name;
 
-        return (
-          <div
-            className="border border-slate-200 dark:border-slate-600 rounded-sm p-4"
-            key={innerParamName}
-          >
-            <RecipeDocObjectDefinition
-              key={innerParamName}
-              paramName={innerParamName}
-              paramSchema={innerParamSchema}
-            />
-            {innerParamSchema.description && (
-              <ReactMarkdown
-                className="text-sm mt-2"
-                components={{
-                  a: (props) => (
-                    <a {...props} className="text-blue-600 underline" />
-                  ),
-                }}
-              >
-                {innerParamSchema.description}
-              </ReactMarkdown>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-  return definition;
-}
+//         return (
+//           <div
+//             className="border border-slate-200 dark:border-slate-600 rounded-sm p-4"
+//             key={innerParamName}
+//           >
+//             <RecipeDocObjectDefinition
+//               key={innerParamName}
+//               paramName={innerParamName}
+//               paramSchema={innerParamSchema}
+//             />
+//             {innerParamSchema.description && (
+//               <ReactMarkdown
+//                 className="text-sm mt-2"
+//                 components={{
+//                   a: (props) => (
+//                     <a {...props} className="text-blue-600 underline" />
+//                   ),
+//                 }}
+//               >
+//                 {innerParamSchema.description}
+//               </ReactMarkdown>
+//             )}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+//   return definition;
+// }
 
 interface RecipeDocParamEditProps {
-  paramSchema: RecipeParam;
+  paramSchema: ExtendedJSONSchema6;
   paramPath: string;
   isQueryParam?: boolean;
 }
@@ -462,7 +479,7 @@ function RecipeDocParamEdit({
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
 
   if (paramSchema.type === RecipeParamType.String) {
-    if (paramSchema.enum) {
+    if (paramSchema.enum && typeof paramSchema.enum[0] === "string") {
       return (
         <select
           id={`${paramPath}`}
@@ -476,7 +493,7 @@ function RecipeDocParamEdit({
           }}
         >
           {paramSchema.enum?.map((value) => {
-            return <option key={value}>{value}</option>;
+            return <option key={value as string}>{value as string}</option>;
           })}
         </select>
       );
@@ -564,33 +581,35 @@ function RecipeDocParamEdit({
         }}
       />
     );
-  } else if (isVariedParam(paramSchema.type) && "variants" in paramSchema) {
-    return (
-      <RecipeDocVariedParamEdit
-        paramSchema={paramSchema}
-        paramPath={paramPath}
-        isQueryParam={isQueryParam}
-      />
-    );
-  } else if (paramSchema.type === RecipeParamType.Array) {
-    return (
-      <RecipeDocArrayParam
-        paramPath={paramPath}
-        paramSchema={paramSchema}
-        isQueryParam={isQueryParam}
-      />
-    );
-  } else if (paramSchema.type === RecipeParamType.Object) {
-    return (
-      <RecipeDocObjectParam
-        paramPath={paramPath}
-        paramSchema={paramSchema}
-        isQueryParam={isQueryParam}
-      />
-    );
-  } else if (paramSchema.type === RecipeParamType.File) {
-    return <RecipeFileParamEdit paramPath={paramPath} />;
   }
+
+  // else if (isVariedParam(paramSchema.type) && "variants" in paramSchema) {
+  //   return (
+  //     <RecipeDocVariedParamEdit
+  //       paramSchema={paramSchema}
+  //       paramPath={paramPath}
+  //       isQueryParam={isQueryParam}
+  //     />
+  //   );
+  // } else if (paramSchema.type === RecipeParamType.Array) {
+  //   return (
+  //     <RecipeDocArrayParam
+  //       paramPath={paramPath}
+  //       paramSchema={paramSchema}
+  //       isQueryParam={isQueryParam}
+  //     />
+  //   );
+  // } else if (paramSchema.type === RecipeParamType.Object) {
+  //   return (
+  //     <RecipeDocObjectParam
+  //       paramPath={paramPath}
+  //       paramSchema={paramSchema}
+  //       isQueryParam={isQueryParam}
+  //     />
+  //   );
+  // } else if (paramSchema.type === RecipeParamType.File) {
+  //   return <RecipeFileParamEdit paramPath={paramPath} />;
+  // }
 
   return <EditInEditor />;
 }
@@ -683,294 +702,275 @@ function EditInEditor() {
   );
 }
 
-function RecipeDocObjectParam({
-  paramSchema,
-  paramPath,
-  isQueryParam,
-}: {
-  paramSchema: RecipeObjectParam;
-  paramPath: string;
-  isQueryParam?: boolean;
-}) {
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
+// function RecipeDocObjectParam({
+//   paramSchema,
+//   paramPath,
+//   isQueryParam,
+// }: {
+//   paramSchema: RecipeObjectParam;
+//   paramPath: string;
+//   isQueryParam?: boolean;
+// }) {
+//   const queryParams = useRecipeSessionStore((state) => state.queryParams);
+//   const requestBody = useRecipeSessionStore((state) => state.requestBody);
 
-  const paramState =
-    getValueInObjPath<Record<string, unknown>>(
-      isQueryParam ? queryParams : requestBody,
-      paramPath
-    ) || {};
+//   const paramState =
+//     getValueInObjPath<Record<string, unknown>>(
+//       isQueryParam ? queryParams : requestBody,
+//       paramPath
+//     ) || {};
 
-  if (Object.keys(paramSchema.objectSchema).length === 0) {
-    return <EditInEditor />;
-  }
+//   if (Object.keys(paramSchema.objectSchema).length === 0) {
+//     return <EditInEditor />;
+//   }
 
-  return (
-    <div className="border border-slate-200 dark:border-slate-600 border-dashed rounded p-4 space-y-2 w-full">
-      {Object.keys(paramState).map((innerParamName) => {
-        const innerParamSchema = paramSchema.objectSchema.find(
-          (param) => param.name === innerParamName
-        )!;
-        return (
-          <div
-            key={innerParamName}
-            className="flex min-w-52 flex-col space-y-2"
-          >
-            <div>{innerParamName}</div>
-            <RecipeDocParamEdit
-              paramSchema={innerParamSchema}
-              paramPath={`${paramPath}.${innerParamName}`}
-              isQueryParam={isQueryParam}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+//   return (
+//     <div className="border border-slate-200 dark:border-slate-600 border-dashed rounded p-4 space-y-2 w-full">
+//       {Object.keys(paramState).map((innerParamName) => {
+//         const innerParamSchema = paramSchema.objectSchema.find(
+//           (param) => param.name === innerParamName
+//         )!;
+//         return (
+//           <div
+//             key={innerParamName}
+//             className="flex min-w-52 flex-col space-y-2"
+//           >
+//             <div>{innerParamName}</div>
+//             <RecipeDocParamEdit
+//               paramSchema={innerParamSchema}
+//               paramPath={`${paramPath}.${innerParamName}`}
+//               isQueryParam={isQueryParam}
+//             />
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// }
 
-function RecipeDocArrayParam({
-  paramSchema,
-  paramPath,
-  isQueryParam,
-}: {
-  paramSchema: RecipeArrayParam;
-  paramPath: string;
-  isQueryParam?: boolean;
-}) {
-  const requestBody = useRecipeSessionStore((state) => state.requestBody);
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const updateRequestBody = useRecipeSessionStore(
-    (state) => state.updateRequestBody
-  );
-  const updateQueryParams = useRecipeSessionStore(
-    (state) => state.updateQueryParams
-  );
+// function RecipeDocArrayParam({
+//   paramSchema,
+//   paramPath,
+//   isQueryParam,
+// }: {
+//   paramSchema: RecipeArrayParam;
+//   paramPath: string;
+//   isQueryParam?: boolean;
+// }) {
+//   const requestBody = useRecipeSessionStore((state) => state.requestBody);
+//   const queryParams = useRecipeSessionStore((state) => state.queryParams);
+//   const updateRequestBody = useRecipeSessionStore(
+//     (state) => state.updateRequestBody
+//   );
+//   const updateQueryParams = useRecipeSessionStore(
+//     (state) => state.updateQueryParams
+//   );
 
-  const paramState =
-    getValueInObjPath<unknown[]>(
-      isQueryParam ? queryParams : requestBody,
-      paramPath
-    ) || [];
+//   const paramState =
+//     getValueInObjPath<unknown[]>(
+//       isQueryParam ? queryParams : requestBody,
+//       paramPath
+//     ) || [];
 
-  const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
+//   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
 
-  let objectParams: RecipeParam[] = [];
-  const loadingTemplate = useRecipeSessionStore(
-    (state) => state.loadingTemplate
-  );
+//   let objectParams: RecipeParam[] = [];
+//   const loadingTemplate = useRecipeSessionStore(
+//     (state) => state.loadingTemplate
+//   );
 
-  if ("objectSchema" in paramSchema.arraySchema) {
-    objectParams = paramSchema.arraySchema.objectSchema;
-  }
+//   if ("objectSchema" in paramSchema.arraySchema) {
+//     objectParams = paramSchema.arraySchema.objectSchema;
+//   }
 
-  return (
-    <div className="">
-      <div
-        className={classNames(
-          paramState.length > 0 &&
-            "mb-2 space-y-2 border border-slate-200 dark:border-slate-600 rounded-sm p-2",
-          loadingTemplate && "flex flex-col-reverse"
-        )}
-      >
-        {paramState?.map((paramInfo, index) => {
-          const currentParams = Object.keys(
-            paramInfo as Record<string, unknown>
-          );
+//   return (
+//     <div className="">
+//       <div
+//         className={classNames(
+//           paramState.length > 0 &&
+//             "mb-2 space-y-2 border border-slate-200 dark:border-slate-600 rounded-sm p-2",
+//           loadingTemplate && "flex flex-col-reverse"
+//         )}
+//       >
+//         {paramState?.map((paramInfo, index) => {
+//           const currentParams = Object.keys(
+//             paramInfo as Record<string, unknown>
+//           );
 
-          const missingParams = objectParams.filter((param) => {
-            if (!("name" in param)) return false;
+//           const missingParams = objectParams.filter((param) => {
+//             if (!("name" in param)) return false;
 
-            return !currentParams.includes(param.name as string);
-          });
+//             return !currentParams.includes(param.name as string);
+//           });
 
-          const innerParamPath = `${paramPath}.[${index}]`;
+//           const innerParamPath = `${paramPath}.[${index}]`;
 
-          return (
-            <div key={index}>
-              <div className="flex items-center space-x-2 w-full">
-                <RecipeDocParamEdit
-                  paramSchema={paramSchema.arraySchema}
-                  paramPath={innerParamPath}
-                  isQueryParam={isQueryParam}
-                />
-                <div className="flex flex-col">
-                  <button
-                    className="btn btn-xs"
-                    onClick={() => {
-                      const newParamState = [...paramState];
-                      newParamState.splice(index, 1);
+//           return (
+//             <div key={index}>
+//               <div className="flex items-center space-x-2 w-full">
+//                 <RecipeDocParamEdit
+//                   paramSchema={paramSchema.arraySchema}
+//                   paramPath={innerParamPath}
+//                   isQueryParam={isQueryParam}
+//                 />
+//                 <div className="flex flex-col">
+//                   <button
+//                     className="btn btn-xs"
+//                     onClick={() => {
+//                       const newParamState = [...paramState];
+//                       newParamState.splice(index, 1);
 
-                      updateParams({
-                        path: paramPath,
-                        value:
-                          newParamState.length > 0 ? newParamState : undefined,
-                      });
-                    }}
-                  >
-                    <XMarkIcon className="w-3 h-3" />
-                  </button>
-                  {missingParams.length > 0 && (
-                    <>
-                      {missingParams.map((param) => {
-                        if (!("name" in param)) return null;
+//                       updateParams({
+//                         path: paramPath,
+//                         value:
+//                           newParamState.length > 0 ? newParamState : undefined,
+//                       });
+//                     }}
+//                   >
+//                     <XMarkIcon className="w-3 h-3" />
+//                   </button>
+//                   {missingParams.length > 0 && (
+//                     <>
+//                       {missingParams.map((param) => {
+//                         if (!("name" in param)) return null;
 
-                        return (
-                          <button
-                            key={param.name as string}
-                            className="btn btn-xs tooltip tooltip-left"
-                            data-tip={`"${param.name}" was optional. Want to add it?`}
-                            onClick={() => {
-                              updateParams({
-                                path: `${paramPath}.[${index}].${param.name}`,
-                                value: getDefaultValue(param),
-                              });
-                            }}
-                          >
-                            <EyeSlashIcon className="w-h h-3" />
-                          </button>
-                        );
-                      })}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div
-        className="tooltip tooltip-right"
-        data-tip="This parameter expects a list of items. Clicking add will add a new array item."
-      >
-        <button
-          className="btn btn-neutral btn-sm"
-          onClick={() => {
-            const defaultParam = getDefaultValue(paramSchema.arraySchema);
+//                         return (
+//                           <button
+//                             key={param.name as string}
+//                             className="btn btn-xs tooltip tooltip-left"
+//                             data-tip={`"${param.name}" was optional. Want to add it?`}
+//                             onClick={() => {
+//                               updateParams({
+//                                 path: `${paramPath}.[${index}].${param.name}`,
+//                                 value: getDefaultValue(param),
+//                               });
+//                             }}
+//                           >
+//                             <EyeSlashIcon className="w-h h-3" />
+//                           </button>
+//                         );
+//                       })}
+//                     </>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           );
+//         })}
+//       </div>
+//       <div
+//         className="tooltip tooltip-right"
+//         data-tip="This parameter expects a list of items. Clicking add will add a new array item."
+//       >
+//         <button
+//           className="btn btn-neutral btn-sm"
+//           onClick={() => {
+//             const defaultParam = getDefaultValue(paramSchema.arraySchema);
 
-            updateParams({
-              path: paramPath,
-              value: [...paramState, defaultParam],
-            });
-          }}
-        >
-          Add new item
-        </button>
-      </div>
-    </div>
-  );
-}
+//             updateParams({
+//               path: paramPath,
+//               value: [...paramState, defaultParam],
+//             });
+//           }}
+//         >
+//           Add new item
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
 
-export function getVariedParamInfo(paramSchema: RecipeVariedParam) {
-  const paramTypes = getParamTypes(paramSchema);
+// function RecipeDocVariedParamEdit({
+//   paramSchema,
+//   paramPath,
+//   isQueryParam,
+// }: {
+//   paramSchema: RecipeVariedParam;
+//   paramPath: string;
+//   isQueryParam?: boolean;
+// }) {
+//   const updateRequestBody = useRecipeSessionStore(
+//     (state) => state.updateRequestBody
+//   );
+//   const updateQueryParams = useRecipeSessionStore(
+//     (state) => state.updateQueryParams
+//   );
+//   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
 
-  // This is the best index to use for the enum
-  const enumVariantIndex = paramSchema.variants.findIndex(
-    (variant) => "enum" in variant
-  );
+//   const [primaryVariantIndex, setPrimaryVariantIndex] = useState(0);
 
-  return {
-    isEnumButSingleType:
-      paramTypes.length === 1 &&
-      (paramSchema.type === RecipeParamType.AnyOf ||
-        paramSchema.type === RecipeParamType.OneOf) &&
-      enumVariantIndex !== -1,
-    paramTypes,
-    enumVariantIndex,
-  };
-}
+//   const { isEnumButSingleType, paramTypes, enumVariantIndex } =
+//     getVariedParamInfo(paramSchema);
 
-function RecipeDocVariedParamEdit({
-  paramSchema,
-  paramPath,
-  isQueryParam,
-}: {
-  paramSchema: RecipeVariedParam;
-  paramPath: string;
-  isQueryParam?: boolean;
-}) {
-  const updateRequestBody = useRecipeSessionStore(
-    (state) => state.updateRequestBody
-  );
-  const updateQueryParams = useRecipeSessionStore(
-    (state) => state.updateQueryParams
-  );
-  const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
+//   // This edge case is very overkill UX optimization. Essentially this covers the case where the user can select
+//   // a list of options ["a", "b", "c", "d"] or put in their own option.
+//   // In most cases, the user should should choose from the list rather than do their own
+//   if (isEnumButSingleType) {
+//     const enumVariant = paramSchema.variants[enumVariantIndex];
+//     return (
+//       <RecipeDocParamEdit
+//         // @ts-expect-error the type here is wrong
+//         paramSchema={{
+//           ...paramSchema,
+//           type: paramTypes[0] as unknown as RecipeParamType,
+//           enum: "enum" in enumVariant ? enumVariant.enum : undefined,
+//         }}
+//         isQueryParam={isQueryParam}
+//         paramPath={paramPath}
+//       />
+//     );
+//   }
 
-  const [primaryVariantIndex, setPrimaryVariantIndex] = useState(0);
+//   // We need to cycle between different variants. How do we do that? we can show dropdown
 
-  const { isEnumButSingleType, paramTypes, enumVariantIndex } =
-    getVariedParamInfo(paramSchema);
+//   const primaryVariant = paramSchema.variants[primaryVariantIndex];
 
-  // This edge case is very overkill UX optimization. Essentially this covers the case where the user can select
-  // a list of options ["a", "b", "c", "d"] or put in their own option.
-  // In most cases, the user should should choose from the list rather than do their own
-  if (isEnumButSingleType) {
-    const enumVariant = paramSchema.variants[enumVariantIndex];
-    return (
-      <RecipeDocParamEdit
-        // @ts-expect-error the type here is wrong
-        paramSchema={{
-          ...paramSchema,
-          type: paramTypes[0] as unknown as RecipeParamType,
-          enum: "enum" in enumVariant ? enumVariant.enum : undefined,
-        }}
-        isQueryParam={isQueryParam}
-        paramPath={paramPath}
-      />
-    );
-  }
+//   return (
+//     <div className="">
+//       <RecipeDocParamEdit
+//         paramPath={paramPath}
+//         paramSchema={primaryVariant}
+//         isQueryParam={isQueryParam}
+//       />
+//       <div
+//         className={classNames(
+//           "tooltip tooltip-right",
+//           primaryVariant.type === RecipeParamType.Array ? "mt-2" : "mt-2"
+//         )}
+//         data-tip="This parameter can take different types."
+//       >
+//         <button
+//           className="btn btn-sm"
+//           onClick={() => {
+//             const newVariantIndex =
+//               (primaryVariantIndex + 1) % paramSchema.variants.length;
 
-  // We need to cycle between different variants. How do we do that? we can show dropdown
+//             setPrimaryVariantIndex(newVariantIndex);
 
-  const primaryVariant = paramSchema.variants[primaryVariantIndex];
+//             // We're gonna have to reset the default value here
+//             const nextVariant = paramSchema.variants[newVariantIndex];
+//             updateParams({
+//               path: paramPath,
+//               value: getDefaultValue(nextVariant),
+//             });
+//           }}
+//         >
+//           Change Variant
+//         </button>
+//       </div>
+//     </div>
+//   );
 
-  return (
-    <div className="">
-      <RecipeDocParamEdit
-        paramPath={paramPath}
-        paramSchema={primaryVariant}
-        isQueryParam={isQueryParam}
-      />
-      <div
-        className={classNames(
-          "tooltip tooltip-right",
-          primaryVariant.type === RecipeParamType.Array ? "mt-2" : "mt-2"
-        )}
-        data-tip="This parameter can take different types."
-      >
-        <button
-          className="btn btn-sm"
-          onClick={() => {
-            const newVariantIndex =
-              (primaryVariantIndex + 1) % paramSchema.variants.length;
-
-            setPrimaryVariantIndex(newVariantIndex);
-
-            // We're gonna have to reset the default value here
-            const nextVariant = paramSchema.variants[newVariantIndex];
-            updateParams({
-              path: paramPath,
-              value: getDefaultValue(nextVariant),
-            });
-          }}
-        >
-          Change Variant
-        </button>
-      </div>
-    </div>
-  );
-
-  // paramSchema
-  // We need to do something special here for model
-}
+//   // paramSchema
+//   // We need to do something special here for model
+// }
 
 // These docs are more simplified and don't need as much as queryParams or requestBody so opting to do it all here
 function RecipeUrlDocsContainer({
   urlParamsSchema,
   showHeader,
 }: {
-  urlParamsSchema: RecipeObjectSchemas;
+  urlParamsSchema: JSONSchema6;
   showHeader: boolean;
 }) {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
@@ -982,11 +982,24 @@ function RecipeUrlDocsContainer({
     (state) => state.loadingTemplate
   );
 
+  if (!urlParamsSchema.properties) {
+    return null;
+  }
+
   return (
     <div className={classNames("my-4")}>
       {showHeader && <h3 className="mb-2 text-sm">Url Params</h3>}
-      {urlParamsSchema.map((paramSchema) => {
-        const paramName = paramSchema.name;
+      {Object.keys(urlParamsSchema.properties).map((paramName) => {
+        const _paramSchema = urlParamsSchema.properties![
+          paramName
+        ] as JSONSchema6;
+
+        const paramSchema: ExtendedJSONSchema6 = {
+          ..._paramSchema,
+          isRequired: urlParamsSchema.required?.includes(paramName) || false,
+          name: paramName,
+        };
+
         const value = urlParams[paramName] as string | undefined;
 
         if (loadingTemplate && value === undefined) {
@@ -1050,7 +1063,9 @@ function RecipeUrlDocsContainer({
                 >
                   <option className="none"></option>
                   {paramSchema.enum?.map((value) => {
-                    return <option key={value}>{value}</option>;
+                    return (
+                      <option key={value as string}>{value as string}</option>
+                    );
                   })}
                 </select>
               )}

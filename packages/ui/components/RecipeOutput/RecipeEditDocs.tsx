@@ -31,11 +31,17 @@ export function RecipeEditDocs() {
   const querySchema = useRecipeSessionStore(
     (state) => state.editorQuerySchemaJSON
   );
+  const urlSchema = useRecipeSessionStore((state) => state.editorURLSchemaJSON);
+
   const updateEditorBodySchemaJSON = useRecipeSessionStore(
     (state) => state.updateEditorBodySchemaJSON
   );
   const updateEditorQuerySchemaJSON = useRecipeSessionStore(
     (state) => state.updateEditorQuerySchemaJSON
+  );
+
+  const updateEditorURLSchemaJSON = useRecipeSessionStore(
+    (state) => state.updateEditorURLSchemaJSON
   );
 
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -68,6 +74,20 @@ export function RecipeEditDocs() {
     </div>
   ) : null;
 
+  const urlParams = urlSchema ? (
+    <div className="py-4" id="docQueryBody">
+      <h3 className="text-lg mb-4 font-bold">Url Params</h3>
+      <DefinitionContext.Provider
+        value={{
+          definitions: urlSchema.definitions,
+          updater: updateEditorQuerySchemaJSON,
+        }}
+      >
+        <ObjectDocContainer schema={urlSchema} path="" />
+      </DefinitionContext.Provider>
+    </div>
+  ) : null;
+
   return (
     <div
       className={classNames(
@@ -78,11 +98,13 @@ export function RecipeEditDocs() {
       <EditorHeader />
       {bodyRoute === RecipeBodyRoute.Query ? (
         <>
+          {urlParams}
           {queryParams}
           {requestBody}
         </>
       ) : (
         <>
+          {urlParams}
           {requestBody}
           {queryParams}
         </>

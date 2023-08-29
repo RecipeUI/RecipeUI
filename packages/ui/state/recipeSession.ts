@@ -75,6 +75,7 @@ export enum RecipeBodyRoute {
   // EDITOR Routes
   Body = "Body",
   Query = "Query",
+  URL = "URL",
   Headers = "Headers",
   Auth = "Auth",
 }
@@ -142,6 +143,9 @@ export type EditorSliceValues = Pick<
   | "editorQuerySchemaJSON"
   | "editorAuth"
   | "editorHeader"
+  | "editorURLSchemaJSON"
+  | "editorURLSchemaType"
+  | "editorURLCode"
 >;
 
 export interface RecipeEditorSlice {
@@ -169,8 +173,11 @@ export interface RecipeEditorSlice {
   editorHeaders: RequestHeader[];
   setEditorHeaders: (editorHeaders: RequestHeader[]) => void;
 
-  editorBodySchemaType: string;
-  setEditorBodySchemaType: (editorBodySchemaType: string) => void;
+  editorBodyType: RecipeMutationContentType | null;
+  setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
+
+  editorBodySchemaType: string | null;
+  setEditorBodySchemaType: (editorBodySchemaType: string | null) => void;
 
   editorBodySchemaJSON: JSONSchema6 | null;
   setEditorBodySchemaJSON: (editorBodySchemaJson: JSONSchema6 | null) => void;
@@ -180,8 +187,8 @@ export interface RecipeEditorSlice {
     merge: boolean;
   }) => void;
 
-  editorQuerySchemaType: string;
-  setEditorQuerySchemaType: (editorQuerySchemaType: string) => void;
+  editorQuerySchemaType: string | null;
+  setEditorQuerySchemaType: (editorQuerySchemaType: string | null) => void;
 
   editorQuerySchemaJSON: JSONSchema6 | null;
   setEditorQuerySchemaJSON: (editorQuerySchemaJSON: JSONSchema6 | null) => void;
@@ -191,8 +198,19 @@ export interface RecipeEditorSlice {
     merge: boolean;
   }) => void;
 
-  editorBodyType: RecipeMutationContentType | null;
-  setEditorBodyType: (editorBodyType: RecipeMutationContentType | null) => void;
+  editorURLCode: string;
+  setEditorURLCode: (editorURLCode: string) => void;
+
+  editorURLSchemaType: string | null;
+  setEditorURLSchemaType: (editorURLSchemaType: string | null) => void;
+
+  editorURLSchemaJSON: JSONSchema6 | null;
+  setEditorURLSchemaJSON: (editorURLSchemaJSON: JSONSchema6 | null) => void;
+  updateEditorURLSchemaJSON: (props: {
+    path: string;
+    update: JSONSchema6;
+    merge: boolean;
+  }) => void;
 
   initializeEditorSession: (
     editorSession: Partial<
@@ -201,6 +219,7 @@ export interface RecipeEditorSlice {
   ) => void;
 
   editorAuth: {
+    prefix?: string;
     meta?: string;
     type: RecipeAuthType;
     docs?: string;
@@ -316,6 +335,9 @@ async function savePrevSessionPre(prevState: Slices) {
     editorQuerySchemaJSON,
     editorAuth,
     editorHeader,
+    editorURLSchemaJSON,
+    editorURLSchemaType,
+    editorURLCode,
   } = prevState;
 
   await setParametersForSessionStore({
@@ -339,6 +361,9 @@ async function savePrevSessionPre(prevState: Slices) {
       editorQuerySchemaJSON,
       editorAuth,
       editorHeader,
+      editorURLSchemaJSON,
+      editorURLSchemaType,
+      editorURLCode,
     },
   });
 }
@@ -352,7 +377,7 @@ function resetEditorSlice(): EditorSliceValues {
     editorMode: false,
     editorUrl: "",
     editorMethod: RecipeMethod.GET,
-    editorBody: "{}",
+    editorBody: "",
     editorQuery: "",
     editorHeaders: [
       {
@@ -360,11 +385,15 @@ function resetEditorSlice(): EditorSliceValues {
       },
     ],
     editorBodyType: RecipeMutationContentType.JSON,
-    editorBodySchemaType: API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE,
-    editorQuerySchemaType: API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE,
-    editorBodySchemaJSON: {},
-    editorQuerySchemaJSON: {},
+    editorBodySchemaType: "",
+    editorQuerySchemaType: "",
+    editorBodySchemaJSON: null,
+    editorQuerySchemaJSON: null,
     editorAuth: null,
+
+    editorURLSchemaType: "",
+    editorURLSchemaJSON: null,
+    editorURLCode: "",
   };
 }
 
@@ -497,8 +526,51 @@ export const createRecipeEditorSlice: StateCreator<
       });
     },
 
+    setEditorURLSchemaType(editorURLSchemaType) {
+      set(() => ({ editorURLSchemaType }));
+    },
+    setEditorURLSchemaJSON(editorURLSchemaJSON) {
+      set((prevState) => ({
+        editorURLSchemaJSON: mergePreserveDocs({
+          destination: editorURLSchemaJSON,
+          source: prevState.editorURLSchemaJSON || {},
+        }),
+      }));
+    },
+    updateEditorURLSchemaJSON({ path, update, merge = true }) {
+      set((prevState) => {
+        const nextState = produce(prevState.editorURLSchemaJSON, (draft) => {
+          const paths = path.split(".");
+
+          let destination = draft;
+
+          try {
+            for (let i = 0; i < paths.length - 1; i++) {
+              const inner_path = paths[i];
+
+              // @ts-ignore
+              destination = destination[inner_path] || {};
+            }
+
+            const finalPath = paths[paths.length - 1];
+
+            // @ts-ignore
+            destination[finalPath] = merge
+              ? // @ts-ignore
+                { ...destination[finalPath], ...update }
+              : update;
+          } catch (e) {}
+        });
+
+        return { editorURLSchemaJSON: nextState };
+      });
+    },
+
     setEditorAuth(editorAuth) {
       set(() => ({ editorAuth }));
+    },
+    setEditorURLCode(editorURLCode) {
+      set(() => ({ editorURLCode }));
     },
   };
 };
@@ -590,6 +662,7 @@ const createRecipeSessionSlice: StateCreator<
     setCurrentSession: (session, editorMode = true) =>
       set(() => {
         return {
+          ...(editorMode ? getEmptyParameters() : {}),
           currentSession: session,
           editorMode,
           bodyRoute: editorMode
