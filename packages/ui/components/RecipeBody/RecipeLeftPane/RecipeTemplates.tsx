@@ -31,7 +31,7 @@ import {
   EllipsisHorizontalCircleIcon,
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/outline";
-import { useSecretsFromSM } from "../../../state/recipeAuth";
+import { useSecret } from "../../../state/apiSession";
 
 export function RecipeTemplatesTab() {
   return (
@@ -101,7 +101,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
     setBodyRoute(RecipeBodyRoute.Parameters);
   };
 
-  const secretInfo = useSecretsFromSM();
+  const secretInfo = useSecret(template.recipe?.id);
 
   return (
     <div
@@ -135,7 +135,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
             loadingTemplate && "btn-disabled"
           )}
           onClick={async () => {
-            if (secretInfo && !secretInfo.hasAllSecrets) {
+            if (!secretInfo && selectedRecipe.auth != null) {
               alert(AuthBlock);
               return;
             }
@@ -278,7 +278,8 @@ function UserTemplateItem({
     setCurrentTab(RecipeOutputTab.Docs);
     setBodyRoute(RecipeBodyRoute.Parameters);
   };
-  const secretInfo = useSecretsFromSM();
+
+  const secret = useSecret(template.recipe?.id);
 
   return (
     <div
@@ -427,7 +428,7 @@ function UserTemplateItem({
             loadingTemplate && "btn-disabled"
           )}
           onClick={async () => {
-            if (secretInfo && !secretInfo.hasAllSecrets) {
+            if (secret && selectedRecipe.auth != null) {
               alert(AuthBlock);
               return;
             }

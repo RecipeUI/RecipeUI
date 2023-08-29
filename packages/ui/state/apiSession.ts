@@ -9,6 +9,7 @@ import {
 } from "types/enums";
 import { openDB, DBSchema } from "idb";
 import { RecipeSession, RecipeSessionFolder } from "./recipeSession";
+import { useCallback, useEffect, useState } from "react";
 
 interface APISessionParameters {
   editorBody: string;
@@ -190,28 +191,49 @@ export async function deleteConfigForSessionStore({
 export async function getSecret({
   secretId,
 }: {
-  secretId: string | number;
+  secretId: string;
 }): Promise<string | undefined> {
   const store = await getSecretStore();
   return store.get(String(secretId));
 }
 
-export async function saveSecret({
-  secretId,
-  secretValue,
-}: {
-  secretId: string | number;
+interface SaveSecret {
+  secretId: string;
   secretValue: string;
-}) {
+}
+export async function saveSecret({ secretId, secretValue }: SaveSecret) {
   const store = await getSecretStore();
   store.put(secretValue, String(secretId));
 }
 
-export async function deleteSecret({
-  secretId,
-}: {
-  secretId: string | number;
-}) {
+export async function deleteSecret({ secretId }: { secretId: string }) {
   const store = await getSecretStore();
   store.delete(String(secretId));
+}
+
+export function useSecret(secretId: string) {
+  const [secret, setSecret] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    getSecret({ secretId }).then((secret) => setSecret(secret));
+  }, [secretId]);
+
+  const _updateSecret = useCallback(
+    ({ secretValue }: SaveSecret) => {
+      saveSecret({ secretId, secretValue });
+      setSecret(secretValue);
+    },
+    [secretId]
+  );
+
+  const _deleteSecret = useCallback(() => {
+    deleteSecret({ secretId });
+    setSecret(undefined);
+  }, [secretId]);
+
+  return {
+    secret,
+    updateSecret: _updateSecret,
+    deleteSecret: _deleteSecret,
+  };
 }

@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSecretsFromSM } from "../../../state/recipeAuth";
 import {
   RecipeBodyRoute,
   RecipeContext,

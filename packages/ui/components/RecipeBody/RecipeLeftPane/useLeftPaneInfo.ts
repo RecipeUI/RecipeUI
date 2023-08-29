@@ -3,15 +3,15 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { useSecretsFromSM } from "../../../state/recipeAuth";
+import { useSecret } from "../../../state/apiSession";
 
 export function useLeftPaneInfo() {
   const selectedRecipe = useContext(RecipeContext)!;
-  const secretInfo = useSecretsFromSM();
 
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
+  const secretInfo = useSecret(selectedRecipe.id);
 
   const {
     hasNoAuth,
@@ -22,7 +22,7 @@ export function useLeftPaneInfo() {
     hasRequiredQueryParams,
     hasUrlParams,
   } = useMemo(() => {
-    const needsAuthSetup = secretInfo ? !secretInfo.hasAllSecrets : false;
+    const needsAuthSetup = selectedRecipe.auth !== null && secretInfo == null;
 
     let hasRequiredBodyParams = false;
     let hasRequestBody = false;

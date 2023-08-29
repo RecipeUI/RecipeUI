@@ -5,7 +5,6 @@ import { useRecipeSessionStore } from "ui/state/recipeSession";
 import { useDebounce } from "usehooks-ts";
 import { produce } from "immer";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useSecretManager, useSecretsFromSM } from "ui/state/recipeAuth";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
 import { deleteSecret, getSecret, saveSecret } from "ui/state/apiSession";

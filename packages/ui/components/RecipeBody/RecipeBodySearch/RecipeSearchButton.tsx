@@ -4,7 +4,6 @@ import {
   RECIPE_PROXY,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { useSecretsFromSM } from "../../../state/recipeAuth";
 import {
   FetchRequest,
   FetchResponse,
