@@ -66,7 +66,7 @@ export function RecipeHomeContainer({
   }, [globalProjects, projects, recipe, sharedTemplate?.recipe]);
 
   return (
-    <div className={classNames("flex-1 flex flex-col")}>
+    <div className={classNames("flex-1 flex flex-col p-8")}>
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
           <RecipeNativeFetch.Provider value={fetchServer}>

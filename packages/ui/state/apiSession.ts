@@ -1,3 +1,5 @@
+"use client";
+
 import { JSONSchema6 } from "json-schema";
 import { RequestHeader } from "types/database";
 import {
@@ -69,43 +71,51 @@ const DB_CONFIG = {
   // TODO: Need a better migration plan this is bad
   VERSION: 1,
 };
-const db = openDB<SessionsStore>(DB_CONFIG.NAME, DB_CONFIG.VERSION, {
-  upgrade(db) {
-    // TODO: Need a better migration plan this is bad
-    db.clear(APIStore.Parameters);
-    db.clear(APIStore.Config);
-    db.clear(APIStore.Sessions);
-    db.clear(APIStore.SessionFolders);
-    db.clear(APIStore.Secrets);
+let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 
-    db.createObjectStore(APIStore.Parameters);
-    db.createObjectStore(APIStore.Config);
-    db.createObjectStore(APIStore.Sessions);
-    db.createObjectStore(APIStore.SessionFolders);
-    db.createObjectStore(APIStore.Secrets);
-  },
-});
+function getDB() {
+  if (!db) {
+    db = openDB<SessionsStore>(DB_CONFIG.NAME, DB_CONFIG.VERSION, {
+      upgrade(db) {
+        // TODO: Need a better migration plan this is bad
+        db.clear(APIStore.Parameters);
+        db.clear(APIStore.Config);
+        db.clear(APIStore.Sessions);
+        db.clear(APIStore.SessionFolders);
+        db.clear(APIStore.Secrets);
+
+        db.createObjectStore(APIStore.Parameters);
+        db.createObjectStore(APIStore.Config);
+        db.createObjectStore(APIStore.Sessions);
+        db.createObjectStore(APIStore.SessionFolders);
+        db.createObjectStore(APIStore.Secrets);
+      },
+    });
+  }
+
+  return db;
+}
 
 async function getParameterStore() {
-  return (await db).transaction(APIStore.Parameters, "readwrite").store;
+  return (await getDB()).transaction(APIStore.Parameters, "readwrite").store;
 }
 
 async function getConfigStore() {
-  return (await db).transaction(APIStore.Config, "readwrite").store;
+  return (await getDB()).transaction(APIStore.Config, "readwrite").store;
 }
 
 async function getSecretStore() {
-  return (await db).transaction(APIStore.Secrets, "readwrite").store;
+  return (await getDB()).transaction(APIStore.Secrets, "readwrite").store;
 }
 
 export async function getSessionsFromStore() {
-  return (await db)
+  return (await getDB())
     .transaction(APIStore.Sessions, "readwrite")
     .store.get("sessions");
 }
 
 export async function saveSessionToStore(sessions: RecipeSession[]) {
-  return (await db)
+  return (await getDB())
     .transaction(APIStore.Sessions, "readwrite")
     .store.put(sessions, "sessions");
 }
