@@ -63,7 +63,7 @@ function HomePage() {
       return currentSession?.recipeId
         ? fetchHomeRecipe({
             supabase,
-            recipeId: Number(currentSession?.recipeId!),
+            recipeId: currentSession?.recipeId!,
           })
         : null;
     },

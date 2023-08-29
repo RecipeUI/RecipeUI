@@ -172,7 +172,7 @@ function SessionTab({
 
         {isHover && !isEditing && (
           <div
-            className="absolute dropdown cursor-pointer w-fit right-0 z-40 top-0 bottom-0 bg-black justify-center"
+            className="absolute dropdown cursor-pointer w-fit right-0 z-40 top-0 bottom-0 bg-black justify-center text-white"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -186,7 +186,7 @@ function SessionTab({
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content z-40  shadow bg-base-100 rounded-lg bg-base-300 w-fit border right-0 top-8 text-end text-sm"
+              className="menu menu-sm dropdown-content z-40  shadow  rounded-lg bg-base-300 w-fit border right-0 top-8 text-end text-sm dark:text-white text-black"
             >
               <li>
                 <a

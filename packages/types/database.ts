@@ -98,7 +98,6 @@ export interface AuthConfig {
 }
 
 export type RecipeOptions = {
-  cors?: boolean;
   deprecated?: boolean;
   streaming?: boolean;
   auth?: AuthConfig[];

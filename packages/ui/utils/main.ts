@@ -1,6 +1,7 @@
 import { RecipeParam, RecipeProject } from "types/database";
 import { ProjectScope, RecipeParamType } from "types/enums";
 import { RecipeSession } from "../state/recipeSession";
+import { JSONSchema6 } from "json-schema";
 
 export function isArrayPath(str: string): boolean {
   // Check to see if string in format of [number]
@@ -122,4 +123,12 @@ export function getProjectSplit(projects: RecipeProject[]) {
     globalProjects,
     userProjects,
   };
+}
+
+export function getIsEmptySchema(schema: JSONSchema6) {
+  return (
+    schema.additionalProperties !== true &&
+    (schema.properties == undefined ||
+      Object.keys(schema.properties).length === 0)
+  );
 }

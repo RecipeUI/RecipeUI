@@ -97,6 +97,12 @@ export interface Database {
             referencedColumns: ["project"]
           },
           {
+            foreignKeyName: "project_member_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
+            referencedColumns: ["project"]
+          },
+          {
             foreignKeyName: "project_member_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "user"
@@ -189,6 +195,12 @@ export interface Database {
             columns: ["project"]
             referencedRelation: "project"
             referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
+            referencedColumns: ["project"]
           }
         ]
       }
@@ -270,6 +282,12 @@ export interface Database {
             foreignKeyName: "recipe_duplicate_project_fkey"
             columns: ["project"]
             referencedRelation: "project"
+            referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "recipe_duplicate_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
             referencedColumns: ["project"]
           }
         ]
@@ -355,6 +373,12 @@ export interface Database {
             foreignKeyName: "template_project_fkey"
             columns: ["project"]
             referencedRelation: "project"
+            referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "template_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
             referencedColumns: ["project"]
           }
         ]
@@ -468,6 +492,64 @@ export interface Database {
       }
     }
     Views: {
+      global_projects_view: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: number | null
+          image: string | null
+          owner_id: string | null
+          project: string | null
+          scope: Database["public"]["Enums"]["projectscope"] | null
+          status: Database["public"]["Enums"]["recipeprojectstatus"] | null
+          subheader: string | null
+          tags: string[] | null
+          title: string | null
+          visibility: Database["public"]["Enums"]["projectvisibility"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: number | null
+          image?: string | null
+          owner_id?: string | null
+          project?: string | null
+          scope?: Database["public"]["Enums"]["projectscope"] | null
+          status?: Database["public"]["Enums"]["recipeprojectstatus"] | null
+          subheader?: string | null
+          tags?: string[] | null
+          title?: string | null
+          visibility?: Database["public"]["Enums"]["projectvisibility"] | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: number | null
+          image?: string | null
+          owner_id?: string | null
+          project?: string | null
+          scope?: Database["public"]["Enums"]["projectscope"] | null
+          status?: Database["public"]["Enums"]["recipeprojectstatus"] | null
+          subheader?: string | null
+          tags?: string[] | null
+          title?: string | null
+          visibility?: Database["public"]["Enums"]["projectvisibility"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_owner_id_fkey"
+            columns: ["owner_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_owner_id_fkey"
+            columns: ["owner_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
       recipe_view: {
         Row: {
           auth: string | null
@@ -508,6 +590,12 @@ export interface Database {
             foreignKeyName: "recipe_project_fkey"
             columns: ["project"]
             referencedRelation: "project"
+            referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "recipe_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
             referencedColumns: ["project"]
           }
         ]
@@ -562,6 +650,12 @@ export interface Database {
             foreignKeyName: "template_project_fkey"
             columns: ["project"]
             referencedRelation: "project"
+            referencedColumns: ["project"]
+          },
+          {
+            foreignKeyName: "template_project_fkey"
+            columns: ["project"]
+            referencedRelation: "global_projects_view"
             referencedColumns: ["project"]
           }
         ]

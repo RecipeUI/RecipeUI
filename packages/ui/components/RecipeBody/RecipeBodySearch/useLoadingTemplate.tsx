@@ -318,10 +318,6 @@ export function useLoadingTemplate() {
       options: {},
     };
 
-    if (selectedRecipe.options?.cors) {
-      requestInfo.options!.cors = true;
-    }
-
     if (selectedRecipe.auth === null) {
       t += 15;
       setTimeout(() => {

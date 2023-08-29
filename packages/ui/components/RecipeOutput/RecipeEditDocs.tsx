@@ -40,38 +40,38 @@ export function RecipeEditDocs() {
 
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
 
-  const requestBody = (
+  const requestBody = bodySchema ? (
     <div className="py-4" id="docRequestBody">
       <h3 className="text-lg mb-4 font-bold">Request Body</h3>
       <DefinitionContext.Provider
         value={{
-          definitions: bodySchema?.definitions,
+          definitions: bodySchema.definitions,
           updater: updateEditorBodySchemaJSON,
         }}
       >
         <ObjectDocContainer schema={bodySchema} path="" />
       </DefinitionContext.Provider>
     </div>
-  );
+  ) : null;
 
-  const queryParams = (
+  const queryParams = querySchema ? (
     <div className="py-4" id="docQueryBody">
       <h3 className="text-lg mb-4 font-bold">Query Params</h3>
       <DefinitionContext.Provider
         value={{
-          definitions: querySchema?.definitions,
+          definitions: querySchema.definitions,
           updater: updateEditorQuerySchemaJSON,
         }}
       >
         <ObjectDocContainer schema={querySchema} path="" />
       </DefinitionContext.Provider>
     </div>
-  );
+  ) : null;
 
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 overflow-y-auto bg-gray-800 dark:bg-gray-700 pb-8 pt-4  dark:text-gray-400"
+        "sm:absolute inset-0 px-4 overflow-y-auto bg-gray-800 dark:bg-gray-700 pb-8 pt-4  text-gray-200 dark:text-gray-400"
         // loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >
@@ -104,7 +104,7 @@ function EditorHeader() {
     <div className="mb-4">
       {!editing ? (
         <div
-          className="cursor-pointer"
+          className="cursor-pointer dark:text-white"
           onClick={() => {
             setEditing(true);
           }}
@@ -113,18 +113,19 @@ function EditorHeader() {
             {title}
             <PencilSquareIcon className="w-6 h-6 ml-2 mb-1" />
           </h2>
-          <p className="text-sm">{description}</p>
+          <p className="text-sm mt-1">{description}</p>
         </div>
       ) : (
         <div className="flex flex-col space-y-2">
           <input
             type="text"
-            className="input input-bordered"
+            className="input input-bordered text-black dark:text-gray-400"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
           <textarea
-            className="textarea textarea-sm textarea-bordered "
+            className="textarea textarea-sm textarea-bordered  text-black dark:text-gray-400"
+            rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -264,10 +265,11 @@ function DocContainer({
           {description || "Add a description"}{" "}
         </p>
       ) : (
-        <div className="space-y-2 flex flex-col py-4">
+        <div className="space-y-2 flex flex-col py-4 text-black dark:text-gray-400">
           <EditDocFieldWrapper label="Description">
             <textarea
-              className="textarea textarea-sm mt-1 w-full text-sm"
+              className="textarea textarea-sm mt-1 w-full text-sm "
+              rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -413,7 +415,9 @@ function EditDocFieldWrapper({
 }) {
   return (
     <div>
-      <p className="text-xs font-bold">{label}</p>
+      <p className="text-xs font-bold text-gray-200 dark:text-gray-400">
+        {label}
+      </p>
       {children}
     </div>
   );

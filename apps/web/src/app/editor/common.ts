@@ -7,7 +7,19 @@ export const DARKTHEME_SETTINGS = {
     colors: {
       "editor.background": "#1d232a",
     },
-  },
+  } as const,
+};
+
+export const LIGHTTHEME_SETTINGS = {
+  name: "recipeui-light",
+  config: {
+    base: "vs",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": "#fafafa",
+    },
+  } as const,
 };
 
 export const DEFAULT_MONACO_OPTIONS = {

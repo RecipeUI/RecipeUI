@@ -24,7 +24,10 @@ export async function fetchHome({
   recipe: Recipe | null;
 }> {
   const { recipeId } = searchParams;
-  const projectRes = await supabase.from("project").select();
+  const projectRes = await supabase
+    .from("project")
+    .select()
+    .neq("visibility", "unlisted"); // This is fine for GLOBAL unlisted. RLS deals with private unlisted
   const { globalProjects, userProjects } = getProjectSplit(
     (projectRes.data || []) as RecipeProject[]
   );

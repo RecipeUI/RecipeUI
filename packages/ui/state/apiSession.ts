@@ -22,9 +22,9 @@ interface APISessionConfig {
   editorMethod: RecipeMethod;
   editorBodyType: RecipeMutationContentType | null;
   editorBodySchemaType: string;
-  editorBodySchemaJSON: JSONSchema6;
+  editorBodySchemaJSON: JSONSchema6 | null;
   editorQuerySchemaType: string;
-  editorQuerySchemaJSON: JSONSchema6;
+  editorQuerySchemaJSON: JSONSchema6 | null;
   editorAuth: {
     meta?: string;
     type: RecipeAuthType;

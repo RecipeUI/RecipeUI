@@ -229,6 +229,10 @@ function CoreEditor() {
     };
   }, [saveSession]);
 
+  // const test = useRecipeSessionStore((state) => {
+  //   console.log("test", state);
+  //   return null;
+  // });
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
       <RecipeEditBodySearch />

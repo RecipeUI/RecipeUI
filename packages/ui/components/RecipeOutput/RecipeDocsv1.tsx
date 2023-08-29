@@ -17,9 +17,8 @@ import {
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { getDefaultValue, getValueInObjPath } from "../../utils/main";
 import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { RecipeDocsv1 } from "./RecipeDocsv1";
 
-export function RecipeDocs() {
+export function RecipeDocsv1() {
   const selectedRecipe = useContext(RecipeContext)!;
 
   const requestBody =
@@ -38,58 +37,55 @@ export function RecipeDocs() {
     (state) => state.loadingTemplate
   );
 
-  if (selectedRecipe.version === 1) {
-    return <RecipeDocsv1 />;
-  }
+  return null;
+  // return (
+  //   <div
+  //     className={classNames(
+  //       "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
+  //       loadingTemplate && "cursor-wait pointer-events-none"
+  //     )}
+  //   >
+  //     {loadingTemplate ? (
+  //       <>
+  //         <h1 className="text-md sm:text-lg font-bold flex items-center">
+  //           Mocking parameters for this example
+  //           <span className="loading loading-bars ml-2"></span>
+  //         </h1>
+  //       </>
+  //     ) : (
+  //       <>
+  //         <h1 className="text-lg sm:text-xl font-bold">
+  //           {selectedRecipe.title}
+  //         </h1>
+  //         {selectedRecipe.summary && (
+  //           <ReactMarkdown className="mt-2 recipe-md">
+  //             {selectedRecipe.summary}
+  //           </ReactMarkdown>
+  //         )}
+  //       </>
+  //     )}
 
-  return (
-    <div
-      className={classNames(
-        "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
-        loadingTemplate && "cursor-wait pointer-events-none"
-      )}
-    >
-      {loadingTemplate ? (
-        <>
-          <h1 className="text-md sm:text-lg font-bold flex items-center">
-            Mocking parameters for this example
-            <span className="loading loading-bars ml-2"></span>
-          </h1>
-        </>
-      ) : (
-        <>
-          <h1 className="text-lg sm:text-xl font-bold">
-            {selectedRecipe.title}
-          </h1>
-          {selectedRecipe.summary && (
-            <ReactMarkdown className="mt-2 recipe-md">
-              {selectedRecipe.summary}
-            </ReactMarkdown>
-          )}
-        </>
-      )}
-
-      {urlParams && (
-        <RecipeUrlDocsContainer
-          urlParamsSchema={urlParams}
-          showHeader={hasMultipleParams}
-        />
-      )}
-      {requestBody && "objectSchema" in requestBody && (
-        <RecipeDocsContainer
-          param={requestBody}
-          paramPath=""
-          showHeader={hasMultipleParams}
-        />
-      )}
-      {queryParams && (
-        <RecipeQueryDocsContainer
-          queryParams={queryParams}
-          showHeader={hasMultipleParams}
-        />
-      )}
-    </div>
-  );
+  //     {urlParams && (
+  //       <RecipeUrlDocsContainer
+  //         urlParamsSchema={urlParams}
+  //         showHeader={hasMultipleParams}
+  //       />
+  //     )}
+  //     {requestBody && "objectSchema" in requestBody && (
+  //       <RecipeDocsContainer
+  //         param={requestBody}
+  //         paramPath=""
+  //         showHeader={hasMultipleParams}
+  //       />
+  //     )}
+  //     {queryParams && (
+  //       <RecipeQueryDocsContainer
+  //         queryParams={queryParams}
+  //         showHeader={hasMultipleParams}
+  //       />
+  //     )}
+  //   </div>
+  // );
 }
 
 function RecipeQueryDocsContainer({

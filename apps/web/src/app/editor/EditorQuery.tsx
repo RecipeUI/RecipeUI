@@ -8,6 +8,7 @@ import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
   DEFAULT_MONACO_OPTIONS,
+  LIGHTTHEME_SETTINGS,
 } from "@/app/editor/common";
 import {
   API_LOCAL_PROCESSING_URLS,
@@ -16,8 +17,10 @@ import {
 import {
   AutoSaveError,
   EditorViewWithSchema,
+  InitializeSchema,
   handleEditorWillMount,
 } from "@/app/editor/EditorViewWithSchema";
+import { getIsEmptySchema } from "ui/utils/main";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -49,11 +52,15 @@ export const EditorQuery = () => {
       <div className="p-2 px-8 text-sm">
         {isEmpty ? "Enter query params as a key value object below" : urlParams}
       </div>
-      <EditorViewWithSchema
-        value={editorQuery}
-        setValue={setEditorQuery}
-        jsonSchema={editorQuerySchemaJSON}
-      />
+      {editorQuerySchemaJSON ? (
+        <EditorViewWithSchema
+          value={editorQuery}
+          setValue={setEditorQuery}
+          jsonSchema={editorQuerySchemaJSON}
+        />
+      ) : (
+        <InitializeSchema type="query" />
+      )}
       <EditorType key={currentSession?.id || "default"} />
     </div>
   );
@@ -91,6 +98,12 @@ const EditorType = () => {
 
   useEffect(() => {
     if (hasChanged) {
+      if (schemaType === "") {
+        editSchemaJSON(null);
+        setHasChanged(false);
+        return;
+      }
+
       setRefreshing(true);
 
       // We have to migrate off of here eventually
@@ -121,12 +134,16 @@ const EditorType = () => {
 
   const [hasError, setHasError] = useState(false);
 
+  if (schemaType === "") {
+    return <InitializeSchema type="query" />;
+  }
+
   return (
     <div className="relative">
       <MonacoEditor
         className="border-t pt-2"
         language="typescript"
-        theme={isDarkMode ? DARKTHEME_SETTINGS.name : "light"}
+        theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
         value={schemaType}
         onChange={(newCode) => {
           editSchemaType(newCode || "");

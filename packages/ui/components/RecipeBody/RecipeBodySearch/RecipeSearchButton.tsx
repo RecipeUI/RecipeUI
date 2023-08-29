@@ -100,7 +100,7 @@ export function RecipeSearchButton() {
       ("requestBody" in recipe && recipe.requestBody?.contentType) || null;
 
     if (editorMode) {
-      if (editorBodyType === RecipeMutationContentType.JSON) {
+      if (editorBodyType === RecipeMutationContentType.JSON && editorBody) {
         fetchRequestBody = JSON.parse(editorBody);
       }
 

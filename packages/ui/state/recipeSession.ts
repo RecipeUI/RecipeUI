@@ -172,8 +172,8 @@ export interface RecipeEditorSlice {
   editorBodySchemaType: string;
   setEditorBodySchemaType: (editorBodySchemaType: string) => void;
 
-  editorBodySchemaJSON: JSONSchema6;
-  setEditorBodySchemaJSON: (editorBodySchemaJson: JSONSchema6) => void;
+  editorBodySchemaJSON: JSONSchema6 | null;
+  setEditorBodySchemaJSON: (editorBodySchemaJson: JSONSchema6 | null) => void;
   updateEditorBodySchemaJSON: (props: {
     path: string;
     update: JSONSchema6;
@@ -183,8 +183,8 @@ export interface RecipeEditorSlice {
   editorQuerySchemaType: string;
   setEditorQuerySchemaType: (editorQuerySchemaType: string) => void;
 
-  editorQuerySchemaJSON: JSONSchema6;
-  setEditorQuerySchemaJSON: (editorQuerySchemaJSON: JSONSchema6) => void;
+  editorQuerySchemaJSON: JSONSchema6 | null;
+  setEditorQuerySchemaJSON: (editorQuerySchemaJSON: JSONSchema6 | null) => void;
   updateEditorQuerySchemaJSON: (props: {
     path: string;
     update: JSONSchema6;
@@ -223,9 +223,12 @@ function mergePreserveDocs({
   destination,
   source,
 }: {
-  destination: JSONSchema6;
-  source: JSONSchema6;
+  destination: JSONSchema6 | null;
+  source: JSONSchema6 | null;
 }) {
+  if (!destination) return null;
+  if (!source) return destination;
+
   function isSchema(item: JSONSchema6Definition): item is JSONSchema6 {
     return typeof item !== "boolean";
   }

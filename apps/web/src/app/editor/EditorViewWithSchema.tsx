@@ -5,10 +5,13 @@ import { useDarkMode } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
   DEFAULT_MONACO_OPTIONS,
+  LIGHTTHEME_SETTINGS,
 } from "@/app/editor/common";
 import { JSONSchema6 } from "json-schema";
 import classNames from "classnames";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { API_SAMPLES } from "ui/utils/constants/main";
 
 export function EditorViewWithSchema({
   value,
@@ -39,7 +42,7 @@ export function EditorViewWithSchema({
     <MonacoEditor
       className="border-t pt-2"
       language="json"
-      theme={isDarkMode ? DARKTHEME_SETTINGS.name : "light"}
+      theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
       value={value}
       onChange={(newCode) => {
         setValue(newCode || "");
@@ -85,6 +88,10 @@ export const handleEditorWillMount: BeforeMount = (monaco) => {
     DARKTHEME_SETTINGS.name,
     DARKTHEME_SETTINGS.config as any
   );
+  monaco.editor.defineTheme(
+    LIGHTTHEME_SETTINGS.name,
+    LIGHTTHEME_SETTINGS.config as any
+  );
 };
 
 const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
@@ -100,3 +107,28 @@ const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
     ],
   });
 };
+
+export function InitializeSchema({ type }: { type: "query" | "body" }) {
+  const editQueryType = useRecipeSessionStore(
+    (state) => state.setEditorQuerySchemaType
+  );
+  const editBodyType = useRecipeSessionStore(
+    (state) => state.setEditorBodySchemaType
+  );
+
+  const onSubmit = () => {
+    if (type === "query") {
+      editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE);
+    } else if (type === "body") {
+      editBodyType(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE);
+    }
+  };
+
+  return (
+    <div className="h-full flex justify-center items-center border-t">
+      <button className="btn btn-accent" onClick={onSubmit}>
+        Initialize {type} schema
+      </button>
+    </div>
+  );
+}

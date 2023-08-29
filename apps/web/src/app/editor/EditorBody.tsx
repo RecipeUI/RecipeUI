@@ -41,6 +41,7 @@ import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
   DEFAULT_MONACO_OPTIONS,
+  LIGHTTHEME_SETTINGS,
 } from "@/app/editor/common";
 import {
   API_LOCAL_PROCESSING_URLS,
@@ -49,6 +50,7 @@ import {
 import {
   AutoSaveError,
   EditorViewWithSchema,
+  InitializeSchema,
   handleEditorWillMount,
 } from "@/app/editor/EditorViewWithSchema";
 
@@ -59,15 +61,19 @@ export const JSONEditorContainer = () => {
   const editorBodySchemaJSON = useRecipeSessionStore(
     (state) => state.editorBodySchemaJSON
   );
-
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
   return (
     <div className="grid grid-rows-2 flex-1 h-full z-20">
-      <EditorViewWithSchema
-        value={editorBody}
-        setValue={setEditorBody}
-        jsonSchema={editorBodySchemaJSON}
-      />
+      {editorBodySchemaJSON ? (
+        <EditorViewWithSchema
+          value={editorBody}
+          setValue={setEditorBody}
+          jsonSchema={editorBodySchemaJSON}
+        />
+      ) : (
+        <InitializeSchema type="body" />
+      )}
       <JSONEditorType key={currentSession?.id || "default"} />
     </div>
   );
@@ -104,6 +110,12 @@ export const JSONEditorType = () => {
 
   useEffect(() => {
     if (hasChanged) {
+      if (schemaType === "") {
+        editSchemaJSON(null);
+        setHasChanged(false);
+        return;
+      }
+
       setRefreshing(true);
 
       // We have to migrate off of here eventually
@@ -135,12 +147,16 @@ export const JSONEditorType = () => {
 
   const [hasError, setHasError] = useState(false);
 
+  if (!schemaType) {
+    return <InitializeSchema type="body" />;
+  }
+
   return (
     <div className="relative">
       <MonacoEditor
         className="border-t pt-2"
         language="typescript"
-        theme={isDarkMode ? DARKTHEME_SETTINGS.name : "light"}
+        theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
         value={schemaType}
         onChange={(newCode) => {
           editSchemaType(newCode || "");
