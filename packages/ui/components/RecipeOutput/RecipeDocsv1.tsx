@@ -48,7 +48,7 @@ export function RecipeDocsv1() {
     <div
       className={classNames(
         "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
-        "!bg-red-900",
+        process.env.NEXT_PUBLIC_ENV === "dev" ? "!bg-red-900" : "",
         loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >
