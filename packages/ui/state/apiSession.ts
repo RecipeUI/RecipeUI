@@ -1,14 +1,18 @@
 "use client";
 
 import { JSONSchema6 } from "json-schema";
-import { RequestHeader } from "types/database";
+import { RecipeOutputType, RequestHeader } from "types/database";
 import {
   RecipeAuthType,
   RecipeMethod,
   RecipeMutationContentType,
 } from "types/enums";
 import { openDB, DBSchema } from "idb";
-import { RecipeSession, RecipeSessionFolder } from "./recipeSession";
+import {
+  RecipeSession,
+  RecipeSessionFolder,
+  SessionOutput,
+} from "./recipeSession";
 import { useCallback, useEffect, useState } from "react";
 
 interface APISessionParameters {
@@ -46,6 +50,7 @@ enum APIStore {
   Sessions = "Sessions",
   SessionFolders = "SessionFolders",
   Secrets = "Secrets",
+  Output = "Output",
 }
 
 export interface SessionsStore extends DBSchema {
@@ -69,10 +74,14 @@ export interface SessionsStore extends DBSchema {
     key: string;
     value: string;
   };
+  [APIStore.Output]: {
+    key: string;
+    value: SessionOutput;
+  };
 }
 
 const DB_CONFIG = {
-  NAME: "RECIPEUI_v1.1",
+  NAME: "RECIPEUI_v1.11",
   // TODO: Need a better migration plan this is bad
   VERSION: 1,
 };
@@ -88,12 +97,14 @@ function getDB() {
         db.clear(APIStore.Sessions);
         db.clear(APIStore.SessionFolders);
         db.clear(APIStore.Secrets);
+        db.clear(APIStore.Output);
 
         db.createObjectStore(APIStore.Parameters);
         db.createObjectStore(APIStore.Config);
         db.createObjectStore(APIStore.Sessions);
         db.createObjectStore(APIStore.SessionFolders);
         db.createObjectStore(APIStore.Secrets);
+        db.createObjectStore(APIStore.Output);
       },
     });
   }
@@ -111,6 +122,10 @@ async function getConfigStore() {
 
 async function getSecretStore() {
   return (await getDB()).transaction(APIStore.Secrets, "readwrite").store;
+}
+
+async function getOutputStore() {
+  return (await getDB()).transaction(APIStore.Output, "readwrite").store;
 }
 
 export async function getSessionsFromStore() {
@@ -239,5 +254,79 @@ export function useSecret(secretId: string) {
     secret,
     updateSecret: _updateSecret,
     deleteSecret: _deleteSecret,
+  };
+}
+
+async function getOutput(sessionId?: string) {
+  if (!sessionId) return undefined;
+
+  const store = await getOutputStore();
+  return store.get(sessionId);
+}
+
+async function updateOutput({
+  sessionId,
+  sessionOutput,
+}: {
+  sessionId: string;
+  sessionOutput: SessionOutput;
+}) {
+  const store = await getOutputStore();
+  store.put(sessionOutput, sessionId);
+}
+
+async function clearOutput(sessionId: string) {
+  const store = await getOutputStore();
+  store.delete(sessionId);
+}
+
+import EventEmitter from "events";
+const eventEmitter = new EventEmitter();
+
+const DEFAULT_OUTPUT: SessionOutput = {
+  output: {},
+  type: RecipeOutputType.Void,
+};
+export function useOutput(sessionId?: string) {
+  const [output, _setOutput] = useState<SessionOutput>(DEFAULT_OUTPUT);
+
+  useEffect(() => {
+    function refreshState() {
+      getOutput(sessionId).then((output) =>
+        _setOutput(output || DEFAULT_OUTPUT)
+      );
+    }
+
+    refreshState();
+
+    // EventEmitters might be overkill because you can do context, but wanted to try this out!!!
+    eventEmitter.on("refreshState", refreshState);
+    return () => {
+      eventEmitter.off("refreshState", refreshState);
+    };
+  }, [sessionId]);
+
+  const setOutput = useCallback(
+    async (output: SessionOutput) => {
+      if (sessionId) {
+        await updateOutput({ sessionId, sessionOutput: output });
+      }
+      eventEmitter.emit("refreshState");
+    },
+    [sessionId]
+  );
+
+  const clear = useCallback(async () => {
+    if (sessionId) {
+      await clearOutput(sessionId);
+    }
+
+    eventEmitter.emit("refreshState");
+  }, [sessionId]);
+
+  return {
+    output,
+    setOutput,
+    clearOutput: clear,
   };
 }

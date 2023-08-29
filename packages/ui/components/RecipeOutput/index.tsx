@@ -10,12 +10,14 @@ import { useContext, useEffect, useMemo } from "react";
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
 import { RecipeCodeView } from "./RecipeCodeView";
 import { RecipeEditDocs } from "./RecipeEditDocs";
+import { useOutput } from "../../state/apiSession";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
-  const getOutput = useRecipeSessionStore((state) => state.getOutput);
-  const output = getOutput();
+
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const output = useOutput(currentSession?.id);
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );

@@ -10,6 +10,7 @@ import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { RecipeOutputType } from "types/database";
+import { useOutput } from "../../state/apiSession";
 
 const codeMirrorSetup = {
   lineNumbers: true,
@@ -17,9 +18,10 @@ const codeMirrorSetup = {
 };
 
 export function RecipeOutputConsole() {
-  const { output, type, duration } = useRecipeSessionStore((state) =>
-    state.getOutput()
-  );
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const {
+    output: { output, type },
+  } = useOutput(currentSession?.id);
 
   const { isDarkMode } = useDarkMode();
   const isSending = useRecipeSessionStore((state) => state.isSending);

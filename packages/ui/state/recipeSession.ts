@@ -93,7 +93,7 @@ export const getEmptyParameters = (): RecipeParameters => ({
   urlParams: {},
 });
 
-interface SessionOutput {
+export interface SessionOutput {
   output: Record<string, unknown>;
   type: RecipeOutputType;
   duration?: number;
@@ -101,7 +101,7 @@ interface SessionOutput {
 }
 
 export interface RecipeRequestInfo {
-  url: URL;
+  url: string;
   payload: {
     method: RecipeMethod;
     headers: Record<string, string>;
@@ -113,11 +113,6 @@ export interface RecipeRequestInfo {
 interface RecipeOutputSlice {
   isSending: boolean;
   setIsSending: (isSending: boolean, outputTab?: RecipeOutputTab) => void;
-
-  outputManager: Record<string, SessionOutput>;
-  getOutput: () => SessionOutput;
-  updateOutput: (sessionId: string, sessionOutput: SessionOutput) => void;
-  clearOutput: (sessionId: string) => void;
 
   outputTab: RecipeOutputTab;
   setOutputTab: (tab: RecipeOutputTab) => void;
@@ -880,49 +875,6 @@ const createRecipeOutputSlice: StateCreator<
         isSending,
         ...(outputTab ? { outputTab } : {}),
       })),
-
-    outputManager: {},
-    getOutput: () => {
-      const state = get();
-
-      return (
-        state.outputManager[state.currentSession?.id || ""] || {
-          output: {},
-          type: RecipeOutputType.Void,
-        }
-      );
-    },
-    updateOutput: (sessionId, output) => {
-      set((prevState) => {
-        const outputManager = {
-          ...prevState.outputManager,
-          [sessionId]: {
-            ...prevState.outputManager[sessionId],
-            ...output,
-          },
-        };
-
-        return {
-          outputManager,
-          ...(output.type === RecipeOutputType.Response && {
-            isSending: false,
-          }),
-        };
-      });
-    },
-    clearOutput: (sessionId) => {
-      set((prevState) => {
-        const outputManager = {
-          ...prevState.outputManager,
-        };
-
-        delete outputManager[sessionId];
-
-        return {
-          outputManager,
-        };
-      });
-    },
 
     outputTab: RecipeOutputTab.Output,
     setOutputTab: (tab) => set(() => ({ outputTab: tab })),

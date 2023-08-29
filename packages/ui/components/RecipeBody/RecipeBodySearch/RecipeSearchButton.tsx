@@ -23,14 +23,13 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { usePathname } from "next/navigation";
-import { getSecret } from "../../../state/apiSession";
+import { getSecret, useOutput } from "../../../state/apiSession";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
   const requestBody = useRecipeSessionStore((store) => store.requestBody);
-  const setOutput = useRecipeSessionStore((store) => store.updateOutput);
-  const clearOutput = useRecipeSessionStore((store) => store.clearOutput);
+  const { setOutput, clearOutput } = useOutput(currentSession?.id);
   const fileManager = useRecipeSessionStore((store) => store.fileManager);
 
   const isSending = useRecipeSessionStore((store) => store.isSending);
@@ -55,7 +54,7 @@ export function RecipeSearchButton() {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
 
   const onSubmit = async () => {
-    if (currentSession) clearOutput(currentSession.id);
+    if (currentSession) clearOutput();
 
     const success = await _onSubmit();
     setTimeout(() => {
@@ -145,7 +144,7 @@ export function RecipeSearchButton() {
       fetchRejectRef.current?.(new Error(RecipeError.AbortedRequest));
       fetchRejectRef.current = null;
 
-      setOutput(currentSession.id, {
+      setOutput({
         output: {
           message: "Request aborted.",
         },
@@ -316,7 +315,7 @@ export function RecipeSearchButton() {
     }
 
     const requestInfo = {
-      url: clonedUrl,
+      url: clonedUrl.toString(),
       payload: {
         method: fetchMethod,
         headers: clonedHeaders,
@@ -367,7 +366,7 @@ export function RecipeSearchButton() {
           const errorResponse = await res.json();
 
           if (errorResponse) {
-            setOutput(currentSession.id, {
+            setOutput({
               output:
                 typeof errorResponse === "string"
                   ? JSON.stringify(errorResponse)
@@ -404,7 +403,7 @@ export function RecipeSearchButton() {
 
             content = `${content}${contentChunk}`;
 
-            setOutput(currentSession.id, {
+            setOutput({
               output: {
                 content,
               },
@@ -413,7 +412,7 @@ export function RecipeSearchButton() {
           }
         }
 
-        setOutput(currentSession.id, {
+        setOutput({
           output: {
             content,
           },
@@ -440,7 +439,7 @@ export function RecipeSearchButton() {
 
         // Prefer browser fetch if we can.
         function simpleFetch() {
-          fetch(url, payload)
+          fetch(url.toString(), payload)
             .then(async (res) => {
               resolve({
                 output: await res.text(),
@@ -515,7 +514,7 @@ export function RecipeSearchButton() {
         recipeInfoLog
       );
 
-      setOutput(currentSession.id, {
+      setOutput({
         output: output,
         type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
         duration: performance.now() - startTime,
@@ -532,7 +531,7 @@ export function RecipeSearchButton() {
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
 
-      setOutput(currentSession.id, {
+      setOutput({
         output: {
           error: output,
         },

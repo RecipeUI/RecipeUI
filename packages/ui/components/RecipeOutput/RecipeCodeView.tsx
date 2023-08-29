@@ -8,6 +8,7 @@ import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
 import { Recipe } from "types/database";
 import { RecipeParamType } from "types/enums";
+import { useOutput } from "../../state/apiSession";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
@@ -25,9 +26,10 @@ enum CodeView {
 const CodeViews = Object.values(CodeView);
 
 export function RecipeCodeView() {
-  const requestInfo = useRecipeSessionStore(
-    (state) => state.getOutput().requestInfo
-  );
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const {
+    output: { requestInfo },
+  } = useOutput(currentSession?.id);
   const { isDarkMode } = useDarkMode();
   const [codeView, setCodeView] = useState(CodeView.CURL);
   const [output, setOutput] = useState("Make a request first!");

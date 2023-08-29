@@ -15,6 +15,7 @@ import {
 import { RecipeParamType } from "types/enums";
 import { getVariedParamInfo } from "../../RecipeOutput/RecipeDocs";
 import { JSONSchema6 } from "json-schema";
+import { useOutput } from "../../../state/apiSession";
 
 export function useLoadingTemplate() {
   const loadingTemplate = useRecipeSessionStore(
@@ -24,8 +25,8 @@ export function useLoadingTemplate() {
     (state) => state.setLoadingTemplate
   );
   const session = useRecipeSessionStore((state) => state.currentSession)!;
-  const setOutput = useRecipeSessionStore((state) => state.updateOutput);
-  const clearOutput = useRecipeSessionStore((state) => state.clearOutput);
+
+  const { clearOutput, setOutput } = useOutput(session.id);
   const setIsSending = useRecipeSessionStore((state) => state.setIsSending);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
@@ -221,7 +222,7 @@ export function useLoadingTemplate() {
       }
     }
 
-    clearOutput(session.id);
+    clearOutput();
     setBodyRoute(RecipeBodyRoute.Parameters);
     setOutputTab(RecipeOutputTab.Docs);
 
@@ -310,7 +311,7 @@ export function useLoadingTemplate() {
     }
 
     let requestInfo: RecipeRequestInfo = {
-      url: requestUrl,
+      url: requestUrl.toString(),
       payload: {
         method: selectedRecipe.method,
         headers: headers,
@@ -346,7 +347,7 @@ export function useLoadingTemplate() {
 
         for (let i = 0; i < stringified.length; i++) {
           setTimeout(() => {
-            setOutput(session.id, {
+            setOutput({
               output: {
                 content: stringified.slice(0, i + 1),
               },
@@ -360,7 +361,7 @@ export function useLoadingTemplate() {
       }
 
       setTimeout(() => {
-        setOutput(session.id, {
+        setOutput({
           output,
           type: RecipeOutputType.Response,
           duration,
@@ -391,8 +392,8 @@ export function useLoadingTemplatev1() {
     (state) => state.setLoadingTemplate
   );
   const session = useRecipeSessionStore((state) => state.currentSession)!;
-  const setOutput = useRecipeSessionStore((state) => state.updateOutput);
-  const clearOutput = useRecipeSessionStore((state) => state.clearOutput);
+
+  const { clearOutput, setOutput } = useOutput(session?.id);
   const setIsSending = useRecipeSessionStore((state) => state.setIsSending);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
@@ -590,7 +591,7 @@ export function useLoadingTemplatev1() {
       }
     }
 
-    clearOutput(session.id);
+    clearOutput();
     setBodyRoute(RecipeBodyRoute.Parameters);
     setOutputTab(RecipeOutputTab.Docs);
 
@@ -681,7 +682,7 @@ export function useLoadingTemplatev1() {
     }
 
     let requestInfo: RecipeRequestInfo = {
-      url: requestUrl,
+      url: requestUrl.toString(),
       payload: {
         method: selectedRecipe.method,
         headers: headers,
@@ -717,7 +718,7 @@ export function useLoadingTemplatev1() {
 
         for (let i = 0; i < stringified.length; i++) {
           setTimeout(() => {
-            setOutput(session.id, {
+            setOutput({
               output: {
                 content: stringified.slice(0, i + 1),
               },
@@ -731,7 +732,7 @@ export function useLoadingTemplatev1() {
       }
 
       setTimeout(() => {
-        setOutput(session.id, {
+        setOutput({
           output,
           type: RecipeOutputType.Response,
           duration,
