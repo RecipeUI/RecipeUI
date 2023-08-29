@@ -233,62 +233,62 @@ export function RecipeNeedsAuth({
 //   );
 // }
 
-function AuthInput({
-  header,
-  onboardingFlow,
-}: {
-  header: string;
-  onboardingFlow: boolean;
-}) {
-  const selectedRecipe = useContext(RecipeContext)!;
-  const authConfig = {
-    project: selectedRecipe.project,
-    auth: header,
-  };
-  const [apiKey, setAPIKey] = useState<string>(sm.getSecret(authConfig) || "");
+// function AuthInput({
+//   header,
+//   onboardingFlow,
+// }: {
+//   header: string;
+//   onboardingFlow: boolean;
+// }) {
+//   const selectedRecipe = useContext(RecipeContext)!;
+//   const authConfig = {
+//     project: selectedRecipe.project,
+//     auth: header,
+//   };
+//   const [apiKey, setAPIKey] = useState<string>(sm.getSecret(authConfig) || "");
 
-  const existingSecret = sm.getSecret(authConfig);
-  const hasChanged = apiKey !== sm.getSecret(authConfig);
-  const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
+//   const existingSecret = sm.getSecret(authConfig);
+//   const hasChanged = apiKey !== sm.getSecret(authConfig);
+//   const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
-  return (
-    <div className="mt-4">
-      <label className="text-sm">{header}</label>
-      <div className="sm:space-x-2 mt-2 flex gap-2 flex-col sm:block">
-        <input
-          type="text"
-          placeholder={`${header}`}
-          className="input input-sm input-bordered max-w-xs"
-          value={apiKey}
-          onChange={(e) => setAPIKey(e.target.value)}
-        />
-        <button
-          className={classNames(
-            "btn btn-sm",
-            hasChanged && apiKey ? "btn-neutral" : "btn-disabled"
-          )}
-          onClick={() => {
-            sm.updateSecret(authConfig, apiKey);
-            setOutputTab(RecipeOutputTab.Docs);
-          }}
-        >
-          Submit
-        </button>
-        {!onboardingFlow && (
-          <button
-            className={classNames(
-              "btn btn-sm",
-              apiKey ? "btn-neutral" : "btn-disabled"
-            )}
-            onClick={() => {
-              sm.deleteSecret(authConfig);
-              setAPIKey("");
-            }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className="mt-4">
+//       <label className="text-sm">{header}</label>
+//       <div className="sm:space-x-2 mt-2 flex gap-2 flex-col sm:block">
+//         <input
+//           type="text"
+//           placeholder={`${header}`}
+//           className="input input-sm input-bordered max-w-xs"
+//           value={apiKey}
+//           onChange={(e) => setAPIKey(e.target.value)}
+//         />
+//         <button
+//           className={classNames(
+//             "btn btn-sm",
+//             hasChanged && apiKey ? "btn-neutral" : "btn-disabled"
+//           )}
+//           onClick={() => {
+//             sm.updateSecret(authConfig, apiKey);
+//             setOutputTab(RecipeOutputTab.Docs);
+//           }}
+//         >
+//           Submit
+//         </button>
+//         {!onboardingFlow && (
+//           <button
+//             className={classNames(
+//               "btn btn-sm",
+//               apiKey ? "btn-neutral" : "btn-disabled"
+//             )}
+//             onClick={() => {
+//               sm.deleteSecret(authConfig);
+//               setAPIKey("");
+//             }}
+//           >
+//             Clear
+//           </button>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
