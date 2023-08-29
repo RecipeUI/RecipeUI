@@ -6,6 +6,7 @@ import { RecipeEditBodySearch } from "ui/components/RecipeBody/RecipeBodySearch/
 import { RecipeSidebar } from "ui/components/RecipeSidebar";
 import {
   EditorSliceValues,
+  GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
   RecipeSession,
   useRecipeSessionStore,
@@ -217,6 +218,16 @@ function NewRequestAction({
 function CoreEditor() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
+  const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      saveSession();
+    }, GLOBAL_POLLING_FACTOR);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [saveSession]);
 
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>

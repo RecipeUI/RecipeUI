@@ -263,36 +263,38 @@ function DuplicateModal({
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
+  const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
 
   const onSubmit = () => {
     if (!sessionName) {
       alert("Please enter a session name");
       return;
     }
+    saveSession().then(() => {
+      const newSession: RecipeSession = addEditorSession({
+        ...session,
+        id: uuidv4(),
+        name: sessionName,
+        recipeId: isRecipeCopy ? session.recipeId : uuidv4(),
+      });
 
-    const newSession: RecipeSession = addEditorSession({
-      ...session,
-      id: uuidv4(),
-      name: sessionName,
-      recipeId: isRecipeCopy ? session.recipeId : uuidv4(),
+      setTimeout(async () => {
+        const parameters = await getParametersForSessionStore({
+          session: session.id,
+        });
+        const config = await getConfigForSessionStore({
+          recipeId: session.recipeId,
+        });
+
+        initializeEditorSession({
+          currentSession: newSession,
+          ...parameters,
+          ...config,
+        });
+
+        onClose();
+      }, 0);
     });
-
-    setTimeout(async () => {
-      const parameters = await getParametersForSessionStore({
-        session: session.id,
-      });
-      const config = await getConfigForSessionStore({
-        recipeId: session.recipeId,
-      });
-
-      initializeEditorSession({
-        currentSession: newSession,
-        ...parameters,
-        ...config,
-      });
-
-      onClose();
-    }, 0);
   };
 
   return (
