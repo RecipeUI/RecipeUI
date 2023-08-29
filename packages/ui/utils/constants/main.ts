@@ -61,7 +61,7 @@ export const API_SAMPLES = {
   API_SAMPLE_QUERY_PARAMS_TYPE,
 };
 
-const baseURL = "https://recipe-proxy-node.fly.dev";
+const baseURL = "https://recipe-translator.fly.dev";
 // const baseURL = "http://localhost:3000";
 
 export const API_LOCAL_PROCESSING_URLS = {
