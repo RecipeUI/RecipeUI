@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
-import { useHover } from "usehooks-ts";
+import { useHover, useSessionStorage } from "usehooks-ts";
 import { useIsMobile } from "../../hooks";
 import {
   Cog6ToothIcon,
@@ -25,6 +25,8 @@ import {
 } from "../../state/apiSession";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
+import { useSearchParams } from "next/navigation";
+import { RECIPE_FORKING_ID } from "../../utils/constants/main";
 
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
@@ -34,6 +36,10 @@ export function RecipeSidebar() {
     (state) => state.setCurrentSession
   );
 
+  const initializeEditorSession = useRecipeSessionStore(
+    (state) => state.initializeEditorSession
+  );
+
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (!loaded) return;
@@ -41,8 +47,38 @@ export function RecipeSidebar() {
     saveSessionToStore(sessions);
   }, [loaded, sessions, setSessions]);
 
+  const searchParams = useSearchParams();
+
+  const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
+
   useEffect(() => {
-    getSessionsFromStore().then((sessions) => {
+    async function initialize() {
+      if (recipeFork) {
+        setRecipeFork("");
+
+        const sessionConfig = await getConfigForSessionStore({
+          recipeId: recipeFork,
+        });
+
+        if (sessionConfig) {
+          initializeEditorSession({
+            currentSession: {
+              id: uuidv4(),
+              name: sessionConfig.editorHeader.title,
+              apiMethod: sessionConfig.editorMethod,
+              recipeId: recipeFork,
+            },
+            ...sessionConfig,
+          });
+        }
+      }
+    }
+
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    getSessionsFromStore().then(async (sessions) => {
       setSessions(sessions || []);
       setLoaded(true);
     });

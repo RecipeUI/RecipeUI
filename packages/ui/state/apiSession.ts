@@ -24,11 +24,14 @@ interface APISessionParameters {
 interface APISessionConfig {
   editorUrl: string;
   editorMethod: RecipeMethod;
+
   editorBodyType: RecipeMutationContentType | null;
   editorBodySchemaType: string | null;
   editorBodySchemaJSON: JSONSchema6 | null;
+
   editorQuerySchemaType: string | null;
   editorQuerySchemaJSON: JSONSchema6 | null;
+
   editorAuth: {
     meta?: string;
     type: RecipeAuthType;

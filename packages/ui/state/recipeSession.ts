@@ -71,6 +71,7 @@ export enum RecipeBodyRoute {
   Parameters = "Parameters",
   Templates = "Recipes",
   Config = "Config",
+  Fork = "Fork",
 
   // EDITOR Routes
   Body = "Body",
@@ -405,7 +406,18 @@ export const createRecipeEditorSlice: StateCreator<
         savePrevSessionPre(prevState);
 
         return {
+          ...resetEditorSlice(),
           ...editorSession,
+          ...(!prevState.sessions.some(
+            (session) => session.id === editorSession.currentSession?.id
+          )
+            ? {
+                sessions: [
+                  ...prevState.sessions,
+                  editorSession.currentSession!,
+                ],
+              }
+            : null),
           bodyRoute: RecipeBodyRoute.Body,
           outputTab: RecipeOutputTab.Output,
           requestInfo: null,

@@ -16,6 +16,7 @@ import { UserTemplatePreview } from "types/database";
 import { useIsMobile } from "../../hooks";
 import { useRouter } from "next/navigation";
 import { useLeftPaneInfo } from "./RecipeLeftPane/useLeftPaneInfo";
+import { RecipeForkTab } from "./RecipeLeftPane/RecipeForkTab";
 
 export function RecipeBody() {
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -69,6 +70,10 @@ export function RecipeBody() {
       });
     }
 
+    if (selectedRecipe.version === 1 && process.env.NEXT_PUBLIC_ENV === "dev") {
+      parameters.push(RecipeBodyRoute.Fork);
+    }
+
     return parameters;
   }, [forkedTemplate, isMobile, selectedRecipe, showingRecipesTwo]);
 
@@ -115,6 +120,7 @@ export function RecipeBody() {
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}
+        {bodyRoute === RecipeBodyRoute.Fork && <RecipeForkTab />}
         <RecipeOutput />
       </div>
     </>

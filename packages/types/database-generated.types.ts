@@ -127,13 +127,16 @@ export interface Database {
           path: string
           project: string
           queryParams: Json | null
+          queryParamsType: string | null
           rank: number | null
           requestBody: Json | null
+          requestBodyType: string | null
           summary: string
           tags: string[] | null
           templates: Json[] | null
           title: string
           urlParams: Json | null
+          urlParamsType: string | null
           version: number
           visibility: Database["public"]["Enums"]["visibility"]
         }
@@ -147,13 +150,16 @@ export interface Database {
           path: string
           project: string
           queryParams?: Json | null
+          queryParamsType?: string | null
           rank?: number | null
           requestBody?: Json | null
+          requestBodyType?: string | null
           summary: string
           tags?: string[] | null
           templates?: Json[] | null
           title: string
           urlParams?: Json | null
+          urlParamsType?: string | null
           version?: number
           visibility?: Database["public"]["Enums"]["visibility"]
         }
@@ -167,13 +173,16 @@ export interface Database {
           path?: string
           project?: string
           queryParams?: Json | null
+          queryParamsType?: string | null
           rank?: number | null
           requestBody?: Json | null
+          requestBodyType?: string | null
           summary?: string
           tags?: string[] | null
           templates?: Json[] | null
           title?: string
           urlParams?: Json | null
+          urlParamsType?: string | null
           version?: number
           visibility?: Database["public"]["Enums"]["visibility"]
         }

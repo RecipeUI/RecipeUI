@@ -81,3 +81,5 @@ export const API_LOCAL_PROCESSING_URLS = {
   JSON_TO_TS: `${baseURL}/json-to-ts`,
   TS_TO_JSON: `${baseURL}/ts-to-jsonschema`,
 };
+
+export const RECIPE_FORKING_ID = "recipeForkingId";

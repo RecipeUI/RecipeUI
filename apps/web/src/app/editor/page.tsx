@@ -27,6 +27,7 @@ import {
 } from "ui/utils/constants/main";
 import { RecipeOptions } from "types/database";
 import { EditorURL } from "@/app/editor/EditorURL";
+import { useSearchParams } from "next/navigation";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -101,8 +102,10 @@ function CurlModal({ onClose }: { onClose: () => void }) {
   );
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const onSubmit = async () => {
     setError(null);
+    setLoading(true);
 
     try {
       const requestInfo = parseCurl(curlString);
@@ -173,6 +176,8 @@ function CurlModal({ onClose }: { onClose: () => void }) {
       }, 0);
     } catch (err) {
       setError("Could not parse CURL");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,7 +195,11 @@ function CurlModal({ onClose }: { onClose: () => void }) {
           value={curlString}
           onChange={(e) => setCurlString(e.target.value)}
         />
-        <button className="btn btn-accent btn-sm" onClick={onSubmit}>
+        <button
+          className="btn btn-accent btn-sm"
+          onClick={onSubmit}
+          disabled={loading}
+        >
           Submit
         </button>
       </div>
@@ -279,6 +288,10 @@ function CoreEditor() {
 
   const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const editorURLSchemaType = useRecipeSessionStore(
+    (state) => state.editorURLSchemaType
+  );
+
   const setEditorURLCode = useRecipeSessionStore(
     (state) => state.setEditorURLCode
   );
@@ -290,8 +303,12 @@ function CoreEditor() {
   );
 
   useEffect(() => {
-    if ((!editorBody || editorBody === "{}") && editorQuery) {
-      setBodyRoute(RecipeBodyRoute.Query);
+    if (!editorBody || editorBody === "{}") {
+      if (editorQuery) {
+        setBodyRoute(RecipeBodyRoute.Query);
+      } else if (editorURLSchemaType) {
+        setBodyRoute(RecipeBodyRoute.URL);
+      }
     }
   }, [session?.id]);
 

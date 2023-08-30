@@ -195,12 +195,13 @@ axios.request(options)${postJsonProcess};
 }
 
 function getPythonHttpClient({
-  url,
+  url: _url,
   payload,
   options: recipeOptions,
 }: RecipeRequestInfo) {
   const { headers, method, body: _body } = payload;
 
+  const url = new URL(_url);
   const lines: string[] = [];
   lines.push(`import http.client`);
   lines.push(`import json`);

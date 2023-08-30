@@ -33,6 +33,7 @@ export type Database = MergeDeep<
             requestBody: Nullable<RecipeRequestBody>;
             queryParams: Nullable<RecipeObjectSchemas>;
             urlParams: Nullable<RecipeObjectSchemas>;
+            auth: Nullable<RecipeAuthType>;
           };
           Insert: {
             templates: Nullable<RecipeTemplate[]>;
@@ -41,6 +42,7 @@ export type Database = MergeDeep<
             requestBody: Nullable<RecipeRequestBody>;
             queryParams: Nullable<RecipeObjectSchemas>;
             urlParams: Nullable<RecipeObjectSchemas>;
+            auth: Nullable<RecipeAuthType>;
           };
         };
         template: {
