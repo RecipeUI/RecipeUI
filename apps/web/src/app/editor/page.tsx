@@ -262,15 +262,14 @@ function CoreEditor() {
       editorBodySchemaType,
     } = state;
 
-    return null;
-    // console.log("state", {
-    //   editorURLSchemaJSON,
-    //   editorURLSchemaType,
-    //   editorQuerySchemaJSON,
-    //   editorQuerySchemaType,
-    //   editorBodySchemaJSON,
-    //   editorBodySchemaType,
-    // });
+    console.log("state", {
+      editorURLSchemaJSON,
+      editorURLSchemaType,
+      editorQuerySchemaJSON,
+      editorQuerySchemaType,
+      editorBodySchemaJSON,
+      editorBodySchemaType,
+    });
 
     // if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
     //   console.log({

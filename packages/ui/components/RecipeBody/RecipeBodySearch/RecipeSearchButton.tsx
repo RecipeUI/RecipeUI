@@ -46,6 +46,10 @@ export function RecipeSearchButton() {
   const editorMode = useRecipeSessionStore((state) => state.editorMode);
   const editorBody = useRecipeSessionStore((state) => state.editorBody);
   const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
+  const editorBodySchemaJSON = useRecipeSessionStore(
+    (state) => state.editorBodySchemaJSON
+  );
+
   const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
   const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
   const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
@@ -66,10 +70,11 @@ export function RecipeSearchButton() {
             : RecipeOutputTab.Docs
           : RecipeOutputTab.Output
       );
-    }, 500);
+    }, 0);
   };
 
   const nativeFetch = useContext(RecipeNativeFetch)!;
+
   const _onSubmit = async () => {
     if (!currentSession) return;
 
@@ -78,6 +83,7 @@ export function RecipeSearchButton() {
       return;
     }
 
+    const startTime = performance.now();
     const recipe = editorMode
       ? {
           id: currentSession.id,
@@ -90,47 +96,6 @@ export function RecipeSearchButton() {
           version: 1,
         }
       : _recipe!;
-
-    let fetchRequestBody: Record<string, unknown> | FormData | undefined =
-      undefined;
-    let fetchHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    let SCHEMA_CONTENT_TYPE =
-      ("requestBody" in recipe && recipe.requestBody?.contentType) || null;
-
-    if (editorMode) {
-      if (editorBodyType === RecipeMutationContentType.JSON && editorBody) {
-        fetchRequestBody = JSON.parse(editorBody);
-      }
-
-      fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
-        acc[name] = value;
-        return acc;
-      }, {} as Record<string, string>);
-
-      SCHEMA_CONTENT_TYPE = editorBodyType;
-    }
-
-    let fetchMethod = recipe.method;
-    let path = recipe.path;
-
-    const matches = path.match(/{(\w+)}/g);
-    if ((editorMode || recipe.version === 1) && matches && matches.length > 0) {
-      try {
-        const urlState = editorMode ? JSON.parse(editorURLCode) : urlParams;
-
-        for (const key in urlState) {
-          path = path.replace(`${key}`, urlState[key]);
-        }
-      } catch (e) {
-        alert("Detected URL params, but could not parse them.");
-        return false;
-      }
-    }
-
-    const startTime = performance.now();
 
     const recipeInfoLog = {
       recipeId: recipe.id,
@@ -154,40 +119,68 @@ export function RecipeSearchButton() {
       return;
     }
 
-    if (
-      "urlParams" in recipe &&
-      recipe.urlParams != undefined &&
-      recipe.version !== 1
-    ) {
-      for (const { name: key, ...schema } of recipe.urlParams) {
-        const value = urlParams[key];
-        if (value == undefined || value === "") {
-          const isRequired = schema.required;
-          // By default URL params are usually required if someone forgot to define
-          if (isRequired === undefined || isRequired) {
-            alert(`Please provide a value for ${key}`);
-            return;
-          } else {
-            path = path.replace(`/{${key}}`, "");
-          }
-        } else {
-          path = path.replace(`{${key}}`, String(value));
+    let fetchRequestBody: Record<string, unknown> | FormData | undefined =
+      undefined;
+    let fetchHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    let SCHEMA_CONTENT_TYPE = RecipeMutationContentType.JSON;
+
+    let fetchMethod = recipe.method;
+    let path = recipe.path;
+
+    if (editorMode) {
+      if (editorBodyType === RecipeMutationContentType.JSON && editorBody) {
+        fetchRequestBody = JSON.parse(editorBody);
+      }
+
+      fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
+        acc[name] = value;
+        return acc;
+      }, {} as Record<string, string>);
+
+      if (editorBodyType) {
+        SCHEMA_CONTENT_TYPE = editorBodyType;
+      }
+    } else {
+      fetchRequestBody = requestBody;
+    }
+
+    // ------ Parse URL Params -------
+    const matches = path.match(/{(\w+)}/g);
+    if (matches && matches.length > 0) {
+      try {
+        const urlState = editorMode ? JSON.parse(editorURLCode) : urlParams;
+
+        for (const key in urlState) {
+          path = path.replace(`${key}`, urlState[key]);
         }
 
-        path = path.replace(`{${key}}`, String(value));
+        // We should do some validation that the URL is clean now
+
+        const recheckMatches = path.match(/{(\w+)}/g);
+        if (recheckMatches && recheckMatches.length > 0) {
+          alert("Detected URL params, but could not parse them.");
+          return;
+        }
+      } catch (e) {
+        alert("Detected URL params, but could not parse them.");
+        return;
       }
     }
 
     let url = new URL(path);
 
+    // ------ Parse Auth -------
     if (recipe.auth) {
       const primaryToken = await getSecret({
         secretId: currentSession.recipeId,
       });
 
       if (!primaryToken) {
-        await alert("Please setup authentication first.");
-        return;
+        alert("Please setup authentication first.");
+        return false;
       }
 
       if (recipe.auth === RecipeAuthType.Bearer) {
@@ -202,7 +195,7 @@ export function RecipeSearchButton() {
         const headerName = editorAuth?.meta || relevantOption?.payload.name;
         if (!headerName) {
           alert("The auth for this API is not setup correctly.");
-          return;
+          return false;
         }
 
         fetchHeaders[headerName!] = primaryToken;
@@ -212,75 +205,84 @@ export function RecipeSearchButton() {
         let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
         if (!QUERY_KEY_NAME) {
           alert("The auth for this API is not setup correctly.");
-          return;
+          return false;
         }
 
         url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
       }
-
-      if (recipe.auth === RecipeAuthType.ClientID) {
-        fetchHeaders["Authorization"] = `Client-ID ${primaryToken}`;
-      }
-
-      if (recipe.auth === RecipeAuthType.Token) {
-        fetchHeaders["Authorization"] = `Token ${primaryToken}`;
-      }
     }
 
-    // TODO: We can have very strict validation eventually
-    if (
-      !editorMode &&
-      "requestBody" in recipe &&
-      recipe.requestBody &&
-      "objectSchema" in recipe.requestBody &&
-      recipe.requestBody.objectSchema
-    ) {
-      const { objectSchema } = recipe.requestBody;
-      const requiredKeys = objectSchema.filter(
-        (schema) => schema.required === true
-      );
-
-      // TODO: Move this to terminal
-      if (requiredKeys.length > Object.keys(requestBody).length) {
+    // ------ Parse Request Body -------
+    if (editorMode && fetchRequestBody) {
+      if (
+        Object.keys(fetchRequestBody).length <
+        (editorBodySchemaJSON?.required?.length || 0)
+      ) {
         alert("Please fill in all required fields.");
         return;
       }
 
-      if (SCHEMA_CONTENT_TYPE === "application/json") {
-        fetchRequestBody = requestBody;
-
-        if (recipe.options?.streaming === true) {
-          fetchRequestBody.stream = true;
-        }
-      } else if (SCHEMA_CONTENT_TYPE === "multipart/form-data") {
-        // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
-        delete fetchHeaders["Content-Type"];
-
-        const formData = new FormData();
-
-        for (const key in requestBody) {
-          let payload = requestBody[key];
-
-          if (typeof payload === "object" && payload !== null) {
-            payload = JSON.stringify(payload);
-          }
-
-          if (key === "file") {
-            // This only works well for 1 layer deep route. Think of something better when we bump into multi layer
-            const file = fileManager[currentSession.id];
-            if (!file) {
-              alert("Please upload a file first.");
-              return;
-            }
-            payload = file;
-          }
-
-          formData.append(key, payload as string | Blob);
-        }
-        fetchRequestBody = formData;
-      }
+      // TODO: Support form fields
     }
 
+    // TODO: We can have very strict validation eventually
+
+    // ------ Parse FORM DEPRECATED  -------
+    // if (
+    //   !editorMode &&
+    //   "requestBody" in recipe &&
+    //   recipe.requestBody &&
+    //   "objectSchema" in recipe.requestBody &&
+    //   recipe.requestBody.objectSchema
+    // ) {
+    //   const { objectSchema } = recipe.requestBody;
+    //   const requiredKeys = objectSchema.filter(
+    //     (schema) => schema.required === true
+    //   );
+
+    //   // TODO: Move this to terminal
+    //   if (requiredKeys.length > Object.keys(requestBody).length) {
+    //     alert("Please fill in all required fields.");
+    //     return;
+    //   }
+
+    //   if (SCHEMA_CONTENT_TYPE === "application/json") {
+    //     fetchRequestBody = requestBody;
+
+    //     if (recipe.options?.streaming === true) {
+    //       fetchRequestBody.stream = true;
+    //     }
+    //   } else if (SCHEMA_CONTENT_TYPE === "multipart/form-data") {
+    //     // https://github.com/JakeChampion/fetch/issues/505#issuecomment-293064470
+    //     delete fetchHeaders["Content-Type"];
+
+    //     const formData = new FormData();
+
+    //     for (const key in requestBody) {
+    //       let payload = requestBody[key];
+
+    //       if (typeof payload === "object" && payload !== null) {
+    //         payload = JSON.stringify(payload);
+    //       }
+
+    //       if (key === "file") {
+    //         // This only works well for 1 layer deep route. Think of something better when we bump into multi layer
+    //         const file = fileManager[currentSession.id];
+    //         if (!file) {
+    //           alert("Please upload a file first.");
+    //           return;
+    //         }
+    //         payload = file;
+    //       }
+
+    //       formData.append(key, payload as string | Blob);
+    //     }
+    //     fetchRequestBody = formData;
+    //   }
+    // }
+    // ------ Parse FORM DEPRECATED  -------
+
+    // ------ Parse Query Params -------
     const _queryParams = editorMode
       ? (JSON.parse(editorQuery || "{}") as Record<string, string>)
       : queryParams;
@@ -297,8 +299,7 @@ export function RecipeSearchButton() {
       url.searchParams.append(key, String(value));
     }
 
-    // We need to reformat it as it was originally
-
+    // ------ Clone Request for Code Generation -------
     let clonedBody =
       fetchRequestBody instanceof FormData
         ? { form: "File binary" }
@@ -308,11 +309,6 @@ export function RecipeSearchButton() {
     let clonedUrl = new URL(path + url.search);
 
     let infoOptions: Record<string, unknown> = {};
-
-    if (clonedBody && "stream" in clonedBody) {
-      infoOptions.stream = clonedBody.stream;
-      delete clonedBody.stream;
-    }
 
     const requestInfo = {
       url: clonedUrl.toString(),
@@ -351,7 +347,8 @@ export function RecipeSearchButton() {
 
       posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
-      // Streaming is unique edge case. We'll have to port this over to Server's later
+      // ------ Fetch via Streaming -------
+      // Streaming is unique edge case, but doesn't work with CORS. Migrate later eventually.
       if (
         (recipe.options &&
           "streaming" in recipe.options &&
@@ -429,7 +426,7 @@ export function RecipeSearchButton() {
         return true;
       }
 
-      // ------ Actual Fetch Request ------
+      // ------ Fetch Request ------
       const {
         contentType,
         status,
@@ -472,6 +469,7 @@ export function RecipeSearchButton() {
           .catch(reject);
       });
 
+      // ------ Parse Response -------
       let output: Record<string, unknown> = {};
       const isStatusOk = status >= 200 && status < 300;
 

@@ -44,18 +44,10 @@ function useDebouncedEditorChanges({
   }, [latestTypeValue]);
 
   useEffect(() => {
-    console.log("Changes made\n", changesMade, latestTypeValue);
     if (!preparingChange && changesMade !== changesFinalized) {
       setPreparingChange(true);
     }
   }, [changesMade]);
-
-  console.log({
-    latestTypeValue,
-    changesMade,
-    changesFinalized,
-    preparingChange,
-  });
 
   useEffect(() => {
     if (preparingChange) {
@@ -72,6 +64,11 @@ function useDebouncedEditorChanges({
       fetchTypeScriptFromJSON({ types: latestTypeValue })
         .then(async (res) => {
           const value = await res.json();
+
+          if (!res.ok) {
+            throw new Error("Failed to fetch");
+          }
+
           setSchemaJSON(value);
         })
         .catch((err) => {

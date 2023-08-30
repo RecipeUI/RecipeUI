@@ -63,8 +63,6 @@ export const JSONEditorContainer = () => {
     (state) => state.setEditorBodySchemaJSON
   );
 
-  console.log("changing", editorBodySchemaType);
-
   return (
     <div className="grid grid-rows-2 flex-1 h-full z-20 overflow-x-auto">
       {editorBodySchemaJSON || editorBody ? (

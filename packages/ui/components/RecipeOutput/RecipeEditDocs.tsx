@@ -15,6 +15,7 @@ import {
 } from "react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 const DefinitionContext = createContext<{
   definitions: JSONSchema6["definitions"];
@@ -222,6 +223,31 @@ function ObjectDocContainer({
   );
 }
 
+function getTypeLabel(schema: JSONSchema6) {
+  let type: string = String(schema.type);
+  if (schema.enum) {
+    type = `${schema.type} | enum`;
+  }
+
+  if (schema.anyOf) {
+    type = schema.anyOf
+      .map((anyOf) => {
+        const innerType = (anyOf as JSONSchema6).type;
+
+        if (innerType === "array") {
+          return `${getTypeLabel(
+            (anyOf as JSONSchema6).items as JSONSchema6
+          )}[]`;
+        }
+
+        return innerType;
+      })
+      .join(" | ");
+  }
+
+  return type;
+}
+
 function DocContainer({
   paramName,
   definition,
@@ -234,11 +260,6 @@ function DocContainer({
   path: string;
 }) {
   const items = definition.items;
-
-  let type: string = String(definition.type);
-  if (definition.enum) {
-    type = `${definition.type} enum`;
-  }
 
   const [description, setDescription] = useState(definition.description || "");
   const [defaultValue, setDefaultValue] = useState<string | number | boolean>(
@@ -261,7 +282,7 @@ function DocContainer({
       <div className="flex justify-between">
         <div className="space-x-4">
           <span className="font-bold">{paramName}</span>
-          <span className="text-sm">{type}</span>
+          <span className="text-sm">{getTypeLabel(definition)}</span>
           <span
             className={classNames(
               "text-sm",
@@ -283,9 +304,9 @@ function DocContainer({
         )}
       </div>
       {!editing ? (
-        <p className="text-xs mt-2 flex items-center cursor-pointer">
-          {description || "Add a description"}{" "}
-        </p>
+        <ReactMarkdown className="text-xs mt-2 flex items-center cursor-pointer recipe-md">
+          {description || "Add a description"}
+        </ReactMarkdown>
       ) : (
         <div className="space-y-2 flex flex-col py-4 text-black dark:text-gray-400">
           <EditDocFieldWrapper label="Description">
@@ -405,17 +426,29 @@ function DocContainer({
         {definition.enum && (
           <p className="text-xs">Enum: {definition.enum.join(", ")}</p>
         )}
-        {(definition.minimum || definition.maximum) && (
+        {(definition.minimum != undefined ||
+          definition.maximum != undefined) && (
           <div className="flex space-x-2">
-            {definition.minimum && (
+            {definition.minimum != undefined && (
               <p className="text-xs">Min: {definition.minimum}</p>
             )}
-            {definition.maximum && (
+            {definition.maximum != undefined && (
               <p className="text-xs">Max: {definition.maximum}</p>
             )}
           </div>
         )}
       </div>
+      {definition.anyOf && (
+        <div>
+          {definition.anyOf.map((anyOf, i) => {
+            return (
+              <div key={i} className="my-4">
+                <ObjectDocContainer schema={anyOf as JSONSchema6} path={path} />
+              </div>
+            );
+          })}
+        </div>
+      )}
       {items && !Array.isArray(items) ? (
         <div className="my-4">
           <ObjectDocContainer
@@ -424,6 +457,15 @@ function DocContainer({
           />
         </div>
       ) : null}
+
+      {definition.type === "object" &&
+        definition.properties &&
+        Object.keys(definition.properties).length > 0 && (
+          <ObjectDocContainer
+            path={`${path}.properties`}
+            schema={definition as JSONSchema6}
+          />
+        )}
     </div>
   );
 }

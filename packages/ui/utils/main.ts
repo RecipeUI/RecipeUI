@@ -108,21 +108,34 @@ export function getDefaultValuev1<T>(
     return (param["minimum"] || param["maximum"] || 0) as T;
   } else if (param.type === RecipeParamType.Boolean) {
     return false as T;
-  }
+  } else if (param.type === RecipeParamType.Array) {
+    return [
+      getDefaultValuev1(param.items as unknown as JSONSchema6, {
+        checkRequired: true,
+        isRequired: true,
+      }),
+    ] as T;
+    // return [getDefaultValue(param.arraySchema)] as T;
+  } else if (param.type === RecipeParamType.Object) {
+    const obj = {} as T;
+    const properties = Object.keys(param.properties || {});
 
-  // else if (param.type === RecipeParamType.Array) {
-  //   return [getDefaultValue(param.arraySchema)] as T;
-  // } else if (param.type === RecipeParamType.Object) {
-  //   const obj = {} as T;
-  //   for (const keySchema of param.objectSchema) {
-  //     const value = getDefaultValue(keySchema, true);
-  //     if (value !== undefined) {
-  //       // @ts-expect-error IDK what the type should be here
-  //       obj[keySchema.name] = value;
-  //     }
-  //   }
-  //   return obj as T;
-  // } else if (
+    for (const property of properties) {
+      const value = getDefaultValuev1(
+        param.properties![property] as JSONSchema6,
+        {
+          checkRequired: true,
+          isRequired: true,
+        }
+      );
+      if (value !== undefined) {
+        // @ts-expect-error IDK what the type should be here
+        obj[property] = value;
+      }
+    }
+    return obj as T;
+  }
+  //  else if (
   //   // TODO: AllOf is wrong here in some cases
   //   "variants" in param
   // ) {

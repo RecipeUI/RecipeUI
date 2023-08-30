@@ -543,44 +543,7 @@ export function useLoadingTemplatev1() {
           });
         }, getTime(t));
         t += 5 * speedFactor;
-      }
-      //  else if ("variants" in paramSchema) {
-      //   const { isEnumButSingleType, paramTypes, enumVariantIndex } =
-      //     getVariedParamInfo(paramSchema);
-
-      //   const innerVariantSchema = paramSchema.variants[
-      //     enumVariantIndex
-      //   ] as RecipeStringParam;
-
-      //   if (
-      //     isEnumButSingleType &&
-      //     paramTypes[0] === RecipeParamType.String &&
-      //     typeof paramValue === "string" &&
-      //     innerVariantSchema.enum
-      //   ) {
-      //     let speed =
-      //       (innerVariantSchema.enum.length > 5 ? 1 : 2) * speedFactor;
-
-      //     for (const enumValue of innerVariantSchema.enum) {
-      //       setTimeout(() => {
-      //         updateFunction({
-      //           path: path + paramName,
-      //           value: enumValue,
-      //         });
-      //       }, getTime(t));
-      //       t += speed;
-      //     }
-      //   } else {
-      //     setTimeout(() => {
-      //       updateFunction({
-      //         path: path + paramName,
-      //         value: paramValue,
-      //       });
-      //     }, getTime(t));
-      //     t += 0.2 * speedFactor;
-      //   }
-      // }
-      else {
+      } else {
         setTimeout(() => {
           updateFunction({
             path: path + paramName,
@@ -596,27 +559,26 @@ export function useLoadingTemplatev1() {
     setOutputTab(RecipeOutputTab.Docs);
 
     let requestUrl = new URL(selectedRecipe.path);
-    // if (requestBody && selectedRecipe.requestBody) {
-    //   setRequestBody({});
-    //   const params = Object.keys(requestBody);
+    if (requestBody && selectedRecipe.requestBody) {
+      setRequestBody({});
+      const params = Object.keys(requestBody);
 
-    //   for (let i = 0; i < params.length; i++) {
-    //     const paramName = params[i];
-    //     const paramValue = requestBody[paramName]!;
-    //     const paramSchema = selectedRecipe.requestBody.objectSchema.find(
-    //       (schema) => schema.name === paramName
-    //     )!;
+      for (let i = 0; i < params.length; i++) {
+        const paramName = params[i];
+        const paramValue = requestBody[paramName]!;
+        const paramSchema = (selectedRecipe.requestBody as JSONSchema6)
+          .properties![paramName] as JSONSchema6;
 
-    //     updateMagic({
-    //       paramName,
-    //       paramValue,
-    //       paramSchema,
-    //       updateFunction: updateRequestBody,
-    //       path: ".",
-    //       speedFactor: 2,
-    //     });
-    //   }
-    // }
+        updateMagic({
+          paramName,
+          paramValue,
+          paramSchema,
+          updateFunction: updateRequestBody,
+          path: ".",
+          speedFactor: 0.5,
+        });
+      }
+    }
 
     const recipeQueryParams = selectedRecipe.queryParams as JSONSchema6;
     if (queryParams && recipeQueryParams) {
@@ -637,7 +599,7 @@ export function useLoadingTemplatev1() {
           paramSchema,
           updateFunction: updateQueryParams,
           path: ".",
-          speedFactor: 3,
+          speedFactor: 0.5,
         });
 
         requestUrl.searchParams.set(paramName, paramValue as string);
@@ -663,7 +625,7 @@ export function useLoadingTemplatev1() {
           paramSchema,
           updateFunction: updateUrlParams,
           path: "",
-          speedFactor: 3,
+          speedFactor: 0.5,
         });
 
         requestUrl.pathname = requestUrl.pathname.replace(
@@ -728,7 +690,7 @@ export function useLoadingTemplatev1() {
           t += speed;
         }
       } else {
-        t += tEndValue;
+        t += Math.min(15, tEndValue);
       }
 
       setTimeout(() => {

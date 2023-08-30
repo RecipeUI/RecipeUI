@@ -419,7 +419,7 @@ export const createRecipeEditorSlice: StateCreator<
               }
             : null),
           bodyRoute: RecipeBodyRoute.Body,
-          outputTab: RecipeOutputTab.Output,
+          outputTab: RecipeOutputTab.DocTwo,
           requestInfo: null,
           desktopPage: null,
           editorMode: true,
@@ -675,7 +675,9 @@ const createRecipeSessionSlice: StateCreator<
           bodyRoute: editorMode
             ? RecipeBodyRoute.Body
             : RecipeBodyRoute.Parameters,
-          outputTab: RecipeOutputTab.Output,
+          outputTab: editorMode
+            ? RecipeOutputTab.DocTwo
+            : RecipeOutputTab.Output,
           requestInfo: null,
           desktopPage: null,
         };
