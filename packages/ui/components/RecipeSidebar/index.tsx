@@ -40,8 +40,6 @@ export function RecipeSidebar() {
     saveSessionToStore(sessions);
   }, [loaded, sessions, setSessions]);
 
-  const searchParams = useSearchParams();
-
   const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
 
   useEffect(() => {
@@ -67,13 +65,11 @@ export function RecipeSidebar() {
       }
     }
 
-    initialize();
-  }, []);
-
-  useEffect(() => {
     getSessionsFromStore().then(async (sessions) => {
       setSessions(sessions || []);
       setLoaded(true);
+
+      initialize();
     });
   }, [setSessions]);
 

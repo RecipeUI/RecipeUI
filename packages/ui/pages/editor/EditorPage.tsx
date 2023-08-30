@@ -28,7 +28,6 @@ import { EditorURL } from "./EditorURL";
 import { useRouter } from "next/navigation";
 import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
-import { useLocalStorage } from "usehooks-ts";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -285,14 +284,16 @@ function CoreEditor() {
       editorBodySchemaType,
     } = state;
 
-    console.log("state", {
-      editorURLSchemaJSON,
-      editorURLSchemaType,
-      editorQuerySchemaJSON,
-      editorQuerySchemaType,
-      editorBodySchemaJSON,
-      editorBodySchemaType,
-    });
+    if (process.env.NEXT_PUBLIC_ENV === "dev") {
+      console.log("state", {
+        editorURLSchemaJSON,
+        editorURLSchemaType,
+        editorQuerySchemaJSON,
+        editorQuerySchemaType,
+        editorBodySchemaJSON,
+        editorBodySchemaType,
+      });
+    }
 
     // if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
     //   console.log({
@@ -335,10 +336,10 @@ function CoreEditor() {
 
   useEffect(() => {
     if (!editorBody || editorBody === "{}") {
-      if (editorQuery) {
-        setBodyRoute(RecipeBodyRoute.Query);
-      } else if (editorURLSchemaType) {
+      if (editorURLSchemaType) {
         setBodyRoute(RecipeBodyRoute.URL);
+      } else if (editorQuery) {
+        setBodyRoute(RecipeBodyRoute.Query);
       }
     }
   }, [session?.id]);

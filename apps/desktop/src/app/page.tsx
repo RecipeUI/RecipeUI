@@ -25,7 +25,7 @@ import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 import EditorPage from "ui/pages/editor/EditorPage";
 
-export default function Container() {
+export default function Page() {
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>
       invoke<FetchResponse>("fetch_wrapper", payload as unknown as InvokeArgs);
@@ -37,12 +37,12 @@ export default function Container() {
 
   return (
     <RecipeNativeFetchContext.Provider value={invokeMemoized}>
-      <Page />
+      <Container />
     </RecipeNativeFetchContext.Provider>
   );
 }
 
-export function Page() {
+function Container() {
   const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
 
   if (!desktopPage) {
