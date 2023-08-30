@@ -92,6 +92,11 @@ export type Recipe = Tables<"recipe"> & {
   userTemplates?: UserTemplatePreview[];
 };
 
+export type RecipeTemplateFragment = Omit<
+  Tables<"template">,
+  "alias" | "author_id" | "project" | "visibility"
+>;
+
 export interface AuthConfig {
   type: RecipeAuthType;
   payload: {

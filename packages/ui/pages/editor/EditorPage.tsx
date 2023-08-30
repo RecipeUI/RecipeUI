@@ -28,6 +28,8 @@ import { EditorURL } from "./EditorURL";
 import { useRouter } from "next/navigation";
 import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
+import { useMiniRecipes } from "../../state/apiSession";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -334,6 +336,7 @@ function CoreEditor() {
     (state) => state.setEditorURLSchemaType
   );
 
+  const { recipes } = useMiniRecipes(session?.recipeId);
   useEffect(() => {
     if (!editorBody || editorBody === "{}") {
       if (editorURLSchemaType) {
@@ -344,23 +347,29 @@ function CoreEditor() {
     }
   }, [session?.id]);
 
+  console.log("", recipes);
+
   const BODY_ROUTES = useMemo(() => {
     const hasURLParams = editorUrl.match(/{(\w+)}/g);
+    const mainRoutes = [...EDITOR_ROUTES];
 
     if (!hasURLParams && editorURLCode) {
       setEditorURLCode("");
       setEditorURLSchemaJSON(null);
       setEditorURLSchemaType(null);
-      return [...EDITOR_ROUTES];
     }
 
     if (hasURLParams) {
-      return [...EDITOR_ROUTES, RecipeBodyRoute.URL];
+      mainRoutes.push(RecipeBodyRoute.URL);
+    }
+
+    if (recipes.length > 0) {
+      mainRoutes.push(RecipeBodyRoute.Templates);
     }
 
     // Lets also do cleanup if the person removes urlParams
-    return EDITOR_ROUTES;
-  }, [editorUrl]);
+    return mainRoutes;
+  }, [editorUrl, recipes.length]);
 
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
@@ -389,6 +398,7 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
         {bodyRoute === RecipeBodyRoute.URL && <EditorURL />}
+        {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplateEdit />}
         <RecipeOutput />
       </div>
     </div>

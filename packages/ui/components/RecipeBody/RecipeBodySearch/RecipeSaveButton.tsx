@@ -3,7 +3,11 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { Recipe, RecipeOutputType } from "types/database";
+import {
+  Recipe,
+  RecipeOutputType,
+  RecipeTemplateFragment,
+} from "types/database";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
@@ -18,18 +22,19 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createTemplate } from "./actions";
 import { useQueryClient } from "@tanstack/react-query";
-import { QueryKey } from "types/enums";
+import { ProjectScope, QueryKey } from "types/enums";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import { useOutput } from "../../../state/apiSession";
+import { useMiniRecipes, useOutput } from "../../../state/apiSession";
 
+import { v4 as uuidv4 } from "uuid";
 export function RecipeSaveButton() {
   const currentSesssion = useRecipeSessionStore(
     (state) => state.currentSession
   );
   const {
-    output: { type },
+    output: { type, output, duration, requestInfo, created_at },
   } = useOutput(currentSesssion?.id);
 
   const isSending = useRecipeSessionStore((state) => state.isSending);
@@ -37,11 +42,34 @@ export function RecipeSaveButton() {
   const user = useRecipeSessionStore((state) => state.user);
 
   const [showCreationFlow, setShowCreationFlow] = useState(false);
+  const editorMode = useRecipeSessionStore((state) => state.editorMode);
+  const [glowing, setGlowing] = useState(true);
 
-  if (!hasValidResponse || isSending) {
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+    if (created_at) {
+      const timeSinceCreated = Date.now() - new Date(created_at).getTime();
+      // Do 3 seconds ago
+      if (timeSinceCreated < 1000 * 3) {
+        setGlowing(true);
+        timer = setTimeout(() => {
+          setGlowing(false);
+        }, 3000);
+      }
+    } else {
+      setGlowing(false);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [created_at]);
+
+  if (!hasValidResponse || isSending || !editorMode || !output) {
     return null;
   }
-  return null;
 
   return (
     <>
@@ -52,7 +80,8 @@ export function RecipeSaveButton() {
         <button
           className={classNames(
             "btn dark:text-white sm:w-24 w-full",
-            "bg-chefYellow !text-black hover:btn-info"
+            "bg-chefYellow !text-black hover:btn-info",
+            glowing && "animate-bounce"
           )}
           type="button"
           onClick={() => {
@@ -67,13 +96,13 @@ export function RecipeSaveButton() {
           Save
         </button>
       </div>
-      {/* {showCreationFlow && (
+      {showCreationFlow && (
         <RecipeCreationFlow
           onClose={() => {
             setShowCreationFlow(false);
           }}
         />
-      )} */}
+      )}
     </>
   );
 }
@@ -83,214 +112,155 @@ interface RecipeCreateFormData {
   description: string;
 }
 
-// export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
-//   const user = useRecipeSessionStore((state) => state.user)!;
-//   const recipe = useContext(RecipeContext)!;
-//   const requestBody = useRecipeSessionStore((state) => state.requestBody);
-//   const queryParams = useRecipeSessionStore((state) => state.queryParams);
-//   const urlParams = useRecipeSessionStore((state) => state.urlParams);
+export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
+  const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
+  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
 
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//   } = useForm<RecipeCreateFormData>({
-//     defaultValues: {},
-//   });
+  const urlParamCode = useRecipeSessionStore((state) => state.editorURLCode);
 
-//   const [loading, setLoading] = useState(false);
-//   const [newTemplateId, setNewTemplateId] = useState<string | null>(null);
-//   const posthog = usePostHog();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RecipeCreateFormData>({
+    defaultValues: {},
+  });
 
-//   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-//   const { output, duration } = useRecipeSessionStore((state) =>
-//     state.getOutput()
-//   );
+  const [loading, setLoading] = useState(false);
+  const posthog = usePostHog();
+  const session = useRecipeSessionStore((state) => state.currentSession);
 
-//   useEffect(() => {
-//     () => {
-//       onClose();
-//     };
-//   }, []);
-//   const supabase = useSupabaseClient();
+  const { addRecipe } = useMiniRecipes(session?.recipeId);
+  const {
+    output: { requestInfo, duration, output, type },
+  } = useOutput(session?.id);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-//   const onSubmit = handleSubmit(async (data) => {
-//     setLoading(true);
+  const supabase = useSupabaseClient();
 
-//     try {
-//       const { newTemplate, error } = await createTemplate(
-//         {
-//           author_id: user.user_id,
-//           original_author_id: user.user_id,
-//           project: recipe.project,
-//           recipe_id: recipe.id,
-//           requestBody,
-//           queryParams,
-//           urlParams,
-//           replay:
-//             recipe.auth !== null && duration
-//               ? {
-//                   output,
-//                   streaming: recipe.options?.streaming ?? false,
-//                   duration: Math.floor(duration),
-//                 }
-//               : null,
-//           ...data,
-//         },
-//         supabase
-//       );
+  const onSubmit = handleSubmit(async (data) => {
+    setLoading(true);
 
-//       if (newTemplate) {
-//         posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE, {
-//           template_id: newTemplate.id,
-//           template_project: newTemplate.project,
-//           recipe_id: recipe.id,
-//           recipe_path: recipe.path,
-//         });
+    try {
+      const newRecipe: RecipeTemplateFragment = {
+        title: data.title,
+        description: data.description,
 
-//         setNewTemplateId(newTemplate.id);
-//       } else if (error === DB_FUNC_ERRORS.TEMPLATE_LIMIT_REACHED) {
-//         setErrorMsg(
-//           "We love that you're making so many recipes but we're currently limiting users to 10 recipes right now to scale properly. Please delete some recipes and try again."
-//         );
-//       }
-//     } catch (e) {
-//       alert("Recipe failed to make");
-//       console.error(e);
-//     }
+        created_at: new Date().toISOString(),
+        id: uuidv4(),
+        replay: {
+          duration: duration ? duration : 3000,
+          output,
+          streaming: false,
+        },
+        project_scope: ProjectScope.Personal,
 
-//     setLoading(false);
-//   });
+        queryParams:
+          editorQuery && editorQuery.length > 0
+            ? JSON.parse(editorQuery)
+            : null,
+        requestBody:
+          (requestInfo?.payload.body as Record<string, unknown>) || null,
+        urlParams:
+          urlParamCode && urlParamCode !== "{}"
+            ? JSON.parse(urlParamCode)
+            : null,
 
-//   return (
-//     <Dialog open={true} onClose={onClose} className="relative z-50">
-//       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+        recipe_id: session?.recipeId!,
 
-//       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-//         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[500px]">
-//           {!newTemplateId ? (
-//             <>
-//               <Dialog.Title className="text-2xl font-bold ">
-//                 {`New Recipe`}
-//               </Dialog.Title>
-//               <Dialog.Description
-//                 as="div"
-//                 className="p-4 text-sm border rounded-md my-2"
-//               >
-//                 <h3 className="font-bold text-base">
-//                   {`Recipe fork of "${recipe.title}"`}
-//                 </h3>
-//                 <h3 className="">{recipe.path}</h3>
-//                 <p className="line-clamp-2 text-xs mt-1">{recipe.summary}</p>
-//               </Dialog.Description>
+        // This part wrong
+        headers: editorHeaders as any,
 
-//               <form
-//                 className="flex flex-col space-y-2  rounded-md mt-4"
-//                 onSubmit={onSubmit}
-//               >
-//                 <>
-//                   <LabelWrapper label="Recipe Title">
-//                     <input
-//                       className="input input-bordered w-full"
-//                       {...register("title", { required: true })}
-//                     />
-//                   </LabelWrapper>
-//                   <LabelWrapper label="Recipe Description">
-//                     <input
-//                       className="input  input-bordered w-full"
-//                       {...register("description", { required: true })}
-//                     />
-//                   </LabelWrapper>
+        // Unnecessary
+        original_author_id: null,
+      };
 
-//                   {(errors.title || errors.description) && (
-//                     <p className="alert alert-error !mt-4">
-//                       Please fill out all required fields.
-//                     </p>
-//                   )}
+      addRecipe(newRecipe)
+        .then(() => {
+          posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
+          setLoading(false);
 
-//                   {errorMsg && (
-//                     <div className="alert alert-error !mt-4 flex flex-col items-start">
-//                       <p>{errorMsg}</p>
-//                       <p>Want to be an early RecipeUI power user?</p>
-//                       <a
-//                         href={FORM_LINKS.RECIPEUI_PRO}
-//                         target="_blank"
-//                         className="underline underline-offset-2 -mt-4"
-//                       >
-//                         Sign up here.
-//                       </a>
-//                     </div>
-//                   )}
-//                 </>
+          onClose();
+        })
+        .catch((e) => {
+          setLoading(false);
+        });
+    } catch (e) {
+      alert("Recipe failed to make");
+      console.error(e);
+    }
+  });
 
-//                 <button
-//                   type="submit"
-//                   className={classNames(
-//                     "btn bg-chefYellow !mt-8 text-black",
-//                     loading && "btn-disabled"
-//                   )}
-//                 >
-//                   Save
-//                   {loading && <span className="loading loading-bars"></span>}
-//                 </button>
-//               </form>
-//             </>
-//           ) : (
-//             <SuccessAnimation onClose={onClose} newTemplateId={newTemplateId} />
-//           )}
-//         </Dialog.Panel>
-//       </div>
-//     </Dialog>
-//   );
-// }
+  return (
+    <Dialog open={true} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
-export function SuccessAnimation({
-  onClose,
-  newTemplateId,
-  passiveRecipe,
-  ignoreAnimation,
-}: {
-  onClose: () => void;
-  newTemplateId: string;
-  passiveRecipe?: Pick<Recipe, "title" | "id" | "method">;
-  ignoreAnimation?: boolean;
-}) {
-  const router = useRouter();
-  const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
-  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const queryClient = useQueryClient();
-  const isTauri = useIsTauri();
-  const searchParams = useSearchParams();
+      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
+        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[500px]">
+          <>
+            <Dialog.Title className="text-2xl font-bold ">
+              {`New recipe`}
+            </Dialog.Title>
 
-  useEffect(() => {
-    setTimeout(
-      () => {
-        const needsSession = passiveRecipe != null;
+            <p>
+              Recipes allow you to save all the params you had before so you can
+              quickly reference, share, or reuse this API in the future.
+            </p>
+            <form
+              className="flex flex-col space-y-2  rounded-md mt-4"
+              onSubmit={onSubmit}
+            >
+              <>
+                <LabelWrapper label="Recipe Title">
+                  <input
+                    className="input input-bordered w-full"
+                    {...register("title", { required: true })}
+                  />
+                </LabelWrapper>
+                <LabelWrapper label="Recipe Description">
+                  <input
+                    className="input  input-bordered w-full"
+                    {...register("description", { required: true })}
+                  />
+                </LabelWrapper>
 
-        setBodyRoute(RecipeBodyRoute.Templates);
-        if (isTauri) {
-          queryClient.invalidateQueries({
-            queryKey: [QueryKey.RecipesHomeView, currentSession?.recipeId],
-          });
-        } else {
-          if (needsSession) {
-            // const newSession = addSession(recipe);
-          } else {
-            const newParams = new URLSearchParams(
-              (searchParams as unknown as URLSearchParams) || undefined
-            );
-            newParams.set("newTemplateId", String(newTemplateId));
-            router.push(`/?${newParams.toString()}`);
-          }
-        }
-        onClose();
-      },
-      ignoreAnimation === true ? 0 : 4000
-    );
-  }, [isTauri]);
+                {(errors.title || errors.description) && (
+                  <p className="alert alert-error !mt-4">
+                    Please fill out all required fields.
+                  </p>
+                )}
 
-  return <img src={"/animated.gif"} alt="visual" className="w-full h-full" />;
+                {errorMsg && (
+                  <div className="alert alert-error !mt-4 flex flex-col items-start">
+                    <p>{errorMsg}</p>
+                    <p>Want to be an early RecipeUI power user?</p>
+                    <a
+                      href={FORM_LINKS.RECIPEUI_PRO}
+                      target="_blank"
+                      className="underline underline-offset-2 -mt-4"
+                    >
+                      Sign up here.
+                    </a>
+                  </div>
+                )}
+              </>
+
+              <button
+                type="submit"
+                className={classNames(
+                  "btn bg-chefYellow !mt-8 text-black",
+                  loading && "btn-disabled"
+                )}
+              >
+                Save
+                {loading && <span className="loading loading-bars"></span>}
+              </button>
+            </form>
+          </>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  );
 }
 
 function LabelWrapper({

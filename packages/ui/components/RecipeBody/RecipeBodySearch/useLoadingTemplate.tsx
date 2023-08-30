@@ -642,7 +642,7 @@ export function useLoadingTemplate() {
       payload: {
         method: selectedRecipe.method,
         headers: headers,
-        body: requestBody,
+        body: (requestBody as Record<string, unknown>) || null,
       },
       options: {},
     };
@@ -674,12 +674,15 @@ export function useLoadingTemplate() {
 
         for (let i = 0; i < stringified.length; i++) {
           setTimeout(() => {
-            setOutput({
-              output: {
-                content: stringified.slice(0, i + 1),
+            setOutput(
+              {
+                output: {
+                  content: stringified.slice(0, i + 1),
+                },
+                type: RecipeOutputType.Streaming,
               },
-              type: RecipeOutputType.Streaming,
-            });
+              true
+            );
           }, getTime(t));
           t += speed;
         }
@@ -688,12 +691,15 @@ export function useLoadingTemplate() {
       }
 
       setTimeout(() => {
-        setOutput({
-          output,
-          type: RecipeOutputType.Response,
-          duration,
-          requestInfo: requestInfo,
-        });
+        setOutput(
+          {
+            output,
+            type: RecipeOutputType.Response,
+            duration,
+            requestInfo: requestInfo,
+          },
+          true
+        );
         setIsSending(false, RecipeOutputTab.Output);
       }, getTime(t));
     }

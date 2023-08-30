@@ -36,14 +36,7 @@ export function RecipeCodeView() {
   const [output, setOutput] = useState("Make a request first!");
   const selectedRecipe = useContext(RecipeContext)!;
 
-  const hasFileBinary = Object.values(
-    (selectedRecipe as Recipe).requestBody?.properties || {}
-  ).some(
-    (param) =>
-      // @ts-expect-error Redo for ifle support later
-      typeof param !== "boolean" && (param as JSONSchema6).type === "file"
-  );
-
+  const hasFileBinary = false;
   useEffect(() => {
     if (!requestInfo) {
       return;

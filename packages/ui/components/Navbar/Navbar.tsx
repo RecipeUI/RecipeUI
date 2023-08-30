@@ -80,7 +80,7 @@ export function Navbar() {
               </clipPath>
             </defs>
           </svg>
-          <h1 className="ml-4 dark:text-white  sm:block hidden">Playground</h1>
+          <h1 className="ml-4 dark:text-white  sm:block hidden">Home</h1>
         </button>
         <button
           onClick={() => {
@@ -194,7 +194,7 @@ function NavMenu({ user }: { user: User }) {
             Home
           </Link>
         </li>
-        <li>
+        {/* <li>
           <button
             onClick={() => {
               router.push(`/u/${user.username}`);
@@ -202,7 +202,7 @@ function NavMenu({ user }: { user: User }) {
           >
             Recipes
           </button>
-        </li>
+        </li> */}
         <li>
           <button
             onClick={async () => {

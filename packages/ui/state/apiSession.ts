@@ -1,7 +1,11 @@
 "use client";
 
 import { JSONSchema6 } from "json-schema";
-import { RecipeOutputType, RequestHeader } from "types/database";
+import {
+  RecipeOutputType,
+  RecipeTemplateFragment,
+  RequestHeader,
+} from "types/database";
 import {
   RecipeAuthType,
   RecipeMethod,
@@ -54,6 +58,7 @@ enum APIStore {
   SessionFolders = "SessionFolders",
   Secrets = "Secrets",
   Output = "Output",
+  MiniRecipes = "MiniRecipes",
 }
 
 export interface SessionsStore extends DBSchema {
@@ -64,6 +69,10 @@ export interface SessionsStore extends DBSchema {
   [APIStore.Config]: {
     key: string;
     value: APISessionConfig;
+  };
+  [APIStore.MiniRecipes]: {
+    key: string;
+    value: RecipeTemplateFragment[];
   };
   [APIStore.Sessions]: {
     key: "sessions";
@@ -84,7 +93,7 @@ export interface SessionsStore extends DBSchema {
 }
 
 const DB_CONFIG = {
-  NAME: "RECIPEUI_v1.11",
+  NAME: "RECIPEUI_ALPHA",
   // TODO: Need a better migration plan this is bad
   VERSION: 1,
 };
@@ -101,6 +110,7 @@ function getDB() {
         db.clear(APIStore.SessionFolders);
         db.clear(APIStore.Secrets);
         db.clear(APIStore.Output);
+        db.clear(APIStore.MiniRecipes);
 
         db.createObjectStore(APIStore.Parameters);
         db.createObjectStore(APIStore.Config);
@@ -108,6 +118,7 @@ function getDB() {
         db.createObjectStore(APIStore.SessionFolders);
         db.createObjectStore(APIStore.Secrets);
         db.createObjectStore(APIStore.Output);
+        db.createObjectStore(APIStore.MiniRecipes);
       },
     });
   }
@@ -314,9 +325,20 @@ export function useOutput(sessionId?: string) {
   }, [sessionId]);
 
   const setOutput = useCallback(
-    async (output: SessionOutput) => {
+    async (output: SessionOutput, mock?: boolean) => {
       if (sessionId) {
-        await updateOutput({ sessionId, sessionOutput: output });
+        await updateOutput({
+          sessionId,
+          sessionOutput: {
+            ...output,
+
+            ...(!mock
+              ? {
+                  created_at: new Date().toISOString(),
+                }
+              : null),
+          },
+        });
       }
       eventEmitter.emit("refreshState");
     },
@@ -335,5 +357,66 @@ export function useOutput(sessionId?: string) {
     output,
     setOutput,
     clearOutput: clear,
+  };
+}
+
+async function getMiniRecipeStore() {
+  return (await getDB()).transaction(APIStore.MiniRecipes, "readwrite").store;
+}
+
+async function getRecipes(recipeId: string) {
+  const store = await getMiniRecipeStore();
+  return store.get(recipeId);
+}
+
+export function useMiniRecipes(primaryRecipeId?: string) {
+  const [recipes, setRecipes] = useState<RecipeTemplateFragment[]>([]);
+
+  useEffect(() => {
+    function refreshRecipes() {
+      if (primaryRecipeId)
+        getRecipes(primaryRecipeId).then((output) => setRecipes(output || []));
+    }
+
+    refreshRecipes();
+
+    eventEmitter.on("refreshRecipes", refreshRecipes);
+    return () => {
+      eventEmitter.off("refreshRecipes", refreshRecipes);
+    };
+  }, [primaryRecipeId]);
+
+  const addRecipe = useCallback(
+    async (newMiniRecipe: RecipeTemplateFragment) => {
+      if (!primaryRecipeId) return;
+
+      const store = await getMiniRecipeStore();
+      const recipes = await store.get(primaryRecipeId);
+      const newRecipes = [...(recipes || []), newMiniRecipe];
+      await store.put(newRecipes, primaryRecipeId);
+      eventEmitter.emit("refreshRecipes");
+    },
+    [primaryRecipeId]
+  );
+
+  const deleteRecipe = useCallback(
+    async (miniRecipeIdToDelete: string) => {
+      if (!primaryRecipeId) return;
+
+      const store = await getMiniRecipeStore();
+      const recipes = await store.get(primaryRecipeId);
+      const newRecipes = (recipes || []).filter(
+        (recipe) => recipe.id !== miniRecipeIdToDelete
+      );
+      await store.put(newRecipes, primaryRecipeId);
+      eventEmitter.emit("refreshRecipes");
+    },
+    [primaryRecipeId]
+  );
+
+  return {
+    recipes,
+    addRecipe,
+    deleteRecipe,
   };
 }

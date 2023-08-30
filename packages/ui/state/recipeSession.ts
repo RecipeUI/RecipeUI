@@ -9,6 +9,7 @@ import {
   RecipeParameters,
   RecipeProject,
   RecipeTemplate,
+  RecipeTemplateFragment,
   RequestHeader,
   User,
 } from "types/database";
@@ -97,6 +98,7 @@ export interface SessionOutput {
   type: RecipeOutputType;
   duration?: number;
   requestInfo?: RecipeRequestInfo;
+  created_at?: string;
 }
 
 export interface RecipeRequestInfo {
@@ -116,9 +118,13 @@ interface RecipeOutputSlice {
   outputTab: RecipeOutputTab;
   setOutputTab: (tab: RecipeOutputTab) => void;
 
-  loadingTemplate: (RecipeTemplate & { speedFactor?: number }) | null;
+  loadingTemplate:
+    | ((RecipeTemplate | RecipeTemplateFragment) & { speedFactor?: number })
+    | null;
   setLoadingTemplate: (
-    template: (RecipeTemplate & { speedFactor?: number }) | null
+    template:
+      | ((RecipeTemplate | RecipeTemplateFragment) & { speedFactor?: number })
+      | null
   ) => void;
 }
 

@@ -32,8 +32,15 @@ import {
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/outline";
 import { useSecret } from "../../../state/apiSession";
+import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
 
 export function RecipeTemplatesTab() {
+  const editorMode = useRecipeSessionStore((state) => state.editorMode);
+
+  if (editorMode) {
+    return <RecipeTemplateEdit />;
+  }
+
   return (
     <div className="flex-1 relative">
       <div className="sm:absolute inset-0 mx-4 my-6 overflow-y-auto space-y-8">
@@ -212,7 +219,7 @@ export function UserTemplates() {
             isLocalFork={forkedTemplate?.id === template.id}
             setForkedTemplate={setForkedTemplate}
             newTemplateId={newTemplateId}
-            loadingTemplate={loadingTemplate}
+            loadingTemplate={loadingTemplate as RecipeTemplate}
             isTeam={isTeam}
           />
         ))}

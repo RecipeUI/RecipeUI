@@ -9,6 +9,7 @@ import {
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { useContext } from "react";
 import { RecipeMethod } from "types/enums";
+import { RecipeSaveButton } from "./RecipeSaveButton";
 
 export function RecipeEditBodySearch() {
   const url = useRecipeSessionStore((state) => state.editorUrl);
@@ -57,7 +58,7 @@ export function RecipeEditBodySearch() {
           </div>
           <div className="grid grid-flow-col gap-x-2">
             <RecipeSearchButton />
-            {/* <RecipePublishButton /> */}
+            <RecipeSaveButton />
           </div>
         </div>
       </div>
