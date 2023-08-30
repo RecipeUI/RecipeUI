@@ -26,7 +26,7 @@ export function useLoadingTemplate() {
   );
   const session = useRecipeSessionStore((state) => state.currentSession)!;
 
-  const { clearOutput, setOutput } = useOutput(session.id);
+  const { clearOutput, setOutput } = useOutput(session?.id);
   const setIsSending = useRecipeSessionStore((state) => state.setIsSending);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
