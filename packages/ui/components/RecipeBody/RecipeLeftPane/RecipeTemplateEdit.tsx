@@ -87,17 +87,21 @@ function UserMiniRecipe({
 
   const setTemplate = async () => {
     setEditorBody(
-      miniRecipe.requestBody ? JSON.stringify(miniRecipe.requestBody) : ""
+      miniRecipe.requestBody
+        ? JSON.stringify(miniRecipe.requestBody, null, 2)
+        : ""
     );
 
     if (miniRecipe.queryParams) {
       setEditorQuery(
-        miniRecipe.queryParams ? JSON.stringify(miniRecipe.queryParams) : ""
+        miniRecipe.queryParams
+          ? JSON.stringify(miniRecipe.queryParams, null, 2)
+          : ""
       );
     }
 
     setURLCode(
-      miniRecipe.urlParams ? JSON.stringify(miniRecipe.urlParams) : ""
+      miniRecipe.urlParams ? JSON.stringify(miniRecipe.urlParams, null, 2) : ""
     );
 
     setCurrentTab(RecipeOutputTab.DocTwo);
