@@ -1,15 +1,15 @@
 "use client";
 
-import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useMemo } from "react";
 import { useDebounce } from "usehooks-ts";
-import { EditorParamView } from "@/app/editor/CodeEditors/common";
+import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
   InitializeSchema,
-} from "@/app/editor/CodeEditors/EditorJSON";
+} from "./CodeEditors/EditorJSON";
 import classNames from "classnames";
-import { EditorTypeScript } from "@/app/editor/CodeEditors/EditorTypeScript";
+import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 
 export const EditorURL = () => {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);

@@ -9,6 +9,7 @@ import { APP_COOKIE } from "../utils/constants/main";
 import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 import { shallow } from "zustand/shallow";
 import { useDebounce } from "usehooks-ts";
+import { useIsTauri } from "../hooks/useIsTauri";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -19,6 +20,7 @@ export function useSaveRecipeUI() {
 
   const router = useRouter();
 
+  const isTauri = useIsTauri();
   useEffect(() => {
     setOnboarding(false);
 
@@ -53,7 +55,10 @@ export function useSaveRecipeUI() {
               Cookie.set(APP_COOKIE, "true", { expires: 7 });
 
               setUser(userInfo);
-              router.refresh();
+
+              if (!isTauri) {
+                router.refresh();
+              }
             }
           });
       } else if (event === "SIGNED_OUT") {

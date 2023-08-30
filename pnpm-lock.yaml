@@ -333,6 +333,9 @@ importers:
       '@heroicons/react':
         specifier: ^2.0.18
         version: 2.0.18(react@18.2.0)
+      '@monaco-editor/react':
+        specifier: ^4.5.2
+        version: 4.5.2(monaco-editor@0.41.0)(react-dom@18.2.0)(react@18.2.0)
       '@supabase/auth-helpers-nextjs':
         specifier: ^0.7.4
         version: 0.7.4(@supabase/supabase-js@2.31.0)
@@ -375,6 +378,9 @@ importers:
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
       lodash.debounce:
         specifier: ^4.0.8
         version: 4.0.8

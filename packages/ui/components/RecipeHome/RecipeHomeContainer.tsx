@@ -2,7 +2,7 @@
 
 import {
   RecipeContext,
-  RecipeNativeFetch,
+  RecipeNativeFetchContext,
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
@@ -30,8 +30,6 @@ export function RecipeHomeContainer({
   recipe?: Recipe;
   sharedTemplate?: UserTemplatePreview;
 }) {
-  const sessions = useRecipeSessionStore((state) => state.sessions);
-  const addSession = useRecipeSessionStore((state) => state.addSession);
   const router = useRouter();
 
   const [showShareModal, setShowShareModal] = useState(sharedTemplate != null);
@@ -67,7 +65,7 @@ export function RecipeHomeContainer({
     <div className={classNames("flex-1 flex flex-col p-8")}>
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          <RecipeNativeFetch.Provider value={fetchServer}>
+          <RecipeNativeFetchContext.Provider value={fetchServer}>
             <RecipeHomeHero />
             <RecipeHome globalProjects={globalProjects} projects={projects} />
             {showShareModal && sharedTemplate && (
@@ -78,7 +76,7 @@ export function RecipeHomeContainer({
                 }}
               />
             )}
-          </RecipeNativeFetch.Provider>
+          </RecipeNativeFetchContext.Provider>
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>

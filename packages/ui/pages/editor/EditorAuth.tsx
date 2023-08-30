@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRecipeSessionStore } from "ui/state/recipeSession";
-import { useDebounce } from "usehooks-ts";
-import { produce } from "immer";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
-import { deleteSecret, getSecret, saveSecret } from "ui/state/apiSession";
+import {
+  deleteSecret,
+  getSecret,
+  saveSecret,
+} from "../../../ui/state/apiSession";
 
 export function EditorAuth() {
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);

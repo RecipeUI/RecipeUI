@@ -115,6 +115,10 @@ function getDB() {
   return db;
 }
 
+export function initializeDB() {
+  return getDB();
+}
+
 async function getParameterStore() {
   return (await getDB()).transaction(APIStore.Parameters, "readwrite").store;
 }

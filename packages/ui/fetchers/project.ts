@@ -1,11 +1,5 @@
 import { SupabaseClient } from "@supabase/auth-helpers-nextjs";
-import {
-  Database,
-  Recipe,
-  RecipeProject,
-  UserTemplatePreview,
-} from "types/database";
-import { getProjectSplit } from "../utils/main";
+import { Database, Recipe, RecipeProject } from "types/database";
 
 interface ProjectFetcher {
   project: string;

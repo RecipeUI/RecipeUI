@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useEffect, useState } from "react";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
@@ -13,6 +13,7 @@ import NavAuthForm from "./NavAuthForm";
 import Cookie from "js-cookie";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import classNames from "classnames";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function Navbar() {
   const userSession = useRecipeSessionStore((state) => state.userSession);
@@ -31,25 +32,38 @@ export function Navbar() {
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
 
   const pathname = usePathname();
+
+  const isTauri = useIsTauri();
+
+  const router = useRouter();
+
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const setCurrentSession = useRecipeSessionStore(
+    (state) => state.setCurrentSession
+  );
+
   return (
     <div
       className={classNames(
         "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-10 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
       )}
     >
-      <div className="flex">
-        <Link
-          href="/"
+      <div className="flex text-sm items-center">
+        <button
           className="cursor-pointer flex items-center"
           onClick={() => {
-            // if (isTauri) {
-            //   setDesktopPage(null);
-            // }
+            setCurrentSession(null);
+
+            if (isTauri) {
+              setDesktopPage(null);
+            } else {
+              router.push("/");
+            }
           }}
         >
           <svg
-            width="23"
-            height="23 "
+            width="23px"
+            height="23px"
             viewBox="0 0 27 28"
             className="fill-black dark:fill-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -66,10 +80,25 @@ export function Navbar() {
               </clipPath>
             </defs>
           </svg>
-          <h1 className="ml-2 dark:text-white font-bold sm:block hidden">
-            RecipeUI
+          <h1 className="ml-4 dark:text-white  sm:block hidden">Playground</h1>
+        </button>
+        <button
+          onClick={() => {
+            setCurrentSession(null);
+
+            if (isTauri) {
+              setDesktopPage({
+                page: DesktopPage.Editor,
+              });
+            } else {
+              router.push("/editor");
+            }
+          }}
+        >
+          <h1 className="ml-2 text-sm dark:text-white sm:block hidden">
+            Editor
           </h1>
-        </Link>
+        </button>
       </div>
       <div />
       <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
@@ -84,7 +113,7 @@ export function Navbar() {
             Star us on Github!
           </Link>
         </li>
-        {pathname !== "/" && (
+        {/* {pathname !== "/" && (
           <li className="hidden sm:block">
             <Link
               href="/"
@@ -100,7 +129,7 @@ export function Navbar() {
               Home
             </Link>
           </li>
-        )}
+        )} */}
         {!user ? (
           <li>
             <button

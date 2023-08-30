@@ -9,14 +9,7 @@ import classNames from "classnames";
 import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover, useSessionStorage } from "usehooks-ts";
-import { useIsMobile } from "../../hooks";
-import {
-  Cog6ToothIcon,
-  PlusCircleIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { RecipeHomeSidebar } from "./RecipeHomeSidebar";
-import { useIsTauri } from "../../hooks/useIsTauri";
+import { Cog6ToothIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import {
   getConfigForSessionStore,
   getParametersForSessionStore,
@@ -94,7 +87,7 @@ export function RecipeSidebar() {
         <button
           className="text-start py-2 px-4 w-full"
           onClick={() => {
-            setCurrentSession(null, false);
+            setCurrentSession(null, true);
           }}
         >
           <h3 className="font-bold text-xs cursor-pointer p-0 text-start flex justify-between">

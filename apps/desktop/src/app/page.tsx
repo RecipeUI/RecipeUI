@@ -13,30 +13,54 @@ import {
   FetchRequest,
   FetchResponse,
   RecipeContext,
-  RecipeNativeFetch,
+  RecipeNativeFetchContext,
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "ui/state/recipeSession";
 import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "ui/components/RecipeBody";
 import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
+import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
-import NewPage from "ui/pages/new";
+import EditorPage from "ui/pages/editor/EditorPage";
 
 export default function Container() {
+  const invokeMemoized = useMemo(() => {
+    return (payload: FetchRequest) =>
+      invoke<FetchResponse>("fetch_wrapper", payload as unknown as InvokeArgs);
+  }, []);
+
+  useEffect(() => {
+    initializeDB();
+  }, []);
+
+  return (
+    <RecipeNativeFetchContext.Provider value={invokeMemoized}>
+      <Page />
+    </RecipeNativeFetchContext.Provider>
+  );
+}
+
+export function Page() {
   const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
 
   if (!desktopPage) {
     return <HomePage />;
   }
+
   if (desktopPage.page === DesktopPage.Project) {
     return <ProjectPage project={desktopPage.pageParam} />;
   }
-  if (desktopPage.page === DesktopPage.New) {
-    return <NewPage />;
+  if (desktopPage.page === DesktopPage.RecipeView) {
+    return <RecipePage api_id={desktopPage.pageParam} />;
   }
-  return <HomePage />;
+
+  if (desktopPage.page === DesktopPage.Editor) {
+    return <EditorPage />;
+  }
+
+  return <div className="p-4">404</div>;
 }
 
 function HomePage() {
@@ -52,11 +76,7 @@ function HomePage() {
     (projectData?.data || []) as RecipeProject[]
   );
 
-  const {
-    data: recipe,
-    isLoading: isLoadingRecipe,
-    refetch,
-  } = useQuery({
+  const { data: recipe, isLoading: isLoadingRecipe } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [QueryKey.RecipesHomeView, currentSession?.recipeId],
     queryFn: async () => {
@@ -76,48 +96,32 @@ function HomePage() {
       : null;
   }, [globalProjects, userProjects, recipe]);
 
-  const invokeMemoized = useMemo(() => {
-    return (payload: FetchRequest) =>
-      invoke<FetchResponse>("fetch_wrapper", payload as unknown as InvokeArgs);
-  }, []);
-
   if (isLoadingHome || isLoadingRecipe) {
     return <Loading />;
   }
-
-  const hasSession = currentSession != null && recipe;
 
   return (
     <div
       className={classNames(
         "flex-1 flex flex-col",
-        currentSession == null && "p-4 sm:px-6 sm:pb-6 sm:pt-4"
+        "p-4 sm:px-6 sm:pb-6 sm:pt-4"
       )}
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          <RecipeNativeFetch.Provider value={invokeMemoized}>
-            {!hasSession && <RecipeHomeHero />}
-            <RecipeBodySearch />
-            {hasSession ? (
-              <RecipeBody />
-            ) : (
-              <RecipeHome
-                globalProjects={globalProjects}
-                projects={userProjects}
-              />
-            )}
-          </RecipeNativeFetch.Provider>
+          <RecipeHomeHero />
+          <RecipeHome globalProjects={globalProjects} projects={userProjects} />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
   );
 }
 
-import { fetchProjectPage } from "ui/fetchers/project";
+import { fetchProject, fetchProjectPage } from "ui/fetchers/project";
 import { ProjectContainer } from "ui/components/Project/ProjectContainer";
 import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
+import { initializeDB } from "ui/state/apiSession";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = useSupabaseClient();
@@ -148,4 +152,40 @@ function ProjectPage({ project: projectParam }: { project: string }) {
       recipes={recipes}
     />
   );
+}
+
+function RecipePage({ api_id }: { api_id: string }) {
+  const supabase = useSupabaseClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: [QueryKey.RecipesView, api_id, supabase],
+    queryFn: async () => {
+      const recipe = await fetchHomeRecipe({
+        supabase,
+        recipeId: api_id,
+      });
+
+      const project = recipe
+        ? await fetchProject({
+            project: recipe.project,
+            supabase,
+          })
+        : null;
+
+      return {
+        recipe,
+        project,
+      };
+    },
+  });
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!data) {
+    return <div>App 404</div>;
+  }
+
+  return <RecipeAPI project={data.project} recipe={data.recipe} />;
 }

@@ -30,6 +30,7 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
     for (key, value) in payload.headers {
         request_builder = request_builder.header(key, value);
     }
+    request_builder = request_builder.header("User-Agent", "RecipeUI/1");
 
     if payload.body.is_some() {
         request_builder = request_builder.header("Content-Type", "application/json");

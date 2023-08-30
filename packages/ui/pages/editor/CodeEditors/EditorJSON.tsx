@@ -11,12 +11,12 @@ import {
   DEFAULT_MONACO_OPTIONS,
   EditorParamView,
   LIGHTTHEME_SETTINGS,
-} from "@/app/editor/CodeEditors/common";
+} from "./common";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import classNames from "classnames";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { useRecipeSessionStore } from "ui/state/recipeSession";
-import { API_SAMPLES } from "ui/utils/constants/main";
+import { useRecipeSessionStore } from "../../../../ui/state/recipeSession";
+import { API_SAMPLES } from "../../../../ui/utils/constants/main";
 import { produce } from "immer";
 
 export function EditorViewWithSchema({

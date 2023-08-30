@@ -8,7 +8,7 @@ import {
   FetchRequest,
   FetchResponse,
   RecipeContext,
-  RecipeNativeFetch,
+  RecipeNativeFetchContext,
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
@@ -73,7 +73,7 @@ export function RecipeSearchButton() {
     }, 0);
   };
 
-  const nativeFetch = useContext(RecipeNativeFetch)!;
+  const nativeFetch = useContext(RecipeNativeFetchContext)!;
 
   const _onSubmit = async () => {
     if (!currentSession) return;
@@ -472,6 +472,7 @@ export function RecipeSearchButton() {
       // ------ Parse Response -------
       let output: Record<string, unknown> = {};
       const isStatusOk = status >= 200 && status < 300;
+      console.debug({ output, status });
 
       if (contentType?.includes("application/json")) {
         try {

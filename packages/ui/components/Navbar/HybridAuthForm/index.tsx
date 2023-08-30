@@ -36,7 +36,8 @@ export default function HybridAuthForm({
                   console.error(error);
                   return;
                 }
-                location.reload();
+
+                // location.reload();
               });
           }
         })

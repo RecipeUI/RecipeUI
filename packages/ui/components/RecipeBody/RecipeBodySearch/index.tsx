@@ -51,7 +51,10 @@ export function RecipeBodySearch() {
             )}
             <input
               className={classNames("outline-none w-full dark:bg-transparent")}
-              {...(currentSession && { value: selectedRecipe?.path })}
+              {...(currentSession && {
+                value: selectedRecipe?.path,
+                onChange: () => {},
+              })}
             />
           </div>
           {currentSession != null && selectedRecipe != null && (

@@ -1,29 +1,19 @@
-import { useContext, useEffect, useState } from "react";
-import classNames from "classnames";
+"use client";
 
-import { RecipeAuthType, RecipeMutationContentType } from "types/enums";
+import { useContext, useState } from "react";
+
+import { RecipeMutationContentType } from "types/enums";
 import {
+  DesktopPage,
   RecipeContext,
-  RecipeOutputTab,
-  RecipeProjectContext,
-  RecipeSession,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { DOC_LINKS } from "../../../utils/docLinks";
-import { Database } from "types/database";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import {
-  deleteSecret,
-  getSecret,
-  saveSecret,
-  setConfigForSessionStore,
-} from "../../../state/apiSession";
-import { v4 as uuidv4 } from "uuid";
+import { setConfigForSessionStore } from "../../../state/apiSession";
 import { JSONSchema6 } from "json-schema";
 import { useSessionStorage } from "usehooks-ts";
 import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
+import { useIsTauri } from "../../../hooks/useIsTauri";
 
 export function RecipeForkTab() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -37,9 +27,19 @@ export function RecipeForkTab() {
   const [_, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
 
   const [loading, setLoading] = useState(false);
+
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
   const onSubmit = async () => {
     if (!selectedRecipe) {
       alert("No recipe selected");
+      return;
+    }
+
+    if (!user) {
+      alert("You must be logged in to fork a recipe");
+      // Nothing really blocking this! So if you fork this code, you can just remove it.
       return;
     }
 
@@ -83,7 +83,14 @@ export function RecipeForkTab() {
 
       setRecipeFork(selectedRecipe.id);
 
-      router.push(`/editor`);
+      if (isTauri) {
+        setDesktopPage({
+          page: DesktopPage.Editor,
+          pageParam: selectedRecipe.id,
+        });
+      } else {
+        router.push(`/editor`);
+      }
     } catch (e) {}
     setLoading(false);
   };
@@ -93,23 +100,34 @@ export function RecipeForkTab() {
       <div className="alert flex flex-col items-start w-full bg-accent dark:bg-base-200">
         <div className="w-full space-y-4 text-start">
           <h1 className="font-bold text-xl">Fork into RecipeUI Editor</h1>
-          <p>
-            Our API tool is a Postman alternative that is built on Rust and
-            provides native{" "}
-            <span className="font-bold">
-              TypeScript linting for request parameters!
-            </span>
-          </p>
+          {isTauri ? (
+            <p>
+              Fork into our <span className="font-bold">TypeScript-First</span>{" "}
+              API tool! Figure out the parameters on your own.
+            </p>
+          ) : (
+            <p>
+              Our API tool is a Postman alternative that is built on Rust and
+              provides native{" "}
+              <span className="font-bold">
+                TypeScript linting for request parameters!
+              </span>
+            </p>
+          )}
           <div className="flex space-x-2">
             <button
               className="btn btn-primary btn-sm"
               disabled={loading}
               onClick={onSubmit}
             >
-              Fork Web
+              {isTauri ? "Fork" : "Fork Web"}
               {loading && <span className="loading loading-bars"></span>}
             </button>
-            <button className="btn btn-primary btn-sm">Download Desktop</button>
+            {!isTauri && (
+              <button className="btn btn-primary btn-sm">
+                Download Desktop
+              </button>
+            )}
           </div>
         </div>
       </div>

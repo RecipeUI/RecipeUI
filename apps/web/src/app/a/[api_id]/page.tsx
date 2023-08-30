@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { fetchHomeRecipe } from "ui/fetchers/home";
 import { RecipeAPI } from "ui/components/RecipeAPI";
 import { fetchProject } from "ui/fetchers/project";
+import { RecipeNativeFetchContext } from "ui/state/recipeSession";
+import { ServerFetchProvider } from "ui/components/Providers/ServerFetchProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -33,5 +35,9 @@ export default async function APIPage({
       })
     : null;
 
-  return <RecipeAPI project={project} recipe={recipe} />;
+  return (
+    <ServerFetchProvider>
+      <RecipeAPI project={project} recipe={recipe} />
+    </ServerFetchProvider>
+  );
 }

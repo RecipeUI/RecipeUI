@@ -257,7 +257,6 @@ export function SuccessAnimation({
 }) {
   const router = useRouter();
   const recipe = useContext(RecipeContext)! ?? passiveRecipe!;
-  const addSession = useRecipeSessionStore((state) => state.addSession);
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const queryClient = useQueryClient();
@@ -276,7 +275,7 @@ export function SuccessAnimation({
           });
         } else {
           if (needsSession) {
-            const newSession = addSession(recipe);
+            // const newSession = addSession(recipe);
           } else {
             const newParams = new URLSearchParams(
               (searchParams as unknown as URLSearchParams) || undefined

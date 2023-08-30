@@ -8,14 +8,14 @@ import {
   DEFAULT_MONACO_OPTIONS,
   EditorParamView,
   LIGHTTHEME_SETTINGS,
-} from "@/app/editor/CodeEditors/common";
+} from "./common";
 import {
   AutoSaveError,
   InitializeSchema,
   handleEditorWillMount,
-} from "@/app/editor/CodeEditors/EditorJSON";
+} from "./EditorJSON";
 
-import { fetchTypeScriptFromJSON } from "ui/fetchers/editor";
+import { fetchTypeScriptFromJSON } from "../../../../ui/fetchers/editor";
 import { JSONSchema6 } from "json-schema";
 
 /*

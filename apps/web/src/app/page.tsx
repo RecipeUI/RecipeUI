@@ -26,7 +26,7 @@ export default async function Home({
   if (Object.keys(searchParams).length === 0) {
     const showApp = cookieStore.get(APP_COOKIE)?.value !== undefined;
     if (!showApp && process.env.NEXT_PUBLIC_ENV !== "dev") {
-      redirect("https://home.recipeui.com/");
+      // redirect("https://home.recipeui.com/");
     }
   }
 

@@ -1,7 +1,14 @@
 "use client";
 
 import { RecipeMutationContentType } from "types/enums";
-import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
+import { EditorParamView } from "./CodeEditors/common";
+import {
+  EditorViewWithSchema,
+  InitializeSchema,
+} from "./CodeEditors/EditorJSON";
+
+import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 
 export function EditorBody() {
   const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
@@ -34,14 +41,6 @@ export function EditorBody() {
     </div>
   );
 }
-
-import { EditorParamView } from "@/app/editor/CodeEditors/common";
-import {
-  EditorViewWithSchema,
-  InitializeSchema,
-} from "@/app/editor/CodeEditors/EditorJSON";
-
-import { EditorTypeScript } from "@/app/editor/CodeEditors/EditorTypeScript";
 
 export const JSONEditorContainer = () => {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);

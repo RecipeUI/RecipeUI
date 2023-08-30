@@ -1,16 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useDebounce } from "usehooks-ts";
 import { produce } from "immer";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export function EditHeaders() {
-  // const [headers, setHeaders] = useState<Record<string, string>>({});
-  // editorHeaders: Record<string, string>;
-  // setEditorHeaders: (editorHeaders: Record<string, string>) => void;
-
   const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
   const setEditorHeaders = useRecipeSessionStore(
     (state) => state.setEditorHeaders

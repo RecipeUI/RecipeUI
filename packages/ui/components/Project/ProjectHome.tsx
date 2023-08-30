@@ -1,11 +1,12 @@
 "use client";
 
-import { useRecipeSessionStore } from "../../state/recipeSession";
+import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { Recipe, RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 
 export function ProjectHome({
   project,
@@ -60,7 +61,7 @@ function ProjectHomeBox({
   project: RecipeProject;
 }) {
   const router = useRouter();
-  const addSession = useRecipeSessionStore((state) => state.addSession);
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const createdAt = new Date(recipe.created_at!);
   const currentTime = new Date();
   const difference = currentTime.getTime() - createdAt.getTime();
@@ -75,6 +76,11 @@ function ProjectHomeBox({
       onClick={() => {
         if (!isTauri) {
           router.push(`/a/${recipe.id}`);
+        } else {
+          setDesktopPage({
+            page: DesktopPage.RecipeView,
+            pageParam: recipe.id,
+          });
         }
       }}
     >

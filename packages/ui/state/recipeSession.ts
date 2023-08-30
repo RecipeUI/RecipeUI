@@ -1,3 +1,4 @@
+"use client";
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 
 import {
@@ -59,9 +60,6 @@ interface RecipeSessionSlice {
   updateCurrentSessionMethod: (method: RecipeMethod) => void;
   updateSessionName: (session: RecipeSession, name: string) => void;
 
-  addSession: (
-    selectedRecipe: Pick<Recipe, "title" | "id" | "method">
-  ) => RecipeSession;
   closeSession: (session: RecipeSession) => RecipeSession | undefined;
 
   addEditorSession: (session?: RecipeSession) => RecipeSession;
@@ -421,7 +419,10 @@ export const createRecipeEditorSlice: StateCreator<
           bodyRoute: RecipeBodyRoute.Body,
           outputTab: RecipeOutputTab.DocTwo,
           requestInfo: null,
-          desktopPage: null,
+          desktopPage: {
+            page: DesktopPage.Editor,
+            pageParam: editorSession.currentSession?.id,
+          },
           editorMode: true,
         };
       });
@@ -608,6 +609,8 @@ interface FileManagerSlice {
 export enum DesktopPage {
   Project = "Project",
   New = "New",
+  RecipeView = "RecipeView",
+  Editor = "Editor",
 }
 
 type DesktopPageShape =
@@ -617,6 +620,14 @@ type DesktopPageShape =
     }
   | {
       page: DesktopPage.New;
+    }
+  | {
+      page: DesktopPage.RecipeView;
+      pageParam: string;
+    }
+  | {
+      page: DesktopPage.Editor;
+      pageParam?: string;
     }
   | null;
 interface DesktopStateSlice {
@@ -639,7 +650,9 @@ export const createDesktopSlice: StateCreator<
   DesktopStateSlice
 > = (set) => {
   return {
-    desktopPage: null,
+    desktopPage: {
+      page: DesktopPage.Editor,
+    },
     setDesktopPage: (pageProps) =>
       set(() => ({
         desktopPage: pageProps,
@@ -679,7 +692,7 @@ const createRecipeSessionSlice: StateCreator<
             ? RecipeOutputTab.DocTwo
             : RecipeOutputTab.Output,
           requestInfo: null,
-          desktopPage: null,
+          ...(session === null && !editorMode ? { desktopPage: null } : {}),
         };
       }),
 
@@ -719,26 +732,6 @@ const createRecipeSessionSlice: StateCreator<
         };
       });
     },
-    addSession: (selectedRecipe) => {
-      const newSession: RecipeSession = {
-        id: uuidv4(),
-        name: selectedRecipe.title,
-        recipeId: selectedRecipe.id,
-        apiMethod: selectedRecipe.method,
-      };
-      set((prevState) => {
-        return {
-          bodyRoute: RecipeBodyRoute.Parameters,
-          currentSession: newSession,
-          sessions: [...prevState.sessions, newSession],
-          outputTab: RecipeOutputTab.Docs,
-          requestInfo: null,
-          desktopPage: null,
-          ...getEmptyParameters(),
-        };
-      });
-      return newSession;
-    },
 
     addEditorSession(session?: RecipeSession) {
       const newSession: RecipeSession = session ?? {
@@ -757,7 +750,10 @@ const createRecipeSessionSlice: StateCreator<
           sessions: [...prevState.sessions, newSession],
           outputTab: RecipeOutputTab.Output,
           requestInfo: null,
-          desktopPage: null,
+          desktopPage: {
+            page: DesktopPage.Editor,
+            pageParam: newSession.id,
+          },
           editorMode: true,
         };
       });
@@ -980,6 +976,6 @@ export interface FetchResponse {
   contentType: string;
 }
 
-export const RecipeNativeFetch = createContext<
+export const RecipeNativeFetchContext = createContext<
   ((req: FetchRequest) => Promise<FetchResponse>) | null
 >(null);

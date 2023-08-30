@@ -1,14 +1,14 @@
 "use client";
 
-import { useRecipeSessionStore } from "ui/state/recipeSession";
+import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useMemo } from "react";
 import { useDebounce } from "usehooks-ts";
-import { EditorParamView } from "@/app/editor/CodeEditors/common";
+import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
   InitializeSchema,
-} from "@/app/editor/CodeEditors/EditorJSON";
-import { EditorTypeScript } from "@/app/editor/CodeEditors/EditorTypeScript";
+} from "./CodeEditors/EditorJSON";
+import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);

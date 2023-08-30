@@ -2,19 +2,18 @@
 
 import {
   RecipeContext,
-  RecipeNativeFetch,
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeBody } from "../RecipeBody";
-import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import classNames from "classnames";
 
 import { Recipe, RecipeProject } from "types/database";
-import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 import { useEffect } from "react";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 import { useOutput } from "../../state/apiSession";
+import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
+import { RecipeBody } from "../RecipeBody";
+import { Loading } from "../Loading";
 
 export function RecipeAPI({
   recipe,
@@ -26,6 +25,7 @@ export function RecipeAPI({
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   const { clearOutput } = useOutput(PLAYGROUND_SESSION_ID);
 
@@ -56,14 +56,16 @@ export function RecipeAPI({
     );
   }
 
+  if (!currentSession) {
+    return <Loading />;
+  }
+
   return (
     <div className={classNames("flex-1 flex flex-col z-0")}>
       <RecipeContext.Provider value={recipe}>
         <RecipeProjectContext.Provider value={project}>
-          <RecipeNativeFetch.Provider value={fetchServer}>
-            <RecipeBodySearch />
-            <RecipeBody />
-          </RecipeNativeFetch.Provider>
+          <RecipeBodySearch />
+          <RecipeBody />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
