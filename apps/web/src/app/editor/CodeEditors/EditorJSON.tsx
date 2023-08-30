@@ -9,8 +9,9 @@ import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
   DEFAULT_MONACO_OPTIONS,
+  EditorParamView,
   LIGHTTHEME_SETTINGS,
-} from "@/app/editor/common";
+} from "@/app/editor/CodeEditors/common";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import classNames from "classnames";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
@@ -25,7 +26,7 @@ export function EditorViewWithSchema({
 }: {
   value: string;
   setValue: (value: string) => void;
-  jsonSchema: JSONSchema6;
+  jsonSchema: JSONSchema6 | null;
 }) {
   const { isDarkMode } = useDarkMode();
   const monacoRef = useRef<Monaco>();
@@ -68,9 +69,9 @@ export function EditorViewWithSchema({
 
   const debouncedMatching = useDebounce(value, 500);
 
-  useEffect(() => {
-    renderModelMarkers();
-  }, [debouncedMatching]);
+  // useEffect(() => {
+  //   renderModelMarkers();
+  // }, [debouncedMatching]);
 
   const handleEditorMount: OnMount = (editor, monaco) => {
     monacoRef.current = monaco;
@@ -136,7 +137,12 @@ export const handleEditorWillMount: BeforeMount = (monaco) => {
   );
 };
 
-const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
+const setJSONDiagnosticOptions = (
+  monaco: Monaco,
+  jsonSchema?: JSONSchema6 | null
+) => {
+  if (!jsonSchema) return;
+
   const wrapSchemaInVariables = (schema: JSONSchema6, variables?: string[]) => {
     if (!variables || variables.length === 0) return schema;
 
@@ -208,13 +214,13 @@ const setJSONDiagnosticOptions = (monaco: Monaco, jsonSchema: JSONSchema6) => {
       {
         uri: monaco.Uri.parse("API_REQUEST").toString(),
         fileMatch: ["*"],
-        schema: wrapSchemaInVariables(jsonSchema, ["API_KEY", "API_URL"]),
+        schema: wrapSchemaInVariables(jsonSchema),
       },
     ],
   });
 };
 
-export function InitializeSchema({ type }: { type: "query" | "body" | "url" }) {
+export function InitializeSchema({ type }: { type: EditorParamView }) {
   const editQueryType = useRecipeSessionStore(
     (state) => state.setEditorQuerySchemaType
   );

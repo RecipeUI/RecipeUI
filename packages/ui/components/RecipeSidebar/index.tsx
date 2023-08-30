@@ -107,12 +107,12 @@ export function RecipeSidebar() {
         <h3 className="font-bold text-xs ml-4">Sessions</h3>
       </div>
       <div>
-        {sessions.length >= 10 && (
+        {/* {sessions.length >= 10 && (
           <div className="px-4 py-2 text-xs w-full text-start relative flex bg-warning dark:text-black animate-pulse">
             Having 10 or more sessions is not recommended. Consider closing some
             and take advantage of recipes instead.
           </div>
-        )}
+        )} */}
 
         {sessions.map((session) => {
           const isCurrentSession = currentSession?.id === session.id;

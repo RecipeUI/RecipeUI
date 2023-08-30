@@ -27,7 +27,7 @@ import {
 } from "ui/utils/constants/main";
 import { RecipeOptions } from "types/database";
 import { EditorURL } from "@/app/editor/EditorURL";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -53,6 +53,8 @@ function NewRequest() {
   );
 
   const [curlModal, setCurlModal] = useState(false);
+
+  const router = useRouter();
 
   return (
     <div
@@ -80,10 +82,16 @@ function NewRequest() {
           <NewRequestAction
             label="OpenAI Chat Completion"
             description="Figure out how to do generative AI with OpenAI's API."
+            onClick={() => {
+              router.push("/a/e4a005d1-a279-45c8-98c2-9165a4483713");
+            }}
           />
           <NewRequestAction
             label="Pokemon API"
             description="Lightweight, fun, and no Auth needed."
+            onClick={() => {
+              router.push("/a/c645327c-4652-4572-aa39-35388943abf8");
+            }}
           />
         </section>
       </div>
@@ -195,13 +203,13 @@ function CurlModal({ onClose }: { onClose: () => void }) {
           value={curlString}
           onChange={(e) => setCurlString(e.target.value)}
         />
-        <button
-          className="btn btn-accent btn-sm"
-          onClick={onSubmit}
-          disabled={loading}
-        >
-          Submit
-        </button>
+        {loading ? (
+          <span className="loading  loading-lg loading-bars"></span>
+        ) : (
+          <button className="btn btn-accent btn-sm" onClick={onSubmit}>
+            Submit
+          </button>
+        )}
       </div>
     </Modal>
   );
@@ -254,34 +262,35 @@ function CoreEditor() {
       editorBodySchemaType,
     } = state;
 
-    console.log("state", {
-      editorURLSchemaJSON,
-      editorURLSchemaType,
-      editorQuerySchemaJSON,
-      editorQuerySchemaType,
-      editorBodySchemaJSON,
-      editorBodySchemaType,
-    });
+    return null;
+    // console.log("state", {
+    //   editorURLSchemaJSON,
+    //   editorURLSchemaType,
+    //   editorQuerySchemaJSON,
+    //   editorQuerySchemaType,
+    //   editorBodySchemaJSON,
+    //   editorBodySchemaType,
+    // });
 
-    if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
-      console.log({
-        auth: [
-          {
-            type: state.editorAuth.type,
-            payload: {
-              name: state.editorAuth.meta,
-            },
-          },
-        ],
-        ...(state.editorAuth.docs
-          ? {
-              docs: {
-                auth: state.editorAuth.docs,
-              },
-            }
-          : {}),
-      } as RecipeOptions);
-    }
+    // if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
+    //   console.log({
+    //     auth: [
+    //       {
+    //         type: state.editorAuth.type,
+    //         payload: {
+    //           name: state.editorAuth.meta,
+    //         },
+    //       },
+    //     ],
+    //     ...(state.editorAuth.docs
+    //       ? {
+    //           docs: {
+    //             auth: state.editorAuth.docs,
+    //           },
+    //         }
+    //       : {}),
+    //   } as RecipeOptions);
+    // }
 
     return null;
   });

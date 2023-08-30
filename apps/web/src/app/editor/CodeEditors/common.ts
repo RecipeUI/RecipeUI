@@ -29,3 +29,9 @@ export const DEFAULT_MONACO_OPTIONS = {
   renderLineHighlight: "none",
   fixedOverflowWidgets: true,
 } as const;
+
+export enum EditorParamView {
+  Query = "query",
+  Body = "body",
+  Url = "url",
+}

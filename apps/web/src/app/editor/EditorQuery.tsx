@@ -1,27 +1,14 @@
 "use client";
 
 import { useRecipeSessionStore } from "ui/state/recipeSession";
-
-import MonacoEditor from "@monaco-editor/react";
-import { useEffect, useMemo, useState } from "react";
-import { useDarkMode, useDebounce } from "usehooks-ts";
+import { useMemo } from "react";
+import { useDebounce } from "usehooks-ts";
+import { EditorParamView } from "@/app/editor/CodeEditors/common";
 import {
-  DARKTHEME_SETTINGS,
-  DEFAULT_MONACO_OPTIONS,
-  LIGHTTHEME_SETTINGS,
-} from "@/app/editor/common";
-import {
-  API_LOCAL_PROCESSING_URLS,
-  API_TYPE_NAMES,
-} from "ui/utils/constants/main";
-import {
-  AutoSaveError,
   EditorViewWithSchema,
   InitializeSchema,
-  handleEditorWillMount,
-} from "@/app/editor/EditorViewWithSchema";
-import { getIsEmptySchema } from "ui/utils/main";
-import { EditorURLHighlight } from "@/app/editor/EditorURL";
+} from "@/app/editor/CodeEditors/EditorJSON";
+import { EditorTypeScript } from "@/app/editor/CodeEditors/EditorTypeScript";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -48,6 +35,16 @@ export const EditorQuery = () => {
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
+  const setSchemaJSON = useRecipeSessionStore(
+    (state) => state.setEditorQuerySchemaJSON
+  );
+  const setSchemaType = useRecipeSessionStore(
+    (state) => state.setEditorQuerySchemaType
+  );
+  const schemaType = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaType
+  );
+
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
       <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto">
@@ -62,109 +59,21 @@ export const EditorQuery = () => {
           </>
         )}
       </div>
-      {editorQuerySchemaJSON ? (
+      {editorQuerySchemaJSON || editorQuery ? (
         <EditorViewWithSchema
           value={editorQuery}
           setValue={setEditorQuery}
           jsonSchema={editorQuerySchemaJSON}
         />
       ) : (
-        <InitializeSchema type="query" />
+        <InitializeSchema type={EditorParamView.Query} />
       )}
-      <EditorType key={currentSession?.id || "default"} />
-    </div>
-  );
-};
-
-const EditorType = () => {
-  const { isDarkMode } = useDarkMode();
-  const schemaType = useRecipeSessionStore(
-    (state) => state.editorQuerySchemaType
-  );
-  const editSchemaType = useRecipeSessionStore(
-    (state) => state.setEditorQuerySchemaType
-  );
-  const editSchemaJSON = useRecipeSessionStore(
-    (state) => state.setEditorQuerySchemaJSON
-  );
-
-  const [hasChanged, setHasChanged] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const changesMade = useDebounce(schemaType, 2000);
-  const finalizedChanges = useDebounce(schemaType, 3000);
-  useEffect(() => {
-    if (hasChanged) setHasChanged(false);
-    if (hasError) setHasError(false);
-  }, [schemaType]);
-
-  useEffect(() => {
-    if (!hasChanged && changesMade !== finalizedChanges) {
-      setHasChanged(true);
-    } else {
-      setHasChanged(false);
-    }
-  }, [changesMade]);
-
-  useEffect(() => {
-    if (hasChanged) {
-      if (schemaType === "") {
-        editSchemaJSON(null);
-        setHasChanged(false);
-        return;
-      }
-
-      setRefreshing(true);
-
-      // We have to migrate off of here eventually
-      // Will mod this package so that it doesn't need a server
-      fetch(API_LOCAL_PROCESSING_URLS.TS_TO_JSON, {
-        body: JSON.stringify({ types: schemaType }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then(async (res) => {
-          const value = await res.json();
-          editSchemaJSON(value);
-        })
-        .catch((err) => {
-          setHasError(true);
-          setTimeout(() => {
-            setHasError(false);
-          }, 3000);
-        })
-        .finally(() => {
-          setRefreshing(false);
-          setHasChanged(false);
-        });
-    }
-  }, [finalizedChanges]);
-
-  const [hasError, setHasError] = useState(false);
-
-  if (!schemaType) {
-    return <InitializeSchema type="query" />;
-  }
-
-  return (
-    <div className="relative">
-      <MonacoEditor
-        className="border-t border-recipe-slate pt-2"
-        language="typescript"
-        theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
-        value={schemaType || ""}
-        onChange={(newCode) => {
-          editSchemaType(newCode || "");
-        }}
-        beforeMount={handleEditorWillMount}
-        options={DEFAULT_MONACO_OPTIONS}
-      />
-      <AutoSaveError
-        hasChanged={hasChanged}
-        hasError={hasError}
-        refreshing={refreshing}
+      <EditorTypeScript
+        key={currentSession?.id || "default"}
+        setSchemaJSON={setSchemaJSON}
+        setSchemaType={setSchemaType}
+        editorParamView={EditorParamView.Query}
+        schemaType={schemaType}
       />
     </div>
   );
