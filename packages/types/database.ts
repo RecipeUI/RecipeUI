@@ -12,6 +12,7 @@ import {
   RecipeProjectStatus,
   Visibility,
 } from "./enums";
+import { JSONSchema6 } from "json-schema";
 
 type Nullable<T> = T | null;
 
@@ -30,18 +31,18 @@ export type Database = MergeDeep<
             templates: Nullable<RecipeTemplate[]>;
             options: Nullable<RecipeOptions>;
             method: RecipeMethod;
-            requestBody: Nullable<RecipeRequestBody>;
-            queryParams: Nullable<RecipeObjectSchemas>;
-            urlParams: Nullable<RecipeObjectSchemas>;
+            requestBody: Nullable<JSONSchema6>;
+            queryParams: Nullable<JSONSchema6>;
+            urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
           };
           Insert: {
             templates: Nullable<RecipeTemplate[]>;
             options: Nullable<RecipeOptions>;
             method: RecipeMethod;
-            requestBody: Nullable<RecipeRequestBody>;
-            queryParams: Nullable<RecipeObjectSchemas>;
-            urlParams: Nullable<RecipeObjectSchemas>;
+            requestBody: Nullable<JSONSchema6>;
+            queryParams: Nullable<JSONSchema6>;
+            urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
           };
         };
@@ -138,7 +139,7 @@ export interface RecipeNumericalParam extends RecipeParamCore<number> {
   maximum?: number;
 }
 
-export type RecipeObjectSchemas = (RecipeParam & { name: string })[];
+export type RecipeObjectSchemas = JSONSchema6;
 
 export interface RecipeObjectParam extends RecipeParamCore {
   type: RecipeParamType.Object;

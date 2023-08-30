@@ -11,10 +11,7 @@ import {
 } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
 import { RecipeSaveButton } from "../../RecipeBody/RecipeBodySearch/RecipeSaveButton";
-import {
-  useLoadingTemplate,
-  useLoadingTemplatev1,
-} from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
+import { useLoadingTemplate } from "../../RecipeBody/RecipeBodySearch/useLoadingTemplate";
 
 export function RecipeBodySearch() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
@@ -25,33 +22,7 @@ export function RecipeBodySearch() {
 
   const selectedRecipe = useContext(RecipeContext);
 
-  if (selectedRecipe?.version === 1) {
-    return <NewLoadingTemplate />;
-  }
-
-  return <OldLoadingTemplate />;
-}
-
-function OldLoadingTemplate() {
   useLoadingTemplate();
-
-  return <RecipeBodySearchInner />;
-}
-
-function NewLoadingTemplate() {
-  useLoadingTemplatev1();
-
-  return <RecipeBodySearchInner />;
-}
-
-function RecipeBodySearchInner() {
-  const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const loadingTemplate = useRecipeSessionStore(
-    (state) => state.loadingTemplate
-  );
-  const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
-
-  const selectedRecipe = useContext(RecipeContext);
 
   return (
     <div

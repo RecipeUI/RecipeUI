@@ -178,6 +178,71 @@ function RecipeJsonEditor() {
   );
 }
 
+// function DEPRECATED_RecipeQueryParameters({
+//   needsParams,
+//   needsAuthSetup,
+// }: {
+//   needsParams: boolean;
+//   needsAuthSetup: boolean;
+// }) {
+//   const queryParams = useRecipeSessionStore((state) => state.queryParams);
+//   const recipe = useContext(RecipeContext)!;
+//   const hasNoParams = Object.values(recipe.queryParams!).every(
+//     (param) => param.required === undefined || param.required === false
+//   );
+
+//   if (hasNoParams && needsAuthSetup) {
+//     return null;
+//   }
+
+//   return (
+//     <div className="mx-4 my-6">
+//       <div className="flex items-center space-x-1 mb-2">
+//         <h3 className="text-lg font-bold">Query Parameters</h3>
+//         <div
+//           className="tooltip tooltip-right"
+//           data-tip={`These are appended to the end of the url. Use parameters on the right or choose from examples.`}
+//         >
+//           <InformationCircleIcon className="h-4 w-4" />
+//         </div>
+//       </div>
+//       <pre className="whitespace-pre-wrap">
+//         {Object.entries(queryParams).map(([key, value]) => {
+//           const recipeSchema = recipe.queryParams!.find(
+//             (param) => param.name === key
+//           );
+
+//           const isRequired = recipeSchema?.required ?? false;
+
+//           return (
+//             <div key={key}>
+//               <span className="">{key}:</span>{" "}
+//               {isRequired && (value == undefined || value == "") ? (
+//                 <span className="text-error">
+//                   This param is required, fill it out in the docs pane.
+//                 </span>
+//               ) : (
+//                 <span className="">
+//                   {typeof value !== "object"
+//                     ? (String(value) as unknown as string | number | boolean)
+//                     : JSON.stringify(value)}
+//                 </span>
+//               )}
+//             </div>
+//           );
+//         })}
+//       </pre>
+//       {hasNoParams && !needsParams && Object.keys(queryParams).length === 0 ? (
+//         <div className="alert alert-success">
+//           {
+//             "You can run this endpoint now if you want! Play around with the docs pane to get different results after."
+//           }
+//         </div>
+//       ) : null}
+//     </div>
+//   );
+// }
+
 function RecipeQueryParameters({
   needsParams,
   needsAuthSetup,
@@ -187,83 +252,11 @@ function RecipeQueryParameters({
 }) {
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const recipe = useContext(RecipeContext)!;
-  const hasNoParams = Object.values(recipe.queryParams!).every(
-    (param) => param.required === undefined || param.required === false
-  );
-
-  if (hasNoParams && needsAuthSetup) {
-    return null;
-  }
-
-  if (recipe.version === 1) {
-    return (
-      <RecipeQueryParametersv1
-        needsParams={needsParams}
-        needsAuthSetup={needsAuthSetup}
-      />
-    );
-  }
-
-  return (
-    <div className="mx-4 my-6">
-      <div className="flex items-center space-x-1 mb-2">
-        <h3 className="text-lg font-bold">Query Parameters</h3>
-        <div
-          className="tooltip tooltip-right"
-          data-tip={`These are appended to the end of the url. Use parameters on the right or choose from examples.`}
-        >
-          <InformationCircleIcon className="h-4 w-4" />
-        </div>
-      </div>
-      <pre className="whitespace-pre-wrap">
-        {Object.entries(queryParams).map(([key, value]) => {
-          const recipeSchema = recipe.queryParams!.find(
-            (param) => param.name === key
-          );
-
-          const isRequired = recipeSchema?.required ?? false;
-
-          return (
-            <div key={key}>
-              <span className="">{key}:</span>{" "}
-              {isRequired && (value == undefined || value == "") ? (
-                <span className="text-error">
-                  This param is required, fill it out in the docs pane.
-                </span>
-              ) : (
-                <span className="">
-                  {typeof value !== "object"
-                    ? (String(value) as unknown as string | number | boolean)
-                    : JSON.stringify(value)}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </pre>
-      {hasNoParams && !needsParams && Object.keys(queryParams).length === 0 ? (
-        <div className="alert alert-success">
-          {
-            "You can run this endpoint now if you want! Play around with the docs pane to get different results after."
-          }
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function RecipeQueryParametersv1({
-  needsParams,
-  needsAuthSetup,
-}: {
-  needsParams: boolean;
-  needsAuthSetup: boolean;
-}) {
-  const queryParams = useRecipeSessionStore((state) => state.queryParams);
-  const recipe = useContext(RecipeContext)!;
-  const hasNoParams = Object.values(recipe.queryParams!).every(
-    (param) => param.required === undefined || param.required === false
-  );
+  const hasNoParams = recipe.queryParams
+    ? (!recipe.queryParams.properties ||
+        Object.keys(recipe.queryParams?.properties).length === 0) &&
+      recipe.queryParams?.additionalProperties !== true
+    : false;
 
   if (hasNoParams && needsAuthSetup) {
     return null;
@@ -316,56 +309,52 @@ function RecipeQueryParametersv1({
   );
 }
 
+// function DEPRECATED_RecipeURLParams() {
+//   const urlParams = useRecipeSessionStore((state) => state.urlParams);
+//   const recipe = useContext(RecipeContext)!;
+
+//   if (!recipe.urlParams) {
+//     return null;
+//   }
+
+//   return (
+//     <div className="mx-4 my-6">
+//       <div className="flex items-center space-x-1 mb-2">
+//         <h3 className="text-lg font-bold">Url Parameters</h3>
+//         <div
+//           className="tooltip tooltip-right"
+//           data-tip={`These are variables we replace in the url. Use parameters on the right or choose from examples.`}
+//         >
+//           <InformationCircleIcon className="h-4 w-4" />
+//         </div>
+//       </div>
+//       <pre className="whitespace-pre-wrap">
+//         {recipe.urlParams.map((paramSchema) => {
+//           const key = paramSchema.name;
+//           const value = urlParams[key] as string | undefined;
+//           const isRequired = paramSchema.required ?? true;
+
+//           return (
+//             <div
+//               key={key}
+//               className={classNames(!value && isRequired && "text-error")}
+//             >
+//               <span>{key}:</span>{" "}
+//               <span>
+//                 {value ||
+//                   (isRequired
+//                     ? "Setup this parameter in the docs pane"
+//                     : "Optional")}
+//               </span>
+//             </div>
+//           );
+//         })}
+//       </pre>
+//     </div>
+//   );
+// }
+
 function RecipeURLParams() {
-  const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const recipe = useContext(RecipeContext)!;
-
-  if (!recipe.urlParams) {
-    return null;
-  }
-
-  if (recipe.version === 1) {
-    return <RecipeURLParamsv1 />;
-  }
-
-  return (
-    <div className="mx-4 my-6">
-      <div className="flex items-center space-x-1 mb-2">
-        <h3 className="text-lg font-bold">Url Parameters</h3>
-        <div
-          className="tooltip tooltip-right"
-          data-tip={`These are variables we replace in the url. Use parameters on the right or choose from examples.`}
-        >
-          <InformationCircleIcon className="h-4 w-4" />
-        </div>
-      </div>
-      <pre className="whitespace-pre-wrap">
-        {recipe.urlParams.map((paramSchema) => {
-          const key = paramSchema.name;
-          const value = urlParams[key] as string | undefined;
-          const isRequired = paramSchema.required ?? true;
-
-          return (
-            <div
-              key={key}
-              className={classNames(!value && isRequired && "text-error")}
-            >
-              <span>{key}:</span>{" "}
-              <span>
-                {value ||
-                  (isRequired
-                    ? "Setup this parameter in the docs pane"
-                    : "Optional")}
-              </span>
-            </div>
-          );
-        })}
-      </pre>
-    </div>
-  );
-}
-
-function RecipeURLParamsv1() {
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
   const recipe = useContext(RecipeContext)!;
 

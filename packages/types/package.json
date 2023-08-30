@@ -8,6 +8,7 @@
     "types": "supabase gen types typescript --project-id nqtmsoehkjdrhcmzfjar > ./database-generated.types.ts"
   },
   "devDependencies": {
+    "@types/json-schema": "^7.0.12",
     "type-fest": "^4.2.0",
     "typescript": "^5.0.2"
   }

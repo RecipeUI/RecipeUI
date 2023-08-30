@@ -4,13 +4,13 @@ import {
   RecipeOutputTab,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeDocs } from "./RecipeDocs";
 import { useContext, useEffect, useMemo } from "react";
 
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
 import { RecipeCodeView } from "./RecipeCodeView";
 import { RecipeEditDocs } from "./RecipeEditDocs";
 import { useOutput } from "../../state/apiSession";
+import { RecipeDocs } from "./RecipeDocsv1";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);

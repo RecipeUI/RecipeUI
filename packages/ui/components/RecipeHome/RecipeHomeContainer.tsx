@@ -6,8 +6,6 @@ import {
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { RecipeBody } from "../RecipeBody";
-import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeHome } from "./RecipeHome";
 import classNames from "classnames";
 

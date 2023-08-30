@@ -26,23 +26,21 @@ export function useLeftPaneInfo() {
 
     let hasRequiredBodyParams = false;
     let hasRequestBody = false;
-    if (
-      "requestBody" in selectedRecipe &&
-      selectedRecipe.requestBody != null &&
-      "objectSchema" in selectedRecipe["requestBody"] &&
-      selectedRecipe.requestBody.objectSchema != null
-    ) {
-      hasRequiredBodyParams = Object.values(
-        selectedRecipe.requestBody.objectSchema
-      ).some((param) => param.required);
+    if (selectedRecipe.requestBody?.properties) {
       hasRequestBody = true;
+
+      hasRequiredBodyParams = Boolean(
+        selectedRecipe.requestBody.required &&
+          selectedRecipe.requestBody.required.length > 0
+      );
     }
 
     let hasQueryParams = false;
     let hasRequiredQueryParams = false;
     if ("queryParams" in selectedRecipe && selectedRecipe.queryParams != null) {
-      hasRequiredQueryParams = Object.values(selectedRecipe.queryParams).some(
-        (param) => param.required
+      hasRequiredQueryParams = Boolean(
+        selectedRecipe.queryParams.required &&
+          selectedRecipe.queryParams.required.length > 0
       );
       hasQueryParams = true;
     }

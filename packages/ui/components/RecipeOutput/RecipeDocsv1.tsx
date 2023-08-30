@@ -19,7 +19,7 @@ import { getDefaultValuev1, getValueInObjPath } from "../../utils/main";
 import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 
-export function RecipeDocsv1() {
+export function RecipeDocs() {
   const selectedRecipe = useContext(RecipeContext)!;
 
   const requestBody =

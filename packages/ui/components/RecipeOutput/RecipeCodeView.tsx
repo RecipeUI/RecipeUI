@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { Recipe } from "types/database";
 import { RecipeParamType } from "types/enums";
 import { useOutput } from "../../state/apiSession";
+import { JSONSchema6 } from "json-schema";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
@@ -35,10 +36,12 @@ export function RecipeCodeView() {
   const [output, setOutput] = useState("Make a request first!");
   const selectedRecipe = useContext(RecipeContext)!;
 
-  const hasFileBinary = (
-    selectedRecipe as Recipe
-  )?.requestBody?.objectSchema.some(
-    (schema) => schema.type === RecipeParamType.File
+  const hasFileBinary = Object.values(
+    (selectedRecipe as Recipe).requestBody?.properties || {}
+  ).some(
+    (param) =>
+      // @ts-expect-error Redo for ifle support later
+      typeof param !== "boolean" && (param as JSONSchema6).type === "file"
   );
 
   useEffect(() => {
