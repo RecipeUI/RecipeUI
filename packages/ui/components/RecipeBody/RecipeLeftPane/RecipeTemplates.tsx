@@ -19,7 +19,6 @@ import {
   FORM_LINKS,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { SuccessAnimation } from "../RecipeBodySearch/RecipeSaveButton";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
@@ -632,14 +631,7 @@ export function ShareInviteModal({
                 {isForking && <span className="loading loading-bars" />}
               </button>
             </>
-          ) : (
-            <SuccessAnimation
-              onClose={onClose}
-              newTemplateId={newTemplateId}
-              passiveRecipe={template.recipe}
-              ignoreAnimation={isQuickUse}
-            />
-          )}
+          ) : null}
 
           {limitedForks && (
             <div className="alert alert-error !mt-4 flex flex-col items-start">
