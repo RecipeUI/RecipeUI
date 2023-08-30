@@ -27,7 +27,7 @@ import { useIsTauri } from "../../../hooks/useIsTauri";
 import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { useMiniRecipes, useOutput } from "../../../state/apiSession";
-
+import { subMinutes, isBefore, differenceInMinutes } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 export function RecipeSaveButton() {
   const currentSesssion = useRecipeSessionStore(
@@ -45,16 +45,24 @@ export function RecipeSaveButton() {
   const editorMode = useRecipeSessionStore((state) => state.editorMode);
   const [glowing, setGlowing] = useState(true);
 
+  const [hide, setHide] = useState(false);
+
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
+
     if (created_at) {
-      const timeSinceCreated = Date.now() - new Date(created_at).getTime();
+      const minutes = differenceInMinutes(new Date(), new Date(created_at));
+
       // Do 3 seconds ago
-      if (timeSinceCreated < 1000 * 3) {
+      if (minutes <= 1) {
         setGlowing(true);
         timer = setTimeout(() => {
           setGlowing(false);
         }, 3000);
+      }
+
+      if (minutes > 5) {
+        setHide(true);
       }
     } else {
       setGlowing(false);
@@ -67,7 +75,14 @@ export function RecipeSaveButton() {
     };
   }, [created_at]);
 
-  if (!hasValidResponse || isSending || !editorMode || !output) {
+  if (
+    !hasValidResponse ||
+    isSending ||
+    !editorMode ||
+    !output ||
+    oldRequest ||
+    hide
+  ) {
     return null;
   }
 

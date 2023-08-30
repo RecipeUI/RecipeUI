@@ -20,6 +20,7 @@
     "autoprefixer": "10.4.14",
     "classnames": "^2.3.2",
     "daisyui": "^3.5.0",
+    "date-fns": "^2.30.0",
     "downshift": "^8.0.0",
     "fuse.js": "^6.6.2",
     "idb": "^7.1.1",
