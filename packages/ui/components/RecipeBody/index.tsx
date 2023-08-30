@@ -70,7 +70,7 @@ export function RecipeBody() {
       });
     }
 
-    if (selectedRecipe.version === 1 && process.env.NEXT_PUBLIC_ENV === "dev") {
+    if (selectedRecipe.version === 1) {
       parameters.push(RecipeBodyRoute.Fork);
     }
 
