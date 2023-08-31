@@ -15,6 +15,44 @@ import { useSessionStorage } from "usehooks-ts";
 import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { DesktopAppUpsell } from "../../../pages/editor/EditorPage";
+import { Recipe } from "types/database";
+
+export function getConfigFromRecipe(selectedRecipe: Recipe) {
+  return {
+    recipeId: selectedRecipe.id,
+    config: {
+      editorAuth: selectedRecipe.auth
+        ? {
+            type: selectedRecipe.auth,
+            docs: selectedRecipe.options?.docs?.auth,
+            meta: selectedRecipe.options?.auth?.find(
+              (a) => a.type === selectedRecipe.auth
+            )?.payload.name,
+          }
+        : null,
+
+      editorUrl: selectedRecipe.path,
+      editorMethod: selectedRecipe.method,
+
+      editorBodyType: RecipeMutationContentType.JSON,
+      editorBodySchemaType: selectedRecipe.requestBodyType,
+      editorBodySchemaJSON: selectedRecipe.requestBody as JSONSchema6,
+
+      editorQuerySchemaType: selectedRecipe.queryParamsType,
+      editorQuerySchemaJSON: selectedRecipe.queryParams as JSONSchema6,
+
+      editorURLSchemaType: selectedRecipe.urlParamsType,
+      editorURLSchemaJSON: selectedRecipe.urlParams as JSONSchema6,
+
+      editorHeader: {
+        title: selectedRecipe.title,
+        description: selectedRecipe.summary,
+      },
+
+      editorURLCode: "",
+    },
+  };
+}
 
 export function RecipeForkTab() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -47,40 +85,7 @@ export function RecipeForkTab() {
     try {
       setLoading(true);
 
-      await setConfigForSessionStore({
-        recipeId: selectedRecipe.id,
-        config: {
-          editorAuth: selectedRecipe.auth
-            ? {
-                type: selectedRecipe.auth,
-                docs: selectedRecipe.options?.docs?.auth,
-                meta: selectedRecipe.options?.auth?.find(
-                  (a) => a.type === selectedRecipe.auth
-                )?.payload.name,
-              }
-            : null,
-
-          editorUrl: selectedRecipe.path,
-          editorMethod: selectedRecipe.method,
-
-          editorBodyType: RecipeMutationContentType.JSON,
-          editorBodySchemaType: selectedRecipe.requestBodyType,
-          editorBodySchemaJSON: selectedRecipe.requestBody as JSONSchema6,
-
-          editorQuerySchemaType: selectedRecipe.queryParamsType,
-          editorQuerySchemaJSON: selectedRecipe.queryParams as JSONSchema6,
-
-          editorURLSchemaType: selectedRecipe.urlParamsType,
-          editorURLSchemaJSON: selectedRecipe.urlParams as JSONSchema6,
-
-          editorHeader: {
-            title: selectedRecipe.title,
-            description: selectedRecipe.summary,
-          },
-
-          editorURLCode: "",
-        },
-      });
+      await setConfigForSessionStore(getConfigFromRecipe(selectedRecipe));
 
       setRecipeFork(selectedRecipe.id);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
@@ -9,6 +9,7 @@ import {
   EditorSliceValues,
   GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
+  RecipeOutputTab,
   RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
@@ -29,10 +30,17 @@ import { useRouter } from "next/navigation";
 import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
-import { useMiniRecipes } from "../../state/apiSession";
+import {
+  setConfigForSessionStore,
+  useMiniRecipes,
+  useSessionFolders,
+} from "../../state/apiSession";
 import Link from "next/link";
 import { MegaphoneIcon, StarIcon } from "@heroicons/react/24/outline";
 import { shell } from "@tauri-apps/api";
+import { SupabaseContext } from "../../components/Providers/SupabaseProvider";
+import { fetchHomeRecipe } from "../../fetchers/home";
+import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -131,28 +139,7 @@ function NewRequest() {
                 to see our collections.
               </p>
             </div>
-            <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
-              {ForkExamples.map(({ label, description, id, tags }) => {
-                return (
-                  <NewRequestAction
-                    key={id}
-                    label={label}
-                    description={description}
-                    tags={tags}
-                    onClick={() => {
-                      if (isTauri) {
-                        setDesktopPage({
-                          page: DesktopPage.RecipeView,
-                          pageParam: id,
-                        });
-                      } else {
-                        router.push(`/a/${id}`);
-                      }
-                    }}
-                  />
-                );
-              })}
-            </div>
+            <ForkExampleContainer />
           </section>
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
@@ -249,6 +236,87 @@ function NewRequest() {
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
+    </div>
+  );
+}
+
+function ForkExampleContainer() {
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
+  const supabase = useContext(SupabaseContext);
+
+  const initializeEditorSession = useRecipeSessionStore(
+    (state) => state.initializeEditorSession
+  );
+
+  const { addSessionToFolder } = useSessionFolders();
+
+  const [forkingId, setForkingId] = useState<string | null>(null);
+
+  return (
+    <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
+      {ForkExamples.map((forkedExample, i) => {
+        return (
+          <NewRequestAction
+            key={forkedExample.id}
+            label={forkedExample.label}
+            description={forkedExample.description}
+            tags={forkedExample.tags}
+            onClick={async () => {
+              setForkingId(forkedExample.id);
+
+              try {
+                // get the recipe information first
+                const recipe = await fetchHomeRecipe({
+                  recipeId: forkedExample.id,
+                  supabase,
+                });
+
+                if (!recipe) {
+                  throw new Error("Recipe not found");
+                }
+
+                const { config: sessionConfig } = getConfigFromRecipe(recipe);
+                await setConfigForSessionStore({
+                  config: sessionConfig,
+                  recipeId: recipe.id,
+                });
+
+                const newSession: RecipeSession = {
+                  id: uuidv4(),
+                  name: recipe.title,
+                  apiMethod: sessionConfig.editorMethod,
+                  recipeId: recipe.id,
+                };
+                initializeEditorSession({
+                  currentSession: newSession,
+                  ...sessionConfig,
+                  outputTab: RecipeOutputTab.DocTwo,
+                });
+
+                await addSessionToFolder(
+                  newSession.id,
+                  recipe.project,
+                  recipe.project
+                );
+              } catch (e) {
+                if (isTauri) {
+                  setDesktopPage({
+                    page: DesktopPage.RecipeView,
+                    pageParam: forkedExample.id,
+                  });
+                } else {
+                  // get con
+                  // router.push(`/a/${id}`);
+                }
+              } finally {
+                setForkingId(null);
+              }
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -398,17 +466,22 @@ function NewRequestAction({
   description,
   onClick,
   tags,
+  loading,
 }: {
   label: string;
   description: string;
   onClick?: () => void;
   tags?: string[];
+  loading?: boolean;
 }) {
   return (
     <button
-      className="border rounded-md p-4 max-w-[xs] text-start flex flex-col"
+      className={classNames(
+        "border rounded-md p-4 max-w-[xs] text-start flex flex-col"
+      )}
       onClick={onClick}
     >
+      {loading && <span className="loading loading-bars mb-1"></span>}
       <p className="text-sm font-bold">{label}</p>
       <p className="text-xs">{description}</p>
       {tags && (

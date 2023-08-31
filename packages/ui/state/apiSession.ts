@@ -475,17 +475,29 @@ export function useSessionFolders() {
   }, []);
 
   const addSessionToFolder = useCallback(
-    async (sessionId: string, folderId: string) => {
+    async (sessionId: string, folderId: string, newFolderName?: string) => {
       const store = await getFolderStore();
       const folders = await store.get("sessionFolders");
 
+      let foundFolder = false;
       const newFolders = (folders || []).map((folder) => {
         if (folder.id !== folderId) return folder;
+
+        foundFolder = true;
         return {
           ...folder,
           sessionIds: [...folder.sessionIds, sessionId],
         };
       });
+
+      if (!foundFolder) {
+        newFolders.push({
+          id: folderId,
+          name: newFolderName ?? "New Folder",
+          sessionIds: [sessionId],
+        });
+      }
+
       await store.put(newFolders, "sessionFolders");
       eventEmitter.emit("refreshFolders");
     },

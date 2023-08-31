@@ -65,6 +65,7 @@ export function RecipeSidebar() {
       if (recipeFork) {
         setRecipeFork("");
 
+        // We gotta change this around
         const sessionConfig = await getConfigForSessionStore({
           recipeId: recipeFork,
         });
@@ -300,30 +301,33 @@ function EditFolderModal({
   folder: RecipeSessionFolder;
 }) {
   const { removeFolder, editFolderName } = useSessionFolders();
-
+  const closeSessions = useRecipeSessionStore((state) => state.closeSessions);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ folderName: string }>({
+  } = useForm<{ folderName: string; deleteAll: boolean }>({
     defaultValues: {
       folderName: folder.name,
     },
   });
 
+  const [deleteAll, setDeleteAll] = useState(true);
+
   const onSubmit = handleSubmit(async (data) => {
     await editFolderName(folder.id, data.folderName);
+
     onClose();
   });
 
   return (
-    <Modal header="Edit Folder" onClose={onClose} size="md">
-      <form className="mt-1 flex flex-col space-y-2" onSubmit={onSubmit}>
+    <Modal header="Edit Folder" onClose={onClose} size="sm">
+      <form className="mt-1 flex flex-col" onSubmit={onSubmit}>
         <p>Change folder name</p>
         <input
           type="text"
           placeholder="Folder Name"
-          className="input input-bordered input-sm"
+          className="input input-bordered input-sm w-full mt-1"
           {...register("folderName", {
             required: true,
           })}
@@ -332,8 +336,26 @@ function EditFolderModal({
           <button className=" btn btn-neutral w-fit btn-sm" type="submit">
             Submit
           </button>
+        </div>
+      </form>
+      <div className="divider" />
+      <div className="recipe-slate">
+        <div className="mt-4">
+          <div className="space-y-1">
+            <p>Delete folder</p>
+            <div className="flex items-center space-x-2 text-sm">
+              <input
+                className="checkbox checkbox-sm"
+                type="checkbox"
+                checked={deleteAll}
+                onChange={(e) => setDeleteAll(e.target.checked)}
+              />
+              <label>Delete all sessions inside the folder.</label>
+            </div>
+          </div>
+
           <button
-            className="btn btn-error w-fit btn-sm ml-2"
+            className="btn btn-error w-fit btn-sm mt-4"
             onClick={async () => {
               const confirm = await window.confirm(
                 "Are you sure you want to delete this folder?"
@@ -341,6 +363,12 @@ function EditFolderModal({
 
               if (confirm) {
                 await removeFolder(folder.id);
+
+                if (deleteAll) {
+                  const sessionIds = [...folder.sessionIds];
+                  closeSessions(sessionIds);
+                }
+
                 onClose();
               }
             }}
@@ -348,7 +376,7 @@ function EditFolderModal({
             Delete
           </button>
         </div>
-      </form>
+      </div>
     </Modal>
   );
 }

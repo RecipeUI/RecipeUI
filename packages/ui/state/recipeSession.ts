@@ -63,6 +63,7 @@ interface RecipeSessionSlice {
   updateSessionName: (session: RecipeSession, name: string) => void;
 
   closeSession: (session: RecipeSession) => RecipeSession | undefined;
+  closeSessions: (sessionIds: string[]) => void;
 
   addEditorSession: (session?: RecipeSession) => RecipeSession;
 }
@@ -777,6 +778,28 @@ const createRecipeSessionSlice: StateCreator<
         };
       });
       return newSession;
+    },
+
+    closeSessions: (sessionIds: string[]) => {
+      set((prevState) => {
+        const sessionsToDelete = prevState.sessions.filter((s) => {
+          return sessionIds.includes(s.id);
+        });
+
+        for (const session of sessionsToDelete) {
+          deleteParametersForSessionStore({ session: session.id });
+          deleteConfigForSessionStore({ recipeId: session.recipeId });
+        }
+
+        return {
+          ...resetEditorSlice(),
+          ...getEmptyParameters(),
+          currentSession: null,
+          sessions: prevState.sessions.filter((s) => {
+            return !sessionIds.includes(s.id);
+          }),
+        };
+      });
     },
 
     closeSession: (session) => {
