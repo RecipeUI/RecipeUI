@@ -93,21 +93,23 @@ function NewRequest() {
             <div>
               <h1 className="font-bold text-lg">New Request</h1>
               <p className="text-sm">
-                See how fun creating statically-typed API requests are!
+                All requests are statically typed and saved locally.
               </p>
             </div>
-            <NewRequestAction
-              label="Start from scratch"
-              description="No configuration setup."
-              onClick={() => {
-                addEditorSession();
-              }}
-            />
-            <NewRequestAction
-              label="Import from CURL"
-              onClick={() => setCurlModal(true)}
-              description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
-            />
+            <div className="grid grid-cols-2 gap-x-4">
+              <NewRequestAction
+                label="Start from scratch"
+                description="No configuration setup."
+                onClick={() => {
+                  addEditorSession();
+                }}
+              />
+              <NewRequestAction
+                label="Import from CURL"
+                onClick={() => setCurlModal(true)}
+                description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
+              />
+            </div>
           </section>
           <section className="space-y-2 flex flex-col mt-12">
             <div>

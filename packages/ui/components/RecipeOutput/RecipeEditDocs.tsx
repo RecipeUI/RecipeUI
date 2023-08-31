@@ -49,7 +49,7 @@ export function RecipeEditDocs() {
 
   const requestBody = bodySchema ? (
     <div className="py-4" id="docRequestBody">
-      <h3 className="text-lg mb-4 font-bold">Request Body</h3>
+      <h3 className="text-lg mb-4 font-bold text-white">Request Body</h3>
       <DefinitionContext.Provider
         value={{
           definitions: bodySchema.definitions,
@@ -63,7 +63,7 @@ export function RecipeEditDocs() {
 
   const queryParams = querySchema ? (
     <div className="py-4" id="docQueryBody">
-      <h3 className="text-lg mb-4 font-bold">Query Params</h3>
+      <h3 className="text-lg mb-4 font-bold text-white">Query Params</h3>
       <DefinitionContext.Provider
         value={{
           definitions: querySchema.definitions,
@@ -77,7 +77,7 @@ export function RecipeEditDocs() {
 
   const urlParams = urlSchema ? (
     <div className="py-4" id="docQueryBody">
-      <h3 className="text-lg mb-4 font-bold">Url Params</h3>
+      <h3 className="text-lg mb-4 font-bold text-white">Url Params</h3>
       <DefinitionContext.Provider
         value={{
           definitions: urlSchema.definitions,
@@ -127,7 +127,7 @@ function EditorHeader() {
     <div className="mb-4">
       {!editing ? (
         <div
-          className="cursor-pointer dark:text-white"
+          className="cursor-pointer  text-white"
           onClick={() => {
             setEditing(true);
           }}
@@ -276,7 +276,7 @@ function DocContainer({
 
   return (
     <div
-      className="border border-slate-200 dark:border-slate-600 rounded-sm p-4"
+      className="border border-slate-200 dark:border-slate-600 rounded-sm p-4 text-white"
       key={paramName}
     >
       <div className="flex justify-between">
@@ -286,7 +286,7 @@ function DocContainer({
           <span
             className={classNames(
               "text-sm",
-              required ? "text-red-600" : "text-gray-600"
+              required ? "text-red-600" : "text-white"
             )}
           >
             {required ? "required" : "optional"}

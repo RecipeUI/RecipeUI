@@ -47,6 +47,7 @@ export interface RecipeSession {
 export interface RecipeSessionFolder {
   id: string;
   name: string;
+  sessionIds: string[];
 }
 
 interface RecipeSessionSlice {
