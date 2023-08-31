@@ -5,10 +5,10 @@ import Cookie from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { APP_COOKIE } from "../utils/constants/main";
+import { APP_COOKIE, REDIRECT_PAGE } from "../utils/constants/main";
 import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 import { shallow } from "zustand/shallow";
-import { useDebounce } from "usehooks-ts";
+import { useDebounce, useSessionStorage } from "usehooks-ts";
 import { useIsTauri } from "../hooks/useIsTauri";
 
 export function useSaveRecipeUI() {
@@ -21,6 +21,8 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   const isTauri = useIsTauri();
+
+  const [redirect, setRedirect] = useSessionStorage(REDIRECT_PAGE, null);
   useEffect(() => {
     setOnboarding(false);
 
@@ -58,6 +60,12 @@ export function useSaveRecipeUI() {
 
               if (!isTauri) {
                 router.refresh();
+
+                if (redirect) {
+                  const hold = redirect;
+                  setRedirect(null);
+                  location.href = hold;
+                }
               }
             }
           });

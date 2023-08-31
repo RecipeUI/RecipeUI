@@ -30,6 +30,9 @@ import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 import { useMiniRecipes } from "../../state/apiSession";
+import Link from "next/link";
+import { MegaphoneIcon, StarIcon } from "@heroicons/react/24/outline";
+import { shell } from "@tauri-apps/api";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -64,46 +67,183 @@ function NewRequest() {
 
   return (
     <div
-      className={"flex-1 flex flex-col relative justify-center items-center"}
+      className={
+        "flex-1 flex flex-col relative sm:justify-center items-center py-8"
+      }
     >
-      <div className="space-y-6 min-w-[600px]">
-        <section className="space-y-2 flex flex-col">
-          <h1 className="font-bold text-lg">New Request Templates</h1>
-          <NewRequestAction
-            label="Start from scratch"
-            description="No configuration setup."
-            onClick={() => {
-              addEditorSession();
-            }}
-          />
-          <NewRequestAction
-            label="Import from CURL"
-            onClick={() => setCurlModal(true)}
-            description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
-          />
-        </section>
-
-        <section className="space-y-2 flex flex-col">
-          <h2 className="font-bold text-lg">Fork Popular Examples</h2>
-          {ForkExamples.map(({ label, description, id }) => {
-            return (
-              <NewRequestAction
-                key={id}
-                label={label}
-                description={description}
-                onClick={() => {
-                  if (isTauri) {
-                    setDesktopPage({
-                      page: DesktopPage.RecipeView,
-                      pageParam: id,
-                    });
-                  } else {
-                    router.push(`/a/${id}`);
-                  }
-                }}
-              />
-            );
-          })}
+      {!isTauri && (
+        <div className="bg-accent sm:hidden p-4 self-start">
+          <p>
+            Our web editor is not mobile friendly. Please visit our home page
+            and play around with other examples!
+          </p>
+          <Link className="btn btn-neutral mt-4" href="/">
+            Go Home
+          </Link>
+        </div>
+      )}
+      <div className="hidden  md:gap-x-4 lg:gap-x-16 sm:flex flex-col lg:grid md:grid-cols-3 w-fit max-w-7xl sm:px-[5%]">
+        <div
+          className={classNames(
+            "md:col-span-2 lg:col-span-2",
+            isTauri ? "col-span-3" : "col-span-2"
+          )}
+        >
+          <section className="space-y-2 flex flex-col">
+            <div>
+              <h1 className="font-bold text-lg">New Request</h1>
+              <p className="text-sm">
+                See how fun creating statically-typed API requests are!
+              </p>
+            </div>
+            <NewRequestAction
+              label="Start from scratch"
+              description="No configuration setup."
+              onClick={() => {
+                addEditorSession();
+              }}
+            />
+            <NewRequestAction
+              label="Import from CURL"
+              onClick={() => setCurlModal(true)}
+              description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
+            />
+          </section>
+          <section className="space-y-2 flex flex-col mt-12">
+            <div>
+              <h2 className="font-bold text-lg">Fork Popular Examples</h2>
+              <p className="text-sm">
+                Visit our{" "}
+                <a
+                  href="/"
+                  className="underline underline-offset-2"
+                  onClick={(e) => {
+                    if (isTauri) {
+                      e.preventDefault();
+                      setDesktopPage(null);
+                    }
+                  }}
+                >
+                  home page
+                </a>{" "}
+                to see our collections.
+              </p>
+            </div>
+            <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
+              {ForkExamples.map(({ label, description, id, tags }) => {
+                return (
+                  <NewRequestAction
+                    key={id}
+                    label={label}
+                    description={description}
+                    tags={tags}
+                    onClick={() => {
+                      if (isTauri) {
+                        setDesktopPage({
+                          page: DesktopPage.RecipeView,
+                          pageParam: id,
+                        });
+                      } else {
+                        router.push(`/a/${id}`);
+                      }
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </section>
+        </div>
+        <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
+          {!isTauri && (
+            <div className="bg-neutral p-4 rounded-md text-white">
+              <p className="my-2 sm:text-base text-lg">
+                Download our
+                <span className="font-bold italic">
+                  {" blazingly fast and lightweight (<20mb)"}
+                </span>{" "}
+                desktop app.
+              </p>
+              <DesktopAppUpsell />
+              <Link className="btn btn-accent btn-sm mt-4" href="/download">
+                Download
+              </Link>
+            </div>
+          )}
+          <div
+            className={classNames(
+              "border rounded-md p-4  flex justify-center items-center",
+              isTauri && "bg-accent text-black border-none"
+            )}
+          >
+            <MegaphoneIcon className="h-12 mb-2 text-sm  mr-2" />
+            <p>
+              {"Have feedback? We'd love to hear it over "}
+              <a
+                href="https://forms.gle/HaLedasspBZkVLsy7"
+                target="_blank"
+                className="underline underline-offset-2"
+              >
+                here
+              </a>
+              .
+            </p>
+          </div>
+          <div className="border rounded-md p-4">
+            <p>Helpful links</p>
+            <ul className="text-sm mt-2 list-disc ml-6 space-y-1">
+              <li>
+                <a
+                  href="https://github.com/RecipeUI/RecipeUI"
+                  target="_blank"
+                  className="underline underline-offset-2 cursor-pointer"
+                  // onClick={(e) => {
+                  // if (isTauri) {
+                  //   e.preventDefault();
+                  //   shell.open("https://discord.gg/rXmpYmCNNA");
+                  // }
+                  // }}
+                >
+                  Star us on GitHub
+                </a>
+              </li>
+              {isTauri && (
+                <li>
+                  <button
+                    className="underline underline-offset-2 cursor-pointer"
+                    onClick={(e) => {
+                      setDesktopPage(null);
+                    }}
+                  >
+                    Public collections
+                  </button>
+                </li>
+              )}
+              <li>
+                <a
+                  href="https://discord.gg/rXmpYmCNNA"
+                  target="_blank"
+                  className="underline underline-offset-2 cursor-pointer"
+                  // onClick={(e) => {
+                  // if (isTauri) {
+                  //   e.preventDefault();
+                  //   shell.open("https://discord.gg/rXmpYmCNNA");
+                  // }
+                  // }}
+                >
+                  Discord Community
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://docs.recipeui.com/"
+                  target="_blank"
+                  className="underline underline-offset-2 cursor-pointer"
+                >
+                  Getting API keys from providers.
+                </a>
+              </li>
+            </ul>
+          </div>
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
@@ -121,6 +261,19 @@ const ForkExamples = [
     label: "Reddit API",
     description: "Search across reddit!",
     id: "183eea98-32c9-4cf6-8c03-6084147e30db",
+    tags: ["No Auth"],
+  },
+  {
+    label: "Dog API",
+    description: "Pictures of really cute dogs.",
+    id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
+    tags: ["No Auth"],
+  },
+  {
+    label: "NASA API",
+    description: "See pictures from Mars Rover.",
+    id: "a806fd1c-3325-4f07-bcdc-985f5033f80a",
+    tags: ["Free"],
   },
 ];
 
@@ -242,18 +395,29 @@ function NewRequestAction({
   label,
   description,
   onClick,
+  tags,
 }: {
   label: string;
   description: string;
   onClick?: () => void;
+  tags?: string[];
 }) {
   return (
     <button
-      className="border rounded-md p-4 max-w-[xs] text-start"
+      className="border rounded-md p-4 max-w-[xs] text-start flex flex-col"
       onClick={onClick}
     >
       <p className="text-sm font-bold">{label}</p>
       <p className="text-xs">{description}</p>
+      {tags && (
+        <div>
+          {tags.map((tag) => (
+            <div className="badge badge-accent badge-sm" key={tag}>
+              {tag}
+            </div>
+          ))}
+        </div>
+      )}
     </button>
   );
 }
@@ -402,5 +566,26 @@ function CoreEditor() {
         <RecipeOutput />
       </div>
     </div>
+  );
+}
+
+export function DesktopAppUpsell() {
+  return (
+    <p>
+      Built on top of open source tech like{" "}
+      <span className="text-orange-600 font-bold underline underline-offset-2">
+        Rust
+      </span>
+      ,{" "}
+      <span className="text-blue-600 font-bold underline underline-offset-2">
+        NextJS
+      </span>
+      , and{" "}
+      <span className="text-accent font-bold underline underline-offset-2">
+        Supabase
+      </span>
+      , RecipeUI has the most modern tech stack for a cross-platform desktop and
+      browser API tool.
+    </p>
   );
 }

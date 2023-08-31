@@ -3,7 +3,7 @@
 import { DownloadContainer } from "@/app/download/DownloadContainer";
 
 export default async function DownloadPage() {
-  let latestVersion: string = "0.2.0";
+  let latestVersion: string = "0.5.0";
 
   // For some reason latest version is not propogating?
   // try {

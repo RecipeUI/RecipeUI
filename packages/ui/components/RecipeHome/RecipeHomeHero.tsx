@@ -17,11 +17,13 @@ export function RecipeHomeHero() {
       </h1>
       <p className="mt-2 text-sm sm:text-base">
         {
-          "Don't know where to start? Test out some use cases in Featured Recipes."
+          "Don't know where to start? Try out these Recipes to experiment with some use cases. "
         }
+        <span className="md:block">
+          Beginner-friendly, no coding experience required!
+        </span>
       </p>
-      {"Beginner-friendly, no coding experience required."}
-      <p></p>
+
       <div className="mt-4 flex-col sm:flex-row gap-2 hidden sm:flex">
         <button
           className="btn btn-neutral w-fit"
@@ -38,11 +40,11 @@ export function RecipeHomeHero() {
         >
           Try OpenAI
         </button>
-        {/* {!isTauri && (
+        {!isTauri && (
           <Link className="btn btn-neutral" href="/download">
             Download Desktop
           </Link>
-        )} */}
+        )}
       </div>
     </div>
   );

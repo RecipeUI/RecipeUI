@@ -214,7 +214,10 @@ export interface RecipeEditorSlice {
 
   initializeEditorSession: (
     editorSession: Partial<
-      EditorSliceValues & { currentSession: RecipeSession }
+      EditorSliceValues & {
+        currentSession: RecipeSession;
+        outputTab?: RecipeOutputTab;
+      }
     >
   ) => void;
 
@@ -432,7 +435,7 @@ export const createRecipeEditorSlice: StateCreator<
             ? { editorURLCode: "{}" }
             : null),
           bodyRoute: RecipeBodyRoute.Body,
-          outputTab: RecipeOutputTab.DocTwo,
+          outputTab: editorSession.outputTab ?? RecipeOutputTab.Output,
           requestInfo: null,
           desktopPage: {
             page: DesktopPage.Editor,

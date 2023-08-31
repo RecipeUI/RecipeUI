@@ -12,6 +12,8 @@ import { getUrl } from "../../../utils/main";
 import { Provider, AuthForm, providersInfo, View } from "./providers";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
+import { useSessionStorage } from "usehooks-ts";
+import { REDIRECT_PAGE } from "../../../utils/constants/main";
 
 export default function HybridAuthForm({
   providers = [],
@@ -36,8 +38,6 @@ export default function HybridAuthForm({
                   console.error(error);
                   return;
                 }
-
-                // location.reload();
               });
           }
         })
@@ -66,6 +66,10 @@ export default function HybridAuthForm({
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<View>(View.SignIn);
+  const [_, setRedirectURL] = useSessionStorage<string | null>(
+    REDIRECT_PAGE,
+    null
+  );
 
   const {
     register,
@@ -139,6 +143,7 @@ export default function HybridAuthForm({
         shell.open(data.url);
       } else {
         location.href = data.url;
+        setRedirectURL(location.href);
       }
     } else {
       setError("Login failed. Close window and try again");

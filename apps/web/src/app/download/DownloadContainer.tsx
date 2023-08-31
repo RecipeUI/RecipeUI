@@ -4,6 +4,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useMemo, useState } from "react";
+import { DesktopAppUpsell } from "ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
 
 enum DesktopPlatform {
@@ -203,16 +204,11 @@ export function DownloadContainer({
           <p className="my-2 sm:text-base text-lg">
             Our open sourced desktop app is{" "}
             <span className="font-bold italic">
-              {"blazingly fast and lightweight (<10mb)"}
+              {"blazingly fast and lightweight (<20mb)"}
             </span>
             .
           </p>
-          <p>
-            Built on top of open source tech like Tauri Rust, NextJS, and
-            Supabase, RecipeUI has the most modern tech stack for a
-            cross-platform desktop and browser API tool.
-          </p>
-
+          <DesktopAppUpsell />
           <div className="grid sm:grid-cols-2 gap-2 mt-4">
             {platformInfo.map((item, i) => {
               const Icon = item.icon;

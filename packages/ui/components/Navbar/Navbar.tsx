@@ -95,7 +95,7 @@ export function Navbar() {
             }
           }}
         >
-          <h1 className="ml-2 text-sm dark:text-white sm:block hidden">
+          <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
             Editor
           </h1>
         </button>

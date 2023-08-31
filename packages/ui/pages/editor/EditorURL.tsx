@@ -37,7 +37,7 @@ export const EditorURL = () => {
 
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-      <div className="p-2 px-8 text-sm border-b border-recipe-slate">
+      <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error">
         <EditorURLHighlight />
       </div>
       {editorURLSchemaJSON || editorURLCode ? (

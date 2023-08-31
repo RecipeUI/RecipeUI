@@ -14,6 +14,7 @@ import { JSONSchema6 } from "json-schema";
 import { useSessionStorage } from "usehooks-ts";
 import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
 import { useIsTauri } from "../../../hooks/useIsTauri";
+import { DesktopAppUpsell } from "../../../pages/editor/EditorPage";
 
 export function RecipeForkTab() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -97,7 +98,7 @@ export function RecipeForkTab() {
 
   return (
     <div className="flex-1 relative px-4 py-6">
-      <div className="alert flex flex-col items-start w-full bg-accent dark:bg-base-200">
+      <div className="alert flex flex-col items-start w-full bg-neutral text-white">
         <div className="w-full space-y-4 text-start">
           <h1 className="font-bold text-xl">Fork into RecipeUI Editor</h1>
           {isTauri ? (
@@ -106,25 +107,24 @@ export function RecipeForkTab() {
               API tool! Figure out the parameters on your own.
             </p>
           ) : (
-            <p>
-              Our API tool is a Postman alternative that is built on Rust and
-              provides native{" "}
-              <span className="font-bold">
-                TypeScript linting for request parameters!
-              </span>
-            </p>
+            <DesktopAppUpsell />
           )}
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-accent btn-sm"
               disabled={loading}
               onClick={onSubmit}
             >
-              {isTauri ? "Fork" : "Fork Web"}
+              {isTauri ? "Fork" : "Fork to Web Editor"}
               {loading && <span className="loading loading-bars"></span>}
             </button>
             {!isTauri && (
-              <button className="btn btn-primary btn-sm">
+              <button
+                className="btn btn-accent btn-sm"
+                onClick={() => {
+                  router.push("/download");
+                }}
+              >
                 Download Desktop
               </button>
             )}

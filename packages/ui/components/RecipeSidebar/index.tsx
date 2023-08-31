@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  RecipeOutputTab,
   RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
@@ -60,6 +61,7 @@ export function RecipeSidebar() {
               recipeId: recipeFork,
             },
             ...sessionConfig,
+            outputTab: RecipeOutputTab.DocTwo,
           });
         }
       }

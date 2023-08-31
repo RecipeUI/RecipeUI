@@ -52,7 +52,7 @@ export const EditorQuery = () => {
           "Enter query params as a key value object below"
         ) : (
           <>
-            {editorUrl}?
+            {editorUrl}
             <span className="mt-2 bg-accent p-1 rounded-md text-white w-fit">
               {urlQueryParams}
             </span>
