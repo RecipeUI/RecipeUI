@@ -75,14 +75,7 @@ export function RecipeSaveButton() {
     };
   }, [created_at]);
 
-  if (
-    !hasValidResponse ||
-    isSending ||
-    !editorMode ||
-    !output ||
-    oldRequest ||
-    hide
-  ) {
+  if (!hasValidResponse || isSending || !editorMode || !output || hide) {
     return null;
   }
 
