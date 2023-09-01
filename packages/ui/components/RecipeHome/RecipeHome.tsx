@@ -156,7 +156,7 @@ export function RecipeHomeBox({
     <div
       className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
       onClick={() => {
-        postHog.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
+        posthog?.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
           project,
         });
 

@@ -105,7 +105,7 @@ export function RecipeSearchButton() {
     };
 
     if (isSending) {
-      posthog.capture(POST_HOG_CONSTANTS.RECIPE_ABORT, recipeInfoLog);
+      posthog?.capture(POST_HOG_CONSTANTS.RECIPE_ABORT, recipeInfoLog);
       fetchRejectRef.current?.(new Error(RecipeError.AbortedRequest));
       fetchRejectRef.current = null;
 
@@ -158,7 +158,6 @@ export function RecipeSearchButton() {
         }
 
         // We should do some validation that the URL is clean now
-
         const recheckMatches = path.match(/{(\w+)}/g);
         if (recheckMatches && recheckMatches.length > 0) {
           alert("Detected URL params, but could not parse them.");
@@ -345,7 +344,7 @@ export function RecipeSearchButton() {
           : null),
       };
 
-      posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
+      posthog?.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
       // ------ Fetch via Streaming -------
       // Streaming is unique edge case, but doesn't work with CORS. Migrate later eventually.
@@ -418,7 +417,7 @@ export function RecipeSearchButton() {
           requestInfo,
         });
 
-        posthog.capture(
+        posthog?.capture(
           POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS,
           recipeInfoLog
         );
@@ -505,7 +504,7 @@ export function RecipeSearchButton() {
         }
       }
 
-      posthog.capture(
+      posthog?.capture(
         // The ok read-only property of the Response interface contains a Boolean stating whether the response was successful (status in the range 200-299) or not.
         isStatusOk
           ? POST_HOG_CONSTANTS.RECIPE_SUBMIT_SUCCESS
@@ -528,7 +527,7 @@ export function RecipeSearchButton() {
         output = "Request cancelled.";
       }
 
-      posthog.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
+      posthog?.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
 
       setOutput({
         output: {

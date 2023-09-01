@@ -124,7 +124,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
             loadingTemplate && "btn-disabled"
           )}
           onClick={async () => {
-            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
               template_id: "Core" + template.title,
               template_project: selectedRecipe.project,
               recipe_id: selectedRecipe.id,
@@ -148,7 +148,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
 
             await setTemplate();
 
-            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
+            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
               template_id: "starter",
               template_project: selectedRecipe.project,
               recipe_id: selectedRecipe.id,
@@ -313,7 +313,7 @@ function UserTemplateItem({
               onClick={async () => {
                 await setTemplate();
 
-                posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+                posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
                   template_id: template.id,
                   template_project: selectedRecipe.project,
                   recipe_id: selectedRecipe.id,
@@ -328,7 +328,7 @@ function UserTemplateItem({
             <button
               className={classNames()}
               onClick={async () => {
-                posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
+                posthog?.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW, {
                   template_id: template.id,
                   template_project: selectedRecipe.project,
                   recipe_id: selectedRecipe.id,
@@ -372,7 +372,7 @@ function UserTemplateItem({
                   );
 
                   if (deletedTemplateRes) {
-                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE, {
+                    posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE, {
                       template_id: template.id,
                       template_project: selectedRecipe.project,
                       recipe_id: selectedRecipe.id,
@@ -441,7 +441,7 @@ function UserTemplateItem({
 
             await setTemplate();
 
-            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
+            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
               template_id: template.id,
               template_project: selectedRecipe.project,
               recipe_id: selectedRecipe.id,
@@ -517,7 +517,7 @@ function ShareModal({
                 }`
               );
 
-              posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
+              posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
                 template_id: template.id,
                 template_project: template.recipe.project,
                 recipe_title: template.recipe.title,
@@ -594,7 +594,7 @@ export function ShareInviteModal({
                   }
 
                   if (!user) {
-                    posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
+                    posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_TO_SHARE, {
                       template_id: template.id,
                       template_project: template.recipe.project,
                       recipe_title: template.recipe.title,
@@ -610,7 +610,7 @@ export function ShareInviteModal({
                     );
 
                     if (newTemplate) {
-                      posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_FORKED, {
+                      posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_FORKED, {
                         new_template_id: newTemplate.id,
                         old_template_id: template.id,
                         template_project: template.recipe.project,

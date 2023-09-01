@@ -17,7 +17,10 @@ import { createClient } from "@supabase/supabase-js";
 export function initPosthog() {
   if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_ENV === "prod") {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
-      api_host: window.origin + "/ingest",
+      api_host:
+        "__TAURI__" in window
+          ? process.env.NEXT_PUBLIC_POSTHOG_HOST
+          : window.origin + "/ingest",
       autocapture: false,
       capture_pageleave: false,
       capture_pageview: false,

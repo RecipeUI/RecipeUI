@@ -9,6 +9,7 @@ import {
 } from "./CodeEditors/EditorJSON";
 
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
+import { API_TYPE_NAMES } from "../../utils/constants/main";
 
 export function EditorBody() {
   const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
@@ -80,6 +81,7 @@ export const JSONEditorContainer = () => {
         editorParamView={EditorParamView.Body}
         setSchemaJSON={setEditorBodySchemaJSON}
         setSchemaType={setEditorBodySchemaType}
+        defaultExport={API_TYPE_NAMES.APIRequestParams}
       />
     </div>
   );

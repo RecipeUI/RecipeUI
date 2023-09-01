@@ -262,7 +262,7 @@ function DesktopDownload() {
         <button
           className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
           onClick={() => {
-            posthog.capture(POST_HOG_CONSTANTS.TRY_WEB);
+            posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
 
             router.push("/editor");
           }}
@@ -290,7 +290,7 @@ function DesktopDownload() {
                 "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
               )}
               onClick={() => {
-                posthog.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
+                posthog?.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
                   platform: item.platform,
                 });
               }}
@@ -307,7 +307,7 @@ function DesktopDownload() {
           if (!showAll) {
             setShowAll(true);
           } else {
-            posthog.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
+            posthog?.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
               platform: "CHOOSING",
             });
 

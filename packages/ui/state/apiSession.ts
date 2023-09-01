@@ -2,11 +2,15 @@
 
 import { JSONSchema6 } from "json-schema";
 import {
+  Recipe,
   RecipeOutputType,
+  RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
+  UserTemplatePreview,
 } from "types/database";
 import {
+  ProjectScope,
   RecipeAuthType,
   RecipeMethod,
   RecipeMutationContentType,
@@ -103,15 +107,15 @@ let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 function getDB() {
   if (!db) {
     db = openDB<SessionsStore>(DB_CONFIG.NAME, DB_CONFIG.VERSION, {
-      upgrade(db) {
+      upgrade(db, old, newVersion, transaction) {
         // TODO: Need a better migration plan this is bad
-        db.clear(APIStore.Parameters);
-        db.clear(APIStore.Config);
-        db.clear(APIStore.Sessions);
-        db.clear(APIStore.Secrets);
-        db.clear(APIStore.Output);
-        db.clear(APIStore.MiniRecipes);
-        db.clear(APIStore.SessionFolders);
+        // db.clear(APIStore.Parameters);
+        // db.clear(APIStore.Config);
+        // db.clear(APIStore.Sessions);
+        // db.clear(APIStore.Secrets);
+        // db.clear(APIStore.Output);
+        // db.clear(APIStore.MiniRecipes);
+        // db.clear(APIStore.SessionFolders);
 
         db.createObjectStore(APIStore.Parameters);
         db.createObjectStore(APIStore.Config);
@@ -175,6 +179,18 @@ export async function setParametersForSessionStore({
   return store.put(parameters, session);
 }
 
+export async function deleteSession({
+  sessionId,
+  recipeId,
+}: {
+  sessionId: string;
+  recipeId: string;
+}) {
+  await deleteParametersForSessionStore({ session: sessionId });
+  await deleteConfigForSessionStore({ recipeId: recipeId });
+  await clearOutput(sessionId);
+}
+
 export async function deleteParametersForSessionStore({
   session,
 }: {
@@ -213,10 +229,11 @@ export async function getConfigForSessionStore({
   return store.get(String(recipeId));
 }
 
+// We can also delete the miniRecipes
 export async function deleteConfigForSessionStore({
   recipeId,
 }: {
-  recipeId: string | number;
+  recipeId: string;
 }) {
   // We need to be careful here. We should check first if there are any sessions that rely on these
   const sessions = await getSessionsFromStore();
@@ -225,9 +242,14 @@ export async function deleteConfigForSessionStore({
     (session) => session.recipeId === recipeId
   ).length;
 
-  if (sessionsWithRecipeId === 1) {
-    const store = await getConfigStore();
-    return store.delete(String(recipeId));
+  if (sessionsWithRecipeId <= 1) {
+    const configStore = await getConfigStore();
+
+    const miniRecipeStore = await getMiniRecipeStore();
+
+    configStore.delete(String(recipeId));
+    miniRecipeStore.delete(String(recipeId));
+    deleteSecret({ secretId: recipeId });
   }
 }
 
@@ -254,25 +276,25 @@ export async function deleteSecret({ secretId }: { secretId: string }) {
   store.delete(String(secretId));
 }
 
-export function useSecret(secretId: string) {
+export function useSecret(recipeId: string) {
   const [secret, setSecret] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    getSecret({ secretId }).then((secret) => setSecret(secret));
-  }, [secretId]);
+    getSecret({ secretId: recipeId }).then((secret) => setSecret(secret));
+  }, [recipeId]);
 
   const _updateSecret = useCallback(
     ({ secretValue }: SaveSecret) => {
-      saveSecret({ secretId, secretValue });
+      saveSecret({ secretId: recipeId, secretValue });
       setSecret(secretValue);
     },
-    [secretId]
+    [recipeId]
   );
 
   const _deleteSecret = useCallback(() => {
-    deleteSecret({ secretId });
+    deleteSecret({ secretId: recipeId });
     setSecret(undefined);
-  }, [secretId]);
+  }, [recipeId]);
 
   return {
     secret,
@@ -299,9 +321,10 @@ async function updateOutput({
   store.put(sessionOutput, sessionId);
 }
 
-async function clearOutput(sessionId: string) {
+export async function clearOutput(sessionId: string) {
   const store = await getOutputStore();
   store.delete(sessionId);
+  eventEmitter.emit("refreshState");
 }
 
 import EventEmitter from "events";
@@ -355,8 +378,6 @@ export function useOutput(sessionId?: string) {
     if (sessionId) {
       await clearOutput(sessionId);
     }
-
-    eventEmitter.emit("refreshState");
   }, [sessionId]);
 
   return {
@@ -373,6 +394,39 @@ async function getMiniRecipeStore() {
 async function getRecipes(recipeId: string) {
   const store = await getMiniRecipeStore();
   return store.get(recipeId);
+}
+
+export async function initializeRecipeList(
+  recipe: Recipe,
+  newMiniRecipes: RecipeTemplate[]
+) {
+  const store = await getMiniRecipeStore();
+
+  const miniRecipes: RecipeTemplateFragment[] = newMiniRecipes.map(
+    (miniRecipe) => {
+      return {
+        description: miniRecipe.description,
+        title: miniRecipe.title,
+        method: recipe.method,
+        project: recipe.project,
+        project_scope: ProjectScope.Personal,
+
+        queryParams: miniRecipe.queryParams,
+        requestBody: miniRecipe.requestBody,
+        urlParams: miniRecipe.urlParams,
+        replay: miniRecipe.replay,
+
+        created_at: recipe.created_at || new Date().toISOString(),
+        id: uuidv4(),
+        headers: null,
+        recipe_id: recipe.id,
+        original_author_id: null,
+      };
+    }
+  );
+
+  await store.put(miniRecipes, recipe.id);
+  eventEmitter.emit("refreshRecipes");
 }
 
 export function useMiniRecipes(primaryRecipeId?: string) {

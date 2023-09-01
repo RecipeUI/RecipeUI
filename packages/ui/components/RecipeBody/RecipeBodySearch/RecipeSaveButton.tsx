@@ -1,33 +1,17 @@
-import {
-  RecipeBodyRoute,
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../../state/recipeSession";
-import {
-  Recipe,
-  RecipeOutputType,
-  RecipeTemplateFragment,
-} from "types/database";
-import {
-  DB_FUNC_ERRORS,
-  FORM_LINKS,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
+import { RecipeOutputType, RecipeTemplateFragment } from "types/database";
+import { FORM_LINKS } from "../../../utils/constants/main";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
-import { useRouter, useSearchParams } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createTemplate } from "./actions";
-import { useQueryClient } from "@tanstack/react-query";
-import { ProjectScope, QueryKey } from "types/enums";
-import { useIsTauri } from "../../../hooks/useIsTauri";
+import { ProjectScope } from "types/enums";
 import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { useMiniRecipes, useOutput } from "../../../state/apiSession";
-import { subMinutes, isBefore, differenceInMinutes } from "date-fns";
+import { differenceInMinutes } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 export function RecipeSaveButton() {
   const currentSesssion = useRecipeSessionStore(
@@ -88,15 +72,15 @@ export function RecipeSaveButton() {
         <button
           className={classNames(
             "btn dark:text-white sm:w-24 w-full",
-            "bg-chefYellow !text-black hover:btn-info",
-            glowing && "animate-bounce"
+            "bg-chefYellow !text-black hover:btn-info"
+            // glowing && "animate-bounce"
           )}
           type="button"
           onClick={() => {
-            if (!user) {
-              document.getElementById(UNIQUE_ELEMENT_IDS.SIGN_IN)?.click();
-              return;
-            }
+            // if (!user) {
+            //   document.getElementById(UNIQUE_ELEMENT_IDS.SIGN_IN)?.click();
+            //   return;
+            // }
 
             setShowCreationFlow(true);
           }}
@@ -185,7 +169,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
 
       addRecipe(newRecipe)
         .then(() => {
-          posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
+          posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
           setLoading(false);
 
           onClose();

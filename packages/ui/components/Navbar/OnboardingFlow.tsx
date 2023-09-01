@@ -88,7 +88,7 @@ export function OnboardingFlow() {
 
       setStage("Survey");
     } else {
-      posthog.capture(POST_HOG_CONSTANTS.SIGN_UP, {
+      posthog?.capture(POST_HOG_CONSTANTS.SIGN_UP, {
         hear_about: data.hear_about,
         use_case: data.use_case,
       });

@@ -133,7 +133,7 @@ function UserMiniRecipe({
               onClick={async () => {
                 await setTemplate();
 
-                posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW);
+                posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW);
 
                 alert("Recipe copied to editor");
               }}
@@ -145,7 +145,7 @@ function UserMiniRecipe({
             <button
               className={classNames()}
               onClick={async () => {
-                posthog.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW);
+                posthog?.capture(POST_HOG_CONSTANTS.SHARED_TEMPLATE_PREVIEW);
 
                 setLoadingTemplate(miniRecipe);
               }}
@@ -161,7 +161,7 @@ function UserMiniRecipe({
                   return;
                 }
 
-                posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE);
+                posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE);
 
                 deleteRecipe(miniRecipe.id).then(() => {
                   alert("Recipe deleted");
@@ -187,7 +187,7 @@ function UserMiniRecipe({
           onClick={async () => {
             await setTemplate();
 
-            posthog.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE);
+            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE);
 
             setTimeout(() => {
               document

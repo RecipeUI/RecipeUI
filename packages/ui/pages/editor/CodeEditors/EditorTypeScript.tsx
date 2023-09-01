@@ -17,6 +17,8 @@ import {
 
 import { fetchTypeScriptFromJSON } from "../../../../ui/fetchers/editor";
 import { JSONSchema6 } from "json-schema";
+import classNames from "classnames";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 /*
   This is more of a UX pattern. We want to initially flag that we noticed the user has
@@ -96,24 +98,27 @@ function useDebouncedEditorChanges({
 export const EditorTypeScript = ({
   editorParamView,
   schemaType,
+  defaultExport,
 
   setSchemaType,
   setSchemaJSON,
 }: {
   editorParamView: EditorParamView;
   schemaType: string | null;
+  defaultExport?: string | null;
 
   setSchemaType: (value: string | null) => void;
   setSchemaJSON: (value: JSONSchema6 | null) => void;
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const { preparingChange, refreshing, hasError } = useDebouncedEditorChanges({
-    latestTypeValue: schemaType,
-    setSchemaJSON: setSchemaJSON,
-  });
+  const { preparingChange, refreshing, hasError, changesFinalized } =
+    useDebouncedEditorChanges({
+      latestTypeValue: schemaType,
+      setSchemaJSON: setSchemaJSON,
+    });
 
-  if (!schemaType) {
+  if (schemaType == undefined) {
     return <InitializeSchema type={editorParamView} />;
   }
 
@@ -135,6 +140,24 @@ export const EditorTypeScript = ({
         hasError={hasError}
         refreshing={refreshing}
       />
+      {defaultExport && !changesFinalized?.includes(defaultExport) && (
+        <LintIfMissing defaultExport={defaultExport} />
+      )}
     </div>
   );
 };
+
+function LintIfMissing({ defaultExport }: { defaultExport: string }) {
+  return (
+    <div
+      className={classNames("absolute top-3 right-8", "btn btn-sm btn-error")}
+    >
+      <div
+        className="tooltip tooltip-left normal-case"
+        data-tip={`Missing "export interface ${defaultExport} { ... }"`}
+      >
+        <ExclamationCircleIcon className="w-6 h-6" />
+      </div>
+    </div>
+  );
+}

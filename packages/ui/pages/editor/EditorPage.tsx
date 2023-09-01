@@ -31,6 +31,7 @@ import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 import {
+  initializeRecipeList,
   setConfigForSessionStore,
   useMiniRecipes,
   useSessionFolders,
@@ -88,7 +89,7 @@ function NewRequest() {
           </Link>
         </div>
       )}
-      <div className="hidden  md:gap-x-4 lg:gap-x-16 sm:flex flex-col lg:grid md:grid-cols-3 w-fit max-w-7xl sm:px-[5%] overflow-y-scroll">
+      <div className="hidden  md:gap-x-4 lg:gap-x-16 sm:flex flex-col lg:grid md:grid-cols-3 w-fit max-w-7xl sm:px-[5%] overflow-y-scroll pb-12">
         <div
           className={classNames(
             "md:col-span-2 lg:col-span-2",
@@ -102,7 +103,7 @@ function NewRequest() {
                 All requests are statically typed and saved locally.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-x-4">
+            <div className="flex flex-col md:grid grid-cols-2 gap-4">
               <NewRequestAction
                 label="Start from scratch"
                 description="No configuration setup."
@@ -124,7 +125,7 @@ function NewRequest() {
           />
           <ForkExampleContainer
             title="Popular APIs"
-            description="We've personally written docs to help you get API keys quickly!"
+            description="These APIs are great, but need API keys. We've written guides on how to get each one!"
             examples={SuggestedExamples}
             showHomeLink
           />
@@ -245,7 +246,7 @@ const FreeForkExamples = [
   },
   {
     label: "JSON Placeholder API",
-    description: "This popular API is great for testing.",
+    description: "Popular API for testing fake data.",
     id: "6bd53e59-8994-4382-ba41-d81146003b8d",
   },
 ];
@@ -329,7 +330,7 @@ function ForkExampleContainer({
           )}
         </p>
       </div>
-      <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
+      <div className="flex flex-col md:grid grid-cols-2 gap-4">
         {examples.map((forkedExample, i) => {
           return (
             <NewRequestAction
@@ -354,6 +355,10 @@ function ForkExampleContainer({
                     config: sessionConfig,
                     recipeId: recipe.id,
                   });
+
+                  if (recipe.templates) {
+                    await initializeRecipeList(recipe, recipe.templates);
+                  }
 
                   const newSession: RecipeSession = {
                     id: uuidv4(),
@@ -628,8 +633,6 @@ function CoreEditor() {
       }
     }
   }, [session?.id]);
-
-  console.log("", recipes);
 
   const BODY_ROUTES = useMemo(() => {
     const hasURLParams = editorUrl.match(/{(\w+)}/g);

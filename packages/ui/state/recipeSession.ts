@@ -30,8 +30,10 @@ import {
 } from "json-schema";
 import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
 import {
+  clearOutput,
   deleteConfigForSessionStore,
   deleteParametersForSessionStore,
+  deleteSession,
   setConfigForSessionStore,
   setParametersForSessionStore,
 } from "./apiSession";
@@ -787,8 +789,10 @@ const createRecipeSessionSlice: StateCreator<
         });
 
         for (const session of sessionsToDelete) {
-          deleteParametersForSessionStore({ session: session.id });
-          deleteConfigForSessionStore({ recipeId: session.recipeId });
+          deleteSession({
+            recipeId: session.recipeId,
+            sessionId: session.id,
+          });
         }
 
         return {
@@ -806,8 +810,10 @@ const createRecipeSessionSlice: StateCreator<
       let nextSessionReturn: RecipeSession | undefined;
 
       set((prevState) => {
-        deleteParametersForSessionStore({ session: session.id });
-        deleteConfigForSessionStore({ recipeId: session.recipeId });
+        deleteSession({
+          recipeId: session.recipeId,
+          sessionId: session.id,
+        });
 
         let nextSessionIndex = -1;
         const sessions = prevState.sessions.filter((s, i) => {

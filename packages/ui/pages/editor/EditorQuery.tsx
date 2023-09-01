@@ -9,6 +9,7 @@ import {
   InitializeSchema,
 } from "./CodeEditors/EditorJSON";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
+import { API_TYPE_NAMES } from "../../utils/constants/main";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -74,6 +75,7 @@ export const EditorQuery = () => {
         setSchemaType={setSchemaType}
         editorParamView={EditorParamView.Query}
         schemaType={schemaType}
+        defaultExport={API_TYPE_NAMES.APIQueryParams}
       />
     </div>
   );

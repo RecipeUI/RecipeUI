@@ -212,7 +212,7 @@ export interface UserTemplatePreview {
   recipe: Pick<Recipe, "id" | "project" | "title" | "method">;
   visibility: "public" | "private";
 
-  replay?: Nullable<RecipeTemplateOutput>;
+  replay: Nullable<RecipeTemplateOutput>;
   author_id: string;
   project_scope: ProjectScope;
 }
@@ -221,11 +221,7 @@ export type UserTemplate = UserTemplatePreview & {
   author_id: string;
   project: string;
   recipe_id: number;
-
-  requestBody?: JSONBody;
-  queryParams?: JSONBody;
-  urlParams?: JSONBody;
-};
+} & NullableRecipeParams;
 
 export type RecipeBook = {
   project: string;

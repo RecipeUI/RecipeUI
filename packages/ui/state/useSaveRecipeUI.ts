@@ -11,6 +11,7 @@ import { shallow } from "zustand/shallow";
 import { useDebounce, useSessionStorage } from "usehooks-ts";
 import { useIsTauri } from "../hooks/useIsTauri";
 import { usePostHog } from "posthog-js/react";
+import { v4 as uuidv4 } from "uuid";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -35,14 +36,12 @@ export function useSaveRecipeUI() {
       setUserSession(session);
       setOnboarding(false);
 
-      // Is there a way to detect the same user without user_id?
-      posthog.identify(session?.user.id || undefined, {
-        platform:
-          typeof window !== undefined && "__TAURI__" in window
-            ? "desktop"
-            : "web",
-      });
-
+      // posthog.identify(uuidv4(), {
+      //   platform:
+      //     typeof window !== undefined && "__TAURI__" in window
+      //       ? "desktop"
+      //       : "web",
+      // });
       if (
         (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
         session?.user
