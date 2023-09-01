@@ -6,6 +6,8 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import { DesktopAppUpsell } from "../../../ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
+import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -134,7 +136,7 @@ export function DownloadContainer() {
             , testing and sharing APIs have never been easier with our
             auto-complete, statically-typed editor.
           </p>
-          <DesktopAppUpsell />
+          <DesktopAppUpsell nextBlack />
           <DesktopDownload />
           {/* <ViewCollections /> */}
         </div>
@@ -243,9 +245,12 @@ function DesktopDownload() {
   const [showInitialWeb, setShowInitialWeb] = useState(true);
 
   const router = useRouter();
+
+  const posthog = usePostHog();
+
   if (showInitialWeb) {
     return (
-      <div className="grid sm:grid-cols-2 gap-2 mt-4 md:w-fit xl:w-full">
+      <div className="grid grid-cols-2 gap-2 mt-4  xl:w-full">
         <button
           className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
           onClick={() => {
@@ -257,6 +262,8 @@ function DesktopDownload() {
         <button
           className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
           onClick={() => {
+            posthog.capture(POST_HOG_CONSTANTS.TRY_WEB);
+
             router.push("/editor");
           }}
         >
@@ -268,7 +275,10 @@ function DesktopDownload() {
 
   return (
     <>
-      <div className="grid sm:grid-cols-2 gap-2 mt-4 w-fit">
+      <div
+        className="grid grid-cols-2 gap-2 mt-4 w-fit xl:w-full"
+        onClick={() => {}}
+      >
         {platformInfo.map((item, i) => {
           const Icon = item.icon;
           return (
@@ -279,6 +289,11 @@ function DesktopDownload() {
               className={classNames(
                 "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
               )}
+              onClick={() => {
+                posthog.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
+                  platform: item.platform,
+                });
+              }}
             >
               <Icon className="fill-black dark:fill-gray-200" />
               <h3 className={classNames("font-bold")}>{item.label}</h3>
@@ -292,6 +307,10 @@ function DesktopDownload() {
           if (!showAll) {
             setShowAll(true);
           } else {
+            posthog.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
+              platform: "CHOOSING",
+            });
+
             window.open(
               "https://github.com/RecipeUI/RecipeUI/releases/latest",
               "_blank"

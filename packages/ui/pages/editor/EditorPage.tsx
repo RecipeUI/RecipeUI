@@ -1,7 +1,7 @@
 "use client";
 
 import classNames from "classnames";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
@@ -88,7 +88,7 @@ function NewRequest() {
           </Link>
         </div>
       )}
-      <div className="hidden  md:gap-x-4 lg:gap-x-16 sm:flex flex-col lg:grid md:grid-cols-3 w-fit max-w-7xl sm:px-[5%]">
+      <div className="hidden  md:gap-x-4 lg:gap-x-16 sm:flex flex-col lg:grid md:grid-cols-3 w-fit max-w-7xl sm:px-[5%] overflow-y-scroll">
         <div
           className={classNames(
             "md:col-span-2 lg:col-span-2",
@@ -117,28 +117,17 @@ function NewRequest() {
               />
             </div>
           </section>
-          <section className="space-y-2 flex flex-col mt-12">
-            <div>
-              <h2 className="font-bold text-lg">Fork Popular Examples</h2>
-              <p className="text-sm">
-                Visit our{" "}
-                <a
-                  href="/?collections=true"
-                  className="underline underline-offset-2"
-                  onClick={(e) => {
-                    if (isTauri) {
-                      e.preventDefault();
-                      setDesktopPage(null);
-                    }
-                  }}
-                >
-                  home page
-                </a>{" "}
-                to see our collections.
-              </p>
-            </div>
-            <ForkExampleContainer />
-          </section>
+          <ForkExampleContainer
+            title="Fork Immediately"
+            description="These APIs require no auth!"
+            examples={FreeForkExamples}
+          />
+          <ForkExampleContainer
+            title="Popular APIs"
+            description="We've personally written docs to help you get API keys quickly!"
+            examples={SuggestedExamples}
+            showHomeLink
+          />
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
           {!isTauri && (
@@ -238,7 +227,71 @@ function NewRequest() {
   );
 }
 
-function ForkExampleContainer() {
+const FreeForkExamples = [
+  {
+    label: "Dog API",
+    description: "Pictures of really cute dogs.",
+    id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
+  },
+  {
+    label: "Reddit API",
+    description: "Search across reddit!",
+    id: "183eea98-32c9-4cf6-8c03-6084147e30db",
+  },
+  {
+    label: "Pokemon API",
+    description: "Pokedex as an API.",
+    id: "c645327c-4652-4572-aa39-35388943abf8",
+  },
+  {
+    label: "JSON Placeholder API",
+    description: "This popular API is great for testing.",
+    id: "6bd53e59-8994-4382-ba41-d81146003b8d",
+  },
+];
+
+const SuggestedExamples = [
+  {
+    label: "OpenAI Chat Completion",
+    description: "Figure out how to do generative AI with OpenAI's API.",
+    id: "48f37734-bbf4-4d0e-81b4-08da77030b06",
+  },
+  {
+    label: "NASA API",
+    description: "See pictures from Mars Rover.",
+    id: "a806fd1c-3325-4f07-bcdc-985f5033f80a",
+    tags: ["Free"],
+  },
+  {
+    label: "Giphy API",
+    description: "Memes as an API.",
+    id: "ccfc1216-f4cc-4f64-b5c7-57bae974a4c4",
+    tags: ["Free"],
+  },
+  {
+    label: "Unsplash API",
+    description: "Gorgeous pictures for image backgrounds or covers.",
+    id: "7e96b0cc-9684-4deb-8425-4f2ce98e9ae6",
+    tags: ["Free"],
+  },
+];
+
+function ForkExampleContainer({
+  title,
+  description,
+  examples,
+  showHomeLink,
+}: {
+  title: string;
+  description: string;
+  examples: {
+    label: string;
+    description: string;
+    id: string;
+    tags?: string[];
+  }[];
+  showHomeLink?: boolean;
+}) {
   const isTauri = useIsTauri();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
@@ -250,97 +303,92 @@ function ForkExampleContainer() {
 
   const { addSessionToFolder } = useSessionFolders();
 
-  const [forkingId, setForkingId] = useState<string | null>(null);
-
   return (
-    <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
-      {ForkExamples.map((forkedExample, i) => {
-        return (
-          <NewRequestAction
-            key={forkedExample.id}
-            label={forkedExample.label}
-            description={forkedExample.description}
-            tags={forkedExample.tags}
-            onClick={async () => {
-              setForkingId(forkedExample.id);
-
-              try {
-                // get the recipe information first
-                const recipe = await fetchHomeRecipe({
-                  recipeId: forkedExample.id,
-                  supabase,
-                });
-
-                if (!recipe) {
-                  throw new Error("Recipe not found");
-                }
-
-                const { config: sessionConfig } = getConfigFromRecipe(recipe);
-                await setConfigForSessionStore({
-                  config: sessionConfig,
-                  recipeId: recipe.id,
-                });
-
-                const newSession: RecipeSession = {
-                  id: uuidv4(),
-                  name: recipe.title,
-                  apiMethod: sessionConfig.editorMethod,
-                  recipeId: recipe.id,
-                };
-                initializeEditorSession({
-                  currentSession: newSession,
-                  ...sessionConfig,
-                  outputTab: RecipeOutputTab.DocTwo,
-                });
-
-                await addSessionToFolder(
-                  newSession.id,
-                  recipe.project,
-                  recipe.project
-                );
-              } catch (e) {
-                if (isTauri) {
-                  setDesktopPage({
-                    page: DesktopPage.RecipeView,
-                    pageParam: forkedExample.id,
+    <section className="space-y-2 flex flex-col mt-12">
+      <div>
+        <h2 className="font-bold text-lg">{title}</h2>
+        <p className="text-sm">
+          {description}{" "}
+          {showHomeLink && (
+            <span>
+              Visit our{" "}
+              <a
+                href="/?collections=true"
+                className="underline underline-offset-2"
+                onClick={(e) => {
+                  if (isTauri) {
+                    e.preventDefault();
+                    setDesktopPage(null);
+                  }
+                }}
+              >
+                home page
+              </a>{" "}
+              to see our collections.
+            </span>
+          )}
+        </p>
+      </div>
+      <div className="sm:flex flex-col lg:grid grid-cols-2 gap-4">
+        {examples.map((forkedExample, i) => {
+          return (
+            <NewRequestAction
+              key={forkedExample.id}
+              label={forkedExample.label}
+              description={forkedExample.description}
+              tags={forkedExample.tags}
+              onClick={async () => {
+                try {
+                  // get the recipe information first
+                  const recipe = await fetchHomeRecipe({
+                    recipeId: forkedExample.id,
+                    supabase,
                   });
+
+                  if (!recipe) {
+                    throw new Error("Recipe not found");
+                  }
+
+                  const { config: sessionConfig } = getConfigFromRecipe(recipe);
+                  await setConfigForSessionStore({
+                    config: sessionConfig,
+                    recipeId: recipe.id,
+                  });
+
+                  const newSession: RecipeSession = {
+                    id: uuidv4(),
+                    name: recipe.title,
+                    apiMethod: sessionConfig.editorMethod,
+                    recipeId: recipe.id,
+                  };
+                  initializeEditorSession({
+                    currentSession: newSession,
+                    ...sessionConfig,
+                    outputTab: RecipeOutputTab.DocTwo,
+                  });
+
+                  await addSessionToFolder(
+                    newSession.id,
+                    recipe.project,
+                    recipe.project
+                  );
+                } catch (e) {
+                  if (isTauri) {
+                    setDesktopPage({
+                      page: DesktopPage.RecipeView,
+                      pageParam: forkedExample.id,
+                    });
+                  }
+                } finally {
                 }
-              } finally {
-                setForkingId(null);
-              }
-            }}
-          />
-        );
-      })}
-    </div>
+              }}
+            />
+          );
+        })}
+      </div>
+    </section>
   );
 }
-
-const ForkExamples = [
-  {
-    label: "OpenAI Chat Completion",
-    description: "Figure out how to do generative AI with OpenAI's API.",
-    id: "48f37734-bbf4-4d0e-81b4-08da77030b06",
-  },
-  {
-    label: "Reddit API",
-    description: "Search across reddit!",
-    id: "183eea98-32c9-4cf6-8c03-6084147e30db",
-    tags: ["No Auth"],
-  },
-  {
-    label: "Dog API",
-    description: "Pictures of really cute dogs.",
-    id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
-    tags: ["No Auth"],
-  },
-  {
-    label: "NASA API",
-    description: "See pictures from Mars Rover.",
-    id: "a806fd1c-3325-4f07-bcdc-985f5033f80a",
-    tags: ["Free"],
-  },
-];
 
 function CurlModal({ onClose }: { onClose: () => void }) {
   const [curlString, setCurlString] = useState("");
@@ -639,7 +687,7 @@ function CoreEditor() {
   );
 }
 
-export function DesktopAppUpsell() {
+export function DesktopAppUpsell({ nextBlack }: { nextBlack?: boolean }) {
   return (
     <p>
       Built on top of open source tech like{" "}
@@ -647,7 +695,12 @@ export function DesktopAppUpsell() {
         Rust
       </span>
       ,{" "}
-      <span className="text-black font-bold underline underline-offset-2">
+      <span
+        className={classNames(
+          "font-bold underline underline-offset-2",
+          nextBlack ? "text-black" : "text-blue-600"
+        )}
+      >
         NextJS
       </span>
       , and{" "}

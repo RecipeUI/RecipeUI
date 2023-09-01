@@ -10,6 +10,7 @@ import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 import { shallow } from "zustand/shallow";
 import { useDebounce, useSessionStorage } from "usehooks-ts";
 import { useIsTauri } from "../hooks/useIsTauri";
+import { usePostHog } from "posthog-js/react";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -21,6 +22,7 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   const isTauri = useIsTauri();
+  const posthog = usePostHog();
 
   const [redirect, setRedirect] = useSessionStorage(REDIRECT_PAGE, null);
   useEffect(() => {
@@ -32,6 +34,14 @@ export function useSaveRecipeUI() {
       console.debug(session, event);
       setUserSession(session);
       setOnboarding(false);
+
+      // Is there a way to detect the same user without user_id?
+      posthog.identify(session?.user.id || undefined, {
+        platform:
+          typeof window !== undefined && "__TAURI__" in window
+            ? "desktop"
+            : "web",
+      });
 
       if (
         (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
@@ -71,6 +81,8 @@ export function useSaveRecipeUI() {
           });
       } else if (event === "SIGNED_OUT") {
         setUser(null);
+      } else {
+        // Is there a way to detect the same user without user_id?
       }
     });
   }, []);
