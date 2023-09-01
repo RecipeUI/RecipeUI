@@ -164,11 +164,8 @@ function ViewCollections() {
   );
 }
 
-function DesktopDownload({
-  latestVersion = "0.5.0",
-}: {
-  latestVersion?: string;
-}) {
+const latestVersion = "0.5.5";
+function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 
   const [platform, setPlatform] = useState<DesktopPlatform>(
