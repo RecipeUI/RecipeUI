@@ -1,12 +1,13 @@
 "use client";
 
 import {
+  DesktopPage,
   RecipeOutputTab,
   RecipeSession,
   RecipeSessionFolder,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
@@ -24,6 +25,7 @@ import {
   getParametersForSessionStore,
   getSessionsFromStore,
   saveSessionToStore,
+  setConfigForSessionStore,
   useSessionFolders,
 } from "../../state/apiSession";
 import { Modal } from "../Modal";
@@ -31,6 +33,10 @@ import { v4 as uuidv4 } from "uuid";
 import { useSearchParams } from "next/navigation";
 import { RECIPE_FORKING_ID } from "../../utils/constants/main";
 import { useForm } from "react-hook-form";
+import { fetchHomeRecipe } from "../../fetchers/home";
+import { getConfigFromRecipe } from "../RecipeBody/RecipeLeftPane/RecipeForkTab";
+import { SupabaseContext } from "../Providers/SupabaseProvider";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -60,28 +66,56 @@ export function RecipeSidebar() {
 
   const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
 
+  const { addSessionToFolder } = useSessionFolders();
+
+  const supabase = useContext(SupabaseContext);
+
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
   useEffect(() => {
     async function initialize() {
-      if (recipeFork) {
-        setRecipeFork("");
+      if (!recipeFork) return;
 
-        // We gotta change this around
-        const sessionConfig = await getConfigForSessionStore({
+      try {
+        setRecipeFork("");
+        const recipe = await fetchHomeRecipe({
           recipeId: recipeFork,
+          supabase,
         });
 
-        if (sessionConfig) {
-          initializeEditorSession({
-            currentSession: {
-              id: uuidv4(),
-              name: sessionConfig.editorHeader.title,
-              apiMethod: sessionConfig.editorMethod,
-              recipeId: recipeFork,
-            },
-            ...sessionConfig,
-            outputTab: RecipeOutputTab.DocTwo,
+        if (!recipe) {
+          throw new Error("Recipe not found");
+        }
+
+        const { config: sessionConfig } = getConfigFromRecipe(recipe);
+        await setConfigForSessionStore({
+          config: sessionConfig,
+          recipeId: recipe.id,
+        });
+
+        const newSession: RecipeSession = {
+          id: uuidv4(),
+          name: recipe.title,
+          apiMethod: sessionConfig.editorMethod,
+          recipeId: recipe.id,
+        };
+        initializeEditorSession({
+          currentSession: newSession,
+          ...sessionConfig,
+          outputTab: RecipeOutputTab.DocTwo,
+        });
+
+        await addSessionToFolder(newSession.id, recipe.project, recipe.project);
+
+        if (isTauri) {
+          setDesktopPage({
+            page: DesktopPage.RecipeView,
+            pageParam: recipeFork,
           });
         }
+      } catch (e) {
+        //
       }
     }
 

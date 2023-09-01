@@ -85,14 +85,11 @@ export function RecipeForkTab() {
     try {
       setLoading(true);
 
-      await setConfigForSessionStore(getConfigFromRecipe(selectedRecipe));
-
       setRecipeFork(selectedRecipe.id);
 
       if (isTauri) {
         setDesktopPage({
           page: DesktopPage.Editor,
-          pageParam: selectedRecipe.id,
         });
       } else {
         router.push(`/editor`);
@@ -103,7 +100,7 @@ export function RecipeForkTab() {
 
   return (
     <div className="flex-1 relative px-4 py-6">
-      <div className="alert flex flex-col items-start w-full bg-neutral text-white">
+      <div className="alert flex flex-col items-start w-full bg-slate-600 text-white">
         <div className="w-full space-y-4 text-start">
           <h1 className="font-bold text-xl">Fork into RecipeUI Editor</h1>
           {isTauri ? (

@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
 
@@ -44,12 +44,21 @@ export function RecipeHome({
     };
   }, [globalProjects]);
 
+  const queryParams = useSearchParams();
+
+  useEffect(() => {
+    if (queryParams.get("collections") != undefined) {
+      document.getElementById("popular")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, []);
+
   return (
     <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
-      {/* {projects.length > 0 && (
-        <MarketplaceSection header="Your Projects" projects={projects} />
-      )} */}
       <MarketplaceSection
+        id="popular"
         header="Popular APIs"
         description={
           <p>{"Discover people's recipes for building with popular APIs. "}</p>
@@ -81,13 +90,15 @@ function MarketplaceSection({
   header,
   description,
   projects,
+  id,
 }: {
   header: string;
   description?: string | ReactNode;
   projects: RecipeProject[];
+  id?: string;
 }) {
   return (
-    <div>
+    <div id={id}>
       <h1 className="text-2xl font-bold dark:text-gray-100">{header}</h1>
       {description ? (
         typeof description === "string" ? (

@@ -48,7 +48,7 @@ export function Navbar() {
         "py-2 sm:py-0 w-full flex justify-between min-h-12 items-center font-bold shadow-sm px-4 text-black sticky top-0 z-10 bg-white dark:bg-base-100 border-b border-slate-200 dark:border-slate-600"
       )}
     >
-      <div className="flex text-sm items-center">
+      <div className={classNames("flex text-sm items-center")}>
         <button
           className="cursor-pointer flex items-center"
           onClick={() => {
@@ -80,25 +80,47 @@ export function Navbar() {
               </clipPath>
             </defs>
           </svg>
-          <h1 className="ml-4 dark:text-white  sm:block hidden">Home</h1>
         </button>
-        <button
-          onClick={() => {
-            setCurrentSession(null);
-
-            if (isTauri) {
-              setDesktopPage({
-                page: DesktopPage.Editor,
-              });
-            } else {
-              router.push("/editor");
-            }
-          }}
+        <div
+          className={classNames(
+            "flex items-center",
+            isTauri && "flex-row-reverse"
+          )}
         >
-          <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
-            Editor
-          </h1>
-        </button>
+          <button
+            className="cursor-pointer flex items-center"
+            onClick={() => {
+              setCurrentSession(null);
+
+              if (isTauri) {
+                setDesktopPage(null);
+              } else {
+                router.push("/");
+              }
+            }}
+          >
+            <h1 className="ml-4 dark:text-white  sm:block hidden">
+              {isTauri ? "Collections" : "Home"}
+            </h1>
+          </button>
+          <button
+            onClick={() => {
+              setCurrentSession(null);
+
+              if (isTauri) {
+                setDesktopPage({
+                  page: DesktopPage.Editor,
+                });
+              } else {
+                router.push("/editor");
+              }
+            }}
+          >
+            <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
+              Editor
+            </h1>
+          </button>
+        </div>
       </div>
       <div />
       <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">

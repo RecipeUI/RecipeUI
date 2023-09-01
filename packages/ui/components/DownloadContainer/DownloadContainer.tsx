@@ -1,11 +1,11 @@
 "use client";
 
 import classNames from "classnames";
-import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { DesktopAppUpsell } from "ui/pages/editor/EditorPage";
+import { DesktopAppUpsell } from "../../../ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
+import { useRouter } from "next/navigation";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -118,14 +118,63 @@ const getContent = (latestVersion: string) => ({
   },
 });
 
-export function DownloadContainer({
-  latestVersion,
+export function DownloadContainer() {
+  const { isDarkMode } = useDarkMode();
+
+  return (
+    <div className="min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5 relative">
+      <div className="m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative sm:text-base text-lg">
+        <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
+          <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
+          <p className="my-2 ">
+            Powered by{" "}
+            <span className="text-blue-600 font-bold underline underline-offset-2">
+              TypeScript
+            </span>
+            , testing and sharing APIs have never been easier with our
+            auto-complete, statically-typed editor.
+          </p>
+          <DesktopAppUpsell />
+          <DesktopDownload />
+          {/* <ViewCollections /> */}
+        </div>
+      </div>
+      <div className="col-span-3 relative overflow-hidden">
+        <div className="lg:absolute inset-0 flex justify-center items-center lg:m-4 lg:mr-0 ">
+          <img
+            className="!h-full object-cover object-left bg-none"
+            src={!isDarkMode ? "/LightApp.png" : "/DarkApp.png"}
+            alt="Screenshot of Desktop app"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ViewCollections() {
+  const [dismiss, setDismiss] = useState(false);
+
+  useEffect(() => {}, []);
+
+  return (
+    <div className="absolute bottom-0 left-0 h-[40px] bg-accent rounded-t-lg  justify-center items-center text-sm px-2 text-black hidden lg:flex">
+      View Collections
+    </div>
+  );
+}
+
+function DesktopDownload({
+  latestVersion = "0.5.0",
 }: {
-  latestVersion: string;
+  latestVersion?: string;
 }) {
+  const [showAll, setShowAll] = useState(true);
+
   const [platform, setPlatform] = useState<DesktopPlatform>(
     DesktopPlatform.Unknown
   );
+
   useEffect(() => {
     async function getPlatform() {
       // Strong if userAgentData, but not supported in Firefox/Safari
@@ -162,8 +211,6 @@ export function DownloadContainer({
   }, []);
 
   const content = getContent(latestVersion);
-  const [showAll, setShowAll] = useState(false);
-  const { isDarkMode } = useDarkMode();
 
   const platformInfo = useMemo(() => {
     const _platforms = Object.values(content);
@@ -196,73 +243,76 @@ export function DownloadContainer({
     return _platforms.slice(0, 1);
   }, [content, platform, showAll]);
 
-  return (
-    <div className="h-full sm:flex sm:flex-col lg:grid grid-cols-5 ">
-      <div className="m-8 text-sm lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center">
-        <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
-          <h1 className="font-bold text-xl lg:text-3xl">Download RecipeUI</h1>
-          <p className="my-2 sm:text-base text-lg">
-            Our open sourced desktop app is{" "}
-            <span className="font-bold italic">
-              {"blazingly fast and lightweight (<20mb)"}
-            </span>
-            .
-          </p>
-          <DesktopAppUpsell />
-          <div className="grid sm:grid-cols-2 gap-2 mt-4">
-            {platformInfo.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  target="_blank"
-                  className={classNames(
-                    "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
-                  )}
-                >
-                  <Icon className="fill-black dark:fill-gray-200" />
-                  <h3 className={classNames("font-bold")}>{item.label}</h3>
-                </Link>
-              );
-            })}
-          </div>
+  const [showInitialWeb, setShowInitialWeb] = useState(true);
 
-          <button
-            className="text-xs text-left mt-4"
-            onClick={() => {
-              if (!showAll) {
-                setShowAll(true);
-              } else {
-                window.open(
-                  "https://github.com/RecipeUI/RecipeUI/releases/latest",
-                  "_blank"
-                );
-              }
-            }}
-          >
-            {showAll ? (
-              <>
-                See more options on <span className="underline">Github</span>.
-              </>
-            ) : (
-              <>
-                Not your OS? Click <span className="underline">here</span> to
-                see more options.
-              </>
-            )}
-          </button>
-        </div>
+  const router = useRouter();
+  if (showInitialWeb) {
+    return (
+      <div className="grid sm:grid-cols-2 gap-2 mt-4 md:w-fit xl:w-full">
+        <button
+          className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
+          onClick={() => {
+            setShowInitialWeb(false);
+          }}
+        >
+          Try Desktop (20 mb!)
+        </button>
+        <button
+          className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
+          onClick={() => {
+            router.push("/editor");
+          }}
+        >
+          Try Web
+        </button>
       </div>
-      <div className="col-span-3 relative overflow-hidden">
-        <div className="lg:absolute inset-0 flex justify-center items-center lg:m-4 lg:mr-0 ">
-          <img
-            className="!h-full object-cover object-left bg-none"
-            src={!isDarkMode ? "/LightApp.png" : "/DarkApp.png"}
-            alt="Screenshot of Desktop app"
-          />
-        </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid sm:grid-cols-2 gap-2 mt-4 w-fit">
+        {platformInfo.map((item, i) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              className={classNames(
+                "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
+              )}
+            >
+              <Icon className="fill-black dark:fill-gray-200" />
+              <h3 className={classNames("font-bold")}>{item.label}</h3>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+      <button
+        className="text-xs text-left mt-4"
+        onClick={() => {
+          if (!showAll) {
+            setShowAll(true);
+          } else {
+            window.open(
+              "https://github.com/RecipeUI/RecipeUI/releases/latest",
+              "_blank"
+            );
+          }
+        }}
+      >
+        {showAll ? (
+          <>
+            See more options on <span className="underline">Github</span>.
+          </>
+        ) : (
+          <>
+            Not your OS? Click <span className="underline">here</span> to see
+            more options.
+          </>
+        )}
+      </button>
+    </>
   );
 }

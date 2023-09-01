@@ -109,7 +109,7 @@ function HomePage() {
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          <RecipeHomeHero />
+          {/* <RecipeHomeHero /> */}
           <RecipeHome globalProjects={globalProjects} projects={userProjects} />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>

@@ -41,6 +41,7 @@ import { shell } from "@tauri-apps/api";
 import { SupabaseContext } from "../../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../../fetchers/home";
 import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
+import { DownloadContainer } from "../../components/DownloadContainer/DownloadContainer";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -65,10 +66,7 @@ function NewRequest() {
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
-
   const [curlModal, setCurlModal] = useState(false);
-
-  const router = useRouter();
   const isTauri = useIsTauri();
 
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
@@ -125,7 +123,7 @@ function NewRequest() {
               <p className="text-sm">
                 Visit our{" "}
                 <a
-                  href="/"
+                  href="/?collections=true"
                   className="underline underline-offset-2"
                   onClick={(e) => {
                     if (isTauri) {
@@ -306,9 +304,6 @@ function ForkExampleContainer() {
                     page: DesktopPage.RecipeView,
                     pageParam: forkedExample.id,
                   });
-                } else {
-                  // get con
-                  // router.push(`/a/${id}`);
                 }
               } finally {
                 setForkingId(null);
@@ -652,7 +647,7 @@ export function DesktopAppUpsell() {
         Rust
       </span>
       ,{" "}
-      <span className="text-blue-600 font-bold underline underline-offset-2">
+      <span className="text-black font-bold underline underline-offset-2">
         NextJS
       </span>
       , and{" "}

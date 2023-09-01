@@ -18,6 +18,8 @@ import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 import { RecipeHomeHero } from "./RecipeHomeHero";
 import { ShareInviteModal } from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
+import { DownloadContainer } from "../DownloadContainer/DownloadContainer";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeHomeContainer({
   globalProjects,
@@ -61,24 +63,29 @@ export function RecipeHomeContainer({
       : null;
   }, [globalProjects, projects, recipe, sharedTemplate?.recipe]);
 
+  const isTauri = useIsTauri();
+
   return (
-    <div className={classNames("flex-1 flex flex-col p-8")}>
-      <RecipeContext.Provider value={recipe || null}>
-        <RecipeProjectContext.Provider value={project || null}>
-          <RecipeNativeFetchContext.Provider value={fetchServer}>
-            <RecipeHomeHero />
-            <RecipeHome globalProjects={globalProjects} projects={projects} />
-            {showShareModal && sharedTemplate && (
-              <ShareInviteModal
-                template={sharedTemplate}
-                onClose={() => {
-                  setShowShareModal(false);
-                }}
-              />
-            )}
-          </RecipeNativeFetchContext.Provider>
-        </RecipeProjectContext.Provider>
-      </RecipeContext.Provider>
-    </div>
+    <>
+      {!isTauri && <DownloadContainer />}
+      <div className={classNames("flex-1 flex flex-col p-8")}>
+        <RecipeContext.Provider value={recipe || null}>
+          <RecipeProjectContext.Provider value={project || null}>
+            <RecipeNativeFetchContext.Provider value={fetchServer}>
+              {/* <RecipeHomeHero /> */}
+              <RecipeHome globalProjects={globalProjects} projects={projects} />
+              {showShareModal && sharedTemplate && (
+                <ShareInviteModal
+                  template={sharedTemplate}
+                  onClose={() => {
+                    setShowShareModal(false);
+                  }}
+                />
+              )}
+            </RecipeNativeFetchContext.Provider>
+          </RecipeProjectContext.Provider>
+        </RecipeContext.Provider>
+      </div>
+    </>
   );
 }
