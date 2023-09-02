@@ -69,15 +69,16 @@ export const JSONEditorContainer = () => {
         <EditorViewWithSchema
           value={editorBody}
           setValue={setEditorBody}
-          key={`${currentSession?.id || "default"}-json`}
+          key={`${currentSession?.id || "default"}-json-body`}
           jsonSchema={editorBodySchemaJSON}
+          typeName={API_TYPE_NAMES.APIRequestParams}
         />
       ) : (
         <InitializeSchema type={EditorParamView.Body} />
       )}
       <EditorTypeScript
         // This key is important, it refreshes changes for us when we switch tabs
-        key={`${currentSession?.id || "default"}-types`}
+        key={`${currentSession?.id || "default"}-types-body`}
         schemaType={editorBodySchemaType}
         editorParamView={EditorParamView.Body}
         setSchemaJSON={setEditorBodySchemaJSON}

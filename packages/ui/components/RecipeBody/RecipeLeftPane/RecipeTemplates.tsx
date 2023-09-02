@@ -1,5 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import {
+  DesktopPage,
   RecipeBodyRoute,
   RecipeContext,
   RecipeOutputTab,
@@ -17,9 +18,10 @@ import { Dialog } from "@headlessui/react";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
+  RECIPE_FORKING_ID,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
-import { useLocalStorage } from "usehooks-ts";
+import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
 import { cloneTemplate, deleteTemplate } from "../RecipeBodySearch/actions";
@@ -109,6 +111,12 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
 
   const secretInfo = useSecret(template.recipe?.id);
 
+  const isTauri = useIsTauri();
+  const [_, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
   return (
     <div
       className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default"
@@ -138,31 +146,33 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
         <button
           className={classNames(
             "btn btn-sm btn-neutral",
-            loadingTemplate && "btn-disabled"
+            (loadingTemplate || loading) && "btn-disabled"
           )}
           onClick={async () => {
-            if (!secretInfo && selectedRecipe.auth != null) {
-              alert(AuthBlock);
-              return;
+            // If this is desktop, then we just fork directly, if this is web then we redirect them to the fork tab
+
+            if (isTauri) {
+              try {
+                setLoading(true);
+
+                setRecipeFork(selectedRecipe.id);
+
+                if (isTauri) {
+                  setDesktopPage({
+                    page: DesktopPage.Editor,
+                  });
+                } else {
+                  router.push(`/editor`);
+                }
+              } catch (e) {}
+              setLoading(false);
+            } else {
+              setBodyRoute(RecipeBodyRoute.Fork);
             }
-
-            await setTemplate();
-
-            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_QUICK_USE, {
-              template_id: "starter",
-              template_project: selectedRecipe.project,
-              recipe_id: selectedRecipe.id,
-              recipe_path: selectedRecipe.path,
-            });
-
-            setTimeout(() => {
-              document
-                .getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)
-                ?.click();
-            }, 500);
           }}
         >
-          Send
+          Fork{" "}
+          {loading && <span className="loading loading-bars loading-sm"></span>}
         </button>
       </div>
     </div>

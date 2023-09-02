@@ -16,17 +16,22 @@ import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import classNames from "classnames";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useRecipeSessionStore } from "../../../../ui/state/recipeSession";
-import { API_SAMPLES } from "../../../../ui/utils/constants/main";
+import {
+  API_SAMPLES,
+  API_TYPE_NAMES,
+} from "../../../../ui/utils/constants/main";
 import { produce } from "immer";
 
 export function EditorViewWithSchema({
   value,
   setValue,
   jsonSchema,
+  typeName,
 }: {
   value: string;
   setValue: (value: string) => void;
   jsonSchema: JSONSchema6 | null;
+  typeName: (typeof API_TYPE_NAMES)[keyof typeof API_TYPE_NAMES];
 }) {
   const { isDarkMode } = useDarkMode();
   const monacoRef = useRef<Monaco>();
@@ -64,7 +69,7 @@ export function EditorViewWithSchema({
   useEffect(() => {
     if (!monacoRef.current) return;
 
-    setJSONDiagnosticOptions(monacoRef.current, jsonSchema);
+    setJSONDiagnosticOptions(monacoRef.current, typeName, jsonSchema);
   }, [jsonSchema]);
 
   const debouncedMatching = useDebounce(value, 500);
@@ -76,7 +81,7 @@ export function EditorViewWithSchema({
   const handleEditorMount: OnMount = (editor, monaco) => {
     monacoRef.current = monaco;
 
-    setJSONDiagnosticOptions(monaco, jsonSchema);
+    setJSONDiagnosticOptions(monaco, typeName, jsonSchema);
     renderModelMarkers();
   };
 
@@ -84,6 +89,7 @@ export function EditorViewWithSchema({
     <MonacoEditor
       className="pt-2"
       language="json"
+      keepCurrentModel={false}
       theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
       value={value}
       onChange={(newCode) => {
@@ -139,10 +145,9 @@ export const handleEditorWillMount: BeforeMount = (monaco) => {
 
 const setJSONDiagnosticOptions = (
   monaco: Monaco,
+  typeName: string,
   jsonSchema?: JSONSchema6 | null
 ) => {
-  if (!jsonSchema) return;
-
   const wrapSchemaInVariables = (schema: JSONSchema6, variables?: string[]) => {
     if (!variables || variables.length === 0) return schema;
 
@@ -210,13 +215,15 @@ const setJSONDiagnosticOptions = (
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
     validate: true,
     schemaValidation: "error",
-    schemas: [
-      {
-        uri: monaco.Uri.parse("API_REQUEST").toString(),
-        fileMatch: ["*"],
-        schema: wrapSchemaInVariables(jsonSchema),
-      },
-    ],
+    schemas: jsonSchema
+      ? [
+          {
+            uri: monaco.Uri.parse(typeName).toString(),
+            fileMatch: ["*"],
+            schema: wrapSchemaInVariables(jsonSchema),
+          },
+        ]
+      : [],
   });
 };
 

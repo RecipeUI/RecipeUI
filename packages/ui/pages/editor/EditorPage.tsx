@@ -38,12 +38,9 @@ import { DownloadContainer } from "../../components/DownloadContainer/DownloadCo
 import { CurlModal } from "./Builders/CurlModal";
 import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 
-const EDITOR_ROUTES = [
-  RecipeBodyRoute.Body,
-  RecipeBodyRoute.Query,
-  RecipeBodyRoute.Headers,
-  RecipeBodyRoute.Auth,
-];
+const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
+
+const CONFIG_ROUTES = [RecipeBodyRoute.Headers, RecipeBodyRoute.Auth];
 
 export default function EditorPage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
@@ -556,6 +553,8 @@ function CoreEditor() {
       mainRoutes.push(RecipeBodyRoute.URL);
     }
 
+    mainRoutes.push(...CONFIG_ROUTES);
+
     if (recipes.length > 0) {
       mainRoutes.push(RecipeBodyRoute.Templates);
     }
@@ -588,9 +587,9 @@ function CoreEditor() {
       <div className="flex-1 border-t border-t-slate-200 dark:border-t-slate-600  sm:flex-row flex flex-col overflow-auto">
         {bodyRoute === RecipeBodyRoute.Body && <EditorBody />}
         {bodyRoute === RecipeBodyRoute.Query && <EditorQuery />}
+        {bodyRoute === RecipeBodyRoute.URL && <EditorURL />}
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
-        {bodyRoute === RecipeBodyRoute.URL && <EditorURL />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplateEdit />}
         <RecipeOutput />
       </div>

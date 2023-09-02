@@ -41,34 +41,34 @@ export function RecipeBody() {
 
     const parameters = [RecipeBodyRoute.Parameters];
 
-    if (
-      !showingRecipesTwo &&
-      ((selectedRecipe &&
-        selectedRecipe.templates &&
-        selectedRecipe.templates.length > 0) ||
-        (selectedRecipe.userTemplates &&
-          selectedRecipe.userTemplates.length > 0) ||
-        forkedTemplate)
-    ) {
-      parameters.push(RecipeBodyRoute.Templates);
-    }
+    // if (
+    //   !showingRecipesTwo &&
+    //   ((selectedRecipe &&
+    //     selectedRecipe.templates &&
+    //     selectedRecipe.templates.length > 0) ||
+    //     (selectedRecipe.userTemplates &&
+    //       selectedRecipe.userTemplates.length > 0) ||
+    //     forkedTemplate)
+    // ) {
+    //   parameters.push(RecipeBodyRoute.Templates);
+    // }
 
-    if (selectedRecipe.auth !== null) {
-      parameters.push(RecipeBodyRoute.Config);
-    }
+    // if (selectedRecipe.auth !== null) {
+    //   parameters.push(RecipeBodyRoute.Config);
+    // }
 
-    if (isMobile && parameters.includes(RecipeBodyRoute.Templates)) {
-      // Make sure Templates is first on mobile
-      parameters.sort((a, b) => {
-        if (a === RecipeBodyRoute.Templates) {
-          return -1;
-        } else if (b === RecipeBodyRoute.Templates) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-    }
+    // if (isMobile && parameters.includes(RecipeBodyRoute.Templates)) {
+    //   // Make sure Templates is first on mobile
+    //   parameters.sort((a, b) => {
+    //     if (a === RecipeBodyRoute.Templates) {
+    //       return -1;
+    //     } else if (b === RecipeBodyRoute.Templates) {
+    //       return 1;
+    //     } else {
+    //       return 0;
+    //     }
+    //   });
+    // }
 
     if (selectedRecipe.version === 1) {
       parameters.push(RecipeBodyRoute.Fork);

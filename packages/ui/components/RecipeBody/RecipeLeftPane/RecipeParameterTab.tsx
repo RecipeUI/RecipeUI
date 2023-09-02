@@ -43,9 +43,9 @@ export function RecipeParameterTab() {
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden">
       {/* This logic is pretty confusing */}
-      {showingRecipesTwo && (
+      {(showingRecipesTwo || true) && (
         <div className="mb-4 mx-4 mt-6 space-y-8">
-          <UserTemplates />
+          {/* <UserTemplates /> */}
           <StarterTemplates />
         </div>
       )}
@@ -90,6 +90,8 @@ export function RecipeParameterTab() {
           </div>
         ) : null
       ) : null}
+
+      {!showingRecipesTwo && <div className="divider" />}
       {!showingRecipes && hasRequestBody && !loadingTemplate && (
         <RecipeJsonEditor />
       )}
