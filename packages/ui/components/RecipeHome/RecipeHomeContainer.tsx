@@ -68,7 +68,7 @@ export function RecipeHomeContainer({
   return (
     <>
       {!isTauri && <DownloadContainer />}
-      <div className={classNames("flex-1 flex flex-col p-8")}>
+      <div className={classNames("flex-1 flex flex-col m-6 sm:m-8")}>
         <RecipeContext.Provider value={recipe || null}>
           <RecipeProjectContext.Provider value={project || null}>
             <RecipeNativeFetchContext.Provider value={fetchServer}>

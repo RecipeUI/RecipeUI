@@ -418,6 +418,8 @@ export const createRecipeEditorSlice: StateCreator<
       set((prevState) => {
         savePrevSessionPre(prevState);
 
+        // ...getEmptyParameters(),
+        // ...resetEditorSlice(),
         return {
           ...resetEditorSlice(),
           ...editorSession,

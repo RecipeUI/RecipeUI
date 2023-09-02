@@ -1,7 +1,7 @@
 "use client";
 
 import MonacoEditor from "@monaco-editor/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
@@ -15,7 +15,7 @@ import {
   handleEditorWillMount,
 } from "./EditorJSON";
 
-import { fetchTypeScriptFromJSON } from "../../../../ui/fetchers/editor";
+import { fetchJSONFromTypeScript } from "../../../../ui/fetchers/editor";
 import { JSONSchema6 } from "json-schema";
 import classNames from "classnames";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
@@ -51,47 +51,49 @@ function useDebouncedEditorChanges({
     }
   }, [changesMade]);
 
+  function refresh() {
+    setPreparingChange(true);
+  }
+
   useEffect(() => {
-    if (preparingChange) {
-      if (!latestTypeValue) {
-        setSchemaJSON(null);
-        setPreparingChange(false);
-        return;
-      }
+    if (!preparingChange) return;
 
-      setRefreshing(true);
-
-      // We have to migrate off of here eventually
-      // Will mod this package so that it doesn't need a server
-      fetchTypeScriptFromJSON({ types: latestTypeValue })
-        .then(async (res) => {
-          const value = await res.json();
-
-          if (!res.ok) {
-            throw new Error("Failed to fetch");
-          }
-
-          setSchemaJSON(value);
-        })
-        .catch((err) => {
-          console.error(err);
-          setHasError(true);
-          setTimeout(() => {
-            setHasError(false);
-          }, 3000);
-        })
-        .finally(() => {
-          setRefreshing(false);
-          setPreparingChange(false);
-        });
+    if (!latestTypeValue) {
+      setSchemaJSON(null);
+      setPreparingChange(false);
+      return;
     }
-  }, [changesFinalized]);
+
+    setRefreshing(true);
+
+    // We have to migrate off of here eventually
+    // Will mod this package so that it doesn't need a server
+    async function refreshJSON(latestTypeValue: string) {
+      try {
+        const value = await fetchJSONFromTypeScript({ types: latestTypeValue });
+
+        setSchemaJSON(value);
+      } catch (e) {
+        console.error(e);
+        setHasError(true);
+        setTimeout(() => {
+          setHasError(false);
+        }, 3000);
+      } finally {
+        setRefreshing(false);
+        setPreparingChange(false);
+      }
+    }
+
+    refreshJSON(latestTypeValue);
+  }, [changesFinalized, preparingChange]);
 
   return {
     changesFinalized,
     preparingChange,
     hasError,
     refreshing,
+    refresh,
   };
 }
 
@@ -99,10 +101,12 @@ export const EditorTypeScript = ({
   editorParamView,
   schemaType,
   defaultExport,
+  sessionId,
 
   setSchemaType,
   setSchemaJSON,
 }: {
+  sessionId?: string;
   editorParamView: EditorParamView;
   schemaType: string | null;
   defaultExport?: string | null;
@@ -112,7 +116,7 @@ export const EditorTypeScript = ({
 }) => {
   const { isDarkMode } = useDarkMode();
 
-  const { preparingChange, refreshing, hasError, changesFinalized } =
+  const { preparingChange, refreshing, hasError, changesFinalized, refresh } =
     useDebouncedEditorChanges({
       latestTypeValue: schemaType,
       setSchemaJSON: setSchemaJSON,

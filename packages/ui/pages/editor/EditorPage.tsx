@@ -6,7 +6,6 @@ import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySear
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
   DesktopPage,
-  EditorSliceValues,
   GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
   RecipeOutputTab,
@@ -17,14 +16,7 @@ import { EditorBody } from "./EditorBody";
 import { EditHeaders } from "./EditHeaders";
 import { RecipeOutput } from "../../components/RecipeOutput";
 import { EditorAuth } from "./EditorAuth";
-import { Modal } from "../../components/Modal";
-import { parseCurl } from "./curlParser";
-import { RecipeAuthType, RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
-import {
-  API_LOCAL_PROCESSING_URLS,
-  API_TYPE_NAMES,
-} from "../../utils/constants/main";
 import { EditorURL } from "./EditorURL";
 import { useRouter } from "next/navigation";
 import { EditorQuery } from "./EditorQuery";
@@ -43,6 +35,8 @@ import { SupabaseContext } from "../../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../../fetchers/home";
 import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
 import { DownloadContainer } from "../../components/DownloadContainer/DownloadContainer";
+import { CurlModal } from "./Builders/CurlModal";
+import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 
 const EDITOR_ROUTES = [
   RecipeBodyRoute.Body,
@@ -68,6 +62,8 @@ function NewRequest() {
     (state) => state.addEditorSession
   );
   const [curlModal, setCurlModal] = useState(false);
+  const [importBuilderModal, setImportBuilderModal] = useState(false);
+
   const isTauri = useIsTauri();
 
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
@@ -103,6 +99,7 @@ function NewRequest() {
                 All requests are statically typed and saved locally.
               </p>
             </div>
+
             <div className="flex flex-col md:grid grid-cols-2 gap-4">
               <NewRequestAction
                 label="Start from scratch"
@@ -116,19 +113,28 @@ function NewRequest() {
                 onClick={() => setCurlModal(true)}
                 description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
               />
+              <NewRequestAction
+                label="Import builder"
+                onClick={() => setImportBuilderModal(true)}
+                description="Have a request body or query params? Our builder will help generate types for you."
+              />
             </div>
           </section>
-          <ForkExampleContainer
-            title="Fork Immediately"
-            description="These APIs require no auth!"
-            examples={FreeForkExamples}
-          />
-          <ForkExampleContainer
-            title="Popular APIs"
-            description="These APIs are great, but need API keys. We've written guides on how to get each one!"
-            examples={SuggestedExamples}
-            showHomeLink
-          />
+
+          <div>
+            <ForkExampleContainer
+              title="Fork Immediately"
+              description="Try out these APIs to get started. We've written guides for those that need API keys!"
+              examples={[...FreeForkExamples, ...SuggestedExamples]}
+              showHomeLink
+            />
+            {/* <ForkExampleContainer
+                title="Popular APIs"
+                description="These APIs are great, but need API keys. We've written guides on how to get each one!"
+                examples={SuggestedExamples}
+                showHomeLink
+              /> */}
+          </div>
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
           {!isTauri && (
@@ -224,6 +230,9 @@ function NewRequest() {
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
+      {importBuilderModal && (
+        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} />
+      )}
     </div>
   );
 }
@@ -233,21 +242,25 @@ const FreeForkExamples = [
     label: "Dog API",
     description: "Pictures of really cute dogs.",
     id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
+    tags: ["No Auth"],
   },
   {
     label: "Reddit API",
     description: "Search across reddit!",
     id: "183eea98-32c9-4cf6-8c03-6084147e30db",
+    tags: ["No Auth"],
   },
   {
     label: "Pokemon API",
     description: "Pokedex as an API.",
     id: "c645327c-4652-4572-aa39-35388943abf8",
+    tags: ["No Auth"],
   },
   {
     label: "JSON Placeholder API",
     description: "Popular API for testing fake data.",
     id: "6bd53e59-8994-4382-ba41-d81146003b8d",
+    tags: ["No Auth"],
   },
 ];
 
@@ -330,7 +343,7 @@ function ForkExampleContainer({
           )}
         </p>
       </div>
-      <div className="flex flex-col md:grid grid-cols-2 gap-4">
+      <div className="flex flex-col md:grid grid-cols-2 gap-4  lg:max-h-[250px] lg:overflow-y-scroll">
         {examples.map((forkedExample, i) => {
           return (
             <NewRequestAction
@@ -395,120 +408,6 @@ function ForkExampleContainer({
   );
 }
 
-function CurlModal({ onClose }: { onClose: () => void }) {
-  const [curlString, setCurlString] = useState("");
-  const initializeEditorSession = useRecipeSessionStore(
-    (state) => state.initializeEditorSession
-  );
-  const addEditorSession = useRecipeSessionStore(
-    (state) => state.addEditorSession
-  );
-
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const onSubmit = async () => {
-    setError(null);
-    setLoading(true);
-
-    try {
-      const requestInfo = parseCurl(curlString);
-      const editorSlice: Partial<EditorSliceValues> = {
-        editorUrl: requestInfo.url,
-        editorBody: requestInfo.body
-          ? JSON.stringify(requestInfo.body, null, 2)
-          : "",
-        editorHeaders: Object.keys(requestInfo.headers).map((key) => ({
-          name: key,
-          value: requestInfo.headers[key],
-        })),
-        editorMethod: requestInfo.method.toUpperCase() as RecipeMethod,
-      };
-
-      if (requestInfo.body) {
-        const schemaTypeRes = await fetch(
-          API_LOCAL_PROCESSING_URLS.JSON_TO_TS,
-          {
-            body: JSON.stringify({
-              body: requestInfo.body,
-              name: API_TYPE_NAMES.APIRequestParams,
-            }),
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const schemaType = await schemaTypeRes.json();
-        editorSlice.editorBodySchemaType = schemaType.join("\n");
-        editorSlice.editorMethod = RecipeMethod.POST;
-      }
-
-      if (editorSlice.editorHeaders) {
-        for (const header of editorSlice.editorHeaders) {
-          if (header.name === "Authorization") {
-            if (header.value.startsWith("Bearer")) {
-              editorSlice.editorAuth = {
-                type: RecipeAuthType.Bearer,
-              };
-
-              break;
-            }
-          }
-        }
-
-        if (editorSlice.editorAuth) {
-          editorSlice.editorHeaders = editorSlice.editorHeaders.filter(
-            (header) => header.name !== "Authorization"
-          );
-        }
-      }
-
-      const newSession: RecipeSession = addEditorSession({
-        id: uuidv4(),
-        name: "New Session",
-        apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
-        recipeId: uuidv4(),
-      });
-
-      setTimeout(() => {
-        initializeEditorSession({
-          currentSession: newSession,
-          ...editorSlice,
-        });
-        onClose();
-      }, 0);
-    } catch (err) {
-      setError("Could not parse CURL");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Modal onClose={onClose} header="Import from CURL">
-      <div className="mt-2 space-y-4">
-        <p>{"Enter your cURL code snippet below and we'll try to parse it."}</p>
-        {error && <div className="text-red-500 text-sm font-bold">{error}</div>}
-        <textarea
-          rows={8}
-          className={classNames(
-            "textarea  w-full",
-            error ? "textarea-error" : "textarea-accent"
-          )}
-          value={curlString}
-          onChange={(e) => setCurlString(e.target.value)}
-        />
-        {loading ? (
-          <span className="loading  loading-lg loading-bars"></span>
-        ) : (
-          <button className="btn btn-accent btn-sm" onClick={onSubmit}>
-            Submit
-          </button>
-        )}
-      </div>
-    </Modal>
-  );
-}
 function NewRequestAction({
   label,
   description,
@@ -560,6 +459,9 @@ function CoreEditor() {
   }, [saveSession]);
 
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
+  const editorQuerySchemaType = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaType
+  );
   const editorBody = useRecipeSessionStore((state) => state.editorBody);
   const session = useRecipeSessionStore((state) => state.currentSession);
 
@@ -574,7 +476,7 @@ function CoreEditor() {
     } = state;
 
     if (process.env.NEXT_PUBLIC_ENV === "dev") {
-      console.log("state", {
+      console.debug("state", {
         editorURLSchemaJSON,
         editorURLSchemaType,
         editorQuerySchemaJSON,
@@ -625,10 +527,16 @@ function CoreEditor() {
 
   const { recipes } = useMiniRecipes(session?.recipeId);
   useEffect(() => {
+    console.log(
+      "Change of sessionId",
+      session?.id,
+      editorURLSchemaType,
+      editorQuerySchemaType
+    );
     if (!editorBody || editorBody === "{}") {
       if (editorURLSchemaType) {
         setBodyRoute(RecipeBodyRoute.URL);
-      } else if (editorQuery) {
+      } else if (editorQuerySchemaType) {
         setBodyRoute(RecipeBodyRoute.Query);
       }
     }

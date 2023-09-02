@@ -2,12 +2,21 @@
 
 import classNames from "classnames";
 import Link from "next/link";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { DesktopAppUpsell } from "../../../ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
+import {
+  CodeBracketIcon,
+  CodeBracketSquareIcon,
+  Square3Stack3DIcon,
+} from "@heroicons/react/24/outline";
+import { useIsMobile } from "../../hooks";
+import { useQuery } from "@tanstack/react-query";
+import { RecipeNativeFetchContext } from "../../state/recipeSession";
+import { RecipeMethod } from "types/enums";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -125,7 +134,7 @@ export function DownloadContainer() {
 
   return (
     <div className="min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5 relative">
-      <div className="m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative sm:text-base text-lg">
+      <div className="m-6 sm:m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative text-sm   sm:text-lg">
         <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
           <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
           <p className="my-2 ">
@@ -166,7 +175,7 @@ function ViewCollections() {
   );
 }
 
-const latestVersion = "0.5.5";
+const LATEST_VERSION = "0.5.5";
 function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 
@@ -209,6 +218,39 @@ function DesktopDownload() {
     getPlatform();
   }, []);
 
+  const [latestVersion, setLatestVersion] = useState(LATEST_VERSION);
+  const nativeFetch = useContext(RecipeNativeFetchContext);
+  useQuery({
+    queryKey: ["latestVersion", nativeFetch],
+    queryFn: async () => {
+      if (!nativeFetch) {
+        return LATEST_VERSION;
+      }
+
+      const latestRes = await nativeFetch({
+        url: "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json",
+        payload: {
+          headers: {},
+          method: RecipeMethod.GET,
+          body: undefined,
+        },
+      });
+
+      if (latestRes.status === 200) {
+        try {
+          const latestJson = JSON.parse(latestRes.output);
+          setLatestVersion(latestJson.version);
+
+          return latestJson.version;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      return LATEST_VERSION;
+    },
+  });
+
   const content = getContent(latestVersion);
 
   const platformInfo = useMemo(() => {
@@ -243,42 +285,86 @@ function DesktopDownload() {
   }, [content, platform, showAll]);
 
   const [showInitialWeb, setShowInitialWeb] = useState(true);
+  const [showAdvancedWeb, setShowAdvancedWeb] = useState(false);
 
   const router = useRouter();
-
   const posthog = usePostHog();
 
+  const isMobile = useIsMobile();
+
+  const buttonClassName =
+    "btn-accent btn dark:text-slate-200 rounded-md w-full";
+
   if (showInitialWeb) {
+    const webCollections = (
+      <button
+        className={buttonClassName}
+        onClick={() => {
+          const popularNode = document.getElementById("popular");
+
+          popularNode?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }}
+      >
+        <Square3Stack3DIcon
+          className={classNames(
+            "w-4 mb-0.5 inline-block",
+            !showAdvancedWeb && "hidden"
+          )}
+        />
+        <span>Web Collections</span>
+      </button>
+    );
+
+    if (showAdvancedWeb) {
+      return (
+        <ButtonGrid>
+          <button
+            className={buttonClassName}
+            onClick={() => {
+              posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
+              router.push("/editor");
+            }}
+          >
+            <CodeBracketSquareIcon className="w-4 mb-0.5 inline-block" />
+            <span className="inline-block">Web Editor</span>
+          </button>
+          {webCollections}
+        </ButtonGrid>
+      );
+    }
+
     return (
-      <div className="grid grid-cols-2 gap-2 mt-4  xl:w-full">
+      <ButtonGrid>
         <button
-          className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
+          className={buttonClassName}
           onClick={() => {
             setShowInitialWeb(false);
           }}
         >
           Try Desktop (20 mb!)
         </button>
-        <button
-          className="!bg-accent btn  dark:text-slate-200 rounded-md cursor-pointer flex flex-row items-center text-sm"
-          onClick={() => {
-            posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
-
-            router.push("/editor");
-          }}
-        >
-          Try Web
-        </button>
-      </div>
+        {isMobile ? (
+          webCollections
+        ) : (
+          <button
+            className={buttonClassName}
+            onClick={() => {
+              setShowAdvancedWeb(true);
+            }}
+          >
+            Try Web
+          </button>
+        )}
+      </ButtonGrid>
     );
   }
 
   return (
     <>
-      <div
-        className="grid grid-cols-2 gap-2 mt-4 w-fit xl:w-full"
-        onClick={() => {}}
-      >
+      <ButtonGrid>
         {platformInfo.map((item, i) => {
           const Icon = item.icon;
           return (
@@ -286,9 +372,7 @@ function DesktopDownload() {
               key={item.href}
               href={item.href}
               target="_blank"
-              className={classNames(
-                "!bg-accent btn text-black dark:text-slate-200 border border-recipe-slate rounded-md p-2 cursor-pointer flex flex-row items-center text-sm px-4 text-center"
-              )}
+              className={classNames(buttonClassName)}
               onClick={() => {
                 posthog?.capture(POST_HOG_CONSTANTS.DOWNLOAD, {
                   platform: item.platform,
@@ -300,7 +384,7 @@ function DesktopDownload() {
             </Link>
           );
         })}
-      </div>
+      </ButtonGrid>
       <button
         className="text-xs text-left mt-4"
         onClick={() => {
@@ -330,5 +414,13 @@ function DesktopDownload() {
         )}
       </button>
     </>
+  );
+}
+
+function ButtonGrid({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-col sm:grid grid-cols-2 gap-2 mt-4 w-full text-xs">
+      {children}
+    </div>
   );
 }

@@ -475,15 +475,9 @@ export function RecipeSearchButton() {
       const isStatusOk = status >= 200 && status < 300;
       console.debug({ output, status });
 
-      if (contentType?.includes("application/json")) {
-        try {
-          output = JSON.parse(outputStr);
-        } catch (e) {
-          output = { response: "unable to parse json" };
-        }
-      } else if (contentType?.includes("text/")) {
+      if (contentType?.includes("text/")) {
         output = { text: outputStr };
-      } else {
+      } else if (!isStatusOk) {
         const statusPrefix = `Error code ${status}.`;
         if (!isStatusOk) {
           if ([401, 403, 405, 406].includes(status)) {
@@ -503,6 +497,12 @@ export function RecipeSearchButton() {
               error: `${statusPrefix} Unable to figure out what went wrong with this request.`,
             };
           }
+        }
+      } else {
+        try {
+          output = JSON.parse(outputStr);
+        } catch (e) {
+          output = { response: "unable to parse json" };
         }
       }
 

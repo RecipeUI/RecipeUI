@@ -65,12 +65,13 @@ export const EditorQuery = () => {
           value={editorQuery}
           setValue={setEditorQuery}
           jsonSchema={editorQuerySchemaJSON}
+          key={`${currentSession?.id || "default"}-json`}
         />
       ) : (
         <InitializeSchema type={EditorParamView.Query} />
       )}
       <EditorTypeScript
-        key={currentSession?.id || "default"}
+        key={`${currentSession?.id || "default"}-types`}
         setSchemaJSON={setSchemaJSON}
         setSchemaType={setSchemaType}
         editorParamView={EditorParamView.Query}

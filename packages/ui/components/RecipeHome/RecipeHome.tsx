@@ -98,7 +98,7 @@ function MarketplaceSection({
   id?: string;
 }) {
   return (
-    <div id={id}>
+    <div id={id} className="scroll-mt-16 sm:scroll-m-0">
       <h1 className="text-2xl font-bold dark:text-gray-100">{header}</h1>
       {description ? (
         typeof description === "string" ? (
@@ -156,7 +156,7 @@ export function RecipeHomeBox({
     <div
       className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
       onClick={() => {
-        posthog?.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
+        postHog?.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
           project,
         });
 

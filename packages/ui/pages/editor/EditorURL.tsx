@@ -43,6 +43,7 @@ export const EditorURL = () => {
       </div>
       {editorURLSchemaJSON || editorURLCode ? (
         <EditorViewWithSchema
+          key={`${currentSession?.id || "default"}-json`}
           value={editorURLCode}
           setValue={setEditorURLCode}
           jsonSchema={editorURLSchemaJSON}
@@ -51,7 +52,7 @@ export const EditorURL = () => {
         <InitializeSchema type={EditorParamView.Url} />
       )}
       <EditorTypeScript
-        key={currentSession?.id || "default"}
+        key={`${currentSession?.id || "default"}-types`}
         editorParamView={EditorParamView.Url}
         schemaType={schemaType}
         setSchemaJSON={setSchemaJSON}

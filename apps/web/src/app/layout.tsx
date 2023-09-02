@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import { Suspense } from "react";
 import { RecipeLayout } from "./RecipeLayout";
+import { ServerFetchProvider } from "ui/components/Providers/ServerFetchProvider";
 
 const sora = Sora({ subsets: ["latin"] });
 
@@ -58,7 +59,9 @@ export default function RootLayout({
       </Suspense>
       <body className={sora.className}>
         <Providers>
-          <RecipeLayout>{children}</RecipeLayout>
+          <ServerFetchProvider>
+            <RecipeLayout>{children}</RecipeLayout>
+          </ServerFetchProvider>
         </Providers>
       </body>
     </html>

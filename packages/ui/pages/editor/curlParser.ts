@@ -3,7 +3,6 @@ import { parse } from "json5";
 function getParts(curlString: string): string[] {
   const _parts = curlString
     .split(/\\\n|\n/)
-    // .split("/n")
     .join("")
     .split(" ")
     .filter((p) => p !== "");

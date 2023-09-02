@@ -35,9 +35,5 @@ export default async function APIPage({
       })
     : null;
 
-  return (
-    <ServerFetchProvider>
-      <RecipeAPI project={project} recipe={recipe} />
-    </ServerFetchProvider>
-  );
+  return <RecipeAPI project={project} recipe={recipe} />;
 }
