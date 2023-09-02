@@ -72,7 +72,7 @@ export function EditorAuth() {
               />
             </AuthFormWrapper>
           )}
-          <AuthFormWrapper label={`${editorAuth.type} Value`}>
+          <AuthFormWrapper label={`${editorAuth.type} Secret Value`}>
             <input
               type="text"
               className={classNames(

@@ -36,7 +36,11 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
         request_builder = request_builder.header("Content-Type", "application/json");
     }
 
+    println!("Sending request to {}", url);
+
     let response = request_builder.send().await.map_err(|e| e.to_string())?;
+
+    println!("Response: {:?}", response);
 
     let status = response.status().as_u16();
     let content_type = response

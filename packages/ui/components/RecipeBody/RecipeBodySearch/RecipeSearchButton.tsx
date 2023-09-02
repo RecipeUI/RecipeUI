@@ -14,6 +14,7 @@ import {
 } from "../../../state/recipeSession";
 import { RecipeOptions, RecipeOutputType } from "types/database";
 import {
+  ContentType,
   RecipeAuthType,
   RecipeError,
   RecipeMutationContentType,
@@ -415,6 +416,7 @@ export function RecipeSearchButton() {
           type: RecipeOutputType.Response,
           duration: performance.now() - startTime,
           requestInfo,
+          contentType: ContentType.JSON,
         });
 
         posthog?.capture(
@@ -479,8 +481,8 @@ export function RecipeSearchButton() {
         } catch (e) {
           output = { response: "unable to parse json" };
         }
-      } else if (contentType?.includes("text/plain")) {
-        output = { response: outputStr };
+      } else if (contentType?.includes("text/")) {
+        output = { text: outputStr };
       } else {
         const statusPrefix = `Error code ${status}.`;
         if (!isStatusOk) {
@@ -517,6 +519,7 @@ export function RecipeSearchButton() {
         type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
         duration: performance.now() - startTime,
         requestInfo,
+        contentType: contentType as ContentType,
       });
     } catch (e) {
       console.error(e);

@@ -83,3 +83,12 @@ export enum QueryKey {
 export enum RecipeError {
   AbortedRequest = "AbortedRequest",
 }
+
+export enum ContentType {
+  JSON = "application/json",
+  FormData = "multipart/form-data",
+  Text = "text/plain",
+  HTML = "text/html",
+  XML = "application/xml",
+  PDF = "application/pdf",
+}

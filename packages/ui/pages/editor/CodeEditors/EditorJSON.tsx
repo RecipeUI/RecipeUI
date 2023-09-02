@@ -256,7 +256,10 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
 
   return (
     <div className="h-full flex justify-center items-center border-t border-recipe-slate">
-      <button className="btn btn-accent" onClick={onSubmit}>
+      <button
+        className="btn btn-outline opacity-30 hover:opacity-100"
+        onClick={onSubmit}
+      >
         Initialize {type} schema
       </button>
     </div>

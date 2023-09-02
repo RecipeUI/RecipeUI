@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import {
   RecipeContext,
+  SessionOutput,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { ReactNode, useContext, useMemo, useRef } from "react";
@@ -9,7 +10,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
-import { RecipeOutputType } from "types/database";
+import { Recipe, RecipeOutputType } from "types/database";
 import { useOutput } from "../../state/apiSession";
 
 const codeMirrorSetup = {
@@ -19,9 +20,10 @@ const codeMirrorSetup = {
 
 export function RecipeOutputConsole() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const sessionOutput = useOutput(currentSession?.id);
   const {
     output: { output, type },
-  } = useOutput(currentSession?.id);
+  } = sessionOutput;
 
   const { isDarkMode } = useDarkMode();
   const isSending = useRecipeSessionStore((state) => state.isSending);
@@ -64,14 +66,6 @@ export function RecipeOutputConsole() {
 
     return { codeBlocks, imageBlocks };
   }, [output]);
-
-  const extensions = useMemo(() => {
-    if (selectedRecipe?.options?.streaming) {
-      return [markdown()];
-    } else {
-      return [json()];
-    }
-  }, [selectedRecipe?.options?.streaming]);
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-white space-y-6">
@@ -138,18 +132,9 @@ export function RecipeOutputConsole() {
             title="Response"
             body={
               Object.keys(output).length > 0 ? (
-                <CodeMirror
-                  readOnly={true}
-                  value={
-                    selectedRecipe?.options?.streaming
-                      ? (output["content"] as string) ||
-                        JSON.stringify(output, null, 2)
-                      : JSON.stringify(output, null, 2)
-                  }
-                  className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-                  basicSetup={codeMirrorSetup}
-                  theme={"dark"}
-                  extensions={extensions}
+                <ResponseOutput
+                  sessionOutput={sessionOutput.output}
+                  selectedRecipe={selectedRecipe}
                 />
               ) : null
             }
@@ -164,6 +149,59 @@ export function RecipeOutputConsole() {
     </div>
   );
 }
+
+function ResponseOutput({
+  selectedRecipe,
+  sessionOutput,
+}: {
+  selectedRecipe?: Recipe | null;
+  sessionOutput: SessionOutput;
+}) {
+  const extensions = useMemo(() => {
+    if (
+      selectedRecipe?.options?.streaming ||
+      sessionOutput.contentType?.includes("text")
+    ) {
+      return [markdown()];
+    } else {
+      return [json()];
+    }
+  }, [selectedRecipe?.options?.streaming, sessionOutput.contentType]);
+
+  const output = useMemo(() => {
+    let _output = "";
+
+    if (selectedRecipe?.options?.streaming) {
+      if (sessionOutput.output["content"] as string) {
+        _output = sessionOutput.output["content"] as string;
+      } else {
+        _output = JSON.stringify(_output, null, 2);
+      }
+    } else if (sessionOutput.contentType?.includes("text")) {
+      _output = sessionOutput.output["text"] as string;
+    } else {
+      _output = JSON.stringify(sessionOutput.output, null, 2);
+    }
+
+    return _output;
+  }, [
+    selectedRecipe?.options?.streaming,
+    sessionOutput.contentType,
+    sessionOutput.output,
+  ]);
+
+  return (
+    <CodeMirror
+      readOnly={true}
+      value={output}
+      className="h-full !outline-none border-none max-w-sm sm:max-w-none"
+      basicSetup={codeMirrorSetup}
+      theme={"dark"}
+      extensions={extensions}
+    />
+  );
+}
+
 function OutputModule({
   title,
   body,

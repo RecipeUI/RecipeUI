@@ -17,6 +17,7 @@ import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
 import {
+  ContentType,
   RecipeAuthType,
   RecipeMethod,
   RecipeMutationContentType,
@@ -103,6 +104,7 @@ export interface SessionOutput {
   duration?: number;
   requestInfo?: RecipeRequestInfo;
   created_at?: string;
+  contentType?: ContentType;
 }
 
 export interface RecipeRequestInfo {
@@ -392,8 +394,8 @@ function resetEditorSlice(): EditorSliceValues {
       },
     ],
     editorBodyType: RecipeMutationContentType.JSON,
-    editorBodySchemaType: "",
-    editorQuerySchemaType: "",
+    editorBodySchemaType: null,
+    editorQuerySchemaType: null,
     editorBodySchemaJSON: null,
     editorQuerySchemaJSON: null,
     editorAuth: null,
