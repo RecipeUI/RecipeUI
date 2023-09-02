@@ -57,6 +57,7 @@ export function RecipeSearchButton() {
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const isTauri = useIsTauri();
 
   const onSubmit = async () => {
     if (currentSession) clearOutput();
@@ -448,8 +449,11 @@ export function RecipeSearchButton() {
             .catch(reject);
         }
 
-        if (payload.body instanceof FormData || !nativeFetch) {
-          // TODO: Make these work with native fetch
+        if (
+          payload.body instanceof FormData ||
+          !nativeFetch ||
+          (!isTauri && url.origin.startsWith("http://localhost"))
+        ) {
           simpleFetch();
           return;
         }
@@ -561,7 +565,6 @@ export function RecipeSearchButton() {
   }, []);
 
   const isHovering = useHover(ref);
-  const isTauri = useIsTauri();
 
   return (
     <div>
