@@ -7,7 +7,7 @@ export default function HomepageFeatures() {
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-          <img src={useBaseUrl("/img/app.jpg")} />
+          <img src={useBaseUrl("/img/app.png")} />
         </div>
       </div>
     </section>

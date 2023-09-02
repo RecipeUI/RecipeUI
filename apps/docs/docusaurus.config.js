@@ -7,7 +7,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "RecipeUI",
-  tagline: "Open Source Postman Alternative",
+  tagline: "The open source Postman alternative",
   favicon: "img/favicon.ico",
 
   url: "https://docs.recipeui.com",

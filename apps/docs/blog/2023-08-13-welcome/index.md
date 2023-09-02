@@ -1,7 +1,7 @@
 ---
 slug: welcome
 title: Welcome
-authors: [jeanec]
+authors: [jeanec, samuelsan]
 tags: [recipeui, hello, robinhood]
 ---
 
