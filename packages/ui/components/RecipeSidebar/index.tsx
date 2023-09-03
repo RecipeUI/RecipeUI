@@ -206,7 +206,7 @@ export function RecipeSidebar() {
                 setCurlModal(true);
               }}
             >
-              Import form cURL
+              Import from cURL
             </button>
           </li>
           <li className="">
@@ -512,7 +512,7 @@ function SessionTab({
               }}
             />
           ) : (
-            <h4 className="ml-2">{session.name}</h4>
+            <h4 className="ml-2">{session.name || "New Session"}</h4>
           )}
         </div>
         {isHover && !isEditing && (
@@ -619,7 +619,8 @@ function EditSessionModal({
         <input
           type="text"
           className="input input-bordered input-sm"
-          value="Session Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
       </div>
 
@@ -722,7 +723,7 @@ function DuplicateModal({
   };
 
   return (
-    <Modal header="Duplicate Modal" onClose={onClose}>
+    <Modal header="Duplicate Request" onClose={onClose}>
       <div className="mt-4 flex flex-col space-y-2">
         <label>Session Name</label>
         <input

@@ -762,7 +762,7 @@ const createRecipeSessionSlice: StateCreator<
     addEditorSession(session?: RecipeSession) {
       const newSession: RecipeSession = session ?? {
         id: uuidv4(),
-        name: "New Session",
+        name: "",
         apiMethod: RecipeMethod.GET,
         recipeId: uuidv4(),
       };

@@ -101,7 +101,7 @@ function NewRequest() {
 
             <div className="flex flex-col gap-4">
               <NewRequestAction
-                label="New request."
+                label="New request"
                 description="Create a request from scratch."
                 onClick={() => {
                   addEditorSession();
@@ -484,14 +484,14 @@ function CoreEditor() {
     } = state;
 
     if (process.env.NEXT_PUBLIC_ENV === "dev") {
-      console.debug("state", {
-        editorURLSchemaJSON,
-        editorURLSchemaType,
-        editorQuerySchemaJSON,
-        editorQuerySchemaType,
-        editorBodySchemaJSON,
-        editorBodySchemaType,
-      });
+      // console.debug("state", {
+      //   editorURLSchemaJSON,
+      //   editorURLSchemaType,
+      //   editorQuerySchemaJSON,
+      //   editorQuerySchemaType,
+      //   editorBodySchemaJSON,
+      //   editorBodySchemaType,
+      // });
     }
 
     // if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
@@ -535,12 +535,12 @@ function CoreEditor() {
 
   const { recipes } = useMiniRecipes(session?.recipeId);
   useEffect(() => {
-    console.log(
-      "Change of sessionId",
-      session?.id,
-      editorURLSchemaType,
-      editorQuerySchemaType
-    );
+    // console.log(
+    //   "Change of sessionId",
+    //   session?.id,
+    //   editorURLSchemaType,
+    //   editorQuerySchemaType
+    // );
     if (!editorBody || editorBody === "{}") {
       if (editorURLSchemaType) {
         setBodyRoute(RecipeBodyRoute.URL);

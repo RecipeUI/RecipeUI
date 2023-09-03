@@ -35,13 +35,21 @@ export function EditorAuth() {
   useEffect(() => {
     getSecret({ secretId: currentSession.recipeId }).then((secret) => {
       setSecret(secret || "");
+
+      if (secret) {
+        setShowAuth(false);
+      } else {
+        setShowAuth(true);
+      }
     });
   }, [currentSession?.recipeId]);
+
+  const [showAuth, setShowAuth] = useState(false);
 
   return (
     <div className="flex-1 ">
       {editorAuth !== null && (
-        <div className="py-2 border-b p-4 pb-4">
+        <div className={classNames("py-2 p-4 pb-4", showAuth && "border-b")}>
           {[RecipeAuthType.Query, RecipeAuthType.Header].includes(
             editorAuth.type
           ) && (
@@ -149,59 +157,71 @@ export function EditorAuth() {
             >
               Delete secret
             </button>
+            {!showAuth && (
+              <button
+                className="btn btn-outline btn-sm m-4 w-"
+                onClick={() => {
+                  setShowAuth(true);
+                }}
+              >
+                Modify Auth
+              </button>
+            )}
           </div>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-4 px-4 py-4">
-        <AuthButton
-          label="None"
-          description="This API request no authentication."
-          onClick={() => {
-            setEditorAuth(null);
-          }}
-          selected={editorAuth === null}
-        />
-        <AuthButton
-          label="Bearer"
-          description='Very common for APIs. Uses Bearer prefix in "Authorization" header.'
-          selected={editorAuth?.type === RecipeAuthType.Bearer}
-          onClick={() => {
-            setEditorAuth({
-              type: RecipeAuthType.Bearer,
-              docs: editorAuth?.docs || "",
-            });
-          }}
-        />
-        <AuthButton
-          label="Query"
-          description="An API key in a query parameter."
-          selected={editorAuth?.type === RecipeAuthType.Query}
-          onClick={() => {
-            setEditorAuth({
-              type: RecipeAuthType.Query,
-              docs: editorAuth?.docs || "",
-            });
-          }}
-        />
-        <AuthButton
-          label="Header"
-          description="An API key in a header."
-          selected={editorAuth?.type === RecipeAuthType.Header}
-          onClick={() => {
-            setEditorAuth({
-              type: RecipeAuthType.Header,
-              docs: editorAuth?.docs || "",
-            });
-          }}
-        />
-        <AuthButton
-          label="OAuth (Soon)"
-          description="Join our Discord or email us to use this feature now."
-          selected={editorAuth?.type === RecipeAuthType.OAuth}
-          className="opacity-50 pointer-events-none"
-          onClick={() => {}}
-        />
-      </div>
+      {showAuth ? (
+        <div className="grid grid-cols-2 gap-4 px-4 py-4">
+          <AuthButton
+            label="None"
+            description="This API request no authentication."
+            onClick={() => {
+              setEditorAuth(null);
+            }}
+            selected={editorAuth === null}
+          />
+          <AuthButton
+            label="Bearer"
+            description='Very common for APIs. Uses Bearer prefix in "Authorization" header.'
+            selected={editorAuth?.type === RecipeAuthType.Bearer}
+            onClick={() => {
+              setEditorAuth({
+                type: RecipeAuthType.Bearer,
+                docs: editorAuth?.docs || "",
+              });
+            }}
+          />
+          <AuthButton
+            label="Query"
+            description="An API key in a query parameter."
+            selected={editorAuth?.type === RecipeAuthType.Query}
+            onClick={() => {
+              setEditorAuth({
+                type: RecipeAuthType.Query,
+                docs: editorAuth?.docs || "",
+              });
+            }}
+          />
+          <AuthButton
+            label="Header"
+            description="An API key in a header."
+            selected={editorAuth?.type === RecipeAuthType.Header}
+            onClick={() => {
+              setEditorAuth({
+                type: RecipeAuthType.Header,
+                docs: editorAuth?.docs || "",
+              });
+            }}
+          />
+          <AuthButton
+            label="OAuth (Soon)"
+            description="Join our Discord or email us to use this feature now."
+            selected={editorAuth?.type === RecipeAuthType.OAuth}
+            className="opacity-50 pointer-events-none"
+            onClick={() => {}}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -222,7 +242,7 @@ function AuthButton({
   return (
     <button
       className={classNames(
-        "border rounded-md p-4 text-start space-y-2 h-[120px] flex flex-col justify-start",
+        "border rounded-md p-4 text-start space-y-2 h-[130px] flex flex-col justify-start",
         selected && "bg-slate-600  text-white",
         className
       )}

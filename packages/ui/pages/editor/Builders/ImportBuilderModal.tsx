@@ -50,7 +50,7 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
     setLoading(true);
 
     try {
-      const editorSlice: Partial<EditorSliceValues> = {
+      let editorSlice: Partial<EditorSliceValues> = {
         editorUrl: requestInfo.url.split("?")[0],
         editorBody: requestInfo.body
           ? JSON.stringify(requestInfo.body, null, 2)
@@ -63,21 +63,15 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
         body: requestInfo.body,
       });
 
-      if (queryInfo) {
-        editorSlice.editorQuerySchemaType = queryInfo.editorQuerySchemaType;
-        editorSlice.editorQuerySchemaJSON = queryInfo.editorQuerySchemaJSON;
-      }
-
-      if (bodyInfo) {
-        editorSlice.editorBodySchemaType = bodyInfo.editorBodySchemaType;
-        editorSlice.editorBodySchemaJSON = bodyInfo.editorBodySchemaJSON;
-
-        editorSlice.editorMethod = RecipeMethod.POST;
-      }
+      editorSlice = {
+        ...editorSlice,
+        ...queryInfo,
+        ...bodyInfo,
+      };
 
       const newSession: RecipeSession = {
         id: uuidv4(),
-        name: "New Session",
+        name: "",
         apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
         recipeId: uuidv4(),
       };

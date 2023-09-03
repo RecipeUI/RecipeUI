@@ -12,16 +12,17 @@ export async function getQueryAndBodyInfo({
   url: string;
   body?: string | null | undefined | Record<string, unknown>;
 }) {
-  const queryParams = new URL(url).searchParams;
+  const urlParam = new URL(url);
   let queryInfo: Pick<
     EditorSliceValues,
-    "editorQuerySchemaType" | "editorQuerySchemaJSON"
+    "editorQuerySchemaType" | "editorQuerySchemaJSON" | "editorQuery"
   > | null = null;
 
-  if (queryParams.size > 0) {
+  if (urlParam.search.length > 1) {
     const queryRecord: Record<string, string> = {};
-
-    queryParams.forEach((value, key) => {
+    const searchParts = urlParam.search.substring(1).split("&");
+    searchParts.forEach((part) => {
+      const [key, value] = part.split("=");
       queryRecord[key] = value;
     });
 
@@ -33,12 +34,13 @@ export async function getQueryAndBodyInfo({
     queryInfo = {
       editorQuerySchemaType: _queryInfo.ts,
       editorQuerySchemaJSON: _queryInfo.json,
+      editorQuery: JSON.stringify(queryRecord, null, 2),
     };
   }
 
   let bodyInfo: Pick<
     EditorSliceValues,
-    "editorBodySchemaType" | "editorBodySchemaJSON"
+    "editorBodySchemaType" | "editorBodySchemaJSON" | "editorBody"
   > | null = null;
   if (body) {
     const requestBody = typeof body === "string" ? JSON.parse(body) : body;
@@ -51,6 +53,7 @@ export async function getQueryAndBodyInfo({
     bodyInfo = {
       editorBodySchemaType: _bodyInfo.ts,
       editorBodySchemaJSON: _bodyInfo.json,
+      editorBody: JSON.stringify(requestBody, null, 2),
     };
   }
 

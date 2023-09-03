@@ -16,8 +16,16 @@ import {
 } from "../../../utils/constants/main";
 import { getQueryAndBodyInfo } from "./helpers";
 
-export function CurlModal({ onClose }: { onClose: () => void }) {
-  const [curlString, setCurlString] = useState("");
+export function CurlModal({
+  onClose,
+  curlString: _curlString,
+  currentSession,
+}: {
+  onClose: () => void;
+  curlString?: string;
+  currentSession?: RecipeSession | null;
+}) {
+  const [curlString, setCurlString] = useState(_curlString ?? "");
   const initializeEditorSession = useRecipeSessionStore(
     (state) => state.initializeEditorSession
   );
@@ -31,7 +39,7 @@ export function CurlModal({ onClose }: { onClose: () => void }) {
     try {
       const requestInfo = parseCurl(curlString);
 
-      const editorSlice: Partial<EditorSliceValues> = {
+      let editorSlice: Partial<EditorSliceValues> = {
         editorUrl: requestInfo.url.split("?")[0],
         editorBody: requestInfo.body
           ? JSON.stringify(requestInfo.body, null, 2)
@@ -48,17 +56,11 @@ export function CurlModal({ onClose }: { onClose: () => void }) {
         body: requestInfo.body,
       });
 
-      if (queryInfo) {
-        editorSlice.editorQuerySchemaType = queryInfo.editorQuerySchemaType;
-        editorSlice.editorQuerySchemaJSON = queryInfo.editorQuerySchemaJSON;
-      }
-
-      if (bodyInfo) {
-        editorSlice.editorBodySchemaType = bodyInfo.editorBodySchemaType;
-        editorSlice.editorBodySchemaJSON = bodyInfo.editorBodySchemaJSON;
-
-        editorSlice.editorMethod = RecipeMethod.POST;
-      }
+      editorSlice = {
+        ...editorSlice,
+        ...queryInfo,
+        ...bodyInfo,
+      };
 
       if (editorSlice.editorHeaders) {
         for (const header of editorSlice.editorHeaders) {
@@ -80,9 +82,9 @@ export function CurlModal({ onClose }: { onClose: () => void }) {
         }
       }
 
-      const newSession: RecipeSession = {
+      const newSession: RecipeSession = currentSession ?? {
         id: uuidv4(),
-        name: "New Session",
+        name: "",
         apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
         recipeId: uuidv4(),
       };
