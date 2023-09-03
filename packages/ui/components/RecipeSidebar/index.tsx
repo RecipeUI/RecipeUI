@@ -69,9 +69,10 @@ export function RecipeSidebar() {
     async function initialize() {
       if (!recipeFork) return;
 
-      let forkId = recipeFork;
+      let [forkId, recipeTitle] = recipeFork.split("::");
+
       setRecipeFork("");
-      initializeRecipe(forkId);
+      initializeRecipe(forkId, recipeTitle);
     }
 
     getSessionsFromStore().then(async (sessions) => {
@@ -417,7 +418,7 @@ function SessionTab({
         key={session.id}
         className={classNames(
           "pl-4 py-2 text-xs ",
-          isCurrentSession && "bg-gray-400"
+          isCurrentSession && "bg-gray-400 dark:text-white"
         )}
         onClick={async (e) => {
           e.stopPropagation();

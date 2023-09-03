@@ -72,7 +72,7 @@ export function EditorViewWithSchema({
     setJSONDiagnosticOptions(monacoRef.current, typeName, jsonSchema);
   }, [jsonSchema]);
 
-  const debouncedMatching = useDebounce(value, 500);
+  // const debouncedMatching = useDebounce(value, 500);
 
   // useEffect(() => {
   //   renderModelMarkers();

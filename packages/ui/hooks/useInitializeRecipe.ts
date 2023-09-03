@@ -29,7 +29,7 @@ export function useInitializeRecipe() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   const initializeRecipe = useCallback(
-    async (recipeId: string) => {
+    async (recipeId: string, recipeTitle?: string) => {
       try {
         // get the recipe information first
         const recipe = await fetchHomeRecipe({
@@ -59,22 +59,36 @@ export function useInitializeRecipe() {
           recipeId: recipe.id,
         };
 
-        const firstTemplate = recipe.templates ? recipe.templates[0] : null;
+        let firstTemplate = recipe.templates ? recipe.templates[0] : null;
+
+        if (recipeTitle && recipe.templates) {
+          firstTemplate =
+            recipe.templates.find((t) => t.title === recipeTitle) ||
+            firstTemplate;
+
+          console.log("firstTemplate", recipeTitle, recipe.templates);
+        }
 
         initializeEditorSession({
           ...sessionConfig,
           currentSession: newSession,
           outputTab: RecipeOutputTab.DocTwo,
           ...(firstTemplate && {
-            editorBody: firstTemplate.requestBody
-              ? JSON.stringify(firstTemplate.requestBody, null, 2)
-              : "",
-            editorQuery: firstTemplate.queryParams
-              ? JSON.stringify(firstTemplate.queryParams, null, 2)
-              : "",
-            editorURLCode: firstTemplate.urlParams
-              ? JSON.stringify(firstTemplate.urlParams, null, 2)
-              : "",
+            editorBody:
+              firstTemplate.requestBody &&
+              Object.keys(firstTemplate.requestBody).length > 0
+                ? JSON.stringify(firstTemplate.requestBody, null, 2)
+                : "",
+            editorQuery:
+              firstTemplate.queryParams &&
+              Object.keys(firstTemplate.queryParams).length > 0
+                ? JSON.stringify(firstTemplate.queryParams, null, 2)
+                : "",
+            editorURLCode:
+              firstTemplate.urlParams &&
+              Object.keys(firstTemplate.urlParams).length > 0
+                ? JSON.stringify(firstTemplate.urlParams, null, 2)
+                : "",
           }),
         });
 

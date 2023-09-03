@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
@@ -42,6 +42,28 @@ export function Navbar() {
     (state) => state.setCurrentSession
   );
 
+  const goCollections = useCallback(() => {
+    setCurrentSession(null);
+
+    if (isTauri) {
+      setDesktopPage(null);
+    } else {
+      router.push("/");
+    }
+  }, [isTauri, router, setCurrentSession, setDesktopPage]);
+
+  const goEditor = useCallback(() => {
+    setCurrentSession(null);
+
+    if (isTauri) {
+      setDesktopPage({
+        page: DesktopPage.Editor,
+      });
+    } else {
+      router.push("/editor");
+    }
+  }, [isTauri, router, setCurrentSession, setDesktopPage]);
+
   return (
     <div
       className={classNames(
@@ -52,12 +74,10 @@ export function Navbar() {
         <button
           className="cursor-pointer flex items-center"
           onClick={() => {
-            setCurrentSession(null);
-
             if (isTauri) {
-              setDesktopPage(null);
+              goEditor();
             } else {
-              router.push("/");
+              goCollections();
             }
           }}
         >
@@ -89,33 +109,13 @@ export function Navbar() {
         >
           <button
             className="cursor-pointer flex items-center"
-            onClick={() => {
-              setCurrentSession(null);
-
-              if (isTauri) {
-                setDesktopPage(null);
-              } else {
-                router.push("/");
-              }
-            }}
+            onClick={goCollections}
           >
             <h1 className="ml-4 dark:text-white  sm:block hidden">
               {isTauri ? "Collections" : "Home"}
             </h1>
           </button>
-          <button
-            onClick={() => {
-              setCurrentSession(null);
-
-              if (isTauri) {
-                setDesktopPage({
-                  page: DesktopPage.Editor,
-                });
-              } else {
-                router.push("/editor");
-              }
-            }}
-          >
+          <button onClick={goEditor}>
             <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
               {isTauri ? "Home" : "Editor"}
             </h1>

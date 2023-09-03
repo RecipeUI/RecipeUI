@@ -155,7 +155,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
               try {
                 setLoading(true);
 
-                setRecipeFork(selectedRecipe.id);
+                setRecipeFork(`${selectedRecipe.id}::${template.title}`);
 
                 if (isTauri) {
                   setDesktopPage({

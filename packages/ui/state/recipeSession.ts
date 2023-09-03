@@ -433,14 +433,14 @@ export const createRecipeEditorSlice: StateCreator<
                 ],
               }
             : null),
-          ...(!editorSession.editorBody && editorSession.editorBodyType
-            ? { editorBody: "{}" }
+          ...(editorSession.editorBody && editorSession.editorBodyType
+            ? { editorBody: "" }
             : null),
           ...(!editorSession.editorQuery && editorSession.editorQuerySchemaType
-            ? { editorQuery: "{}" }
+            ? { editorQuery: "" }
             : null),
           ...(!editorSession.editorURLCode && editorSession.editorURLSchemaType
-            ? { editorURLCode: "{}" }
+            ? { editorURLCode: "" }
             : null),
           bodyRoute: RecipeBodyRoute.Body,
           outputTab: editorSession.outputTab ?? RecipeOutputTab.Output,

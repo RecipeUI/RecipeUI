@@ -62,7 +62,7 @@ export function EditorQueryOnboarding() {
         </button>
         {currentSession?.recipeId !== RECIPE_IDS.REDDIT_SEARCH && (
           <button
-            className="btn btn-sm mt-2 w-fit btn-neutral"
+            className="btn btn-sm mt-2 w-fit btn-neutral dark:btn-accent"
             disabled={loading}
             onClick={() => {
               initializeRecipe(RECIPE_IDS.REDDIT_SEARCH).catch(() => {
