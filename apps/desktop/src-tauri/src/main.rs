@@ -15,6 +15,8 @@ fn main() {
 #[tauri::command]
 #[tokio::main]
 async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutput, String> {
+    println!("\nFetching {} with {:?}", url, payload);
+
     let client = reqwest::Client::new();
 
     // Create the request builder based on the method
@@ -34,13 +36,16 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
 
     if payload.body.is_some() {
         request_builder = request_builder.header("Content-Type", "application/json");
+
+        request_builder = request_builder.body(payload.body.unwrap());
     }
 
-    println!("Sending request to {}", url);
+    println!("\nSending request to {}", url);
+    println!("\nRequest: {:?}", request_builder);
 
     let response = request_builder.send().await.map_err(|e| e.to_string())?;
 
-    println!("Response: {:?}", response);
+    println!("\nResponse: {:?}", response);
 
     let status = response.status().as_u16();
     let content_type = response

@@ -32,7 +32,12 @@ export function RecipeEditBodySearch() {
             )}
           >
             <select
-              className="select select-sm"
+              className={classNames("select select-sm  select-ghost", {
+                "text-green-600": method === RecipeMethod.GET,
+                "text-orange-600":
+                  method === RecipeMethod.POST || method === RecipeMethod.PUT,
+                "text-red-600": method === RecipeMethod.DELETE,
+              })}
               onChange={(e) => {
                 setMethod(e.target.value as RecipeMethod);
                 updateSessionMethod(e.target.value as RecipeMethod);

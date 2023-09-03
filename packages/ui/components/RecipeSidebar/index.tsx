@@ -37,6 +37,7 @@ import { fetchHomeRecipe } from "../../fetchers/home";
 import { getConfigFromRecipe } from "../RecipeBody/RecipeLeftPane/RecipeForkTab";
 import { SupabaseContext } from "../Providers/SupabaseProvider";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -72,6 +73,7 @@ export function RecipeSidebar() {
 
   const isTauri = useIsTauri();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const [curlModal, setCurlModal] = useState(false);
 
   useEffect(() => {
     async function initialize() {
@@ -163,6 +165,10 @@ export function RecipeSidebar() {
     };
   }, [folders, sessions]);
 
+  const addEditorSession = useRecipeSessionStore(
+    (state) => state.addEditorSession
+  );
+
   if (sessions.length === 0) {
     return null;
   }
@@ -185,17 +191,24 @@ export function RecipeSidebar() {
             e.target.parentNode?.parentNode?.blur();
           }}
         >
-          {currentSession !== null && (
-            <li>
-              <button
-                onClick={(e) => {
-                  setCurrentSession(null, true);
-                }}
-              >
-                Request
-              </button>
-            </li>
-          )}
+          <li>
+            <button
+              onClick={(e) => {
+                addEditorSession();
+              }}
+            >
+              Request
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={(e) => {
+                setCurlModal(true);
+              }}
+            >
+              Import form cURL
+            </button>
+          </li>
           <li className="">
             <button
               className=""
@@ -288,6 +301,7 @@ export function RecipeSidebar() {
           folder={editFolder}
         />
       )}
+      {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
     </div>
   );
 }

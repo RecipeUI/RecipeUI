@@ -117,7 +117,7 @@ export function Navbar() {
             }}
           >
             <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
-              Editor
+              {isTauri ? "Home" : "Editor"}
             </h1>
           </button>
         </div>

@@ -65,6 +65,8 @@ function NewRequest() {
 
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
+  const [showForkExamples, setShowForkExamples] = useState(false);
+
   return (
     <div
       className={
@@ -91,47 +93,56 @@ function NewRequest() {
         >
           <section className="space-y-2 flex flex-col">
             <div>
-              <h1 className="font-bold text-lg">New Request</h1>
+              <h1 className="font-bold text-lg">Get started</h1>
               <p className="text-sm">
                 All requests are statically typed and saved locally.
               </p>
             </div>
 
-            <div className="flex flex-col md:grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
               <NewRequestAction
-                label="Start from scratch"
-                description="No configuration setup."
+                label="New request."
+                description="Create a request from scratch."
                 onClick={() => {
                   addEditorSession();
                 }}
               />
-              <NewRequestAction
+              {!showForkExamples && (
+                <NewRequestAction
+                  label="Fork from our public API collection."
+                  description="See how easy it is to fork and use an API right away!"
+                  onClick={() => {
+                    setShowForkExamples(true);
+                  }}
+                />
+              )}
+              {/* <NewRequestAction
                 label="Import from CURL"
                 onClick={() => setCurlModal(true)}
                 description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
-              />
-              <NewRequestAction
+              /> */}
+              {/* <NewRequestAction
                 label="Import builder"
                 onClick={() => setImportBuilderModal(true)}
                 description="Have a request body or query params? Our builder will help generate types for you."
-              />
+              /> */}
             </div>
           </section>
-
-          <div>
-            <ForkExampleContainer
-              title="Fork Immediately"
-              description="Try out these APIs to get started. We've written guides for those that need API keys!"
-              examples={[...FreeForkExamples, ...SuggestedExamples]}
-              showHomeLink
-            />
-            {/* <ForkExampleContainer
+          {showForkExamples && (
+            <>
+              <ForkExampleContainer
+                title="Public APIs"
+                description="These APIs can be used right away, without an API key!"
+                examples={FreeForkExamples}
+              />
+              <ForkExampleContainer
                 title="Popular APIs"
-                description="These APIs are great, but need API keys. We've written guides on how to get each one!"
+                description="Some of these APIs need an API key, but we've personally written a doc for each one!"
                 examples={SuggestedExamples}
                 showHomeLink
-              /> */}
-          </div>
+              />
+            </>
+          )}
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
           {!isTauri && (
@@ -239,25 +250,25 @@ const FreeForkExamples = [
     label: "Dog API",
     description: "Pictures of really cute dogs.",
     id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
-    tags: ["No Auth"],
+    // tags: ["No Auth"],
   },
   {
     label: "Reddit API",
     description: "Search across reddit!",
     id: "183eea98-32c9-4cf6-8c03-6084147e30db",
-    tags: ["No Auth"],
+    // tags: ["No Auth"],
   },
   {
     label: "Pokemon API",
     description: "Pokedex as an API.",
     id: "c645327c-4652-4572-aa39-35388943abf8",
-    tags: ["No Auth"],
+    // tags: ["No Auth"],
   },
   {
     label: "JSON Placeholder API",
     description: "Popular API for testing fake data.",
     id: "6bd53e59-8994-4382-ba41-d81146003b8d",
-    tags: ["No Auth"],
+    // tags: ["No Auth"],
   },
 ];
 
@@ -271,19 +282,19 @@ const SuggestedExamples = [
     label: "NASA API",
     description: "See pictures from Mars Rover.",
     id: "a806fd1c-3325-4f07-bcdc-985f5033f80a",
-    tags: ["Free"],
+    // tags: ["Free"],
   },
   {
     label: "Giphy API",
     description: "Memes as an API.",
     id: "ccfc1216-f4cc-4f64-b5c7-57bae974a4c4",
-    tags: ["Free"],
+    // tags: ["Free"],
   },
   {
     label: "Unsplash API",
     description: "Gorgeous pictures for image backgrounds or covers.",
     id: "7e96b0cc-9684-4deb-8425-4f2ce98e9ae6",
-    tags: ["Free"],
+    // tags: ["Free"],
   },
 ];
 
@@ -340,7 +351,7 @@ function ForkExampleContainer({
           )}
         </p>
       </div>
-      <div className="flex flex-col md:grid grid-cols-2 gap-4  lg:max-h-[250px] lg:overflow-y-scroll">
+      <div className="flex flex-col md:grid grid-cols-2 gap-4">
         {examples.map((forkedExample, i) => {
           return (
             <NewRequestAction

@@ -19,6 +19,7 @@ export function RecipeHomeSidebar() {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
+
   const pathname = usePathname();
   const isTauri = useIsTauri();
 
