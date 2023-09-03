@@ -50,7 +50,7 @@ export function RecipeDocs() {
       {loadingTemplate ? (
         <>
           <h1 className="text-md sm:text-lg font-bold flex items-center">
-            Mocking parameters for this example
+            Simulating parameters for this example
             <span className="loading loading-bars ml-2"></span>
           </h1>
         </>

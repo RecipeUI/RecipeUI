@@ -141,7 +141,7 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
             setLoadingTemplate(template);
           }}
         >
-          Mock
+          Simulate
         </button>
         <button
           className={classNames(
@@ -353,7 +353,7 @@ function UserTemplateItem({
                 }
               }}
             >
-              MOCK
+              Simulate
             </button>
           </li>
 

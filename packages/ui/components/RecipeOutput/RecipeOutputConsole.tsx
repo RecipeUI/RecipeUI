@@ -49,6 +49,9 @@ export function RecipeOutputConsole() {
           // We'll ocassionally hardcode edgecases. Unsplash doesn't have standardized image urls
           if (value.includes("images.unsplash")) {
             imageBlocks.push(value);
+          } else if (value.startsWith("https://preview.redd.it/")) {
+            // Blacklist this website.
+            return;
           }
 
           const codeBlockMatch = value

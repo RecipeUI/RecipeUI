@@ -1,7 +1,14 @@
 "use client";
 
 import classNames from "classnames";
-import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
@@ -37,6 +44,11 @@ import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/
 import { DownloadContainer } from "../../components/DownloadContainer/DownloadContainer";
 import { CurlModal } from "./Builders/CurlModal";
 import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
+import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
+import {
+  FreeForkExamples,
+  SuggestedExamples,
+} from "../../utils/constants/recipe";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -110,7 +122,7 @@ function NewRequest() {
               {!showForkExamples && (
                 <NewRequestAction
                   label="Fork from our public API collection."
-                  description="See how easy it is to fork and use an API right away!"
+                  description="Try NASA, Giphy, Reddit, Pokemon, ChatGPT and more in seconds."
                   onClick={() => {
                     setShowForkExamples(true);
                   }}
@@ -245,59 +257,6 @@ function NewRequest() {
   );
 }
 
-const FreeForkExamples = [
-  {
-    label: "Dog API",
-    description: "Pictures of really cute dogs.",
-    id: "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
-    // tags: ["No Auth"],
-  },
-  {
-    label: "Reddit API",
-    description: "Search across reddit!",
-    id: "183eea98-32c9-4cf6-8c03-6084147e30db",
-    // tags: ["No Auth"],
-  },
-  {
-    label: "Pokemon API",
-    description: "Pokedex as an API.",
-    id: "c645327c-4652-4572-aa39-35388943abf8",
-    // tags: ["No Auth"],
-  },
-  {
-    label: "JSON Placeholder API",
-    description: "Popular API for testing fake data.",
-    id: "6bd53e59-8994-4382-ba41-d81146003b8d",
-    // tags: ["No Auth"],
-  },
-];
-
-const SuggestedExamples = [
-  {
-    label: "OpenAI Chat Completion",
-    description: "Figure out how to do generative AI with OpenAI's API.",
-    id: "48f37734-bbf4-4d0e-81b4-08da77030b06",
-  },
-  {
-    label: "NASA API",
-    description: "See pictures from Mars Rover.",
-    id: "a806fd1c-3325-4f07-bcdc-985f5033f80a",
-    // tags: ["Free"],
-  },
-  {
-    label: "Giphy API",
-    description: "Memes as an API.",
-    id: "ccfc1216-f4cc-4f64-b5c7-57bae974a4c4",
-    // tags: ["Free"],
-  },
-  {
-    label: "Unsplash API",
-    description: "Gorgeous pictures for image backgrounds or covers.",
-    id: "7e96b0cc-9684-4deb-8425-4f2ce98e9ae6",
-    // tags: ["Free"],
-  },
-];
-
 function ForkExampleContainer({
   title,
   description,
@@ -317,13 +276,7 @@ function ForkExampleContainer({
   const isTauri = useIsTauri();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
-  const supabase = useContext(SupabaseContext);
-
-  const initializeEditorSession = useRecipeSessionStore(
-    (state) => state.initializeEditorSession
-  );
-
-  const { addSessionToFolder } = useSessionFolders();
+  const { initializeRecipe } = useInitializeRecipe();
 
   return (
     <section className="space-y-2 flex flex-col mt-12">
@@ -360,53 +313,7 @@ function ForkExampleContainer({
               description={forkedExample.description}
               tags={forkedExample.tags}
               onClick={async () => {
-                try {
-                  // get the recipe information first
-                  const recipe = await fetchHomeRecipe({
-                    recipeId: forkedExample.id,
-                    supabase,
-                  });
-
-                  if (!recipe) {
-                    throw new Error("Recipe not found");
-                  }
-
-                  const { config: sessionConfig } = getConfigFromRecipe(recipe);
-                  await setConfigForSessionStore({
-                    config: sessionConfig,
-                    recipeId: recipe.id,
-                  });
-
-                  if (recipe.templates) {
-                    await initializeRecipeList(recipe, recipe.templates);
-                  }
-
-                  const newSession: RecipeSession = {
-                    id: uuidv4(),
-                    name: recipe.title,
-                    apiMethod: sessionConfig.editorMethod,
-                    recipeId: recipe.id,
-                  };
-                  initializeEditorSession({
-                    currentSession: newSession,
-                    ...sessionConfig,
-                    outputTab: RecipeOutputTab.DocTwo,
-                  });
-
-                  await addSessionToFolder(
-                    newSession.id,
-                    recipe.project,
-                    recipe.project
-                  );
-                } catch (e) {
-                  if (isTauri) {
-                    setDesktopPage({
-                      page: DesktopPage.RecipeView,
-                      pageParam: forkedExample.id,
-                    });
-                  }
-                } finally {
-                }
+                initializeRecipe(forkedExample.id);
               }}
             />
           );

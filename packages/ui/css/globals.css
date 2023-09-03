@@ -33,6 +33,10 @@
   body {
     @apply bg-[#FAFAFA] dark:bg-base-100;
   }
+
+  .code-snippet-onboarding {
+    @apply flex bg-base-300 rounded-md p-4 m-2;
+  }
 }
 
 @layer utilities {

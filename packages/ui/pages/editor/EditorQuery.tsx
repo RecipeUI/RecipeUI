@@ -2,14 +2,18 @@
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useMemo } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounce, useLocalStorage } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
   InitializeSchema,
 } from "./CodeEditors/EditorJSON";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
-import { API_TYPE_NAMES } from "../../utils/constants/main";
+import {
+  API_TYPE_NAMES,
+  ONBOARDING_CONSTANTS,
+} from "../../utils/constants/main";
+import { EditorQueryOnboarding } from "./EditorOnboarding/EditorQueryOnboarding";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -46,6 +50,17 @@ export const EditorQuery = () => {
     (state) => state.editorQuerySchemaType
   );
 
+  const [onboardedToQuery] = useLocalStorage(
+    ONBOARDING_CONSTANTS.QUERY_ONBOARDING,
+    false
+  );
+
+  const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
+
+  if (showJSONEditor && !onboardedToQuery) {
+    return <EditorQueryOnboarding />;
+  }
+
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
       <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto">
@@ -54,13 +69,13 @@ export const EditorQuery = () => {
         ) : (
           <>
             {editorUrl}
-            <span className="mt-2 bg-accent p-1 rounded-md text-white w-fit">
+            <span className="mt-2 bg-accent py-1 rounded-md text-white w-fit break-all">
               {urlQueryParams}
             </span>
           </>
         )}
       </div>
-      {editorQuerySchemaJSON || editorQuery ? (
+      {showJSONEditor ? (
         <EditorViewWithSchema
           value={editorQuery}
           setValue={setEditorQuery}

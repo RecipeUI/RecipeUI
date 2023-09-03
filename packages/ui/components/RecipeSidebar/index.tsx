@@ -38,6 +38,7 @@ import { getConfigFromRecipe } from "../RecipeBody/RecipeLeftPane/RecipeForkTab"
 import { SupabaseContext } from "../Providers/SupabaseProvider";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
+import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -50,13 +51,6 @@ export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
   const setSessions = useRecipeSessionStore((state) => state.setSessions);
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const setCurrentSession = useRecipeSessionStore(
-    (state) => state.setCurrentSession
-  );
-
-  const initializeEditorSession = useRecipeSessionStore(
-    (state) => state.initializeEditorSession
-  );
 
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
@@ -67,58 +61,17 @@ export function RecipeSidebar() {
 
   const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
 
-  const { addSessionToFolder } = useSessionFolders();
-
-  const supabase = useContext(SupabaseContext);
-
-  const isTauri = useIsTauri();
-  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const [curlModal, setCurlModal] = useState(false);
+
+  const { initializeRecipe } = useInitializeRecipe();
 
   useEffect(() => {
     async function initialize() {
       if (!recipeFork) return;
 
-      try {
-        setRecipeFork("");
-        const recipe = await fetchHomeRecipe({
-          recipeId: recipeFork,
-          supabase,
-        });
-
-        if (!recipe) {
-          throw new Error("Recipe not found");
-        }
-
-        const { config: sessionConfig } = getConfigFromRecipe(recipe);
-        await setConfigForSessionStore({
-          config: sessionConfig,
-          recipeId: recipe.id,
-        });
-
-        const newSession: RecipeSession = {
-          id: uuidv4(),
-          name: recipe.title,
-          apiMethod: sessionConfig.editorMethod,
-          recipeId: recipe.id,
-        };
-        initializeEditorSession({
-          currentSession: newSession,
-          ...sessionConfig,
-          outputTab: RecipeOutputTab.DocTwo,
-        });
-
-        await addSessionToFolder(newSession.id, recipe.project, recipe.project);
-
-        if (isTauri) {
-          setDesktopPage({
-            page: DesktopPage.RecipeView,
-            pageParam: recipeFork,
-          });
-        }
-      } catch (e) {
-        //
-      }
+      let forkId = recipeFork;
+      setRecipeFork("");
+      initializeRecipe(forkId);
     }
 
     getSessionsFromStore().then(async (sessions) => {
@@ -134,7 +87,7 @@ export function RecipeSidebar() {
     null
   );
 
-  const { addFolder, folders, removeFolder } = useSessionFolders();
+  const { folders } = useSessionFolders();
 
   const { folderSessions, noFolderSessions } = useMemo(() => {
     const sessionRecord: Record<string, RecipeSession> = {};
@@ -193,7 +146,7 @@ export function RecipeSidebar() {
         >
           <li>
             <button
-              onClick={(e) => {
+              onClick={() => {
                 addEditorSession();
               }}
             >
@@ -202,7 +155,7 @@ export function RecipeSidebar() {
           </li>
           <li>
             <button
-              onClick={(e) => {
+              onClick={() => {
                 setCurlModal(true);
               }}
             >
@@ -309,11 +262,7 @@ export function RecipeSidebar() {
 function FolderModal({ onClose }: { onClose: () => void }) {
   const { addFolder } = useSessionFolders();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ folderName: string }>({
+  const { register, handleSubmit } = useForm<{ folderName: string }>({
     defaultValues: {},
   });
 
@@ -350,11 +299,10 @@ function EditFolderModal({
 }) {
   const { removeFolder, editFolderName } = useSessionFolders();
   const closeSessions = useRecipeSessionStore((state) => state.closeSessions);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ folderName: string; deleteAll: boolean }>({
+  const { register, handleSubmit } = useForm<{
+    folderName: string;
+    deleteAll: boolean;
+  }>({
     defaultValues: {
       folderName: folder.name,
     },
@@ -679,7 +627,7 @@ function DuplicateModal({
   session: RecipeSession;
 }) {
   const [sessionName, setSessionName] = useState(session.name + " copy");
-  const [isRecipeCopy, setIsRecipeCopy] = useState(true);
+  const [isRecipeCopy, setIsRecipeCopy] = useState(false);
 
   const initializeEditorSession = useRecipeSessionStore(
     (state) => state.initializeEditorSession
@@ -737,14 +685,14 @@ function DuplicateModal({
         <label>Duplication Type</label>
         <div className="grid grid-cols-2 gap-x-4 mt-2">
           <DuplicateCopyButton
-            title="Deep Copy"
-            description="Simple hard copy of all parameters and documentation."
+            title="Simple Copy"
+            description="The way copy normally works."
             selected={!isRecipeCopy}
             onClick={() => setIsRecipeCopy(false)}
           />
           <DuplicateCopyButton
-            title="Recipe Copy"
-            description="Link the types, auth, and documentation with this API."
+            title="Linked Copy"
+            description="Useful if you want to share the same TypeScript and Auth between two requests."
             selected={isRecipeCopy}
             onClick={() => setIsRecipeCopy(true)}
           />
