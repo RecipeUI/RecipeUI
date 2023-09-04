@@ -53,7 +53,7 @@ export function RecipeHome({
         block: "start",
       });
     }
-  }, []);
+  }, [queryParams]);
 
   return (
     <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">

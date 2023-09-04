@@ -120,6 +120,13 @@ export function Navbar() {
               {isTauri ? "Home" : "Editor"}
             </h1>
           </button>
+          {!isTauri && (
+            <Link href="/?collections=true">
+              <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
+                Collections
+              </h1>
+            </Link>
+          )}
         </div>
       </div>
       <div />

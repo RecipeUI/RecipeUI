@@ -526,7 +526,7 @@ export function DesktopAppUpsell({ nextBlack }: { nextBlack?: boolean }) {
       <span
         className={classNames(
           "font-bold underline underline-offset-2",
-          nextBlack ? "text-black" : "text-blue-600"
+          nextBlack ? "text-black dark:text-white" : "text-blue-600"
         )}
       >
         NextJS

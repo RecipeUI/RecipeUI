@@ -143,11 +143,15 @@ export function RecipeSidebar() {
           onClick={(e) => {
             // @ts-expect-error Need to get blur
             e.target.parentNode?.parentNode?.blur();
+
+            setTimeout(() => {
+              document.getElementById("url-input")?.focus();
+            }, 500);
           }}
         >
           <li>
             <button
-              onClick={() => {
+              onClick={(e) => {
                 addEditorSession();
               }}
             >

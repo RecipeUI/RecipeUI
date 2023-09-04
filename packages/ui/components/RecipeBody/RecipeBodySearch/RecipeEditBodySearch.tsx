@@ -60,6 +60,7 @@ export function RecipeEditBodySearch() {
 
               <div className="relative flex-1">
                 <input
+                  id="url-input"
                   onPaste={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
