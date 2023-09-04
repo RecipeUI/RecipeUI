@@ -23,7 +23,9 @@ export function EditorQueryOnboarding() {
 
   return (
     <div className="p-4 text-sm overflow-y-auto flex-1">
-      <h2 className="font-bold text-lg">[Tutorial] Query Params</h2>
+      <h2 className="font-bold text-lg">
+        [Tutorial] Type safety with query params
+      </h2>
       <p className="text">The query below</p>
       <code className="code-snippet-onboarding">?subreddit=cats&sort=top</code>
 
@@ -31,7 +33,7 @@ export function EditorQueryOnboarding() {
       <code className="code-snippet-onboarding">
         {JSON.stringify(
           {
-            subreddit: "cats",
+            q: "cats",
             sort: "top",
           },
           null,
@@ -39,16 +41,16 @@ export function EditorQueryOnboarding() {
         )}
       </code>
 
-      <p>
-        <span className="font-bold">
-          You can also add TypeScript to guarantee your query params are always
-          correct.
-        </span>
-      </p>
+      <p>We can decorate this object with TypeScript.</p>
       <pre>
         <code className="code-snippet-onboarding">{codingExample}</code>
       </pre>
-      <p>This enables autocomplete and checking for required params.</p>
+      <p>To give us linting, autocomplete, and type safety.</p>
+      <img
+        src="https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/recipeui/tutorial/query2.gif"
+        className="w-full rounded-lg border border-4 my-2 "
+        alt="Query autocomplete GIF"
+      />
 
       <div className="flex space-x-2">
         <button
@@ -82,7 +84,8 @@ export function EditorQueryOnboarding() {
 }
 const codingExample = `
 type ${API_TYPE_NAMES.APIQueryParams} = {
-  subreddit: string; // Required
-  sort?: "top" | "hot" | "new"; // Optional enum
+  q: string; // required
+  sort: "top" | "hot" | "new"; // required
+  type?: "link" | "comment" | "sr" | "user"; // optional
 }
 `.trim();

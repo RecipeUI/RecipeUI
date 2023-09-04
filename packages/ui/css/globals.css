@@ -35,7 +35,7 @@
   }
 
   .code-snippet-onboarding {
-    @apply flex bg-base-300 rounded-md p-4 m-2;
+    @apply flex bg-base-300  text-white rounded-md p-4 m-2;
   }
 }
 

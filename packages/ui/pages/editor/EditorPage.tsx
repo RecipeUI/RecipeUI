@@ -90,6 +90,15 @@ function NewRequest() {
             </div>
 
             <div className="flex flex-col gap-4">
+              {!showForkExamples && (
+                <NewRequestAction
+                  label="Fork from our public API collection"
+                  description="Try NASA, Giphy, Reddit, Pokemon, ChatGPT and more in seconds."
+                  onClick={() => {
+                    setShowForkExamples(true);
+                  }}
+                />
+              )}
               <NewRequestAction
                 label="New request"
                 description="Create a request from scratch."
@@ -97,15 +106,7 @@ function NewRequest() {
                   addEditorSession();
                 }}
               />
-              {!showForkExamples && (
-                <NewRequestAction
-                  label="Fork from our public API collection."
-                  description="Try NASA, Giphy, Reddit, Pokemon, ChatGPT and more in seconds."
-                  onClick={() => {
-                    setShowForkExamples(true);
-                  }}
-                />
-              )}
+
               {/* <NewRequestAction
                 label="Import from CURL"
                 onClick={() => setCurlModal(true)}
@@ -122,7 +123,7 @@ function NewRequest() {
             <>
               <ForkExampleContainer
                 title="Public APIs"
-                description="These APIs can be used right away, without an API key!"
+                description="These APIs can be used right away without an API key!"
                 examples={FreeForkExamples}
               />
               <ForkExampleContainer
@@ -220,7 +221,7 @@ function NewRequest() {
                   target="_blank"
                   className="underline underline-offset-2 cursor-pointer"
                 >
-                  Getting API keys from providers.
+                  Getting API keys from providers
                 </a>
               </li>
             </ul>

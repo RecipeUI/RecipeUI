@@ -297,36 +297,6 @@ function DesktopDownload() {
     "btn-accent btn dark:text-slate-200 rounded-md w-full";
 
   if (showInitialWeb) {
-    const webCollections = (
-      <Link className={buttonClassName} href="/collections">
-        <Square3Stack3DIcon
-          className={classNames(
-            "w-4 mb-0.5 inline-block",
-            !showAdvancedWeb && "hidden"
-          )}
-        />
-        <span>Web Collections</span>
-      </Link>
-    );
-
-    if (showAdvancedWeb) {
-      return (
-        <ButtonGrid>
-          <button
-            className={buttonClassName}
-            onClick={() => {
-              posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
-              router.push("/editor");
-            }}
-          >
-            <CodeBracketSquareIcon className="w-4 mb-0.5 inline-block" />
-            <span className="inline-block">Web Editor</span>
-          </button>
-          {webCollections}
-        </ButtonGrid>
-      );
-    }
-
     return (
       <ButtonGrid>
         <button
@@ -337,18 +307,19 @@ function DesktopDownload() {
         >
           Try Desktop (20 mb!)
         </button>
-        {isMobile ? (
-          webCollections
-        ) : (
-          <button
-            className={buttonClassName}
-            onClick={() => {
-              setShowAdvancedWeb(true);
-            }}
-          >
-            Try Web
-          </button>
-        )}
+        <Link
+          href="/editor"
+          className={buttonClassName}
+          onClick={(e) => {
+            posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
+            if (isMobile) {
+              e.preventDefault();
+              router.push("/collections");
+            }
+          }}
+        >
+          Try Web
+        </Link>
       </ButtonGrid>
     );
   }
