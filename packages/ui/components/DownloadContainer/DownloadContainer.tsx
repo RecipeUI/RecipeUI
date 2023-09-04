@@ -297,17 +297,7 @@ function DesktopDownload() {
 
   if (showInitialWeb) {
     const webCollections = (
-      <button
-        className={buttonClassName}
-        onClick={() => {
-          const popularNode = document.getElementById("popular");
-
-          popularNode?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-      >
+      <Link className={buttonClassName} href="/collections">
         <Square3Stack3DIcon
           className={classNames(
             "w-4 mb-0.5 inline-block",
@@ -315,7 +305,7 @@ function DesktopDownload() {
           )}
         />
         <span>Web Collections</span>
-      </button>
+      </Link>
     );
 
     if (showAdvancedWeb) {

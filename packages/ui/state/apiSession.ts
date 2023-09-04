@@ -481,6 +481,108 @@ export function useMiniRecipes(primaryRecipeId?: string) {
   };
 }
 
+export const addFolder = async (folderName: string) => {
+  const store = await getFolderStore();
+  const folders = await store.get("sessionFolders");
+  const newFolders = [
+    ...(folders || []),
+    {
+      id: uuidv4(),
+      name: folderName,
+      sessionIds: [],
+    } as RecipeSessionFolder,
+  ];
+  await store.put(newFolders, "sessionFolders");
+  eventEmitter.emit("refreshFolders");
+};
+
+export class FolderAPI {
+  static addSessionToFolder = async (
+    sessionId: string,
+    folderId: string,
+    newFolderName?: string
+  ) => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+
+    let foundFolder = false;
+    const newFolders = (folders || []).map((folder) => {
+      if (folder.id !== folderId) return folder;
+
+      foundFolder = true;
+      return {
+        ...folder,
+        sessionIds: [...folder.sessionIds, sessionId],
+      };
+    });
+
+    if (!foundFolder) {
+      newFolders.push({
+        id: folderId,
+        name: newFolderName ?? "New Folder",
+        sessionIds: [sessionId],
+      });
+    }
+
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+
+  static deleteSessionFromFolder = async (sessionId: string) => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+
+    const newFolders = (folders || []).map((folder) => {
+      return {
+        ...folder,
+        sessionIds: folder.sessionIds.filter((id) => id !== sessionId),
+      };
+    });
+
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+
+  static removeFolder = async (folderId: string) => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+    const newFolders = (folders || []).filter(
+      (folder) => folder.id !== folderId
+    );
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+
+  static editFolderName = async (folderId: string, name: string) => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+    const newFolders = (folders || []).map((folder) => {
+      if (folder.id !== folderId) return folder;
+      return {
+        ...folder,
+        name,
+      };
+    });
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+
+  static addFolder = async (folderName: string) => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+    const newFolders = [
+      ...(folders || []),
+      {
+        id: uuidv4(),
+        name: folderName,
+        sessionIds: [],
+      } as RecipeSessionFolder,
+    ];
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+}
+
 export function useSessionFolders() {
   const [folders, setFolders] = useState<RecipeSessionFolder[]>([]);
 
@@ -499,96 +601,5 @@ export function useSessionFolders() {
     };
   }, []);
 
-  const addFolder = useCallback(async (folderName: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = [
-      ...(folders || []),
-      {
-        id: uuidv4(),
-        name: folderName,
-        sessionIds: [],
-      } as RecipeSessionFolder,
-    ];
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  }, []);
-
-  const editFolderName = useCallback(async (folderId: string, name: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = (folders || []).map((folder) => {
-      if (folder.id !== folderId) return folder;
-      return {
-        ...folder,
-        name,
-      };
-    });
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  }, []);
-
-  const addSessionToFolder = useCallback(
-    async (sessionId: string, folderId: string, newFolderName?: string) => {
-      const store = await getFolderStore();
-      const folders = await store.get("sessionFolders");
-
-      let foundFolder = false;
-      const newFolders = (folders || []).map((folder) => {
-        if (folder.id !== folderId) return folder;
-
-        foundFolder = true;
-        return {
-          ...folder,
-          sessionIds: [...folder.sessionIds, sessionId],
-        };
-      });
-
-      if (!foundFolder) {
-        newFolders.push({
-          id: folderId,
-          name: newFolderName ?? "New Folder",
-          sessionIds: [sessionId],
-        });
-      }
-
-      await store.put(newFolders, "sessionFolders");
-      eventEmitter.emit("refreshFolders");
-    },
-    []
-  );
-
-  const deleteSessionFromFolder = useCallback(async (sessionId: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-
-    const newFolders = (folders || []).map((folder) => {
-      return {
-        ...folder,
-        sessionIds: folder.sessionIds.filter((id) => id !== sessionId),
-      };
-    });
-
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  }, []);
-
-  const removeFolder = useCallback(async (folderId: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = (folders || []).filter(
-      (folder) => folder.id !== folderId
-    );
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  }, []);
-
-  return {
-    folders,
-    editFolderName,
-    addFolder,
-    removeFolder,
-    addSessionToFolder,
-    deleteSessionFromFolder,
-  };
+  return folders;
 }

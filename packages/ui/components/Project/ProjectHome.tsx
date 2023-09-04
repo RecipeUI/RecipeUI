@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
+import Link from "next/link";
 
 export function ProjectHome({
   project,
@@ -68,15 +69,15 @@ function ProjectHomeBox({
   const isTauri = useIsTauri();
 
   return (
-    <div
+    <Link
+      href={`/a/${recipe.id}`}
       className={classNames(
         "border border-slate-700 rounded-md p-4 space-y-1 flex flex-col h-38 cursor-pointer recipe-container-box",
         difference < 300000 && "border-accent"
       )}
-      onClick={() => {
-        if (!isTauri) {
-          router.push(`/a/${recipe.id}`);
-        } else {
+      onClick={(e) => {
+        if (isTauri) {
+          e.preventDefault();
           setDesktopPage({
             page: DesktopPage.RecipeView,
             pageParam: recipe.id,
@@ -123,6 +124,6 @@ function ProjectHomeBox({
           </div>
         </>
       )}
-    </div>
+    </Link>
   );
 }

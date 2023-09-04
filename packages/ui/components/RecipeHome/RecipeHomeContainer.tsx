@@ -63,16 +63,12 @@ export function RecipeHomeContainer({
       : null;
   }, [globalProjects, projects, recipe, sharedTemplate?.recipe]);
 
-  const isTauri = useIsTauri();
-
   return (
     <>
-      {!isTauri && <DownloadContainer />}
       <div className={classNames("flex-1 flex flex-col m-6 sm:m-8")}>
         <RecipeContext.Provider value={recipe || null}>
           <RecipeProjectContext.Provider value={project || null}>
             <RecipeNativeFetchContext.Provider value={fetchServer}>
-              {/* <RecipeHomeHero /> */}
               <RecipeHome globalProjects={globalProjects} projects={projects} />
               {showShareModal && sharedTemplate && (
                 <ShareInviteModal

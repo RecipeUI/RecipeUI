@@ -15,6 +15,7 @@ import {
   API_TYPE_NAMES,
 } from "../../../utils/constants/main";
 import { getQueryAndBodyInfo } from "./helpers";
+import { saveSecret } from "../../../state/apiSession";
 
 export function CurlModal({
   onClose,
@@ -32,6 +33,7 @@ export function CurlModal({
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
   const onSubmit = async () => {
     setError(null);
     setLoading(true);
@@ -62,6 +64,13 @@ export function CurlModal({
         ...bodyInfo,
       };
 
+      const newSession: RecipeSession = currentSession ?? {
+        id: uuidv4(),
+        name: "",
+        apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
+        recipeId: uuidv4(),
+      };
+
       if (editorSlice.editorHeaders) {
         for (const header of editorSlice.editorHeaders) {
           if (header.name === "Authorization") {
@@ -69,6 +78,11 @@ export function CurlModal({
               editorSlice.editorAuth = {
                 type: RecipeAuthType.Bearer,
               };
+
+              saveSecret({
+                secretId: newSession.recipeId,
+                secretValue: header.value.replace("Bearer ", ""),
+              });
 
               break;
             }
@@ -81,13 +95,6 @@ export function CurlModal({
           );
         }
       }
-
-      const newSession: RecipeSession = currentSession ?? {
-        id: uuidv4(),
-        name: "",
-        apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
-        recipeId: uuidv4(),
-      };
 
       setTimeout(() => {
         initializeEditorSession({

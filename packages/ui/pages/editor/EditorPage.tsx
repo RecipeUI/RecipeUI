@@ -1,47 +1,25 @@
 "use client";
 
 import classNames from "classnames";
-import {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
-  DesktopPage,
   GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
-  RecipeOutputTab,
-  RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { EditorBody } from "./EditorBody";
 import { EditHeaders } from "./EditHeaders";
 import { RecipeOutput } from "../../components/RecipeOutput";
 import { EditorAuth } from "./EditorAuth";
-import { v4 as uuidv4 } from "uuid";
 import { EditorURL } from "./EditorURL";
-import { useRouter } from "next/navigation";
 import { EditorQuery } from "./EditorQuery";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
-import {
-  initializeRecipeList,
-  setConfigForSessionStore,
-  useMiniRecipes,
-  useSessionFolders,
-} from "../../state/apiSession";
+import { useMiniRecipes } from "../../state/apiSession";
 import Link from "next/link";
-import { MegaphoneIcon, StarIcon } from "@heroicons/react/24/outline";
-import { shell } from "@tauri-apps/api";
-import { SupabaseContext } from "../../components/Providers/SupabaseProvider";
-import { fetchHomeRecipe } from "../../fetchers/home";
-import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
-import { DownloadContainer } from "../../components/DownloadContainer/DownloadContainer";
+import { MegaphoneIcon } from "@heroicons/react/24/outline";
 import { CurlModal } from "./Builders/CurlModal";
 import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";

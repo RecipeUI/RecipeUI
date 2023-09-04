@@ -10,9 +10,9 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { useIsTauri } from "./useIsTauri";
 import {
+  FolderAPI,
   initializeRecipeList,
   setConfigForSessionStore,
-  useSessionFolders,
 } from "../state/apiSession";
 import { SupabaseContext } from "../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../fetchers/home";
@@ -24,7 +24,6 @@ export function useInitializeRecipe() {
     (state) => state.initializeEditorSession
   );
 
-  const { addSessionToFolder } = useSessionFolders();
   const isTauri = useIsTauri();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
@@ -92,7 +91,11 @@ export function useInitializeRecipe() {
           }),
         });
 
-        await addSessionToFolder(newSession.id, recipe.project, recipe.project);
+        await FolderAPI.addSessionToFolder(
+          newSession.id,
+          recipe.project,
+          recipe.project
+        );
       } catch (e) {
         if (isTauri) {
           setDesktopPage({
@@ -103,13 +106,7 @@ export function useInitializeRecipe() {
       } finally {
       }
     },
-    [
-      addSessionToFolder,
-      initializeEditorSession,
-      isTauri,
-      setDesktopPage,
-      supabase,
-    ]
+    [initializeEditorSession, isTauri, setDesktopPage, supabase]
   );
 
   return {

@@ -100,12 +100,12 @@ export function EditorAuth() {
               }}
             />
           </AuthFormWrapper>
-          <AuthFormWrapper label="Auth Documentation">
+          <AuthFormWrapper label="Auth Documentation (Optional)">
             <input
               type="text"
               className="input input-bordered w-full input-sm"
               value={docs}
-              placeholder="(Optional) Link to docs so your future self or team knows how to authenticate."
+              placeholder="Link to docs so your future self or team knows how to authenticate."
               onChange={(e) => {
                 if (!hasChanged) setHasChanged(true);
 
@@ -164,7 +164,7 @@ export function EditorAuth() {
                   setShowAuth(true);
                 }}
               >
-                Modify Auth
+                Reset Auth
               </button>
             )}
           </div>

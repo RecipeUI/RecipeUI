@@ -21,6 +21,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
+  FolderAPI,
   getConfigForSessionStore,
   getParametersForSessionStore,
   getSessionsFromStore,
@@ -88,7 +89,7 @@ export function RecipeSidebar() {
     null
   );
 
-  const { folders } = useSessionFolders();
+  const folders = useSessionFolders();
 
   const { folderSessions, noFolderSessions } = useMemo(() => {
     const sessionRecord: Record<string, RecipeSession> = {};
@@ -190,17 +191,31 @@ export function RecipeSidebar() {
                 <details className="relative group" open>
                   <summary className="text-xs font-bold p-0 px-2 py-2 pr-4 relative">
                     {folder.name}
-                    <a
-                      className="group-hover:block hidden hover:animate-spin w-fit"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    <div className="flex space-x-2">
+                      <a
+                        className="hidden group-hover:block hover:animate-spin w-fit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
 
-                        setEditFolder(folder);
-                      }}
-                    >
-                      <Cog6ToothIcon className="w-4 h-4" />
-                    </a>
+                          setEditFolder(folder);
+                        }}
+                      >
+                        <Cog6ToothIcon className="w-4 h-4" />
+                      </a>
+                      <a
+                        className="hidden group-hover:block hover:bg-accent w-fit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          const session = addEditorSession();
+                          FolderAPI.addSessionToFolder(session.id, folder.id);
+                        }}
+                      >
+                        <PlusIcon className="w-4 h-4" />
+                      </a>
+                    </div>
                   </summary>
                   <ul>
                     {sessions.map((session) => {
@@ -265,14 +280,12 @@ export function RecipeSidebar() {
 }
 
 function FolderModal({ onClose }: { onClose: () => void }) {
-  const { addFolder } = useSessionFolders();
-
   const { register, handleSubmit } = useForm<{ folderName: string }>({
     defaultValues: {},
   });
 
   const onSubmit = handleSubmit((data) => {
-    addFolder(data.folderName);
+    FolderAPI.addFolder(data.folderName);
     onClose();
   });
 
@@ -302,7 +315,6 @@ function EditFolderModal({
   onClose: () => void;
   folder: RecipeSessionFolder;
 }) {
-  const { removeFolder, editFolderName } = useSessionFolders();
   const closeSessions = useRecipeSessionStore((state) => state.closeSessions);
   const { register, handleSubmit } = useForm<{
     folderName: string;
@@ -316,7 +328,7 @@ function EditFolderModal({
   const [deleteAll, setDeleteAll] = useState(true);
 
   const onSubmit = handleSubmit(async (data) => {
-    await editFolderName(folder.id, data.folderName);
+    await FolderAPI.editFolderName(folder.id, data.folderName);
 
     onClose();
   });
@@ -363,7 +375,7 @@ function EditFolderModal({
               );
 
               if (confirm) {
-                await removeFolder(folder.id);
+                await FolderAPI.removeFolder(folder.id);
 
                 if (deleteAll) {
                   const sessionIds = [...folder.sessionIds];
@@ -413,7 +425,6 @@ function SessionTab({
 
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { deleteSessionFromFolder } = useSessionFolders();
 
   return (
     <li className="relative cursor-pointer">
@@ -505,7 +516,7 @@ function SessionTab({
                 const nextSession = closeSession(session);
 
                 setTimeout(async () => {
-                  await deleteSessionFromFolder(session.id);
+                  await FolderAPI.deleteSessionFromFolder(session.id);
                   if (nextSession) {
                     const parameters = await getParametersForSessionStore({
                       session: nextSession.id,
@@ -552,8 +563,7 @@ function EditSessionModal({
   session: RecipeSession;
 }) {
   const [name, setName] = useState(session.name);
-  const { addSessionToFolder, deleteSessionFromFolder, folders } =
-    useSessionFolders();
+  const folders = useSessionFolders();
   const updateSessionName = useRecipeSessionStore(
     (state) => state.updateSessionName
   );
@@ -607,10 +617,10 @@ function EditSessionModal({
 
           if (currentFolder?.id !== selectedFolder) {
             if (folders.length > 0) {
-              await deleteSessionFromFolder(session.id);
+              await FolderAPI.deleteSessionFromFolder(session.id);
 
               if (selectedFolder !== "NO_FOLDER_ID") {
-                await addSessionToFolder(session.id, selectedFolder);
+                await FolderAPI.addSessionToFolder(session.id, selectedFolder);
               }
             }
           }

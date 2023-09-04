@@ -121,7 +121,7 @@ export function Navbar() {
             </h1>
           </button>
           {!isTauri && (
-            <Link href="/?collections=true">
+            <Link href="/collections">
               <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
                 Collections
               </h1>

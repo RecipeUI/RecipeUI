@@ -148,25 +148,25 @@ export function RecipeHomeBox({
     status = "View";
   }
 
-  const router = useRouter();
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const isTauri = useIsTauri();
 
   return (
-    <div
+    <Link
+      href={`/${project}`}
       className="border border-slate-700 rounded-md p-4 space-y-1 cursor-pointer h-full recipe-container-box"
-      onClick={() => {
-        postHog?.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
-          project,
-        });
-
+      onClick={(e) => {
         if (isTauri) {
+          e.preventDefault();
+
           setDesktopPage({
             page: DesktopPage.Project,
             pageParam: project,
           });
-        } else {
-          router.push(`/${project}`);
+
+          postHog?.capture(POST_HOG_CONSTANTS.PROJECT_LOAD, {
+            project,
+          });
         }
       }}
     >
@@ -198,6 +198,6 @@ export function RecipeHomeBox({
       <p className="text-sm text-gray-600 line-clamp-3 dark:text-gray-300">
         {description}
       </p>
-    </div>
+    </Link>
   );
 }
