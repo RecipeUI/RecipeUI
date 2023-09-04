@@ -122,6 +122,10 @@ export const EditorTypeScript = ({
       setSchemaJSON: setSchemaJSON,
     });
 
+  useEffect(() => {
+    refresh();
+  }, []);
+
   if (schemaType == undefined) {
     return <InitializeSchema type={editorParamView} />;
   }
@@ -136,6 +140,12 @@ export const EditorTypeScript = ({
         onChange={(newCode) => {
           setSchemaType(newCode || "");
         }}
+        onMount={(editor, monaco) => {
+          // This seems to disable the JSON formatter
+          // editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+          //   editor.getAction("editor.action.formatDocument")?.run();
+          // });
+        }}
         beforeMount={handleEditorWillMount}
         options={DEFAULT_MONACO_OPTIONS}
       />
@@ -144,9 +154,12 @@ export const EditorTypeScript = ({
         hasError={hasError}
         refreshing={refreshing}
       />
-      {defaultExport && !changesFinalized?.includes(defaultExport) && (
-        <LintIfMissing defaultExport={defaultExport} />
-      )}
+      {!refreshing &&
+        !preparingChange &&
+        defaultExport &&
+        !schemaType?.includes(defaultExport) && (
+          <LintIfMissing defaultExport={defaultExport} />
+        )}
     </div>
   );
 };

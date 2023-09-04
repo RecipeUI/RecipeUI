@@ -50,3 +50,84 @@ export const SuggestedExamples = [
     // tags: ["Free"],
   },
 ];
+
+export const API_TYPE_NAMES = {
+  APIRequestParams: "APIRequestParams",
+  APIQueryParams: "APIQueryParams",
+  APIUrlParams: "APIUrlParams",
+};
+
+const API_SAMPLE_REQUEST_BODY_TYPE = `
+// Define your request body with TypeScript.
+// This will add auto-complete (CMD+SPACE) and validation!
+
+export interface APIRequestParams {
+  model: "gpt-3.5-turbo" | "gpt-4" | "gpt-3";
+  messages: {
+    role: "system" | "user";
+    content: string;
+  }[];
+}
+`.trim();
+
+const API_SAMPLE_REQUEST_BODY_JSON = `
+// Sample Body Params
+// Hover over red markers to see error messages
+{
+  "model": 100
+}
+`.trim();
+
+const API_SAMPLE_QUERY_PARAMS_TYPE = `
+// Define your query params with TypeScript.
+// This will add auto-complete (CMD+SPACE) and validation!
+
+
+export interface APIQueryParams {
+  color: "red" | "blue" | "green",
+  counter: number,
+}
+`.trim();
+
+const API_SAMPLE_QUERY_JSON = `
+// Sample Query Params
+// Hover over red markers to see error messages
+{
+  "color": 100 
+}
+`.trim();
+
+const API_SAMPLE_URL_PARAMS_TYPE = `
+// Define your url params with TypeScript.
+// This will add auto-complete (CMD+SPACE) and validation!
+
+
+export interface ${API_TYPE_NAMES.APIUrlParams} {
+  // "{sort}": "asc" | "desc";
+  // "{filter}": "top" | "new";
+}
+`.trim();
+
+const API_SAMPLE_URL_JSON = JSON.stringify(
+  {
+    "{sort}": "asc",
+    "{filter}": "popular",
+  },
+  null,
+  2
+);
+
+export const API_SAMPLES = {
+  API_SAMPLE_REQUEST_BODY_TYPE: {
+    TYPE: API_SAMPLE_REQUEST_BODY_TYPE,
+    JSON: API_SAMPLE_REQUEST_BODY_JSON,
+  },
+  API_SAMPLE_QUERY_PARAMS_TYPE: {
+    TYPE: API_SAMPLE_QUERY_PARAMS_TYPE,
+    JSON: API_SAMPLE_QUERY_JSON,
+  },
+  API_SAMPLE_URL_PARAMS_TYPE: {
+    TYPE: API_SAMPLE_URL_PARAMS_TYPE,
+    JSON: API_SAMPLE_URL_JSON,
+  },
+};

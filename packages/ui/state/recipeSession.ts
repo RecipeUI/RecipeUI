@@ -29,7 +29,6 @@ import {
   JSONSchema6Definition,
   JSONSchema6Object,
 } from "json-schema";
-import { API_SAMPLES, API_TYPE_NAMES } from "../utils/constants/main";
 import {
   clearOutput,
   deleteConfigForSessionStore,
@@ -393,14 +392,14 @@ function resetEditorSlice(): EditorSliceValues {
         ...getContentTypeHeader(),
       },
     ],
-    editorBodyType: RecipeMutationContentType.JSON,
+    editorBodyType: null,
     editorBodySchemaType: null,
     editorQuerySchemaType: null,
     editorBodySchemaJSON: null,
     editorQuerySchemaJSON: null,
     editorAuth: null,
 
-    editorURLSchemaType: "",
+    editorURLSchemaType: null,
     editorURLSchemaJSON: null,
     editorURLCode: "",
   };
@@ -418,8 +417,6 @@ export const createRecipeEditorSlice: StateCreator<
       set((prevState) => {
         savePrevSessionPre(prevState);
 
-        // ...getEmptyParameters(),
-        // ...resetEditorSlice(),
         return {
           ...resetEditorSlice(),
           ...editorSession,

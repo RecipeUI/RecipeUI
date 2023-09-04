@@ -9,10 +9,6 @@ import {
 import { Modal } from "../../../components/Modal";
 import { RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
-import {
-  API_LOCAL_PROCESSING_URLS,
-  API_TYPE_NAMES,
-} from "../../../utils/constants/main";
 import { useForm } from "react-hook-form";
 import { FormLabelWrapper } from "../../../components/Navbar/FormLabelWrapper";
 import {

@@ -64,8 +64,6 @@ export function useInitializeRecipe() {
           firstTemplate =
             recipe.templates.find((t) => t.title === recipeTitle) ||
             firstTemplate;
-
-          console.log("firstTemplate", recipeTitle, recipe.templates);
         }
 
         initializeEditorSession({

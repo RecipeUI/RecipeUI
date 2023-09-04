@@ -16,11 +16,9 @@ import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import classNames from "classnames";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useRecipeSessionStore } from "../../../../ui/state/recipeSession";
-import {
-  API_SAMPLES,
-  API_TYPE_NAMES,
-} from "../../../../ui/utils/constants/main";
 import { produce } from "immer";
+import { RecipeMutationContentType } from "types/enums";
+import { API_SAMPLES, API_TYPE_NAMES } from "../../../utils/constants/recipe";
 
 export function EditorViewWithSchema({
   value,
@@ -83,6 +81,10 @@ export function EditorViewWithSchema({
 
     setJSONDiagnosticOptions(monaco, typeName, jsonSchema);
     renderModelMarkers();
+
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      editor.getAction("editor.action.formatDocument")?.run();
+    });
   };
 
   return (
@@ -215,6 +217,7 @@ const setJSONDiagnosticOptions = (
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
     validate: true,
     schemaValidation: "error",
+    allowComments: true,
     schemas: jsonSchema
       ? [
           {
@@ -234,9 +237,17 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
   const editBodyType = useRecipeSessionStore(
     (state) => state.setEditorBodySchemaType
   );
+
   const setEditorBodySchemaJSON = useRecipeSessionStore(
     (state) => state.setEditorBodySchemaJSON
   );
+  const setEditorBodyType = useRecipeSessionStore(
+    (state) => state.setEditorBodyType
+  );
+  const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
+
+  const setEditorQuery = useRecipeSessionStore((state) => state.setEditorQuery);
+
   const setEditorQuerySchemaJSON = useRecipeSessionStore(
     (state) => state.setEditorQuerySchemaJSON
   );
@@ -248,16 +259,24 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
     (state) => state.setEditorURLSchemaType
   );
 
+  const setEditorUrlCode = useRecipeSessionStore(
+    (state) => state.setEditorURLCode
+  );
+
   const onSubmit = () => {
     if (type === "query") {
-      editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE);
+      editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.TYPE);
       setEditorQuerySchemaJSON({});
+      setEditorQuery(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.JSON);
     } else if (type === "body") {
-      editBodyType(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE);
+      editBodyType(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE.TYPE);
+      setEditorBodyType(RecipeMutationContentType.JSON);
       setEditorBodySchemaJSON({});
+      setEditorBody(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE.JSON);
     } else if (type === "url") {
-      setEditorURLSchemaType(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE);
+      setEditorURLSchemaType(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE.TYPE);
       setEditorURLSchemaJSON({});
+      setEditorUrlCode(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE.JSON);
     }
   };
 

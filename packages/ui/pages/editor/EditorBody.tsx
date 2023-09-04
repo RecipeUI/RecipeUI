@@ -9,7 +9,7 @@ import {
 } from "./CodeEditors/EditorJSON";
 
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
-import { API_TYPE_NAMES } from "../../utils/constants/main";
+import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 
 export function EditorBody() {
   const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
@@ -19,9 +19,9 @@ export function EditorBody() {
 
   return (
     <div className="flex-1 overflow-x-auto sm:block hidden z-20">
-      {editorBodyType === null && (
+      {editorBodyType === null && false && (
         <select
-          className="select select-bordered w-full max-w-xs m-4"
+          className="select select-bordered m-4 select-sm"
           onChange={(e) => {
             setEditorBodyType(
               (e.target.value || null) as RecipeMutationContentType
@@ -30,10 +30,14 @@ export function EditorBody() {
         >
           <option value={undefined}>None</option>
           <option value={RecipeMutationContentType.JSON}>JSON Body</option>
-          <option value={RecipeMutationContentType.FormData}>
+          {/* <option value={RecipeMutationContentType.FormData}>
             FormData Body
-          </option>
+          </option> */}
         </select>
+      )}
+
+      {editorBodyType === null && (
+        <InitializeSchema type={EditorParamView.Body} />
       )}
 
       {editorBodyType === RecipeMutationContentType.JSON && (

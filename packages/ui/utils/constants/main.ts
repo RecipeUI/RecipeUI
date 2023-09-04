@@ -25,55 +25,6 @@ export const FORM_LINKS = {
 
 export const PLAYGROUND_SESSION_ID = "playgroundSessionId";
 
-export const API_TYPE_NAMES = {
-  APIRequestParams: "APIRequestParams",
-  APIQueryParams: "APIQueryParams",
-  APIUrlParams: "APIUrlParams",
-};
-
-const API_SAMPLE_REQUEST_BODY_TYPE = `
-// Define your request body with TypeScript.
-// This will add auto-complete (CMD+SPACE) and validation!
-
-export interface ${API_TYPE_NAMES.APIRequestParams} {
-  // model: string;
-  // messages: {
-  //    role: "system" | "user";
-  //    content: string;
-  // }[];
-  // max_tokens?: number;
-  // stream?: boolean;
-}
-`.trim();
-
-const API_SAMPLE_QUERY_PARAMS_TYPE = `
-// Define your query params with TypeScript.
-// This will add auto-complete (CMD+SPACE) and validation!
-
-
-export interface ${API_TYPE_NAMES.APIQueryParams} {
-  // sort?: "asc" | "desc";
-  // page?: number;
-}
-`.trim();
-
-const API_SAMPLE_URL_PARAMS_TYPE = `
-// Define your url params with TypeScript.
-// This will add auto-complete (CMD+SPACE) and validation!
-
-
-export interface ${API_TYPE_NAMES.APIUrlParams} {
-  // "{sort}": "asc" | "desc";
-  // "{filter}": "top" | "new";
-}
-`.trim();
-
-export const API_SAMPLES = {
-  API_SAMPLE_REQUEST_BODY_TYPE,
-  API_SAMPLE_QUERY_PARAMS_TYPE,
-  API_SAMPLE_URL_PARAMS_TYPE,
-};
-
 const baseURL = "https://recipe-translator.fly.dev";
 // const baseURL = "http://localhost:3000";
 

@@ -1,9 +1,8 @@
+import { RecipeMutationContentType } from "types/enums";
 import { superFetchTypesAndJSON } from "../../../fetchers/editor";
 import { EditorSliceValues } from "../../../state/recipeSession";
-import {
-  API_LOCAL_PROCESSING_URLS,
-  API_TYPE_NAMES,
-} from "../../../utils/constants/main";
+import { API_LOCAL_PROCESSING_URLS } from "../../../utils/constants/main";
+import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
 
 export async function getQueryAndBodyInfo({
   url,
@@ -40,7 +39,10 @@ export async function getQueryAndBodyInfo({
 
   let bodyInfo: Pick<
     EditorSliceValues,
-    "editorBodySchemaType" | "editorBodySchemaJSON" | "editorBody"
+    | "editorBodySchemaType"
+    | "editorBodySchemaJSON"
+    | "editorBody"
+    | "editorBodyType"
   > | null = null;
   if (body) {
     const requestBody = typeof body === "string" ? JSON.parse(body) : body;
@@ -54,6 +56,7 @@ export async function getQueryAndBodyInfo({
       editorBodySchemaType: _bodyInfo.ts,
       editorBodySchemaJSON: _bodyInfo.json,
       editorBody: JSON.stringify(requestBody, null, 2),
+      editorBodyType: RecipeMutationContentType.JSON, //TODO: Rethink this for forms
     };
   }
 

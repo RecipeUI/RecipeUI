@@ -25,6 +25,7 @@ import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { usePathname } from "next/navigation";
 import { getSecret, useOutput } from "../../../state/apiSession";
+import { parse } from "json5";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -134,7 +135,7 @@ export function RecipeSearchButton() {
 
     if (editorMode) {
       if (editorBodyType === RecipeMutationContentType.JSON && editorBody) {
-        fetchRequestBody = JSON.parse(editorBody);
+        fetchRequestBody = parse(editorBody);
       }
 
       fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
@@ -153,7 +154,7 @@ export function RecipeSearchButton() {
     const matches = path.match(/{(\w+)}/g);
     if (matches && matches.length > 0) {
       try {
-        const urlState = editorMode ? JSON.parse(editorURLCode) : urlParams;
+        const urlState = editorMode ? parse(editorURLCode) : urlParams;
 
         for (const key in urlState) {
           path = path.replace(`${key}`, urlState[key]);
@@ -285,7 +286,7 @@ export function RecipeSearchButton() {
 
     // ------ Parse Query Params -------
     const _queryParams = editorMode
-      ? (JSON.parse(editorQuery || "{}") as Record<string, string>)
+      ? (parse(editorQuery || "{}") as Record<string, string>)
       : queryParams;
 
     for (const key in _queryParams) {
@@ -504,7 +505,7 @@ export function RecipeSearchButton() {
         }
       } else {
         try {
-          output = JSON.parse(outputStr);
+          output = parse(outputStr);
         } catch (e) {
           output = { response: "unable to parse json" };
         }

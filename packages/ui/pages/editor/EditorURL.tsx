@@ -10,7 +10,7 @@ import {
 } from "./CodeEditors/EditorJSON";
 import classNames from "classnames";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
-import { API_TYPE_NAMES } from "../../utils/constants/main";
+import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 
 export const EditorURL = () => {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);

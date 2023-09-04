@@ -10,10 +10,7 @@ import { Modal } from "../../../components/Modal";
 import { parseCurl } from "../curlParser";
 import { RecipeAuthType, RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
-import {
-  API_LOCAL_PROCESSING_URLS,
-  API_TYPE_NAMES,
-} from "../../../utils/constants/main";
+
 import { getQueryAndBodyInfo } from "./helpers";
 import { saveSecret } from "../../../state/apiSession";
 

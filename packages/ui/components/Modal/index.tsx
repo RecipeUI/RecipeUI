@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 export function Modal({
   header,
@@ -9,12 +9,14 @@ export function Modal({
   children,
   size = "md",
   onClose,
+  autoFocus,
 }: {
   header: string;
   headerClassName?: string;
   description?: string;
   children: ReactNode;
   size?: "sm" | "md" | "lg";
+  autoFocus?: boolean;
   onClose?: () => void;
 }) {
   return (
@@ -24,6 +26,7 @@ export function Modal({
         onClose?.();
       }}
       className="relative z-50"
+      autoFocus={false}
     >
       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
@@ -38,7 +41,11 @@ export function Modal({
           )}
         >
           <Dialog.Title
-            className={classNames("text-2xl font-bold", headerClassName)}
+            className={classNames(
+              "text-2xl font-bold outline-none",
+              headerClassName
+            )}
+            tabIndex={autoFocus ? undefined : -1}
           >
             {header}
           </Dialog.Title>

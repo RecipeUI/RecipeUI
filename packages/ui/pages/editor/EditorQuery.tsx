@@ -9,11 +9,10 @@ import {
   InitializeSchema,
 } from "./CodeEditors/EditorJSON";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
-import {
-  API_TYPE_NAMES,
-  ONBOARDING_CONSTANTS,
-} from "../../utils/constants/main";
+import { ONBOARDING_CONSTANTS } from "../../utils/constants/main";
 import { EditorQueryOnboarding } from "./EditorOnboarding/EditorQueryOnboarding";
+import { API_TYPE_NAMES } from "../../utils/constants/recipe";
+import { parse } from "json5";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -30,7 +29,7 @@ export const EditorQuery = () => {
     if (!newQueryChanges) return "Enter query params as key value pairs below";
 
     try {
-      const params = JSON.parse(newQueryChanges) as Record<string, string>;
+      const params = parse(newQueryChanges) as Record<string, string>;
 
       return `?${new URLSearchParams(params).toString()}`;
     } catch (e) {
@@ -57,43 +56,44 @@ export const EditorQuery = () => {
 
   const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
 
-  if (showJSONEditor && !onboardedToQuery) {
-    return <EditorQueryOnboarding />;
-  }
+  console.log({ schemaType });
 
   return (
-    <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-      <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto">
-        {isEmpty ? (
-          "Enter query params as a key value object below"
+    <>
+      <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
+        <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto">
+          {isEmpty ? (
+            "Enter query params as a key value object below"
+          ) : (
+            <>
+              {editorUrl}
+              <span className="mt-2 bg-accent py-1 rounded-md text-white w-fit break-all">
+                {urlQueryParams}
+              </span>
+            </>
+          )}
+        </div>
+        {showJSONEditor ? (
+          <EditorViewWithSchema
+            value={editorQuery}
+            setValue={setEditorQuery}
+            jsonSchema={editorQuerySchemaJSON}
+            key={`${currentSession?.id || "default"}-json-query`}
+            typeName={API_TYPE_NAMES.APIQueryParams}
+          />
         ) : (
-          <>
-            {editorUrl}
-            <span className="mt-2 bg-accent py-1 rounded-md text-white w-fit break-all">
-              {urlQueryParams}
-            </span>
-          </>
+          <InitializeSchema type={EditorParamView.Query} />
         )}
-      </div>
-      {showJSONEditor ? (
-        <EditorViewWithSchema
-          value={editorQuery}
-          setValue={setEditorQuery}
-          jsonSchema={editorQuerySchemaJSON}
-          key={`${currentSession?.id || "default"}-json-query`}
-          typeName={API_TYPE_NAMES.APIQueryParams}
+        <EditorTypeScript
+          key={`${currentSession?.id || "default"}-types-query`}
+          setSchemaJSON={setSchemaJSON}
+          setSchemaType={setSchemaType}
+          editorParamView={EditorParamView.Query}
+          schemaType={schemaType}
+          defaultExport={API_TYPE_NAMES.APIQueryParams}
         />
-      ) : (
-        <InitializeSchema type={EditorParamView.Query} />
-      )}
-      <EditorTypeScript
-        key={`${currentSession?.id || "default"}-types-query`}
-        setSchemaJSON={setSchemaJSON}
-        setSchemaType={setSchemaType}
-        editorParamView={EditorParamView.Query}
-        schemaType={schemaType}
-        defaultExport={API_TYPE_NAMES.APIQueryParams}
-      />
-    </div>
+      </div>
+      {showJSONEditor && !onboardedToQuery && <EditorQueryOnboarding />}
+    </>
   );
 };

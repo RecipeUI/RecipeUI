@@ -313,9 +313,11 @@ function TauriUpdateExtension() {
     },
   });
 
-  console.log("", version, latestVersion.data);
-
-  if (!version || latestVersion.isLoading || latestVersion.data === version) {
+  if (
+    !version ||
+    latestVersion.isLoading ||
+    (latestVersion?.data && version <= latestVersion.data)
+  ) {
     return null;
   }
 

@@ -35,13 +35,13 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
       editorMethod: selectedRecipe.method,
 
       editorBodyType: RecipeMutationContentType.JSON,
-      editorBodySchemaType: selectedRecipe.requestBodyType,
+      editorBodySchemaType: selectedRecipe.requestBodyType || null,
       editorBodySchemaJSON: selectedRecipe.requestBody as JSONSchema6,
 
-      editorQuerySchemaType: selectedRecipe.queryParamsType,
+      editorQuerySchemaType: selectedRecipe.queryParamsType || null,
       editorQuerySchemaJSON: selectedRecipe.queryParams as JSONSchema6,
 
-      editorURLSchemaType: selectedRecipe.urlParamsType,
+      editorURLSchemaType: selectedRecipe.urlParamsType || null,
       editorURLSchemaJSON: selectedRecipe.urlParams as JSONSchema6,
 
       editorHeader: {
