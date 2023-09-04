@@ -489,7 +489,7 @@ function RecipeDocParamEdit({
       return (
         <select
           id={`${paramPath}`}
-          className="select select-bordered select-sm w-full max-w-xs text-black"
+          className="select select-bordered select-sm w-full max-w-xs text-black dark:text-white"
           value={paramState as string}
           onChange={(e) => {
             updateParams({
@@ -509,7 +509,7 @@ function RecipeDocParamEdit({
       <>
         <textarea
           id={`${paramPath}`}
-          className="textarea textarea-bordered textarea-sm w-full text-black"
+          className="textarea textarea-bordered textarea-sm w-full text-black dark:text-white"
           placeholder={
             paramSchema.default ? `example: ${paramSchema.default}` : undefined
           }
@@ -530,7 +530,7 @@ function RecipeDocParamEdit({
       <input
         id={`${paramPath}`}
         type="checkbox"
-        className="toggle toggle-accent text-black"
+        className="toggle toggle-accent text-black dark:text-white"
         checked={(paramState || false) as boolean}
         onChange={(e) => {
           updateParams({
@@ -547,7 +547,7 @@ function RecipeDocParamEdit({
     // Do something special if minimum and maxmium are defined
     if (paramSchema.maximum != undefined && paramSchema.minimum != undefined) {
       return (
-        <div className="space-x-4 flex items-center text-black">
+        <div className="space-x-4 flex items-center text-black dark:text-white">
           <input
             id={`${paramPath}`}
             type="range"
@@ -572,7 +572,7 @@ function RecipeDocParamEdit({
       <input
         id={`${paramPath}`}
         type="number"
-        className="input input-sm input-bordered text-black"
+        className="input input-sm input-bordered text-black dark:text-white"
         placeholder={
           paramSchema.default
             ? `example: ${String(paramSchema.default)}`
