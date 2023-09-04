@@ -17,6 +17,7 @@ import { useIsMobile } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
 import { RecipeMethod } from "types/enums";
+import { APP_GITHUB_LATEST_RELEASE_URL } from "../../utils/constants/main";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -228,7 +229,7 @@ function DesktopDownload() {
       }
 
       const latestRes = await nativeFetch({
-        url: "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json",
+        url: APP_GITHUB_LATEST_RELEASE_URL,
         payload: {
           headers: {},
           method: RecipeMethod.GET,

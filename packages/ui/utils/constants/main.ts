@@ -89,3 +89,6 @@ export const REDIRECT_PAGE = "redirectURL";
 export const ONBOARDING_CONSTANTS = {
   QUERY_ONBOARDING: "QUERY_ONBOARDING",
 };
+
+export const APP_GITHUB_LATEST_RELEASE_URL =
+  "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json";

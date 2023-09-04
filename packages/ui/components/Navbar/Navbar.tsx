@@ -1,12 +1,20 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
-import { useCallback, useEffect, useState } from "react";
+import {
+  DesktopPage,
+  RecipeNativeFetchContext,
+  useRecipeSessionStore,
+} from "../../state/recipeSession";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { Bars3Icon, StarIcon } from "@heroicons/react/24/outline";
 import { User } from "types/database";
 import Link from "next/link";
-import { APP_COOKIE, UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
+import {
+  APP_COOKIE,
+  APP_GITHUB_LATEST_RELEASE_URL,
+  UNIQUE_ELEMENT_IDS,
+} from "../../utils/constants/main";
 import { OnboardingFlow } from "./OnboardingFlow";
 import NavAuthForm from "./NavAuthForm";
 
@@ -31,8 +39,6 @@ export function Navbar() {
 
   const onboarding = useRecipeSessionStore((state) => state.onboarding);
 
-  const pathname = usePathname();
-
   const isTauri = useIsTauri();
 
   const router = useRouter();
@@ -42,15 +48,21 @@ export function Navbar() {
     (state) => state.setCurrentSession
   );
 
+  const pathName = usePathname();
+
   const goCollections = useCallback(() => {
     setCurrentSession(null);
 
     if (isTauri) {
       setDesktopPage(null);
     } else {
-      router.push("/");
+      if (pathName === "/") {
+        location.reload();
+      } else {
+        router.push("/");
+      }
     }
-  }, [isTauri, router, setCurrentSession, setDesktopPage]);
+  }, [isTauri, pathName, router, setCurrentSession, setDesktopPage]);
 
   const goEditor = useCallback(() => {
     setCurrentSession(null);
@@ -101,6 +113,7 @@ export function Navbar() {
             </defs>
           </svg>
         </button>
+        {isTauri && <TauriUpdateExtension />}
         <div
           className={classNames(
             "flex items-center",
@@ -246,5 +259,74 @@ function NavMenu({ user }: { user: User }) {
         </li>
       </ul>
     </div>
+  );
+}
+
+import { getVersion } from "@tauri-apps/api/app";
+import { useQuery } from "@tanstack/react-query";
+import { RecipeMethod } from "types/enums";
+
+import { emit } from "@tauri-apps/api/event";
+
+function TauriUpdateExtension() {
+  const [version, setVersion] = useState("");
+
+  const nativeFetch = useContext(RecipeNativeFetchContext);
+
+  useEffect(() => {
+    getVersion().then((v) => {
+      setVersion(v);
+    });
+  }, []);
+
+  const latestVersion = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [version],
+    enabled: !!version,
+    // refetchInterval: 5000,
+    refetchInterval: 60 * 60 * 1000, // Every hour
+    queryFn: async () => {
+      if (!nativeFetch) {
+        return version;
+      }
+
+      const latestRes = await nativeFetch({
+        url: APP_GITHUB_LATEST_RELEASE_URL,
+        payload: {
+          headers: {},
+          method: RecipeMethod.GET,
+          body: undefined,
+        },
+      });
+
+      if (latestRes.status === 200) {
+        try {
+          const latestJson = JSON.parse(latestRes.output);
+
+          return latestJson.version as string;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      return version;
+    },
+  });
+
+  console.log("", version, latestVersion.data);
+
+  if (!version || latestVersion.isLoading || latestVersion.data === version) {
+    return null;
+  }
+
+  return (
+    <button
+      className="ml-2 btn btn-accent btn-xs animate-bounce -mr-2"
+      onClick={() => {
+        emit("tauri://update");
+      }}
+    >
+      Update App
+    </button>
   );
 }

@@ -22,7 +22,6 @@ export default function RootLayout({
         <Providers>
           <div className="w-full h-screen flex overflow-y-auto border-t border-recipe-slate">
             <div className="flex flex-1 flex-col overflow-y-scroll">
-              <Navbar />
               {children}
             </div>
           </div>

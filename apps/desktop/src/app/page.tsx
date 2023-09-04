@@ -37,6 +37,7 @@ export default function Page() {
 
   return (
     <RecipeNativeFetchContext.Provider value={invokeMemoized}>
+      <Navbar />
       <Container />
     </RecipeNativeFetchContext.Provider>
   );
@@ -122,6 +123,7 @@ import { ProjectContainer } from "ui/components/Project/ProjectContainer";
 import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 import { initializeDB } from "ui/state/apiSession";
+import { Navbar } from "ui/components/Navbar/Navbar";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = useSupabaseClient();
