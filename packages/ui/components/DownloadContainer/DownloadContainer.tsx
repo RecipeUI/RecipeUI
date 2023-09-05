@@ -145,14 +145,18 @@ export function DownloadContainer() {
           </a>
           <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
           <p className="my-2 ">
-            Powered by{" "}
-            <span className="text-blue-600 font-bold underline underline-offset-2">
-              TypeScript
-            </span>
-            , testing and sharing APIs has never been easier with our
-            auto-complete, statically-typed editor.
+            RecipeUI is the open source Postman alternative with{" "}
+            <span className="font-bold underline-offset-2 underline">
+              type safety
+            </span>{" "}
+            built in.
           </p>
-          <DesktopAppUpsell nextBlack />
+          <p>
+            Catch your API requests before they fail with TypeScript and
+            autocomplete. Enhance your workflows with auto-generated docs and
+            reusable API templates.
+          </p>
+          {/* <DesktopAppUpsell nextBlack /> */}
           <DesktopDownload />
           {/* <ViewCollections /> */}
         </div>
