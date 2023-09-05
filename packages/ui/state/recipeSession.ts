@@ -421,7 +421,7 @@ export const createRecipeEditorSlice: StateCreator<
                 ],
               }
             : null),
-          ...(editorSession.editorBody && editorSession.editorBodyType
+          ...(!editorSession.editorBody && editorSession.editorBodyType
             ? { editorBody: "" }
             : null),
           ...(!editorSession.editorQuery && editorSession.editorQuerySchemaType

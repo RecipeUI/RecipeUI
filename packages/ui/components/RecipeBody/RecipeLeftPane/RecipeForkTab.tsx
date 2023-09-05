@@ -64,10 +64,6 @@ export function RecipeForkTab({
   onClose: () => void;
 }) {
   const selectedRecipe = useContext(RecipeContext)!;
-  const user = useRecipeSessionStore((state) => state.user);
-  const addEditorSession = useRecipeSessionStore(
-    (state) => state.addEditorSession
-  );
 
   const router = useRouter();
 

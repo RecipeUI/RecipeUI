@@ -59,7 +59,7 @@ export function RecipeBodySearch() {
           </div>
           {currentSession != null && selectedRecipe != null && (
             <div className="grid grid-flow-col gap-x-2">
-              <RecipeSearchButton />
+              {/* <RecipeSearchButton /> */}
               {/* <RecipeSaveButton /> */}
             </div>
           )}
