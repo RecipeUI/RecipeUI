@@ -19,7 +19,7 @@ import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 import { useMiniRecipes } from "../../state/apiSession";
 import Link from "next/link";
-import { MegaphoneIcon } from "@heroicons/react/24/outline";
+import { MegaphoneIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { CurlModal } from "./Builders/CurlModal";
 import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
@@ -27,6 +27,7 @@ import {
   FreeForkExamples,
   SuggestedExamples,
 } from "../../utils/constants/recipe";
+import { useDarkMode } from "usehooks-ts";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -57,6 +58,7 @@ function NewRequest() {
 
   const [showForkExamples, setShowForkExamples] = useState(false);
 
+  const { isDarkMode } = useDarkMode();
   return (
     <div
       className={
@@ -136,6 +138,32 @@ function NewRequest() {
           )}
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
+          <div className="">
+            <a
+              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
+              target="_blank"
+              className="cursor-pointer"
+            >
+              <img
+                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=411024&theme=light`}
+                alt="RecipeUI - Open&#0032;source&#0032;type&#0045;safe&#0032;Postman&#0032;alternative | Product Hunt"
+                width="250"
+                height="54"
+              />
+            </a>
+            <a
+              className={classNames(
+                "border rounded-md p-4  flex justify-center items-center mt-8 cursor-pointer bg-accent text-white"
+              )}
+              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
+            >
+              <MegaphoneIcon className="h-12 mb-2 text-sm  mr-2" />
+              <p>
+                Just launched on ProductHunt. Help us with an{" "}
+                <span className="underline underline-offset-2">upvote</span>!
+              </p>
+            </a>
+          </div>
           {!isTauri && (
             <div className="bg-neutral p-4 rounded-md text-white">
               <p className="my-2 sm:text-base text-lg">
@@ -151,25 +179,7 @@ function NewRequest() {
               </Link>
             </div>
           )}
-          <div
-            className={classNames(
-              "border rounded-md p-4  flex justify-center items-center",
-              isTauri && "bg-accent text-black border-none"
-            )}
-          >
-            <MegaphoneIcon className="h-12 mb-2 text-sm  mr-2" />
-            <p>
-              {"Have feedback? We'd love to hear it over "}
-              <a
-                href="https://forms.gle/HaLedasspBZkVLsy7"
-                target="_blank"
-                className="underline underline-offset-2"
-              >
-                here
-              </a>
-              .
-            </p>
-          </div>
+
           <div className="border rounded-md p-4">
             <p>Helpful links</p>
             <ul className="text-sm mt-2 list-disc ml-6 space-y-1">
@@ -225,6 +235,26 @@ function NewRequest() {
                 </a>
               </li>
             </ul>
+          </div>
+
+          <div
+            className={classNames(
+              "border rounded-md p-4  flex justify-center items-center",
+              isTauri && "bg-neutral text-black border-none"
+            )}
+          >
+            <SparklesIcon className="h-12 mb-2 text-sm  mr-2" />
+            <p>
+              {"Have feedback? We'd love to hear it over "}
+              <a
+                href="https://forms.gle/HaLedasspBZkVLsy7"
+                target="_blank"
+                className="underline underline-offset-2"
+              >
+                here
+              </a>
+              .
+            </p>
           </div>
         </section>
       </div>
