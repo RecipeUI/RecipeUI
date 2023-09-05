@@ -8,6 +8,8 @@ import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
+import { open } from "@tauri-apps/api/shell";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 
 export function RecipeHome({
   globalProjects,
@@ -55,6 +57,8 @@ export function RecipeHome({
     }
   }, [queryParams]);
 
+  const isTauri = useIsTauri();
+
   return (
     <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
       <MarketplaceSection
@@ -82,6 +86,27 @@ export function RecipeHome({
           projects={more}
         />
       )}
+      <div className="alert w-fit">
+        <SparklesIcon className="w-6" />
+        <span>Suggest us APIs to support!</span>
+        <div>
+          <Link
+            className="btn btn-sm btn-outline"
+            target="_blank"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfsj0O2OI8lZOs4uX3RB7yINoqR81nhIYom2wHIK3d4Ggwy4Q/viewform"
+            onClick={(e) => {
+              if (isTauri) {
+                e.preventDefault();
+                open(
+                  "https://docs.google.com/forms/d/e/1FAIpQLSfsj0O2OI8lZOs4uX3RB7yINoqR81nhIYom2wHIK3d4Ggwy4Q/viewform"
+                );
+              }
+            }}
+          >
+            Suggest
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

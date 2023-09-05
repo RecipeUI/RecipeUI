@@ -316,7 +316,7 @@ function TauriUpdateExtension() {
   if (
     !version ||
     latestVersion.isLoading ||
-    (latestVersion?.data && version <= latestVersion.data)
+    (latestVersion?.data && version >= latestVersion.data)
   ) {
     return null;
   }
