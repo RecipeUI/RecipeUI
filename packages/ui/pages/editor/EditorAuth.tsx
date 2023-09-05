@@ -105,7 +105,7 @@ export function EditorAuth() {
               type="text"
               className="input input-bordered w-full input-sm"
               value={docs}
-              placeholder="Link to docs so your future self or team knows how to authenticate."
+              // placeholder="Link to docs so your future self or team knows how to authenticate."
               onChange={(e) => {
                 if (!hasChanged) setHasChanged(true);
 

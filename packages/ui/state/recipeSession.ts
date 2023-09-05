@@ -427,7 +427,14 @@ export const createRecipeEditorSlice: StateCreator<
                   editorSession.currentSession!,
                 ],
               }
-            : null),
+            : {
+                sessions: prevState.sessions.map((session) => {
+                  if (session.id === editorSession.currentSession?.id) {
+                    return editorSession.currentSession!;
+                  }
+                  return session;
+                }),
+              }),
           ...(!editorSession.editorBody && editorSession.editorBodyType
             ? { editorBody: "" }
             : null),

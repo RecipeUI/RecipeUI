@@ -333,7 +333,6 @@ export class OutputAPI {
     },
     mock?: boolean
   ) => {
-    console.log("modifying", sessionId, sessionOutput);
     const store = await getOutputStore();
     const outputs = await store.get(sessionId);
 
@@ -389,18 +388,15 @@ export function useOutput(sessionId?: string) {
   const [output, _setOutput] = useState<SessionOutput>(DEFAULT_OUTPUT);
   const [allOutputs, setAllOutputs] = useState<SessionOutput[]>([]);
 
-  console.log("in here", output);
   useEffect(() => {
     function refreshState(outputId?: string) {
-      getOutput(sessionId).then((output) => {
-        setAllOutputs(output?.reverse() || []);
+      getOutput(sessionId).then((_output) => {
+        setAllOutputs(_output?.reverse() || []);
 
-        if (outputId && output) {
-          _setOutput(output.find((o) => o.id === outputId) || DEFAULT_OUTPUT);
+        if (outputId && _output) {
+          _setOutput(_output.find((o) => o.id === outputId) || DEFAULT_OUTPUT);
         } else {
-          _setOutput(
-            output ? output[output.length - 1] : null || DEFAULT_OUTPUT
-          );
+          _setOutput(_output ? _output[0] : null || DEFAULT_OUTPUT);
         }
       });
     }

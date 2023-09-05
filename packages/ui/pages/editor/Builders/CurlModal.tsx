@@ -61,12 +61,19 @@ export function CurlModal({
         ...bodyInfo,
       };
 
-      const newSession: RecipeSession = currentSession ?? {
-        id: uuidv4(),
-        name: "",
-        apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
-        recipeId: uuidv4(),
-      };
+      const newSession: RecipeSession = currentSession
+        ? {
+            ...currentSession,
+            apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
+          }
+        : {
+            id: uuidv4(),
+            name: "",
+            apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
+            recipeId: uuidv4(),
+          };
+
+      console.log("in here", editorSlice.editorMethod, newSession);
 
       if (editorSlice.editorHeaders) {
         for (const header of editorSlice.editorHeaders) {
