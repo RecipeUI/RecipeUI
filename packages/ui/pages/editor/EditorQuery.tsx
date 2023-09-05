@@ -56,8 +56,6 @@ export const EditorQuery = () => {
 
   const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
 
-  console.log({ schemaType });
-
   return (
     <>
       <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">

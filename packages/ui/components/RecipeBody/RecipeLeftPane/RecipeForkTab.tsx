@@ -15,7 +15,8 @@ import { useSessionStorage } from "usehooks-ts";
 import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { DesktopAppUpsell } from "../../../pages/editor/EditorPage";
-import { Recipe } from "types/database";
+import { Recipe, RecipeTemplate } from "types/database";
+import { Modal } from "../../Modal";
 
 export function getConfigFromRecipe(selectedRecipe: Recipe) {
   return {
@@ -54,7 +55,14 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
   };
 }
 
-export function RecipeForkTab() {
+export function RecipeForkTab({
+  template,
+  onClose,
+}: {
+  template: RecipeTemplate;
+
+  onClose: () => void;
+}) {
   const selectedRecipe = useContext(RecipeContext)!;
   const user = useRecipeSessionStore((state) => state.user);
   const addEditorSession = useRecipeSessionStore(
@@ -85,7 +93,7 @@ export function RecipeForkTab() {
     try {
       setLoading(true);
 
-      setRecipeFork(selectedRecipe.id);
+      setRecipeFork(`${selectedRecipe.id}::${template.title}`);
 
       if (isTauri) {
         setDesktopPage({
@@ -99,40 +107,38 @@ export function RecipeForkTab() {
   };
 
   return (
-    <div className="flex-1 relative px-4 py-6">
-      <div className="alert flex flex-col items-start w-full bg-slate-600 text-white">
+    <Modal header="Web or Desktop?" onClose={onClose}>
+      <div className="flex-1 relative py-4">
         <div className="w-full space-y-4 text-start">
-          <h1 className="font-bold text-xl">Fork into RecipeUI Editor</h1>
-          {isTauri ? (
-            <p>
-              Fork into our <span className="font-bold">TypeScript-First</span>{" "}
-              API tool! Figure out the parameters on your own.
-            </p>
-          ) : (
-            <DesktopAppUpsell />
-          )}
+          <p>
+            Download our blazingly fast and lightweight (20mb) desktop app built
+            in{" "}
+            <span className="text-orange-600 font-bold underline underline-offset-2">
+              {" "}
+              Tauri Rust
+            </span>
+            .
+          </p>
           <div className="flex space-x-4">
             <button
-              className="btn btn-accent btn-sm"
+              className="btn btn-accent"
               disabled={loading}
               onClick={onSubmit}
             >
               {isTauri ? "Fork" : "Fork to Web Editor"}
               {loading && <span className="loading loading-bars"></span>}
             </button>
-            {!isTauri && (
-              <button
-                className="btn btn-accent btn-sm"
-                onClick={() => {
-                  router.push("/download");
-                }}
-              >
-                Download Desktop
-              </button>
-            )}
+            <button
+              className="btn btn-accent"
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Download Desktop
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

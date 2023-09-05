@@ -39,7 +39,7 @@ export const EditorURL = () => {
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
       <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-scroll break-all">
-        <EditorURLHighlight />
+        <EditorURLHighlightContainer />
       </div>
       {editorURLSchemaJSON || editorURLCode ? (
         <EditorViewWithSchema
@@ -64,7 +64,7 @@ export const EditorURL = () => {
   );
 };
 
-export function EditorURLHighlight() {
+export function EditorURLHighlightContainer() {
   const editorURL = useRecipeSessionStore((state) => state.editorUrl);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
   const debouncedURLCodeChanges = useDebounce(editorURLCode, 500);
@@ -77,9 +77,19 @@ export function EditorURLHighlight() {
     }
   }, [debouncedURLCodeChanges]);
 
-  const matches = editorURL.match(/{(\w+)}/g);
+  return <URLHighlight url={editorURL} urlState={urlState} />;
+}
 
-  const highlightedText = editorURL.split("/").map((word, i) => {
+export function URLHighlight({
+  url,
+  urlState,
+}: {
+  url: string;
+  urlState: Record<string, string>;
+}) {
+  const matches = url.match(/{(\w+)}/g);
+
+  const highlightedText = url.split("/").map((word, i) => {
     let match = matches?.find((m) => word.includes(m));
     if (match) {
       const wordWithoutBrackets = match.slice(1, -1);

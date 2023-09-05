@@ -297,6 +297,34 @@ function DesktopDownload() {
     "btn-accent btn dark:text-slate-200 rounded-md w-full";
 
   if (showInitialWeb) {
+    const collections = (
+      <Link
+        href="/collections"
+        className={buttonClassName}
+        onClick={() => {
+          posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
+        }}
+      >
+        Web Collections
+      </Link>
+    );
+    if (showAdvancedWeb) {
+      return (
+        <ButtonGrid>
+          <Link
+            href="/editor"
+            className={buttonClassName}
+            onClick={() => {
+              posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
+            }}
+          >
+            Web Editor
+          </Link>
+          {collections}
+        </ButtonGrid>
+      );
+    }
+
     return (
       <ButtonGrid>
         <button
@@ -307,19 +335,18 @@ function DesktopDownload() {
         >
           Try Desktop (20 mb!)
         </button>
-        <Link
-          href="/editor"
-          className={buttonClassName}
-          onClick={(e) => {
-            posthog?.capture(POST_HOG_CONSTANTS.TRY_WEB);
-            if (isMobile) {
-              e.preventDefault();
-              router.push("/collections");
-            }
-          }}
-        >
-          Try Web
-        </Link>
+        {!isMobile ? (
+          <button
+            className={buttonClassName}
+            onClick={() => {
+              setShowAdvancedWeb(true);
+            }}
+          >
+            Try Web
+          </button>
+        ) : (
+          collections
+        )}
       </ButtonGrid>
     );
   }

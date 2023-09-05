@@ -34,6 +34,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useSecret } from "../../../state/apiSession";
 import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
+import { RecipeForkTab } from "./RecipeForkTab";
 
 export function RecipeTemplatesTab() {
   const editorMode = useRecipeSessionStore((state) => state.editorMode);
@@ -63,7 +64,7 @@ export function StarterTemplates() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">Community Recipes</h1>
+      <h1 className="text-xl font-bold">Example Recipes</h1>
       <p className="mt-2">Use the example below to see how to use this API.</p>
       <div className="flex-1 flex flex-col sm:grid grid-cols-2 gap-4 mt-4">
         {templates.map((template) => (
@@ -117,65 +118,73 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
-  return (
-    <div
-      className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default"
-      key={`${template.title}`}
-    >
-      <h3 className="font-bold">{template.title}</h3>
-      <p className="text-sm line-clamp-3">{template.description}</p>
-      <div className="flex-1" />
-      <div className="flex space-x-2">
-        <button
-          className={classNames(
-            "btn btn-sm btn-neutral w-fit",
-            loadingTemplate && "btn-disabled"
-          )}
-          onClick={async () => {
-            posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
-              template_id: "Core" + template.title,
-              template_project: selectedRecipe.project,
-              recipe_id: selectedRecipe.id,
-              recipe_path: selectedRecipe.path,
-            });
-            setLoadingTemplate(template);
-          }}
-        >
-          Simulate
-        </button>
-        <button
-          className={classNames(
-            "btn btn-sm btn-neutral",
-            (loadingTemplate || loading) && "btn-disabled"
-          )}
-          onClick={async () => {
-            // If this is desktop, then we just fork directly, if this is web then we redirect them to the fork tab
+  const [showForkModal, setShowForkModal] = useState(false);
 
-            if (isTauri) {
-              try {
+  return (
+    <>
+      <div className="border rounded-sm p-4 space-y-2 flex flex-col recipe-container-box !cursor-default">
+        <h3 className="font-bold">{template.title}</h3>
+        <p className="text-sm line-clamp-3">{template.description}</p>
+        <div className="flex-1" />
+        <div className="flex space-x-2">
+          <button
+            className={classNames(
+              "btn btn-sm btn-neutral w-fit",
+              loadingTemplate && "btn-disabled"
+            )}
+            onClick={async () => {
+              posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW, {
+                template_id: "Core" + template.title,
+                template_project: selectedRecipe.project,
+                recipe_id: selectedRecipe.id,
+                recipe_path: selectedRecipe.path,
+              });
+              setLoadingTemplate(template);
+            }}
+          >
+            Simulate
+          </button>
+          <button
+            className={classNames(
+              "btn btn-sm btn-neutral",
+              (loadingTemplate || loading) && "btn-disabled"
+            )}
+            onClick={async () => {
+              // If this is desktop, then we just fork directly, if this is web then we redirect them to the fork tab
+
+              if (isTauri) {
                 setLoading(true);
 
-                setRecipeFork(`${selectedRecipe.id}::${template.title}`);
-
-                if (isTauri) {
-                  setDesktopPage({
-                    page: DesktopPage.Editor,
-                  });
-                } else {
-                  router.push(`/editor`);
-                }
-              } catch (e) {}
-              setLoading(false);
-            } else {
-              setBodyRoute(RecipeBodyRoute.Fork);
-            }
-          }}
-        >
-          Fork{" "}
-          {loading && <span className="loading loading-bars loading-sm"></span>}
-        </button>
+                try {
+                  if (isTauri) {
+                    setRecipeFork(`${selectedRecipe.id}::${template.title}`);
+                    setDesktopPage({
+                      page: DesktopPage.Editor,
+                    });
+                  }
+                } catch (e) {}
+                setLoading(false);
+              } else {
+                setShowForkModal(true);
+              }
+            }}
+          >
+            Fork
+            {loading && (
+              <span className="loading loading-bars loading-sm"></span>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+      {showForkModal && (
+        <RecipeForkTab
+          onClose={() => {
+            setShowForkModal(false);
+          }}
+          template={template}
+        />
+      )}
+    </>
   );
 }
 

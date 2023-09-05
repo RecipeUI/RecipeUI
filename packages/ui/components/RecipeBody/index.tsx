@@ -70,18 +70,14 @@ export function RecipeBody() {
     //   });
     // }
 
-    if (selectedRecipe.version === 1) {
-      parameters.push(RecipeBodyRoute.Fork);
-    }
-
     return parameters;
   }, [forkedTemplate, isMobile, selectedRecipe, showingRecipesTwo]);
 
-  useEffect(() => {
-    if (isMobile) {
-      setBodyRoute(RecipeBodyRoute.Templates);
-    }
-  }, [isMobile, setBodyRoute]);
+  // useEffect(() => {
+  //   if (isMobile) {
+  //     setBodyRoute(RecipeBodyRoute.Templates);
+  //   }
+  // }, [isMobile, setBodyRoute]);
 
   const router = useRouter();
 
@@ -91,7 +87,7 @@ export function RecipeBody() {
 
   return (
     <>
-      <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
+      {/* <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
         {routes.map((route) => {
           return (
             <div
@@ -115,12 +111,11 @@ export function RecipeBody() {
         >
           {"Home"}
         </div>
-      </div>
+      </div> */}
       <div className="flex-1 border-t border-t-slate-200 dark:border-t-slate-600 sm:grid sm:grid-cols-2 flex flex-col overflow-x-auto">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
         {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}
-        {bodyRoute === RecipeBodyRoute.Fork && <RecipeForkTab />}
         <RecipeOutput />
       </div>
     </>

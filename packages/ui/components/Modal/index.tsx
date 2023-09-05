@@ -28,7 +28,7 @@ export function Modal({
       className="relative z-50"
       autoFocus={false}
     >
-      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+      <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
 
       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
         <Dialog.Panel

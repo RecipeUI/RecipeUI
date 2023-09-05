@@ -82,6 +82,5 @@ const codingExample = `
 type ${API_TYPE_NAMES.APIQueryParams} = {
   q: string; // required
   sort: "top" | "hot" | "new"; // required
-  type?: "link" | "comment" | "sr" | "user"; // optional
 }
 `.trim();

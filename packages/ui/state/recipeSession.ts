@@ -2,7 +2,6 @@
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 
 import {
-  JSONBody,
   Recipe,
   RecipeOptions,
   RecipeOutputType,
@@ -24,15 +23,8 @@ import {
 } from "types/enums";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
+import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import {
-  JSONSchema6,
-  JSONSchema6Definition,
-  JSONSchema6Object,
-} from "json-schema";
-import {
-  clearOutput,
-  deleteConfigForSessionStore,
-  deleteParametersForSessionStore,
   deleteSession,
   setConfigForSessionStore,
   setParametersForSessionStore,
@@ -71,10 +63,9 @@ interface RecipeSessionSlice {
 }
 
 export enum RecipeBodyRoute {
-  Parameters = "Parameters",
+  Parameters = "Examples",
   Templates = "Recipes",
   Config = "Config",
-  Fork = "Fork",
 
   // EDITOR Routes
   Body = "Body",

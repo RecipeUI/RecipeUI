@@ -1,3 +1,5 @@
+import { JSONSchema6 } from "json-schema";
+
 export const RECIPE_IDS = {
   REDDIT_SEARCH: "5280469b-9f6d-413b-9d46-9955fdf3735a",
 };
@@ -71,12 +73,44 @@ export interface APIRequestParams {
 `.trim();
 
 const API_SAMPLE_REQUEST_BODY_JSON = `
-// Sample Body Params
-// Hover over red markers to see error messages
+// Sample request body params
+// Hover over red markers to see types in action
 {
   "model": 100
 }
 `.trim();
+
+const API_SAMPLE_REQUEST_BODY_SCHEMA = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  type: "object",
+  properties: {
+    color: {
+      type: "string",
+      enum: ["red", "blue", "green"],
+    },
+    counter: {
+      type: "number",
+    },
+  },
+  required: ["color", "counter"],
+  additionalProperties: false,
+};
+
+const API_SAMPLE_QUERY_SCHEMA = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  type: "object",
+  properties: {
+    color: {
+      type: "string",
+      enum: ["red", "blue", "green"],
+    },
+    counter: {
+      type: "number",
+    },
+  },
+  required: ["color", "counter"],
+  additionalProperties: false,
+};
 
 const API_SAMPLE_QUERY_PARAMS_TYPE = `
 // Define your query params with TypeScript.
@@ -90,12 +124,16 @@ export interface APIQueryParams {
 `.trim();
 
 const API_SAMPLE_QUERY_JSON = `
-// Sample Query Params
-// Hover over red markers to see error messages
+// Sample query params
+// Hover over red markers to see types in action
 {
   "color": 100 
 }
 `.trim();
+
+// const API_SAMPLE_URL_PARAMS_TYPE = {$schema: "http://json-schema.org/draft-07/schema#", type: "object", properties: Object, …}
+// {$schema: "http://json-schema.org/draft-07/schema#", type: "object", properties: Object, required: ["color", "counter"], additionalProperties: false}Object
+// `
 
 const API_SAMPLE_URL_PARAMS_TYPE = `
 // Define your url params with TypeScript.
@@ -121,13 +159,16 @@ export const API_SAMPLES = {
   API_SAMPLE_REQUEST_BODY_TYPE: {
     TYPE: API_SAMPLE_REQUEST_BODY_TYPE,
     JSON: API_SAMPLE_REQUEST_BODY_JSON,
+    SCHEMA: API_SAMPLE_REQUEST_BODY_SCHEMA as JSONSchema6,
   },
   API_SAMPLE_QUERY_PARAMS_TYPE: {
     TYPE: API_SAMPLE_QUERY_PARAMS_TYPE,
     JSON: API_SAMPLE_QUERY_JSON,
+    SCHEMA: API_SAMPLE_QUERY_SCHEMA as JSONSchema6,
   },
   API_SAMPLE_URL_PARAMS_TYPE: {
     TYPE: API_SAMPLE_URL_PARAMS_TYPE,
     JSON: API_SAMPLE_URL_JSON,
+    SCHEMA: API_SAMPLE_REQUEST_BODY_SCHEMA as JSONSchema6,
   },
 };

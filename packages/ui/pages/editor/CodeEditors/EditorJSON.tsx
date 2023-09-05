@@ -266,12 +266,12 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
   const onSubmit = () => {
     if (type === "query") {
       editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.TYPE);
-      setEditorQuerySchemaJSON({});
+      setEditorQuerySchemaJSON(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.SCHEMA);
       setEditorQuery(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.JSON);
     } else if (type === "body") {
       editBodyType(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE.TYPE);
       setEditorBodyType(RecipeMutationContentType.JSON);
-      setEditorBodySchemaJSON({});
+      setEditorBodySchemaJSON(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE.SCHEMA);
       setEditorBody(API_SAMPLES.API_SAMPLE_REQUEST_BODY_TYPE.JSON);
     } else if (type === "url") {
       setEditorURLSchemaType(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE.TYPE);
@@ -279,7 +279,7 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
       setEditorUrlCode(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE.JSON);
     }
   };
-
+  Object;
   return (
     <div className="h-full flex justify-center items-center border-t border-recipe-slate">
       <button
