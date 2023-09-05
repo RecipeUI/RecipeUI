@@ -246,7 +246,7 @@ function OutputModule({
               </div>
               <div
                 className={classNames(
-                  "btn-outline btn btn-xs text-black pointer-events-none"
+                  "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
                 )}
               >
                 {responseInfo.duration.toFixed(2)} ms
