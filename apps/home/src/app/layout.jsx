@@ -5,7 +5,7 @@ import '../styles/tailwind.css'
 const metadataConstants = {
   title: 'RecipeUI',
   description:
-    'Open source postman alternative for teams. APIs made easy, no coding experience or required.',
+    'Open source Postman alternative with type safety. Make error-free requests to ChatGPT, OpenAI, Nasa, Reddit, and more.',
   image_url: 'https://www.recipeui.com/opengraph-image.png',
 }
 export const metadata = {

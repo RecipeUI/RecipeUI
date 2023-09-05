@@ -66,7 +66,7 @@ function NewRequest() {
       }
     >
       {!isTauri && (
-        <div className="bg-accent sm:hidden p-4 self-start">
+        <div className="bg-accent sm:hidden p-4 self-start dark:text-white">
           <p>
             Our web editor is not mobile friendly. Please visit our home page
             and play around with other examples!
@@ -240,7 +240,7 @@ function NewRequest() {
           <div
             className={classNames(
               "border rounded-md p-4  flex justify-center items-center",
-              isTauri && "bg-neutral text-black border-none"
+              isTauri && "bg-neutral text-white border-none"
             )}
           >
             <SparklesIcon className="h-12 mb-2 text-sm  mr-2" />

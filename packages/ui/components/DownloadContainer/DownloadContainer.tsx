@@ -8,11 +8,6 @@ import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
-import {
-  CodeBracketIcon,
-  CodeBracketSquareIcon,
-  Square3Stack3DIcon,
-} from "@heroicons/react/24/outline";
 import { useIsMobile } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
@@ -154,7 +149,7 @@ export function DownloadContainer() {
             <span className="text-blue-600 font-bold underline underline-offset-2">
               TypeScript
             </span>
-            , testing and sharing APIs have never been easier with our
+            , testing and sharing APIs has never been easier with our
             auto-complete, statically-typed editor.
           </p>
           <DesktopAppUpsell nextBlack />
@@ -169,6 +164,15 @@ export function DownloadContainer() {
             src={!isDarkMode ? "/LightApp.png" : "/DarkApp.png"}
             alt="Screenshot of Desktop app"
           />
+        </div>
+        <div className="absolute  inset-0 flex justify-center items-center sm:pl-[20%] sm:pt-0">
+          <Link
+            className="btn btn-primary sm:btn-primary sm:animate-bounce hover:animate-none"
+            href="https://www.youtube.com/watch?v=O_Mly_p-g5s"
+            target="_blank"
+          >
+            Watch Demo
+          </Link>
         </div>
       </div>
     </div>
@@ -187,7 +191,7 @@ function ViewCollections() {
   );
 }
 
-const LATEST_VERSION = "0.5.5";
+const LATEST_VERSION = "0.7.2";
 function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 

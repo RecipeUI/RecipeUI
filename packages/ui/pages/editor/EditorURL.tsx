@@ -2,7 +2,7 @@
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useMemo } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounce, useLocalStorage } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
@@ -11,6 +11,8 @@ import {
 import classNames from "classnames";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 import { API_TYPE_NAMES } from "../../utils/constants/recipe";
+import { ONBOARDING_CONSTANTS } from "../../utils/constants/main";
+import { EditorURLOnboarding } from "./EditorOnboarding/EditorURLOnboarding";
 
 export const EditorURL = () => {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
@@ -36,12 +38,18 @@ export const EditorURL = () => {
     (state) => state.setEditorURLSchemaType
   );
 
+  const showJSONEditor = Boolean(editorURLSchemaJSON || editorURLCode);
+  const [onboardedToURL] = useLocalStorage(
+    ONBOARDING_CONSTANTS.URL_ONBOARDING,
+    false
+  );
+
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
       <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-scroll break-all">
         <EditorURLHighlightContainer />
       </div>
-      {editorURLSchemaJSON || editorURLCode ? (
+      {showJSONEditor ? (
         <EditorViewWithSchema
           key={`${currentSession?.id || "default"}-json-url`}
           value={editorURLCode}
@@ -60,6 +68,7 @@ export const EditorURL = () => {
         setSchemaType={setSchemaType}
         defaultExport={API_TYPE_NAMES.APIUrlParams}
       />
+      {showJSONEditor && !onboardedToURL && <EditorURLOnboarding />}
     </div>
   );
 };

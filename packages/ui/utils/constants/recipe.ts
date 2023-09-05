@@ -2,6 +2,7 @@ import { JSONSchema6 } from "json-schema";
 
 export const RECIPE_IDS = {
   REDDIT_SEARCH: "5280469b-9f6d-413b-9d46-9955fdf3735a",
+  REDDIT_SUBREDDIT: "183eea98-32c9-4cf6-8c03-6084147e30db",
 };
 
 export const FreeForkExamples = [
