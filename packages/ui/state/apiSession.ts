@@ -17,6 +17,7 @@ import {
 } from "types/enums";
 import { openDB, DBSchema } from "idb";
 import {
+  FetchResponse,
   RecipeSession,
   RecipeSessionFolder,
   SessionOutput,
@@ -93,12 +94,12 @@ export interface SessionsStore extends DBSchema {
   };
   [APIStore.Output]: {
     key: string;
-    value: SessionOutput;
+    value: SessionOutput[];
   };
 }
 
 const DB_CONFIG = {
-  NAME: "RECIPEUI_ALPHA",
+  NAME: "RECIPEUI_ALPHA_0.5",
   // TODO: Need a better migration plan this is bad
   VERSION: 1,
 };
@@ -188,7 +189,7 @@ export async function deleteSession({
 }) {
   await deleteParametersForSessionStore({ session: sessionId });
   await deleteConfigForSessionStore({ recipeId: recipeId });
-  await clearOutput(sessionId);
+  await OutputAPI.clearOutput(sessionId);
 }
 
 export async function deleteParametersForSessionStore({
@@ -310,25 +311,75 @@ async function getOutput(sessionId?: string) {
   return store.get(sessionId);
 }
 
-async function updateOutput({
-  sessionId,
-  sessionOutput,
-}: {
-  sessionId: string;
-  sessionOutput: SessionOutput;
-}) {
-  const store = await getOutputStore();
-  store.put(sessionOutput, sessionId);
-}
-
-export async function clearOutput(sessionId: string) {
-  const store = await getOutputStore();
-  store.delete(sessionId);
-  eventEmitter.emit("refreshState");
-}
-
 import EventEmitter from "events";
+import { PLAYGROUND_SESSION_ID } from "../utils/constants/main";
 const eventEmitter = new EventEmitter();
+
+export class OutputAPI {
+  static clearOutput = async (sessionId: string) => {
+    const store = await getOutputStore();
+    await store.delete(sessionId);
+
+    eventEmitter.emit("refreshState");
+  };
+
+  static addOutput = async (
+    {
+      sessionId,
+      sessionOutput,
+    }: {
+      sessionId: string;
+      sessionOutput: SessionOutput;
+    },
+    mock?: boolean
+  ) => {
+    console.log("modifying", sessionId, sessionOutput);
+    const store = await getOutputStore();
+    const outputs = await store.get(sessionId);
+
+    if (!outputs || sessionId === PLAYGROUND_SESSION_ID) {
+      await store.put(
+        [
+          {
+            ...sessionOutput,
+            ...(!mock
+              ? {
+                  created_at: new Date().toISOString(),
+                }
+              : null),
+          },
+        ],
+        sessionId
+      );
+    } else {
+      // We should override an existing sessionOutputId if it exits
+      const previousSession = outputs.find(
+        (output) => output.id === sessionOutput.id
+      );
+
+      if (previousSession) {
+        await store.put(
+          outputs.map((output) => {
+            if (output.id === sessionOutput.id) {
+              return sessionOutput;
+            }
+
+            return output;
+          }),
+          sessionId
+        );
+      } else {
+        await store.put([...outputs, sessionOutput], sessionId);
+      }
+    }
+
+    eventEmitter.emit("refreshState");
+  };
+
+  static setOutput = async (outputId: string) => {
+    eventEmitter.emit("refreshState", outputId);
+  };
+}
 
 const DEFAULT_OUTPUT: SessionOutput = {
   output: {},
@@ -336,12 +387,22 @@ const DEFAULT_OUTPUT: SessionOutput = {
 };
 export function useOutput(sessionId?: string) {
   const [output, _setOutput] = useState<SessionOutput>(DEFAULT_OUTPUT);
+  const [allOutputs, setAllOutputs] = useState<SessionOutput[]>([]);
 
+  console.log("in here", output);
   useEffect(() => {
-    function refreshState() {
-      getOutput(sessionId).then((output) =>
-        _setOutput(output || DEFAULT_OUTPUT)
-      );
+    function refreshState(outputId?: string) {
+      getOutput(sessionId).then((output) => {
+        setAllOutputs(output?.reverse() || []);
+
+        if (outputId && output) {
+          _setOutput(output.find((o) => o.id === outputId) || DEFAULT_OUTPUT);
+        } else {
+          _setOutput(
+            output ? output[output.length - 1] : null || DEFAULT_OUTPUT
+          );
+        }
+      });
     }
 
     refreshState();
@@ -353,37 +414,9 @@ export function useOutput(sessionId?: string) {
     };
   }, [sessionId]);
 
-  const setOutput = useCallback(
-    async (output: SessionOutput, mock?: boolean) => {
-      if (sessionId) {
-        await updateOutput({
-          sessionId,
-          sessionOutput: {
-            ...output,
-
-            ...(!mock
-              ? {
-                  created_at: new Date().toISOString(),
-                }
-              : null),
-          },
-        });
-      }
-      eventEmitter.emit("refreshState");
-    },
-    [sessionId]
-  );
-
-  const clear = useCallback(async () => {
-    if (sessionId) {
-      await clearOutput(sessionId);
-    }
-  }, [sessionId]);
-
   return {
     output,
-    setOutput,
-    clearOutput: clear,
+    allOutputs,
   };
 }
 
@@ -532,12 +565,31 @@ export class FolderAPI {
     const store = await getFolderStore();
     const folders = await store.get("sessionFolders");
 
-    const newFolders = (folders || []).map((folder) => {
-      return {
+    const foldersToDelete: string[] = [];
+    let newFolders = (folders || []).map((folder) => {
+      let madeChange = false;
+      const returnFolder = {
         ...folder,
-        sessionIds: folder.sessionIds.filter((id) => id !== sessionId),
+        sessionIds: folder.sessionIds.filter((id) => {
+          if (id !== sessionId) {
+            return true;
+          }
+
+          madeChange = true;
+          return false;
+        }),
       };
+
+      if (madeChange && returnFolder.sessionIds.length === 0) {
+        foldersToDelete.push(returnFolder.id);
+      }
+
+      return returnFolder;
     });
+
+    newFolders = newFolders.filter(
+      (folder) => !foldersToDelete.includes(folder.id)
+    );
 
     await store.put(newFolders, "sessionFolders");
     eventEmitter.emit("refreshFolders");

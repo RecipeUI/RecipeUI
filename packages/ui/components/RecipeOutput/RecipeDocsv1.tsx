@@ -43,7 +43,7 @@ export function RecipeDocs() {
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-gray-300",
+        "sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg",
         loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >

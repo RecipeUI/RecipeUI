@@ -22,7 +22,7 @@ export function RecipeOutputConsole() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const sessionOutput = useOutput(currentSession?.id);
   const {
-    output: { output, type },
+    output: { id, output, type },
   } = sessionOutput;
 
   const { isDarkMode } = useDarkMode();
@@ -68,10 +68,10 @@ export function RecipeOutputConsole() {
     checkObjs(output);
 
     return { codeBlocks, imageBlocks };
-  }, [output]);
+  }, [output, id]);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto bg-gray-800 dark:bg-gray-700 text-white space-y-6">
+    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg space-y-6">
       {imageBlocks.length > 0 && (
         <>
           <OutputModule
@@ -95,7 +95,6 @@ export function RecipeOutputConsole() {
                         src={imageUrl}
                         key={imageUrl + i}
                         className="carousel-item rounded-md max-h-48 object-contain"
-                        alt={""}
                       />
                     );
                   })}
@@ -133,6 +132,7 @@ export function RecipeOutputConsole() {
         <>
           <OutputModule
             title="Response"
+            responseInfo={sessionOutput.output.responseInfo}
             body={
               Object.keys(output).length > 0 ? (
                 <ResponseOutput
@@ -193,13 +193,15 @@ function ResponseOutput({
     sessionOutput.output,
   ]);
 
+  const { isDarkMode } = useDarkMode();
+
   return (
     <CodeMirror
       readOnly={true}
       value={output}
       className="h-full !outline-none border-none max-w-sm sm:max-w-none"
       basicSetup={codeMirrorSetup}
-      theme={"dark"}
+      theme={isDarkMode ? "dark" : "light"}
       extensions={extensions}
     />
   );
@@ -210,16 +212,48 @@ function OutputModule({
   body,
   tooltip,
   loading,
+  responseInfo,
 }: {
   title: string;
   body: ReactNode;
   tooltip?: string;
   loading?: boolean;
+  responseInfo?: SessionOutput["responseInfo"];
 }) {
   return (
     <div className="">
       <div className="flex items-center mb-2">
-        <h1 className="text-xl font-bold">{title}</h1>
+        <div className="flex items-center space-x-2">
+          <h1 className="text-xl font-bold text-black dark:text-white">
+            {title}
+          </h1>
+          {responseInfo && (
+            <>
+              <div
+                className={classNames("text-white !pointer-events-none", {
+                  "btn btn-xs btn-accent":
+                    responseInfo.status >= 200 && responseInfo.status < 300,
+                  "btn btn-xs btn-error":
+                    responseInfo.status >= 400 && responseInfo.status < 500,
+                  "btn btn-xs btn-warning":
+                    responseInfo.status >= 500 && responseInfo.status < 600,
+                })}
+              >
+                {responseInfo.status}{" "}
+                {responseInfo.status >= 200 && responseInfo.status < 300
+                  ? "OK"
+                  : ""}
+              </div>
+              <div
+                className={classNames(
+                  "btn-outline btn btn-xs text-black pointer-events-none"
+                )}
+              >
+                {responseInfo.duration.toFixed(2)} ms
+              </div>
+            </>
+          )}
+        </div>
         {tooltip && (
           <span
             className="tooltip tooltip-bottom tooltip-accent ml-2"

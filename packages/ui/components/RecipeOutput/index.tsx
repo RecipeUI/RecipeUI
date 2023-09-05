@@ -11,13 +11,14 @@ import { RecipeCodeView } from "./RecipeCodeView";
 import { RecipeEditDocs } from "./RecipeEditDocs";
 import { useOutput } from "../../state/apiSession";
 import { RecipeDocs } from "./RecipeDocsv1";
+import { RecipeHistoryView } from "./RecipeHistoryView";
 
 export function RecipeOutput() {
   const currentTab = useRecipeSessionStore((state) => state.outputTab);
   const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const output = useOutput(currentSession?.id);
+  const { output, allOutputs } = useOutput(currentSession?.id);
   const loadingTemplate = useRecipeSessionStore(
     (state) => state.loadingTemplate
   );
@@ -60,6 +61,10 @@ export function RecipeOutput() {
 
     _tabs.push(RecipeOutputTab.Code);
 
+    // if (allOutputs.length > 1) {
+    //   _tabs.push(RecipeOutputTab.History);
+    // }
+
     return _tabs;
   }, [output, currentTab, editorMode]);
 
@@ -69,6 +74,7 @@ export function RecipeOutput() {
       {currentTab === RecipeOutputTab.DocTwo && <RecipeEditDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}
       {currentTab === RecipeOutputTab.Code && <RecipeCodeView />}
+      {currentTab === RecipeOutputTab.History && <RecipeHistoryView />}
       {!loadingTemplate && tabs.length && (
         <div className="absolute right-0 top-0 flex border-l border-b border-slate-200 dark:border-slate-600">
           {tabs.map((tab) => {

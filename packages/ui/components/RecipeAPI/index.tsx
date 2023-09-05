@@ -10,10 +10,10 @@ import classNames from "classnames";
 import { Recipe, RecipeProject } from "types/database";
 import { useEffect } from "react";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
-import { useOutput } from "../../state/apiSession";
 import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "../RecipeBody";
 import { Loading } from "../Loading";
+import { OutputAPI } from "../../state/apiSession";
 
 export function RecipeAPI({
   recipe,
@@ -27,8 +27,6 @@ export function RecipeAPI({
   );
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
-  const { clearOutput } = useOutput(PLAYGROUND_SESSION_ID);
-
   useEffect(() => {
     if (recipe) {
       setCurrentSession(
@@ -41,7 +39,7 @@ export function RecipeAPI({
         false
       );
     }
-    clearOutput();
+    OutputAPI.clearOutput(PLAYGROUND_SESSION_ID);
   }, []);
 
   if (!project || !recipe) {

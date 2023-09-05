@@ -80,6 +80,7 @@ export enum RecipeOutputTab {
   Docs = "Docs",
   DocTwo = "Doc",
   Code = "Code",
+  History = "History",
 }
 
 export const getEmptyParameters = (): RecipeParameters => ({
@@ -89,7 +90,13 @@ export const getEmptyParameters = (): RecipeParameters => ({
 });
 
 export interface SessionOutput {
+  id?: string;
   output: Record<string, unknown>;
+  responseInfo?: {
+    status: number;
+    headers: Record<string, string>;
+    duration: number;
+  };
   type: RecipeOutputType;
   duration?: number;
   requestInfo?: RecipeRequestInfo;
@@ -1014,6 +1021,7 @@ export interface FetchResponse {
   output: string;
   status: number;
   contentType: string;
+  headers: Record<string, string>;
 }
 
 export const RecipeNativeFetchContext = createContext<

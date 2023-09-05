@@ -24,14 +24,14 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { usePathname } from "next/navigation";
-import { getSecret, useOutput } from "../../../state/apiSession";
+import { OutputAPI, getSecret, useOutput } from "../../../state/apiSession";
 import { parse } from "json5";
+import { v4 as uuidv4 } from "uuid";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
   const currentSession = useRecipeSessionStore((store) => store.currentSession);
   const requestBody = useRecipeSessionStore((store) => store.requestBody);
-  const { setOutput, clearOutput } = useOutput(currentSession?.id);
   const fileManager = useRecipeSessionStore((store) => store.fileManager);
 
   const isSending = useRecipeSessionStore((store) => store.isSending);
@@ -61,7 +61,7 @@ export function RecipeSearchButton() {
   const isTauri = useIsTauri();
 
   const onSubmit = async () => {
-    if (currentSession) clearOutput();
+    // if (currentSession) OutputAPI.clearOutput(currentSession.id);
 
     const success = await _onSubmit();
     setTimeout(() => {
@@ -107,16 +107,22 @@ export function RecipeSearchButton() {
       title: recipe.title,
     };
 
+    const outputId = uuidv4();
+
     if (isSending) {
       posthog?.capture(POST_HOG_CONSTANTS.RECIPE_ABORT, recipeInfoLog);
       fetchRejectRef.current?.(new Error(RecipeError.AbortedRequest));
       fetchRejectRef.current = null;
 
-      setOutput({
-        output: {
-          message: "Request aborted.",
+      // This isn't right
+      OutputAPI.addOutput({
+        sessionId: currentSession.id,
+        sessionOutput: {
+          output: {
+            message: "Request aborted.",
+          },
+          type: RecipeOutputType.Response,
         },
-        type: RecipeOutputType.Response,
       });
 
       return;
@@ -365,12 +371,16 @@ export function RecipeSearchButton() {
           const errorResponse = await res.json();
 
           if (errorResponse) {
-            setOutput({
-              output:
-                typeof errorResponse === "string"
-                  ? JSON.stringify(errorResponse)
-                  : errorResponse,
-              type: RecipeOutputType.Error,
+            OutputAPI.addOutput({
+              sessionId: currentSession.id,
+              sessionOutput: {
+                id: outputId,
+                output:
+                  typeof errorResponse === "string"
+                    ? JSON.stringify(errorResponse)
+                    : errorResponse,
+                type: RecipeOutputType.Error,
+              },
             });
             return false;
           }
@@ -402,23 +412,41 @@ export function RecipeSearchButton() {
 
             content = `${content}${contentChunk}`;
 
-            setOutput({
-              output: {
-                content,
+            OutputAPI.addOutput({
+              sessionId: currentSession.id,
+              sessionOutput: {
+                id: outputId,
+                output: {
+                  content,
+                },
+                type: RecipeOutputType.Streaming,
               },
-              type: RecipeOutputType.Streaming,
             });
           }
         }
 
-        setOutput({
-          output: {
-            content,
+        const headers: Record<string, string> = {};
+        res.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+
+        OutputAPI.addOutput({
+          sessionId: currentSession.id,
+          sessionOutput: {
+            id: outputId,
+            output: {
+              content,
+            },
+            type: RecipeOutputType.Response,
+            duration: performance.now() - startTime,
+            requestInfo,
+            contentType: ContentType.JSON,
+            responseInfo: {
+              status: res.status,
+              headers: headers,
+              duration: performance.now() - startTime,
+            },
           },
-          type: RecipeOutputType.Response,
-          duration: performance.now() - startTime,
-          requestInfo,
-          contentType: ContentType.JSON,
         });
 
         posthog?.capture(
@@ -434,6 +462,7 @@ export function RecipeSearchButton() {
         contentType,
         status,
         output: outputStr,
+        headers,
       } = await new Promise<FetchResponse>((resolve, reject) => {
         fetchRejectRef.current = reject;
 
@@ -441,10 +470,16 @@ export function RecipeSearchButton() {
         function simpleFetch() {
           fetch(url.toString(), payload)
             .then(async (res) => {
+              const headers: Record<string, string> = {};
+              res.headers.forEach((value, key) => {
+                headers[key] = value;
+              });
+
               resolve({
                 output: await res.text(),
                 status: res.status,
                 contentType: res.headers.get("content-type") ?? "text/plain",
+                headers: headers,
               });
             })
             .catch(reject);
@@ -519,12 +554,21 @@ export function RecipeSearchButton() {
         recipeInfoLog
       );
 
-      setOutput({
-        output: output,
-        type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
-        duration: performance.now() - startTime,
-        requestInfo,
-        contentType: contentType as ContentType,
+      OutputAPI.addOutput({
+        sessionId: currentSession.id,
+        sessionOutput: {
+          id: outputId,
+          output: output,
+          type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
+          duration: performance.now() - startTime,
+          requestInfo,
+          contentType: contentType as ContentType,
+          responseInfo: {
+            status: status,
+            headers: headers,
+            duration: performance.now() - startTime,
+          },
+        },
       });
     } catch (e) {
       console.error(e);
@@ -537,12 +581,16 @@ export function RecipeSearchButton() {
 
       posthog?.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
 
-      setOutput({
-        output: {
-          error: output,
+      OutputAPI.addOutput({
+        sessionId: currentSession.id,
+        sessionOutput: {
+          id: outputId,
+          output: {
+            error: output,
+          },
+          type: RecipeOutputType.Error,
+          duration: performance.now() - startTime,
         },
-        type: RecipeOutputType.Error,
-        duration: performance.now() - startTime,
       });
     }
     return true;

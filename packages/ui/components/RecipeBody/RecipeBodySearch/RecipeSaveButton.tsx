@@ -13,6 +13,7 @@ import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { useMiniRecipes, useOutput } from "../../../state/apiSession";
 import { differenceInMinutes } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
+
 export function RecipeSaveButton() {
   const currentSesssion = useRecipeSessionStore(
     (state) => state.currentSession
@@ -88,13 +89,6 @@ export function RecipeSaveButton() {
           Save
         </button>
       </div>
-      {showCreationFlow && (
-        <RecipeCreationFlow
-          onClose={() => {
-            setShowCreationFlow(false);
-          }}
-        />
-      )}
     </>
   );
 }
@@ -104,156 +98,157 @@ interface RecipeCreateFormData {
   description: string;
 }
 
-export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
-  const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
-  const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
+// export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
+//   const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
+//   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
 
-  const urlParamCode = useRecipeSessionStore((state) => state.editorURLCode);
+//   const urlParamCode = useRecipeSessionStore((state) => state.editorURLCode);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RecipeCreateFormData>({
-    defaultValues: {},
-  });
+//   const {
+//     register,
+//     handleSubmit,
+//     formState: { errors },
+//   } = useForm<RecipeCreateFormData>({
+//     defaultValues: {},
+//   });
 
-  const [loading, setLoading] = useState(false);
-  const posthog = usePostHog();
-  const session = useRecipeSessionStore((state) => state.currentSession);
+//   const [loading, setLoading] = useState(false);
+//   const posthog = usePostHog();
+//   const session = useRecipeSessionStore((state) => state.currentSession);
 
-  const { addRecipe } = useMiniRecipes(session?.recipeId);
-  const {
-    output: { requestInfo, duration, output, type },
-  } = useOutput(session?.id);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+//   const { addRecipe } = useMiniRecipes(session?.recipeId);
+//   // TODO: This is not proper right now
+//   const {
+//     output: { requestInfo, duration, output, type },
+//   } = useOutput(session?.id);
+//   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const supabase = useSupabaseClient();
+//   const supabase = useSupabaseClient();
 
-  const onSubmit = handleSubmit(async (data) => {
-    setLoading(true);
+//   const onSubmit = handleSubmit(async (data) => {
+//     setLoading(true);
 
-    try {
-      const newRecipe: RecipeTemplateFragment = {
-        title: data.title,
-        description: data.description,
+//     try {
+//       const newRecipe: RecipeTemplateFragment = {
+//         title: data.title,
+//         description: data.description,
 
-        created_at: new Date().toISOString(),
-        id: uuidv4(),
-        replay: {
-          duration: duration ? duration : 3000,
-          output,
-          streaming: false,
-        },
-        project_scope: ProjectScope.Personal,
+//         created_at: new Date().toISOString(),
+//         id: uuidv4(),
+//         replay: {
+//           duration: duration ? duration : 3000,
+//           output,
+//           streaming: false,
+//         },
+//         project_scope: ProjectScope.Personal,
 
-        queryParams:
-          editorQuery && editorQuery.length > 0
-            ? JSON.parse(editorQuery)
-            : null,
-        requestBody:
-          (requestInfo?.payload.body as Record<string, unknown>) || null,
-        urlParams:
-          urlParamCode && urlParamCode !== "{}"
-            ? JSON.parse(urlParamCode)
-            : null,
+//         queryParams:
+//           editorQuery && editorQuery.length > 0
+//             ? JSON.parse(editorQuery)
+//             : null,
+//         requestBody:
+//           (requestInfo?.payload.body as Record<string, unknown>) || null,
+//         urlParams:
+//           urlParamCode && urlParamCode !== "{}"
+//             ? JSON.parse(urlParamCode)
+//             : null,
 
-        recipe_id: session?.recipeId!,
+//         recipe_id: session?.recipeId!,
 
-        // This part wrong
-        headers: editorHeaders as any,
+//         // This part wrong
+//         headers: editorHeaders as any,
 
-        // Unnecessary
-        original_author_id: null,
-      };
+//         // Unnecessary
+//         original_author_id: null,
+//       };
 
-      addRecipe(newRecipe)
-        .then(() => {
-          posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
-          setLoading(false);
+//       addRecipe(newRecipe)
+//         .then(() => {
+//           posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
+//           setLoading(false);
 
-          onClose();
-        })
-        .catch((e) => {
-          setLoading(false);
-        });
-    } catch (e) {
-      alert("Recipe failed to make");
-      console.error(e);
-    }
-  });
+//           onClose();
+//         })
+//         .catch((e) => {
+//           setLoading(false);
+//         });
+//     } catch (e) {
+//       alert("Recipe failed to make");
+//       console.error(e);
+//     }
+//   });
 
-  return (
-    <Dialog open={true} onClose={onClose} className="relative z-50">
-      <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+//   return (
+//     <Dialog open={true} onClose={onClose} className="relative z-50">
+//       <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
-      <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[500px]">
-          <>
-            <Dialog.Title className="text-2xl font-bold ">
-              {`New recipe`}
-            </Dialog.Title>
+//       <div className="fixed inset-0 z-10  flex items-center justify-center p-4">
+//         <Dialog.Panel className="bg-base-100 p-8 rounded-lg w-[500px]">
+//           <>
+//             <Dialog.Title className="text-2xl font-bold ">
+//               {`New recipe`}
+//             </Dialog.Title>
+//             Make sure to fix recipeouput
+//             <p>
+//               Recipes allow you to save all the params you had before so you can
+//               quickly reference, share, or reuse this API in the future.
+//             </p>
+//             <form
+//               className="flex flex-col space-y-2  rounded-md mt-4"
+//               onSubmit={onSubmit}
+//             >
+//               <>
+//                 <LabelWrapper label="Recipe Title">
+//                   <input
+//                     className="input input-bordered w-full"
+//                     {...register("title", { required: true })}
+//                   />
+//                 </LabelWrapper>
+//                 <LabelWrapper label="Recipe Description">
+//                   <input
+//                     className="input  input-bordered w-full"
+//                     {...register("description", { required: true })}
+//                   />
+//                 </LabelWrapper>
 
-            <p>
-              Recipes allow you to save all the params you had before so you can
-              quickly reference, share, or reuse this API in the future.
-            </p>
-            <form
-              className="flex flex-col space-y-2  rounded-md mt-4"
-              onSubmit={onSubmit}
-            >
-              <>
-                <LabelWrapper label="Recipe Title">
-                  <input
-                    className="input input-bordered w-full"
-                    {...register("title", { required: true })}
-                  />
-                </LabelWrapper>
-                <LabelWrapper label="Recipe Description">
-                  <input
-                    className="input  input-bordered w-full"
-                    {...register("description", { required: true })}
-                  />
-                </LabelWrapper>
+//                 {(errors.title || errors.description) && (
+//                   <p className="alert alert-error !mt-4">
+//                     Please fill out all required fields.
+//                   </p>
+//                 )}
 
-                {(errors.title || errors.description) && (
-                  <p className="alert alert-error !mt-4">
-                    Please fill out all required fields.
-                  </p>
-                )}
+//                 {errorMsg && (
+//                   <div className="alert alert-error !mt-4 flex flex-col items-start">
+//                     <p>{errorMsg}</p>
+//                     <p>Want to be an early RecipeUI power user?</p>
+//                     <a
+//                       href={FORM_LINKS.RECIPEUI_PRO}
+//                       target="_blank"
+//                       className="underline underline-offset-2 -mt-4"
+//                     >
+//                       Sign up here.
+//                     </a>
+//                   </div>
+//                 )}
+//               </>
 
-                {errorMsg && (
-                  <div className="alert alert-error !mt-4 flex flex-col items-start">
-                    <p>{errorMsg}</p>
-                    <p>Want to be an early RecipeUI power user?</p>
-                    <a
-                      href={FORM_LINKS.RECIPEUI_PRO}
-                      target="_blank"
-                      className="underline underline-offset-2 -mt-4"
-                    >
-                      Sign up here.
-                    </a>
-                  </div>
-                )}
-              </>
-
-              <button
-                type="submit"
-                className={classNames(
-                  "btn bg-chefYellow !mt-8 text-black",
-                  loading && "btn-disabled"
-                )}
-              >
-                Save
-                {loading && <span className="loading loading-bars"></span>}
-              </button>
-            </form>
-          </>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
-  );
-}
+//               <button
+//                 type="submit"
+//                 className={classNames(
+//                   "btn bg-chefYellow !mt-8 text-black",
+//                   loading && "btn-disabled"
+//                 )}
+//               >
+//                 Save
+//                 {loading && <span className="loading loading-bars"></span>}
+//               </button>
+//             </form>
+//           </>
+//         </Dialog.Panel>
+//       </div>
+//     </Dialog>
+//   );
+// }
 
 function LabelWrapper({
   label,

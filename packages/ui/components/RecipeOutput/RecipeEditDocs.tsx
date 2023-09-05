@@ -49,7 +49,9 @@ export function RecipeEditDocs() {
 
   const requestBody = bodySchema ? (
     <div className="py-4" id="docRequestBody">
-      <h3 className="text-lg mb-4 font-bold text-white">Request Body</h3>
+      <h3 className="text-lg mb-4 font-bold text-black dark:text-white">
+        Request Body
+      </h3>
       <DefinitionContext.Provider
         value={{
           definitions: bodySchema.definitions,
@@ -63,7 +65,9 @@ export function RecipeEditDocs() {
 
   const queryParams = querySchema ? (
     <div className="py-4" id="docQueryBody">
-      <h3 className="text-lg mb-4 font-bold text-white">Query Params</h3>
+      <h3 className="text-lg mb-4 font-bold text-black dark:text-white">
+        Query Params
+      </h3>
       <DefinitionContext.Provider
         value={{
           definitions: querySchema.definitions,
@@ -77,7 +81,9 @@ export function RecipeEditDocs() {
 
   const urlParams = urlSchema ? (
     <div className="py-4" id="docQueryBody">
-      <h3 className="text-lg mb-4 font-bold text-white">Url Params</h3>
+      <h3 className="text-lg mb-4 font-bold text-black dark:text-white">
+        Url Params
+      </h3>
       <DefinitionContext.Provider
         value={{
           definitions: urlSchema.definitions,
@@ -92,7 +98,7 @@ export function RecipeEditDocs() {
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 overflow-y-auto bg-gray-800 dark:bg-gray-700 pb-8 pt-4 "
+        "sm:absolute inset-0 px-4 overflow-y-auto right-pane-bg pb-8 pt-4 "
         // loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >
@@ -127,7 +133,7 @@ function EditorHeader() {
     <div className="mb-4">
       {!editing ? (
         <div
-          className="cursor-pointer  text-white"
+          className="cursor-pointer  text-black dark:text-white"
           onClick={() => {
             setEditing(true);
           }}
@@ -276,7 +282,7 @@ function DocContainer({
 
   return (
     <div
-      className="border border-slate-200 dark:border-slate-600 rounded-sm p-4 text-white"
+      className="border border-slate-200 dark:border-slate-600 rounded-sm p-4 text-black dark:text-white bg-base-200 dark:bg-transparent"
       key={paramName}
     >
       <div className="flex justify-between">
@@ -286,7 +292,7 @@ function DocContainer({
           <span
             className={classNames(
               "text-sm",
-              required ? "text-red-600" : "text-white"
+              required ? "text-red-600" : "text-black dark:text-white"
             )}
           >
             {required ? "required" : "optional"}
@@ -479,9 +485,7 @@ function EditDocFieldWrapper({
 }) {
   return (
     <div>
-      <p className="text-xs font-bold text-gray-200 dark:text-gray-400">
-        {label}
-      </p>
+      <p className="text-xs font-bold text-black dark:text-white">{label}</p>
       {children}
     </div>
   );

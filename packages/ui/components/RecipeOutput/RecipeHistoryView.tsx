@@ -26,75 +26,31 @@ enum CodeView {
 }
 const CodeViews = Object.values(CodeView);
 
-export function RecipeCodeView() {
+export function RecipeHistoryView() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const {
     output: { requestInfo },
+    allOutputs,
   } = useOutput(currentSession?.id);
-  const { isDarkMode } = useDarkMode();
-  const [codeView, setCodeView] = useState(CodeView.CURL);
-  const [output, setOutput] = useState("Make a request first!");
-  const selectedRecipe = useContext(RecipeContext)!;
-
-  const hasFileBinary = false;
-  useEffect(() => {
-    if (!requestInfo) {
-      return;
-    }
-
-    if (codeView === CodeView.JavaScriptFetch) {
-      setOutput(getJavaScriptFetchCode(requestInfo));
-    } else if (codeView === CodeView.CURL) {
-      setOutput(getCurlCode(requestInfo));
-    } else if (codeView === CodeView.JavaScriptAxios) {
-      setOutput(getJavaScriptAxiosCode(requestInfo));
-    } else if (codeView === CodeView.PythonHttpClient) {
-      setOutput(getPythonHttpClient(requestInfo));
-    } else if (codeView === CodeView.PythonRequestLib) {
-      setOutput(getPythonRequestLibCode(requestInfo));
-    }
-  }, [codeView, requestInfo]);
 
   return (
     <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg">
       <h1 className="text-xl font-bold mb-4 text-black dark:text-white">
         Code
       </h1>
-      <div className="space-x-2 flex items-center mb-4">
-        <select
-          className="select select-bordered max-w-xs select-sm w-64 h-full bg-slate-700 text-white"
-          value={codeView}
-          onChange={(event) => {
-            setCodeView(event.target.value as CodeView);
-          }}
-        >
-          {CodeViews.map((view) => {
-            return <option key={view}>{view}</option>;
-          })}
-        </select>
-        <button
-          onClick={async () => {
-            await navigator.clipboard.writeText(output);
-            alert("Copied to clipboard");
-          }}
-          className="px-4 py-2 rounded-md  text-white btn btn-sm  btn-accent h-full"
-        >
-          Copy
-        </button>
+      <div className="space-y-4">
+        {allOutputs.map((output, i) => {
+          return (
+            <pre key={i}>
+              <div>
+                {output.created_at
+                  ? new Date(output.created_at).toLocaleTimeString()
+                  : new Date().toLocaleTimeString()}
+              </div>
+            </pre>
+          );
+        })}
       </div>
-      {hasFileBinary && (
-        <div className="alert alert-info my-4">
-          Support for file code generation coming soon...
-        </div>
-      )}
-      <CodeMirror
-        className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-        value={output}
-        basicSetup={codeMirrorSetup}
-        readOnly={true}
-        theme={isDarkMode ? "dark" : "light"}
-        extensions={[]}
-      />
     </div>
   );
 }
