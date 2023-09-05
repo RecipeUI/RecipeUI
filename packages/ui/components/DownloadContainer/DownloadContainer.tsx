@@ -368,7 +368,7 @@ function DesktopDownload() {
                 });
               }}
             >
-              <Icon className="fill-black dark:fill-gray-200" />
+              <Icon className="fill-black dark:fill-gray-200 hidden sm:block" />
               <h3 className={classNames("font-bold")}>{item.label}</h3>
             </Link>
           );

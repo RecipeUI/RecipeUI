@@ -39,7 +39,7 @@ export function RecipeBody() {
       return [];
     }
 
-    const parameters = [RecipeBodyRoute.Parameters];
+    const parameters = [RecipeBodyRoute.Parameters, RecipeBodyRoute.Templates];
 
     // if (
     //   !showingRecipesTwo &&
@@ -73,11 +73,11 @@ export function RecipeBody() {
     return parameters;
   }, [forkedTemplate, isMobile, selectedRecipe, showingRecipesTwo]);
 
-  // useEffect(() => {
-  //   if (isMobile) {
-  //     setBodyRoute(RecipeBodyRoute.Templates);
-  //   }
-  // }, [isMobile, setBodyRoute]);
+  useEffect(() => {
+    if (isMobile) {
+      setBodyRoute(RecipeBodyRoute.Templates);
+    }
+  }, [isMobile, setBodyRoute]);
 
   const router = useRouter();
 
@@ -87,7 +87,7 @@ export function RecipeBody() {
 
   return (
     <>
-      {/* <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
+      <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4 sm:hidden">
         {routes.map((route) => {
           return (
             <div
@@ -111,7 +111,7 @@ export function RecipeBody() {
         >
           {"Home"}
         </div>
-      </div> */}
+      </div>
       <div className="flex-1 border-t border-t-slate-200 dark:border-t-slate-600 sm:grid sm:grid-cols-2 flex flex-col overflow-x-auto">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
