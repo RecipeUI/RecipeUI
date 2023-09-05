@@ -29,7 +29,7 @@ function AppleIcon({ className }: Icon) {
     <svg
       viewBox="0 0 163 200"
       className={classNames(
-        "w-4 h-fit mb-1",
+        "w-4 h-4 mb-1",
         className ? className : "fill-slate-200"
       )}
       xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,7 @@ function WindowsIcon({ className }: Icon) {
       viewBox="0 0 88 88"
       xmlns="http://www.w3.org/2000/svg"
       className={classNames(
-        "w-4 h-fit",
+        "w-4 h-4",
         className ? className : "fill-slate-200"
       )}
     >
@@ -67,7 +67,7 @@ function DebianLinux({ className }: Icon) {
       viewBox="0 0 88 109"
       xmlns="http://www.w3.org/2000/svg"
       className={classNames(
-        "w-4 h-fit",
+        "w-4 h-4",
         className ? className : "fill-slate-200"
       )}
     >
@@ -236,36 +236,36 @@ function DesktopDownload() {
 
   const [latestVersion, setLatestVersion] = useState(LATEST_VERSION);
   const nativeFetch = useContext(RecipeNativeFetchContext);
-  useQuery({
-    queryKey: ["latestVersion", nativeFetch],
-    queryFn: async () => {
-      if (!nativeFetch) {
-        return LATEST_VERSION;
-      }
+  // useQuery({
+  //   queryKey: ["latestVersion", nativeFetch],
+  //   queryFn: async () => {
+  //     if (!nativeFetch) {
+  //       return LATEST_VERSION;
+  //     }
 
-      const latestRes = await nativeFetch({
-        url: APP_GITHUB_LATEST_RELEASE_URL,
-        payload: {
-          headers: {},
-          method: RecipeMethod.GET,
-          body: undefined,
-        },
-      });
+  //     const latestRes = await nativeFetch({
+  //       url: APP_GITHUB_LATEST_RELEASE_URL,
+  //       payload: {
+  //         headers: {},
+  //         method: RecipeMethod.GET,
+  //         body: undefined,
+  //       },
+  //     });
 
-      if (latestRes.status === 200) {
-        try {
-          const latestJson = JSON.parse(latestRes.output);
-          setLatestVersion(latestJson.version);
+  //     if (latestRes.status === 200) {
+  //       try {
+  //         const latestJson = JSON.parse(latestRes.output);
+  //         setLatestVersion(latestJson.version);
 
-          return latestJson.version;
-        } catch (e) {
-          console.error(e);
-        }
-      }
+  //         return latestJson.version;
+  //       } catch (e) {
+  //         console.error(e);
+  //       }
+  //     }
 
-      return LATEST_VERSION;
-    },
-  });
+  //     return LATEST_VERSION;
+  //   },
+  // });
 
   const content = getContent(latestVersion);
 
@@ -383,7 +383,7 @@ function DesktopDownload() {
                 });
               }}
             >
-              <Icon className="fill-black dark:fill-gray-200 hidden sm:block" />
+              <Icon className="fill-black dark:fill-gray-200 hidden sm:block " />
               <h3 className={classNames("font-bold")}>{item.label}</h3>
             </Link>
           );
