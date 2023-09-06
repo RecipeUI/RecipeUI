@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  ShareInviteModal,
-  TemplateMockCode,
-} from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
+import { TemplateMockCode } from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
 import { RecipeProject, User, UserTemplatePreview } from "types/database";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -92,14 +89,6 @@ export function ProfileHome({
           })}
         </div>
       </div>
-      {shareTemplate && (
-        <ShareInviteModal
-          template={shareTemplate}
-          onClose={() => {
-            setShareTemplate(null);
-          }}
-        />
-      )}
     </div>
   );
 }
