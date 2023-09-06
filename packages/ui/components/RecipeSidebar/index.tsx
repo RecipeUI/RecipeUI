@@ -562,6 +562,7 @@ function EditSessionModal({
   onClose: () => void;
   session: RecipeSession;
 }) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [name, setName] = useState(session.name);
   const folders = useSessionFolders();
   const updateSessionName = useRecipeSessionStore(
@@ -584,6 +585,7 @@ function EditSessionModal({
           className="input input-bordered input-sm"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e)=> e.key==="Enter" && buttonRef?.current?.click()}
         />
       </div>
 
@@ -612,6 +614,7 @@ function EditSessionModal({
       )}
       <button
         className="btn btn-accent btn-sm mt-4"
+        ref={buttonRef}
         onClick={async () => {
           updateSessionName(session, name);
 
