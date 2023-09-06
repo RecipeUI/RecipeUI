@@ -34,7 +34,6 @@ import {
 import { useHover, useInterval, useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
-import { cloneTemplate, deleteTemplate } from "../RecipeBodySearch/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";

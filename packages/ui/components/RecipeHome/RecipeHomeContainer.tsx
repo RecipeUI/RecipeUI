@@ -17,7 +17,6 @@ import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
 import { RecipeHomeHero } from "./RecipeHomeHero";
-import { ShareInviteModal } from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
 import { DownloadContainer } from "../DownloadContainer/DownloadContainer";
 import { useIsTauri } from "../../hooks/useIsTauri";
 
@@ -70,14 +69,6 @@ export function RecipeHomeContainer({
           <RecipeProjectContext.Provider value={project || null}>
             <RecipeNativeFetchContext.Provider value={fetchServer}>
               <RecipeHome globalProjects={globalProjects} projects={projects} />
-              {showShareModal && sharedTemplate && (
-                <ShareInviteModal
-                  template={sharedTemplate}
-                  onClose={() => {
-                    setShowShareModal(false);
-                  }}
-                />
-              )}
             </RecipeNativeFetchContext.Provider>
           </RecipeProjectContext.Provider>
         </RecipeContext.Provider>
