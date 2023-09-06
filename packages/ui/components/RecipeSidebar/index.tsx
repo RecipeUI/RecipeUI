@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  DesktopPage,
-  RecipeOutputTab,
   RecipeSession,
   RecipeSessionFolder,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
@@ -26,18 +24,12 @@ import {
   getParametersForSessionStore,
   getSessionsFromStore,
   saveSessionToStore,
-  setConfigForSessionStore,
   useSessionFolders,
 } from "../../state/apiSession";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
-import { useSearchParams } from "next/navigation";
 import { RECIPE_FORKING_ID } from "../../utils/constants/main";
 import { useForm } from "react-hook-form";
-import { fetchHomeRecipe } from "../../fetchers/home";
-import { getConfigFromRecipe } from "../RecipeBody/RecipeLeftPane/RecipeForkTab";
-import { SupabaseContext } from "../Providers/SupabaseProvider";
-import { useIsTauri } from "../../hooks/useIsTauri";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 

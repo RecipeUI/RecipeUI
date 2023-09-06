@@ -32,7 +32,7 @@ export function RecipeHome({
       } else if (tags.includes("Free")) {
         free.push(recipe);
       } else if (tags.includes("YCombinator")) {
-        ycombinator.push(recipe);
+        // ycombinator.push(recipe);
       } else {
         more.push(recipe);
       }
@@ -69,23 +69,6 @@ export function RecipeHome({
         }
         projects={popular}
       />
-      <MarketplaceSection
-        header="No Auth"
-        description="API key not required -> these APIs can be run right away!"
-        projects={free}
-      />
-      {/* <MarketplaceSection
-        header="YCombinator"
-        description="We are part of YC S23! The first few recipes were ones we built internally at Robinhood and Meta to save our coworkers time. Check out these API's from our YC family."
-        projects={ycombinator}
-      /> */}
-      {more.length > 0 && (
-        <MarketplaceSection
-          header="Discover"
-          description="Checkout these APIs and let us know what you think!"
-          projects={more}
-        />
-      )}
       <div className="alert w-fit">
         <SparklesIcon className="w-6" />
         <span>Suggest us APIs to support!</span>
@@ -107,6 +90,18 @@ export function RecipeHome({
           </Link>
         </div>
       </div>
+      <MarketplaceSection
+        header="No Auth"
+        description="API key not required -> these APIs can be run right away!"
+        projects={free}
+      />
+      {more.length > 0 && (
+        <MarketplaceSection
+          header="Discover"
+          description="Checkout these APIs and let us know what you think!"
+          projects={more}
+        />
+      )}
     </div>
   );
 }

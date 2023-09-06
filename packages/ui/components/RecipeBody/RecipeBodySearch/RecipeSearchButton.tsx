@@ -439,6 +439,7 @@ export function RecipeSearchButton() {
             output: {
               content,
             },
+            created_at: new Date().toISOString(),
             type: RecipeOutputType.Response,
             duration: performance.now() - startTime,
             requestInfo,
@@ -564,6 +565,7 @@ export function RecipeSearchButton() {
         sessionOutput: {
           id: outputId,
           output: output,
+          created_at: new Date().toISOString(),
           type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
           duration: performance.now() - startTime,
           requestInfo,

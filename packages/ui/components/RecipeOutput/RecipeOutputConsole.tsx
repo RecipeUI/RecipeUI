@@ -12,6 +12,7 @@ import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { Recipe, RecipeOutputType } from "types/database";
 import { useOutput } from "../../state/apiSession";
+import { RecipeSaveButton } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 
 const codeMirrorSetup = {
   lineNumbers: true,
@@ -134,12 +135,14 @@ export function RecipeOutputConsole() {
             title="Response"
             responseInfo={sessionOutput.output.responseInfo}
             body={
-              Object.keys(output).length > 0 ? (
-                <ResponseOutput
-                  sessionOutput={sessionOutput.output}
-                  selectedRecipe={selectedRecipe}
-                />
-              ) : null
+              <>
+                {Object.keys(output).length > 0 ? (
+                  <ResponseOutput
+                    sessionOutput={sessionOutput.output}
+                    selectedRecipe={selectedRecipe}
+                  />
+                ) : null}
+              </>
             }
           />
         </>
@@ -229,6 +232,7 @@ function OutputModule({
           </h1>
           {responseInfo && (
             <>
+              <RecipeSaveButton />
               <div
                 className={classNames("text-white !pointer-events-none", {
                   "btn btn-xs btn-accent":

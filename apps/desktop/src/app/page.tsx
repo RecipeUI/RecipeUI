@@ -70,7 +70,8 @@ function HomePage() {
 
   const { data: projectData, isLoading: isLoadingHome } = useQuery({
     queryKey: [QueryKey.Projects],
-    queryFn: async () => supabase.from("project").select(),
+    queryFn: async () =>
+      supabase.from("project").select().neq("visibility", "unlisted"),
   });
 
   const { globalProjects, userProjects } = getProjectSplit(
@@ -110,7 +111,6 @@ function HomePage() {
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          {/* <RecipeHomeHero /> */}
           <RecipeHome globalProjects={globalProjects} projects={userProjects} />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>

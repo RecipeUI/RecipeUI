@@ -83,7 +83,7 @@ export function RecipeOutput() {
                 key={tab}
                 onClick={() => setCurrentTab(tab)}
                 className={classNames(
-                  "text-sm py-1 sm:text-base first:!border-l-0 border-l border-slate-200 dark:border-slate-600 px-2 sm:py-2 cursor-pointer tooltip bg-chefYellow dark:text-gray-800"
+                  "text-sm py-1 sm:text-sm first:!border-l-0 border-l border-slate-200 dark:border-slate-600 px-1 sm:py-1 cursor-pointer tooltip bg-chefYellow dark:text-gray-800"
                 )}
                 data-tip={"CMD+D"}
               >
