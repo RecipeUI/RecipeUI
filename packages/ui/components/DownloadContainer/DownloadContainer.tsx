@@ -184,7 +184,7 @@ function ViewCollections() {
   );
 }
 
-const LATEST_VERSION = "0.7.6";
+const LATEST_VERSION = "0.7.7";
 function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 
