@@ -1,6 +1,13 @@
-import { useRecipeSessionStore } from "../../../state/recipeSession";
+import {
+  RecipeBodyRoute,
+  RecipeOutputTab,
+  useRecipeSessionStore,
+} from "../../../state/recipeSession";
 import { RecipeOutputType, RecipeTemplateFragment } from "types/database";
-import { FORM_LINKS } from "../../../utils/constants/main";
+import {
+  FORM_LINKS,
+  PLAYGROUND_SESSION_ID,
+} from "../../../utils/constants/main";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
 import classNames from "classnames";
@@ -10,8 +17,12 @@ import { useForm } from "react-hook-form";
 import { ProjectScope } from "types/enums";
 import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import { useMiniRecipes, useOutput } from "../../../state/apiSession";
-import { differenceInMinutes } from "date-fns";
+import {
+  MiniRecipeAPI,
+  useMiniRecipes,
+  useOutput,
+} from "../../../state/apiSession";
+import { differenceInMinutes, differenceInSeconds } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 import { parse } from "json5";
 
@@ -23,27 +34,18 @@ export function RecipeSaveButton() {
     output: { type, output, duration, requestInfo, created_at, id },
   } = useOutput(currentSesssion?.id);
 
-  const isSending = useRecipeSessionStore((state) => state.isSending);
-  const hasValidResponse = type === RecipeOutputType.Response;
-  const user = useRecipeSessionStore((state) => state.user);
-
   const [showCreationFlow, setShowCreationFlow] = useState(false);
-  const editorMode = useRecipeSessionStore((state) => state.editorMode);
-  const [glowing, setGlowing] = useState(true);
-
-  const [hide, setHide] = useState(false);
 
   const [bouncing, setBouncing] = useState(false);
 
   useEffect(() => {
     if (!created_at) return;
 
-    const diffInMinutes = Math.abs(
-      differenceInMinutes(new Date(), new Date(created_at))
+    const secondsAgo = Math.abs(
+      differenceInSeconds(new Date(), new Date(created_at))
     );
-    console.log("in here", diffInMinutes);
 
-    if (diffInMinutes >= 3) return;
+    if (secondsAgo >= 10) return;
 
     setBouncing(true);
 
@@ -56,7 +58,11 @@ export function RecipeSaveButton() {
     };
   }, [id]);
 
-  if (![RecipeOutputType.Response].includes(type) || !created_at) {
+  if (
+    ![RecipeOutputType.Response].includes(type) ||
+    !created_at ||
+    currentSesssion?.id === PLAYGROUND_SESSION_ID
+  ) {
     return null;
   }
 
@@ -109,12 +115,12 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
   const posthog = usePostHog();
   const session = useRecipeSessionStore((state) => state.currentSession);
 
-  const { addRecipe } = useMiniRecipes(session?.recipeId);
-
   // TODO: This is not proper right now
   const {
     output: { requestInfo, duration, output, type },
   } = useOutput(session?.id);
+
+  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
 
   const onSubmit = handleSubmit(async (data) => {
     setLoading(true);
@@ -142,18 +148,17 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
 
         recipe_id: session?.recipeId!,
 
-        // This part wrong
-        headers: editorHeaders as any,
+        headers: editorHeaders,
 
         // Unnecessary
         original_author_id: null,
       };
 
-      addRecipe(newRecipe)
+      MiniRecipeAPI.addRecipe(session!.recipeId, newRecipe)
         .then(() => {
           posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_CREATE);
           setLoading(false);
-
+          setBodyRoute(RecipeBodyRoute.Templates);
           onClose();
         })
         .catch((e) => {

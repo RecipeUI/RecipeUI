@@ -73,8 +73,6 @@ export function CurlModal({
             recipeId: uuidv4(),
           };
 
-      console.log("in here", editorSlice.editorMethod, newSession);
-
       if (editorSlice.editorHeaders) {
         for (const header of editorSlice.editorHeaders) {
           if (header.name === "Authorization") {

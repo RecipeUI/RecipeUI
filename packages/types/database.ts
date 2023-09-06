@@ -50,6 +50,7 @@ export type Database = MergeDeep<
           Row: {
             replay: Nullable<RecipeTemplateOutput>;
             project_scope: ProjectScope;
+            headers: Nullable<RequestHeader[]>;
           } & NullableRecipeParams;
           Insert: {
             replay: Nullable<RecipeTemplateOutput>;

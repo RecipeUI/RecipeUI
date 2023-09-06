@@ -458,6 +458,20 @@ export async function initializeRecipeList(
   eventEmitter.emit("refreshRecipes");
 }
 
+export class MiniRecipeAPI {
+  static addRecipe = async (
+    mainRecipeId: string,
+    newMiniRecipe: RecipeTemplateFragment
+  ) => {
+    const store = await getMiniRecipeStore();
+    const recipes = await store.get(mainRecipeId);
+    const newRecipes = [...(recipes || []), newMiniRecipe];
+
+    await store.put(newRecipes, mainRecipeId);
+    eventEmitter.emit("refreshRecipes");
+  };
+}
+
 export function useMiniRecipes(primaryRecipeId?: string) {
   const [recipes, setRecipes] = useState<RecipeTemplateFragment[]>([]);
 
@@ -474,19 +488,6 @@ export function useMiniRecipes(primaryRecipeId?: string) {
       eventEmitter.off("refreshRecipes", refreshRecipes);
     };
   }, [primaryRecipeId]);
-
-  const addRecipe = useCallback(
-    async (newMiniRecipe: RecipeTemplateFragment) => {
-      if (!primaryRecipeId) return;
-
-      const store = await getMiniRecipeStore();
-      const recipes = await store.get(primaryRecipeId);
-      const newRecipes = [...(recipes || []), newMiniRecipe];
-      await store.put(newRecipes, primaryRecipeId);
-      eventEmitter.emit("refreshRecipes");
-    },
-    [primaryRecipeId]
-  );
 
   const deleteRecipe = useCallback(
     async (miniRecipeIdToDelete: string) => {
@@ -505,7 +506,6 @@ export function useMiniRecipes(primaryRecipeId?: string) {
 
   return {
     recipes,
-    addRecipe,
     deleteRecipe,
   };
 }

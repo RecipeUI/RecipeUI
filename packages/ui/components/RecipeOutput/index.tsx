@@ -61,9 +61,9 @@ export function RecipeOutput() {
 
     _tabs.push(RecipeOutputTab.Code);
 
-    // if (allOutputs.length > 1) {
-    //   _tabs.push(RecipeOutputTab.History);
-    // }
+    if (allOutputs.length > 1) {
+      _tabs.push(RecipeOutputTab.History);
+    }
 
     return _tabs;
   }, [output, currentTab, editorMode]);

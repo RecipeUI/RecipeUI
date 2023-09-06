@@ -156,7 +156,7 @@ export function RecipeOutputConsole() {
   );
 }
 
-function ResponseOutput({
+export function ResponseOutput({
   selectedRecipe,
   sessionOutput,
 }: {
@@ -233,28 +233,7 @@ function OutputModule({
           {responseInfo && (
             <>
               <RecipeSaveButton />
-              <div
-                className={classNames("text-white !pointer-events-none", {
-                  "btn btn-xs btn-accent":
-                    responseInfo.status >= 200 && responseInfo.status < 300,
-                  "btn btn-xs btn-error":
-                    responseInfo.status >= 400 && responseInfo.status < 500,
-                  "btn btn-xs btn-warning":
-                    responseInfo.status >= 500 && responseInfo.status < 600,
-                })}
-              >
-                {responseInfo.status}{" "}
-                {responseInfo.status >= 200 && responseInfo.status < 300
-                  ? "OK"
-                  : ""}
-              </div>
-              <div
-                className={classNames(
-                  "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
-                )}
-              >
-                {responseInfo.duration.toFixed(2)} ms
-              </div>
+              <ResponseInfo responseInfo={responseInfo} />
             </>
           )}
         </div>
@@ -270,5 +249,36 @@ function OutputModule({
       </div>
       {body}
     </div>
+  );
+}
+
+export function ResponseInfo({
+  responseInfo,
+}: {
+  responseInfo: NonNullable<SessionOutput["responseInfo"]>;
+}) {
+  return (
+    <>
+      <div
+        className={classNames("text-white !pointer-events-none", {
+          "btn btn-xs btn-accent":
+            responseInfo.status >= 200 && responseInfo.status < 300,
+          "btn btn-xs btn-error":
+            responseInfo.status >= 400 && responseInfo.status < 500,
+          "btn btn-xs btn-warning":
+            responseInfo.status >= 500 && responseInfo.status < 600,
+        })}
+      >
+        {responseInfo.status}{" "}
+        {responseInfo.status >= 200 && responseInfo.status < 300 ? "OK" : ""}
+      </div>
+      <div
+        className={classNames(
+          "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
+        )}
+      >
+        {responseInfo.duration.toFixed(2)} ms
+      </div>
+    </>
   );
 }

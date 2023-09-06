@@ -108,17 +108,6 @@ function NewRequest() {
                   addEditorSession();
                 }}
               />
-
-              {/* <NewRequestAction
-                label="Import from CURL"
-                onClick={() => setCurlModal(true)}
-                description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
-              /> */}
-              {/* <NewRequestAction
-                label="Import builder"
-                onClick={() => setImportBuilderModal(true)}
-                description="Have a request body or query params? Our builder will help generate types for you."
-              /> */}
             </div>
           </section>
           {showForkExamples && (
