@@ -257,7 +257,6 @@ export function RecipeSendModal({
     } else if (action === "save") {
       posthog?.capture(POST_HOG_CONSTANTS.HISTORY_RESTORE);
 
-      alert("saving");
       await MiniRecipeAPI.addRecipe(currentSession?.recipeId!, miniRecipe);
 
       setBodyRoute(RecipeBodyRoute.Templates);

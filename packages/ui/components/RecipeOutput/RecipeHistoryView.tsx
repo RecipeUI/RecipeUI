@@ -152,12 +152,17 @@ function HistoryActions({
 
     const urlParams: Record<string, string> = {};
 
-    let urlPaths = requestInfo.url.split("/");
-    let recipeURLPaths = editorURL.split("/");
+    let urlPaths = requestInfo.url.split("?")[0].split("/");
+    let recipeURLPaths = editorURL.split("?")[0].split("/");
 
     recipeURLPaths.forEach((path, i) => {
-      if (path.match(/{(\w+)}/g)) {
-        urlParams[path] = urlPaths[i];
+      let match = path.match(/{(\w+)}/g);
+      if (match && match[0]) {
+        // This needs to be a more exclusive split
+        const valueMatch = urlPaths[i].match(/^[^.|]*/);
+        urlPaths[i].split(".")[0];
+
+        urlParams[match[0]] = valueMatch ? valueMatch[0] : urlPaths[i];
       }
     });
 
