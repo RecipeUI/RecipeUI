@@ -132,17 +132,6 @@ export function DownloadContainer() {
     <div className="min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5 relative">
       <div className="m-6 sm:m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative text-sm   sm:text-lg">
         <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
-          <a
-            href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-            target="_blank"
-          >
-            <img
-              src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=411024&theme=light`}
-              alt="RecipeUI - Open&#0032;source&#0032;type&#0045;safe&#0032;Postman&#0032;alternative | Product Hunt"
-              width="250"
-              height="54"
-            />
-          </a>
           <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
           <p className="my-2 ">
             RecipeUI is the open source Postman alternative with{" "}

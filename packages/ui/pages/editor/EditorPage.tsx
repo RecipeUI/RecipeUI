@@ -138,32 +138,6 @@ function NewRequest() {
           )}
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
-          <div className="">
-            <a
-              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-              target="_blank"
-              className="cursor-pointer"
-            >
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=411024&theme=light`}
-                alt="RecipeUI - Open&#0032;source&#0032;type&#0045;safe&#0032;Postman&#0032;alternative | Product Hunt"
-                width="250"
-                height="54"
-              />
-            </a>
-            <a
-              className={classNames(
-                "border rounded-md p-4  flex justify-center items-center mt-8 cursor-pointer bg-accent text-white"
-              )}
-              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-            >
-              <MegaphoneIcon className="h-12 mb-2 text-sm  mr-2" />
-              <p>
-                Just launched on ProductHunt. Help us with an{" "}
-                <span className="underline underline-offset-2">upvote</span>!
-              </p>
-            </a>
-          </div>
           {!isTauri && (
             <div className="bg-neutral p-4 rounded-md text-white">
               <p className="my-2 sm:text-base text-lg">
