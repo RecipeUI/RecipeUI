@@ -27,6 +27,6 @@ Contributors
 
 We are open sourced because we use so much open source technology and we want to be transparent about how we actually make API requests. We don't store any API secrets in the cloud and we limit the telemetry we collect to the user experience portions.
 
-## Forking
+## Running locally
 
-Currently, we allow some support for running our desktop app built with Tauri Rust. Check out the readme at (apps/desktop)[https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop]
+Currently, we allow some support for running our desktop app built with Tauri Rust. Check out the readme at [apps/desktop](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop)

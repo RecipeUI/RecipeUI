@@ -6,8 +6,10 @@ You'll need the following things installed before doing anything
 - [node](https://nodejs.org/en/download)
 
 ## Spinning up dev
-Inside of `/apps/desktop`, run
+Make sure you are inside of `/apps/desktop`
+
 ```
+cd /apps/desktop
 pnpm i
 ```
 
