@@ -91,7 +91,9 @@ export const EditorQuery = () => {
           defaultExport={API_TYPE_NAMES.APIQueryParams}
         />
       </div>
-      {showJSONEditor && !onboardedToQuery && <EditorQueryOnboarding />}
+      {showJSONEditor && !onboardedToQuery && process.env.NEXT_PUBLIC_ENV && (
+        <EditorQueryOnboarding />
+      )}
     </>
   );
 };

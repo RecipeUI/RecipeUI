@@ -92,7 +92,7 @@ function NewRequest() {
             </div>
 
             <div className="flex flex-col gap-4">
-              {!showForkExamples && (
+              {!showForkExamples && process.env.NEXT_PUBLIC_ENV && (
                 <NewRequestAction
                   label="Fork from our public API collection"
                   description="Try NASA, Giphy, Reddit, Pokemon, ChatGPT and more in seconds."

@@ -58,20 +58,31 @@ export function Providers({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window !== undefined && "__TAURI__" in window) {
-      setSupabase(
-        createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-          {
-            auth: {
-              persistSession: true,
-              storageKey: "RecipeUI",
-              storage: window.localStorage,
-              flowType: "pkce",
-            },
-          }
-        )
-      );
+      if (
+        process.env.NEXT_PUBLIC_SUPABASE_URL &&
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      ) {
+        setSupabase(
+          createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+            {
+              auth: {
+                persistSession: true,
+                storageKey: "RecipeUI",
+                storage: window.localStorage,
+                flowType: "pkce",
+              },
+            }
+          )
+        );
+      } else {
+        setSupabase({
+          auth: {
+            onAuthStateChange: () => {},
+          },
+        } as any);
+      }
     } else {
       setSupabase(createClientComponentClient());
     }

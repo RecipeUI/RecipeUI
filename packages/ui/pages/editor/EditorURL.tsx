@@ -68,7 +68,9 @@ export const EditorURL = () => {
         setSchemaType={setSchemaType}
         defaultExport={API_TYPE_NAMES.APIUrlParams}
       />
-      {showJSONEditor && !onboardedToURL && <EditorURLOnboarding />}
+      {showJSONEditor && !onboardedToURL && process.env.NEXT_PUBLIC_ENV && (
+        <EditorURLOnboarding />
+      )}
     </div>
   );
 };

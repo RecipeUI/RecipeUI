@@ -120,14 +120,16 @@ export function Navbar() {
             isTauri && "flex-row-reverse"
           )}
         >
-          <button
-            className="cursor-pointer flex items-center"
-            onClick={goCollections}
-          >
-            <h1 className="ml-4 dark:text-white  sm:block hidden">
-              {isTauri ? "Collections" : "Home"}
-            </h1>
-          </button>
+          {process.env.NEXT_PUBLIC_ENV && (
+            <button
+              className="cursor-pointer flex items-center"
+              onClick={goCollections}
+            >
+              <h1 className="ml-4 dark:text-white  sm:block hidden">
+                {isTauri ? "Collections" : "Home"}
+              </h1>
+            </button>
+          )}
           <button onClick={goEditor}>
             <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
               {isTauri ? "Home" : "Editor"}
@@ -143,19 +145,20 @@ export function Navbar() {
         </div>
       </div>
       <div />
-      <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
-        <li className="">
-          <Link
-            href="https://github.com/RecipeUI/RecipeUI"
-            className="btn btn-ghost btn-sm font-sm text-xs"
-            target="_blank"
-            as=""
-          >
-            <StarIcon className="w-3 h-3" />
-            Star us on Github!
-          </Link>
-        </li>
-        {/* {pathname !== "/" && (
+      {process.env.NEXT_PUBLIC_ENV && (
+        <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
+          <li className="">
+            <Link
+              href="https://github.com/RecipeUI/RecipeUI"
+              className="btn btn-ghost btn-sm font-sm text-xs"
+              target="_blank"
+              as=""
+            >
+              <StarIcon className="w-3 h-3" />
+              Star us on Github!
+            </Link>
+          </li>
+          {/* {pathname !== "/" && (
           <li className="hidden sm:block">
             <Link
               href="/"
@@ -172,24 +175,25 @@ export function Navbar() {
             </Link>
           </li>
         )} */}
-        {!user ? (
-          <li>
-            <button
-              id={UNIQUE_ELEMENT_IDS.SIGN_IN}
-              className="btn bg-chefYellow text-black btn-sm"
-              onClick={() => {
-                setIsLoginModalOpen(true);
-              }}
-            >
-              Log in
-            </button>
-          </li>
-        ) : (
-          <>
-            <NavMenu user={user} />
-          </>
-        )}
-      </ul>
+          {!user ? (
+            <li>
+              <button
+                id={UNIQUE_ELEMENT_IDS.SIGN_IN}
+                className="btn bg-chefYellow text-black btn-sm"
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                }}
+              >
+                Log in
+              </button>
+            </li>
+          ) : (
+            <>
+              <NavMenu user={user} />
+            </>
+          )}
+        </ul>
+      )}
       {showForm && (
         <NavAuthForm
           isModalOpen={isLoginModalOpen}
