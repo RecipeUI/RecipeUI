@@ -200,3 +200,26 @@ export function getIsEmptySchema(schema: JSONSchema6) {
       Object.keys(schema.properties).length === 0)
   );
 }
+
+export function isSemverLessThan({
+  oldVer,
+  newVer,
+}: {
+  oldVer: string;
+  newVer: string;
+}): boolean {
+  // Split the semver strings into their major, minor, and patch components
+  const [major1, minor1, patch1 = 0] = oldVer.split(".").map(Number);
+  const [major2, minor2, patch2 = 0] = newVer.split(".").map(Number);
+
+  // Compare major versions
+  if (major1 < major2) return true;
+  if (major1 > major2) return false;
+
+  // If major versions are equal, compare minor versions
+  if (minor1 < minor2) return true;
+  if (minor1 > minor2) return false;
+
+  // If minor versions are equal, compare patch versions
+  return patch1 < patch2;
+}

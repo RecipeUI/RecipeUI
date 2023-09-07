@@ -43,7 +43,7 @@ export function ContactUs() {
                       <dd>
                         <a
                           className="font-semibold text-indigo-600"
-                          href="https://discord.com/invite/jPAKE7Ur"
+                          href="https://discord.gg/rXmpYmCNNA"
                         >
                           Join our Discord
                         </a>

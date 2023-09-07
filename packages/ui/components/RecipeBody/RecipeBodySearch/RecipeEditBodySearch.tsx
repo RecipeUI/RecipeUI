@@ -12,6 +12,7 @@ import { RecipeMethod } from "types/enums";
 import { RecipeSaveButton } from "./RecipeSaveButton";
 import { CurlModal } from "../../../pages/editor/Builders/CurlModal";
 import { useDebounce } from "usehooks-ts";
+import { ImportBuilderModal } from "../../../pages/editor/Builders/ImportBuilderModal";
 
 export function RecipeEditBodySearch() {
   const url = useRecipeSessionStore((state) => state.editorUrl);
@@ -25,6 +26,8 @@ export function RecipeEditBodySearch() {
   );
 
   const [curlString, setCurlString] = useState("");
+  const [importString, setImportString] = useState("");
+
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   return (
@@ -74,6 +77,9 @@ export function RecipeEditBodySearch() {
                     } else {
                       setUrl(pasteString);
                     }
+                    // else if (pasteString.startsWith("http") && !url) {
+                    //   setImportString(pasteString);
+                    // }
                   }}
                   placeholder="Enter URL here"
                   className={classNames(
@@ -96,6 +102,12 @@ export function RecipeEditBodySearch() {
           curlString={curlString}
           onClose={() => setCurlString("")}
           currentSession={currentSession}
+        />
+      )}
+      {importString && (
+        <ImportBuilderModal
+          initialUrl={importString}
+          onClose={() => setImportString("")}
         />
       )}
     </>

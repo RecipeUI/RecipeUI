@@ -368,6 +368,14 @@ export class OutputAPI {
           sessionId
         );
       } else {
+        const newOutput = [...outputs, sessionOutput];
+
+        // TODO: Let's let users add an option to limit the output.
+        // Limiting to 10 because it should be enough for most use cases.
+        if (newOutput.length > 10) {
+          newOutput.shift();
+        }
+
         await store.put([...outputs, sessionOutput], sessionId);
       }
     }

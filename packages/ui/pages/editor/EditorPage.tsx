@@ -28,6 +28,8 @@ import {
   SuggestedExamples,
 } from "../../utils/constants/recipe";
 import { useDarkMode } from "usehooks-ts";
+import { EditorUpdates } from "./EditorUpdates";
+import { DISCORD_LINK } from "../../utils/constants/main";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -125,6 +127,7 @@ function NewRequest() {
               />
             </>
           )}
+          <EditorUpdates />
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
           {!isTauri && (
@@ -151,12 +154,6 @@ function NewRequest() {
                   href="https://github.com/RecipeUI/RecipeUI"
                   target="_blank"
                   className="underline underline-offset-2 cursor-pointer"
-                  // onClick={(e) => {
-                  // if (isTauri) {
-                  //   e.preventDefault();
-                  //   shell.open("https://discord.gg/rXmpYmCNNA");
-                  // }
-                  // }}
                 >
                   Star us on GitHub
                 </a>
@@ -175,15 +172,9 @@ function NewRequest() {
               )}
               <li>
                 <a
-                  href="https://discord.gg/rXmpYmCNNA"
+                  href={DISCORD_LINK}
                   target="_blank"
                   className="underline underline-offset-2 cursor-pointer"
-                  // onClick={(e) => {
-                  // if (isTauri) {
-                  //   e.preventDefault();
-                  //   shell.open("https://discord.gg/rXmpYmCNNA");
-                  // }
-                  // }}
                 >
                   Discord Community
                 </a>
@@ -202,7 +193,7 @@ function NewRequest() {
 
           <div
             className={classNames(
-              "border rounded-md p-4  flex justify-center items-center",
+              "border rounded-md p-4  flex justify-center items-center group",
               isTauri && "bg-neutral text-white border-none"
             )}
           >
@@ -222,9 +213,11 @@ function NewRequest() {
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
-      {importBuilderModal && (
-        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} />
-      )}
+      {/* {importBuilderModal && (
+        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} 
+          initialUrl={im}
+        />
+      )} */}
     </div>
   );
 }

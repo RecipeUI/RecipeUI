@@ -147,34 +147,18 @@ export function Navbar() {
       <div />
       {process.env.NEXT_PUBLIC_ENV && (
         <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
-          <li className="">
+          <li className="group">
             <Link
               href="https://github.com/RecipeUI/RecipeUI"
               className="btn btn-ghost btn-sm font-sm text-xs"
               target="_blank"
               as=""
             >
-              <StarIcon className="w-3 h-3" />
+              <StarIcon className="w-3 h-3 group-hover:spin group-hover:fill-accent group-hover:text-accent" />
               Star us on Github!
             </Link>
           </li>
-          {/* {pathname !== "/" && (
-          <li className="hidden sm:block">
-            <Link
-              href="/"
-              className="btn btn-ghost btn-sm font-sm text-xs"
-              target="_blank"
-              as=""
-              onClick={() => {
-                // if (isTauri) {
-                //   setDesktopPage(null);
-                // }
-              }}
-            >
-              Home
-            </Link>
-          </li>
-        )} */}
+
           {!user ? (
             <li>
               <button

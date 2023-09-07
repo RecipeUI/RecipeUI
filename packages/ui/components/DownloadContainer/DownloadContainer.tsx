@@ -12,7 +12,10 @@ import { useIsMobile } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
 import { RecipeMethod } from "types/enums";
-import { APP_GITHUB_LATEST_RELEASE_URL } from "../../utils/constants/main";
+import {
+  APP_GITHUB_LATEST_RELEASE_URL,
+  LATEST_APP_VERSION,
+} from "../../utils/constants/main";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -184,7 +187,6 @@ function ViewCollections() {
   );
 }
 
-const LATEST_VERSION = "0.7.7";
 function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 
@@ -227,7 +229,7 @@ function DesktopDownload() {
     getPlatform();
   }, []);
 
-  const [latestVersion, setLatestVersion] = useState(LATEST_VERSION);
+  const [latestVersion, setLatestVersion] = useState(LATEST_APP_VERSION);
   const nativeFetch = useContext(RecipeNativeFetchContext);
   // useQuery({
   //   queryKey: ["latestVersion", nativeFetch],
