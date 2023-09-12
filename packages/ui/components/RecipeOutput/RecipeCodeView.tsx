@@ -8,7 +8,7 @@ import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
 import { Recipe } from "types/database";
 import { RecipeParamType } from "types/enums";
-import { useOutput } from "../../state/apiSession";
+import { useOutput } from "../../state/apiSession/OutputAPI";
 import { JSONSchema6 } from "json-schema";
 
 const codeMirrorSetup: BasicSetupOptions = {

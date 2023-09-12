@@ -189,7 +189,14 @@ export type RecipeParam =
 
 export type RecipeTemplate = Omit<
   UserTemplate,
-  "id" | "created_at" | "project" | "recipe_id" | "visibility"
+  | "id"
+  | "created_at"
+  | "project"
+  | "recipe_id"
+  | "visibility"
+  | "alias"
+  | "original_author"
+  | "recipe"
 >;
 
 interface RecipeTemplateOutput {

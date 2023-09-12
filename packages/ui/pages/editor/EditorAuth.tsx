@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
-import {
-  deleteSecret,
-  getSecret,
-  saveSecret,
-} from "../../../ui/state/apiSession";
+import { deleteSecret, getSecret, saveSecret } from "../../state/apiSession";
 
 export function EditorAuth() {
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);

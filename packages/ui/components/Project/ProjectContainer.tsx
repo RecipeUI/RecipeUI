@@ -22,25 +22,25 @@ export function ProjectContainer({
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const isTauri = useIsTauri();
 
-  useEffect(() => {
-    if (hasNoProject) {
-      if (isTauri) {
-        setDesktopPage({
-          page: DesktopPage.Project,
-          pageParam: projectName,
-        });
-      } else {
-        setTimeout(() => router.push("/"), 3000);
-      }
-    }
-  }, [isTauri]);
+  // useEffect(() => {
+  //   if (hasNoProject) {
+  //     if (isTauri) {
+  //       setDesktopPage({
+  //         page: DesktopPage.Project,
+  //         pageParam: projectName,
+  //       });
+  //     } else {
+  //       setTimeout(() => router.push("/"), 3000);
+  //     }
+  //   }
+  // }, [isTauri]);
 
   return (
     <div className={classNames("flex-1 flex flex-col sm:px-6 sm:pb-6 sm:pt-4")}>
       {hasNoProject ? (
         <div className="flex items-center space-x-4 px-4 pt-4">
           <span className="text-xl font-bold">
-            No project {projectName}, redirecting back to home page.
+            No collection {projectName}, redirecting back to home page.
           </span>
           <span className="loading loading-bars loading-lg"></span>
         </div>

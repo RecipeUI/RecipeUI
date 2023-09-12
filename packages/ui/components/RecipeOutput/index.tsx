@@ -9,7 +9,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { RecipeOutputConsole } from "./RecipeOutputConsole";
 import { RecipeCodeView } from "./RecipeCodeView";
 import { RecipeEditDocs } from "./RecipeEditDocs";
-import { useOutput } from "../../state/apiSession";
+import { useOutput } from "../../state/apiSession/OutputAPI";
 import { RecipeDocs } from "./RecipeDocsv1";
 import { RecipeHistoryView } from "./RecipeHistoryView";
 

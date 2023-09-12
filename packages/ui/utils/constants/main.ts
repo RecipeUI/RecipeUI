@@ -7,6 +7,7 @@ export const APP_COOKIE = "showApp";
 export enum QueryKeys {
   Projects = "projects",
   Recipes = "recipes",
+  PersonalCollections = "personalCollections",
 }
 
 export const UNIQUE_ELEMENT_IDS = {

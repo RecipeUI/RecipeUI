@@ -10,7 +10,7 @@ import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
 import { Recipe, RecipeTemplateFragment, RequestHeader } from "types/database";
 import { ProjectScope, RecipeParamType } from "types/enums";
-import { OutputAPI, useOutput } from "../../state/apiSession";
+import { OutputAPI, useOutput } from "../../state/apiSession/OutputAPI";
 import { JSONSchema6 } from "json-schema";
 import { ResponseInfo } from "./RecipeOutputConsole";
 import { formatRelative, min, subDays } from "date-fns";

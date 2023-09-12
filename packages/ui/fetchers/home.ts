@@ -15,6 +15,14 @@ interface HomeFetcher {
   supabase: SupabaseClient<Database>;
 }
 
+export async function fetchHomeProjects({
+  supabase,
+}: {
+  supabase: HomeFetcher["supabase"];
+}) {
+  return await supabase.from("project").select();
+}
+
 export async function fetchHome({
   searchParams,
   supabase,
@@ -24,10 +32,9 @@ export async function fetchHome({
   recipe: Recipe | null;
 }> {
   const { recipeId } = searchParams;
-  const projectRes = await supabase
-    .from("project")
-    .select()
-    .neq("visibility", "unlisted"); // This is fine for GLOBAL unlisted. RLS deals with private unlisted
+  const projectRes = await fetchHomeProjects({
+    supabase,
+  });
   const { globalProjects, userProjects } = getProjectSplit(
     (projectRes.data || []) as RecipeProject[]
   );
@@ -48,11 +55,19 @@ export async function fetchHomeRecipe({
   recipeId: string;
   supabase: HomeFetcher["supabase"];
 }) {
-  const response = recipeId
+  let response = recipeId
     ? await supabase.from("recipe").select().eq("id", recipeId).single()
     : null;
+
   if ((response && response.error) || !response?.data) {
-    return null;
+    // This might be a recipe from an unlisted project
+    response = await supabase
+      .rpc("get_recipe_from_unlisted_project", { recipe_id: recipeId })
+      .single();
+
+    if ((response && response.error) || !response?.data) {
+      return null;
+    }
   }
 
   const recipe = response.data as Recipe;

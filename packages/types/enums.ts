@@ -78,6 +78,7 @@ export enum QueryKey {
   RecipesView = "RecipesView",
   RecipesHomeView = "RecipesHomeView",
   Projects = "Projects",
+  PersonalCollections = "PersonalCollections",
 }
 
 export enum RecipeError {

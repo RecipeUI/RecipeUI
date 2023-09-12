@@ -3,7 +3,6 @@
 import { JSONSchema6 } from "json-schema";
 import {
   Recipe,
-  RecipeOutputType,
   RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
@@ -21,7 +20,7 @@ import {
   RecipeSession,
   RecipeSessionFolder,
   SessionOutput,
-} from "./recipeSession";
+} from "../recipeSession";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 interface APISessionParameters {
@@ -148,11 +147,11 @@ async function getSecretStore() {
   return (await getDB()).transaction(APIStore.Secrets, "readwrite").store;
 }
 
-async function getOutputStore() {
+export async function getOutputStore() {
   return (await getDB()).transaction(APIStore.Output, "readwrite").store;
 }
 
-async function getFolderStore() {
+export async function getFolderStore() {
   return (await getDB()).transaction(APIStore.SessionFolders, "readwrite")
     .store;
 }
@@ -304,131 +303,15 @@ export function useSecret(recipeId: string) {
   };
 }
 
-async function getOutput(sessionId?: string) {
-  if (!sessionId) return undefined;
-
-  const store = await getOutputStore();
-  return store.get(sessionId);
-}
-
 import EventEmitter from "events";
-import { PLAYGROUND_SESSION_ID } from "../utils/constants/main";
-const eventEmitter = new EventEmitter();
-
-export class OutputAPI {
-  static clearOutput = async (sessionId: string) => {
-    const store = await getOutputStore();
-    await store.delete(sessionId);
-
-    eventEmitter.emit("refreshState");
-  };
-
-  static addOutput = async (
-    {
-      sessionId,
-      sessionOutput,
-    }: {
-      sessionId: string;
-      sessionOutput: SessionOutput;
-    },
-    mock?: boolean
-  ) => {
-    const store = await getOutputStore();
-    const outputs = await store.get(sessionId);
-
-    if (!outputs || sessionId === PLAYGROUND_SESSION_ID) {
-      await store.put(
-        [
-          {
-            ...sessionOutput,
-            ...(!mock
-              ? {
-                  created_at: new Date().toISOString(),
-                }
-              : null),
-          },
-        ],
-        sessionId
-      );
-    } else {
-      // We should override an existing sessionOutputId if it exits
-      const previousSession = outputs.find(
-        (output) => output.id === sessionOutput.id
-      );
-
-      if (previousSession) {
-        await store.put(
-          outputs.map((output) => {
-            if (output.id === sessionOutput.id) {
-              return sessionOutput;
-            }
-
-            return output;
-          }),
-          sessionId
-        );
-      } else {
-        const newOutput = [...outputs, sessionOutput];
-
-        // TODO: Let's let users add an option to limit the output.
-        // Limiting to 10 because it should be enough for most use cases.
-        if (newOutput.length > 10) {
-          newOutput.shift();
-        }
-
-        await store.put([...outputs, sessionOutput], sessionId);
-      }
-    }
-
-    eventEmitter.emit("refreshState");
-  };
-
-  static setOutput = async (outputId: string) => {
-    eventEmitter.emit("refreshState", outputId);
-  };
-}
-
-const DEFAULT_OUTPUT: SessionOutput = {
-  output: {},
-  type: RecipeOutputType.Void,
-};
-export function useOutput(sessionId?: string) {
-  const [output, _setOutput] = useState<SessionOutput>(DEFAULT_OUTPUT);
-  const [allOutputs, setAllOutputs] = useState<SessionOutput[]>([]);
-
-  useEffect(() => {
-    function refreshState(outputId?: string) {
-      getOutput(sessionId).then((_output) => {
-        setAllOutputs(_output?.reverse() || []);
-
-        if (outputId && _output) {
-          _setOutput(_output.find((o) => o.id === outputId) || DEFAULT_OUTPUT);
-        } else {
-          _setOutput(_output ? _output[0] : null || DEFAULT_OUTPUT);
-        }
-      });
-    }
-
-    refreshState();
-
-    // EventEmitters might be overkill because you can do context, but wanted to try this out!!!
-    eventEmitter.on("refreshState", refreshState);
-    return () => {
-      eventEmitter.off("refreshState", refreshState);
-    };
-  }, [sessionId]);
-
-  return {
-    output,
-    allOutputs,
-  };
-}
+import { OutputAPI } from "./OutputAPI";
+export const eventEmitter = new EventEmitter();
 
 async function getMiniRecipeStore() {
   return (await getDB()).transaction(APIStore.MiniRecipes, "readwrite").store;
 }
 
-async function getRecipes(recipeId: string) {
+export async function getMiniRecipes(recipeId: string) {
   const store = await getMiniRecipeStore();
   return store.get(recipeId);
 }
@@ -486,7 +369,9 @@ export function useMiniRecipes(primaryRecipeId?: string) {
   useEffect(() => {
     function refreshRecipes() {
       if (primaryRecipeId)
-        getRecipes(primaryRecipeId).then((output) => setRecipes(output || []));
+        getMiniRecipes(primaryRecipeId).then((output) =>
+          setRecipes(output || [])
+        );
     }
 
     refreshRecipes();
@@ -518,144 +403,29 @@ export function useMiniRecipes(primaryRecipeId?: string) {
   };
 }
 
-export const addFolder = async (folderName: string) => {
-  const store = await getFolderStore();
-  const folders = await store.get("sessionFolders");
-  const newFolders = [
-    ...(folders || []),
-    {
-      id: uuidv4(),
-      name: folderName,
-      sessionIds: [],
-    } as RecipeSessionFolder,
-  ];
-  await store.put(newFolders, "sessionFolders");
-  eventEmitter.emit("refreshFolders");
-};
+// [APIStore.Parameters]: {
+//   key: string;
+//   value: APISessionParameters;
+// };
+// [APIStore.Config]: {
+//   key: string;
+//   value: APISessionConfig;
+// };
+// [APIStore.MiniRecipes]: {
+//   key: string;
+//   value: RecipeTemplateFragment[];
+// };
 
-export class FolderAPI {
-  static addSessionToFolder = async (
-    sessionId: string,
-    folderId: string,
-    newFolderName?: string
-  ) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
+export async function getSessionRecord() {
+  const sessions = (await getSessionsFromStore()) || [];
 
-    let foundFolder = false;
-    const newFolders = (folders || []).map((folder) => {
-      if (folder.id !== folderId) return folder;
+  const sessionRecord: {
+    [key: string]: RecipeSession;
+  } = {};
 
-      foundFolder = true;
-      return {
-        ...folder,
-        sessionIds: [...folder.sessionIds, sessionId],
-      };
-    });
+  for (const session of sessions) {
+    sessionRecord[session.id] = session;
+  }
 
-    if (!foundFolder) {
-      newFolders.push({
-        id: folderId,
-        name: newFolderName ?? "New Folder",
-        sessionIds: [sessionId],
-      });
-    }
-
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  };
-
-  static deleteSessionFromFolder = async (sessionId: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-
-    const foldersToDelete: string[] = [];
-    let newFolders = (folders || []).map((folder) => {
-      let madeChange = false;
-      const returnFolder = {
-        ...folder,
-        sessionIds: folder.sessionIds.filter((id) => {
-          if (id !== sessionId) {
-            return true;
-          }
-
-          madeChange = true;
-          return false;
-        }),
-      };
-
-      if (madeChange && returnFolder.sessionIds.length === 0) {
-        foldersToDelete.push(returnFolder.id);
-      }
-
-      return returnFolder;
-    });
-
-    newFolders = newFolders.filter(
-      (folder) => !foldersToDelete.includes(folder.id)
-    );
-
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  };
-
-  static removeFolder = async (folderId: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = (folders || []).filter(
-      (folder) => folder.id !== folderId
-    );
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  };
-
-  static editFolderName = async (folderId: string, name: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = (folders || []).map((folder) => {
-      if (folder.id !== folderId) return folder;
-      return {
-        ...folder,
-        name,
-      };
-    });
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  };
-
-  static addFolder = async (folderName: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = [
-      ...(folders || []),
-      {
-        id: uuidv4(),
-        name: folderName,
-        sessionIds: [],
-      } as RecipeSessionFolder,
-    ];
-    await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
-  };
-}
-
-export function useSessionFolders() {
-  const [folders, setFolders] = useState<RecipeSessionFolder[]>([]);
-
-  useEffect(() => {
-    async function refreshFolders() {
-      const store = await getFolderStore();
-      const folders = await store.get("sessionFolders");
-      setFolders(folders || []);
-    }
-
-    refreshFolders();
-
-    eventEmitter.on("refreshFolders", refreshFolders);
-    return () => {
-      eventEmitter.off("refreshFolders", refreshFolders);
-    };
-  }, []);
-
-  return folders;
+  return sessionRecord;
 }

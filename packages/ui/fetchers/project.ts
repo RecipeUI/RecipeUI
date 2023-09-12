@@ -23,16 +23,44 @@ export async function fetchProjectPage({
     .limit(1)
     .single();
 
-  const { data: projectRecipes } = await supabase
-    .from("recipe_view")
-    .select()
-    .ilike("project", `%${projectName}%`);
+  if (projectInfo) {
+    const { data: projectRecipes } = await supabase
+      .from("recipe_view")
+      .select()
+      .ilike("project", `%${projectName}%`);
 
-  return {
-    project: projectInfo,
-    recipes: projectRecipes as Recipe[] | null,
-    projectName,
-  };
+    return {
+      project: projectInfo,
+      recipes: projectRecipes as Recipe[] | null,
+      projectName,
+    };
+  } else {
+    // This could be unlisted
+
+    const unlistedProjectInfo = await supabase.rpc("get_unlisted_project", {
+      project_id: projectName,
+    });
+
+    console.log("in here22", unlistedProjectInfo);
+
+    if (!unlistedProjectInfo.data) {
+      return {
+        project: null,
+        recipes: null,
+        projectName,
+      };
+    }
+
+    const recipeInfo = await supabase.rpc("get_recipes_from_unlisted_project", {
+      project_id: projectName,
+    });
+
+    return {
+      project: (unlistedProjectInfo.data[0] as RecipeProject) || null,
+      recipes: (recipeInfo.data as Recipe[]) || null,
+      projectName,
+    };
+  }
 }
 
 export async function fetchProject({
@@ -48,6 +76,20 @@ export async function fetchProject({
     .ilike("project", `%${project}%`)
     .limit(1)
     .single();
+
+  if (!projectInfo) {
+    const unlistedProjectInfo = await supabase
+      .rpc("get_unlisted_project", {
+        project_id: project,
+      })
+      .single();
+
+    if (!unlistedProjectInfo.data) {
+      return null;
+    }
+
+    return (unlistedProjectInfo.data as RecipeProject) || null;
+  }
 
   return projectInfo;
 }

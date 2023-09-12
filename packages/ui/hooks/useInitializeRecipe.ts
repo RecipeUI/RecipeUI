@@ -10,10 +10,10 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { useIsTauri } from "./useIsTauri";
 import {
-  FolderAPI,
   initializeRecipeList,
   setConfigForSessionStore,
 } from "../state/apiSession";
+import { FolderAPI } from "../state/apiSession/FolderAPI";
 import { SupabaseContext } from "../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../fetchers/home";
 import { getConfigFromRecipe } from "../components/RecipeBody/RecipeLeftPane/RecipeForkTab";

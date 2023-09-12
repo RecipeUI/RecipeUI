@@ -29,7 +29,7 @@ export default async function RecipePage({
     const { data: templateData } = await supabase
       .from("template_view")
       .select(
-        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id,project_scope"
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, project_scope"
       )
       .eq("alias", recipeName);
 

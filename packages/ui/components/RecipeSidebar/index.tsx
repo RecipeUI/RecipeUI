@@ -7,7 +7,6 @@ import {
 } from "../../state/recipeSession";
 import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
-import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover, useSessionStorage } from "usehooks-ts";
 import {
@@ -16,22 +15,23 @@ import {
   PencilSquareIcon,
   PlusCircleIcon,
   PlusIcon,
+  ShareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
-  FolderAPI,
   getConfigForSessionStore,
   getParametersForSessionStore,
   getSessionsFromStore,
   saveSessionToStore,
-  useSessionFolders,
 } from "../../state/apiSession";
+import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
 import { RECIPE_FORKING_ID } from "../../utils/constants/main";
 import { useForm } from "react-hook-form";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
+import { PublishFolderModal } from "../../pages/editor/Builders/PublishModal";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -80,6 +80,8 @@ export function RecipeSidebar() {
   const [editFolder, setEditFolder] = useState<RecipeSessionFolder | null>(
     null
   );
+  const [publishFolder, setPublishFolder] =
+    useState<RecipeSessionFolder | null>(null);
 
   const folders = useSessionFolders();
 
@@ -196,7 +198,7 @@ export function RecipeSidebar() {
                         <Cog6ToothIcon className="w-4 h-4" />
                       </a>
                       <a
-                        className="hidden group-hover:block hover:bg-accent w-fit"
+                        className="hidden group-hover:block hover:bg-primary w-fit"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -206,6 +208,17 @@ export function RecipeSidebar() {
                         }}
                       >
                         <PlusIcon className="w-4 h-4" />
+                      </a>
+                      <a
+                        className="hidden group-hover:block hover:bg-primary w-fit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          setPublishFolder(folder);
+                        }}
+                      >
+                        <ShareIcon className="w-4 h-4" />
                       </a>
                     </div>
                   </summary>
@@ -264,6 +277,12 @@ export function RecipeSidebar() {
         <EditFolderModal
           onClose={() => setEditFolder(null)}
           folder={editFolder}
+        />
+      )}
+      {publishFolder && (
+        <PublishFolderModal
+          onClose={() => setPublishFolder(null)}
+          folder={publishFolder}
         />
       )}
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
@@ -560,12 +579,20 @@ function EditSessionModal({
     (state) => state.updateSessionName
   );
 
-  const currentFolder = folders.find((folder) => {
-    return folder.sessionIds.includes(session.id);
-  });
-  const [selectedFolder, setSelectedFolder] = useState(
-    currentFolder?.id || "NO_FOLDER_ID"
-  );
+  const [selectedFolder, setSelectedFolder] = useState("NO_FOLDER_ID");
+  const [currentFolder, setCurrentFolder] =
+    useState<RecipeSessionFolder | null>(null);
+
+  useEffect(() => {
+    const currentFolder = folders.find((folder) => {
+      return folder.sessionIds.includes(session.id);
+    });
+
+    if (currentFolder) {
+      setSelectedFolder(currentFolder.id);
+      setCurrentFolder(currentFolder);
+    }
+  }, [folders]);
 
   return (
     <Modal header="Edit Session" onClose={onClose}>

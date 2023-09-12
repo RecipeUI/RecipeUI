@@ -1,12 +1,10 @@
 "use client";
-import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
-import { Database, RecipeProject } from "types/database";
-import { redirect } from "next/navigation";
+import { RecipeProject } from "types/database";
 import { useEffect, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
-import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
+import { fetchHomeProjects, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
 import {
   DesktopPage,
@@ -17,8 +15,6 @@ import {
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "ui/state/recipeSession";
-import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
-import { RecipeBody } from "ui/components/RecipeBody";
 import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
 import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
@@ -69,9 +65,11 @@ function HomePage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   const { data: projectData, isLoading: isLoadingHome } = useQuery({
-    queryKey: [QueryKey.Projects],
+    queryKey: [QueryKey.Projects, supabase],
     queryFn: async () =>
-      supabase.from("project").select().neq("visibility", "unlisted"),
+      fetchHomeProjects({
+        supabase,
+      }),
   });
 
   const { globalProjects, userProjects } = getProjectSplit(
@@ -120,7 +118,6 @@ function HomePage() {
 
 import { fetchProject, fetchProjectPage } from "ui/fetchers/project";
 import { ProjectContainer } from "ui/components/Project/ProjectContainer";
-import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 import { initializeDB } from "ui/state/apiSession";
 import { Navbar } from "ui/components/Navbar/Navbar";

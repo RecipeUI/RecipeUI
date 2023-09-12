@@ -24,7 +24,8 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { usePathname } from "next/navigation";
-import { OutputAPI, getSecret, useOutput } from "../../../state/apiSession";
+import { getSecret } from "../../../state/apiSession";
+import { OutputAPI, useOutput } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
 

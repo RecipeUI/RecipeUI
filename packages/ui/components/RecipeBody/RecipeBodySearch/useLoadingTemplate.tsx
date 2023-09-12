@@ -13,7 +13,7 @@ import {
 import { RecipeOutputType } from "types/database";
 import { RecipeParamType } from "types/enums";
 import { JSONSchema6 } from "json-schema";
-import { OutputAPI, useOutput } from "../../../state/apiSession";
+import { OutputAPI, useOutput } from "../../../state/apiSession/OutputAPI";
 
 function getTime(t: number) {
   return t * 100;

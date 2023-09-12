@@ -103,7 +103,7 @@ export function useSaveRecipeUI() {
     shallow
   );
 
-  const debouncedStateChanges = useDebounce(newState, 5000);
+  const debouncedStateChanges = useDebounce(newState, 2000);
   const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
   useEffect(() => {
     saveSession();

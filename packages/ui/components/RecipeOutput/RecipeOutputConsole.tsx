@@ -4,15 +4,16 @@ import {
   SessionOutput,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { ReactNode, useContext, useMemo, useRef } from "react";
+import { ReactNode, useContext, useMemo, useRef, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import CodeMirror from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { Recipe, RecipeOutputType } from "types/database";
-import { useOutput } from "../../state/apiSession";
+import { useOutput } from "../../state/apiSession/OutputAPI";
 import { RecipeSaveButton } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { Modal } from "../Modal";
 
 const codeMirrorSetup = {
   lineNumbers: true,
@@ -202,6 +203,7 @@ export function ResponseOutput({
     <CodeMirror
       readOnly={true}
       value={output}
+      maxHeight="100vh"
       className="h-full !outline-none border-none max-w-sm sm:max-w-none"
       basicSetup={codeMirrorSetup}
       theme={isDarkMode ? "dark" : "light"}
@@ -257,9 +259,12 @@ export function ResponseInfo({
 }: {
   responseInfo: NonNullable<SessionOutput["responseInfo"]>;
 }) {
+  const [showHeaders, setShowHeaders] = useState(false);
+
+  console.log(responseInfo);
   return (
     <>
-      <div
+      <button
         className={classNames("text-white !pointer-events-none", {
           "btn btn-xs btn-accent":
             responseInfo.status >= 200 && responseInfo.status < 300,
@@ -271,14 +276,99 @@ export function ResponseInfo({
       >
         {responseInfo.status}{" "}
         {responseInfo.status >= 200 && responseInfo.status < 300 ? "OK" : ""}
-      </div>
-      <div
+      </button>
+      {responseInfo.headers && Object.keys(responseInfo.headers).length > 0 && (
+        <button
+          className="btn btn-outline btn-xs tooltip"
+          data-tip="View response headers"
+          onClick={() => setShowHeaders(true)}
+        >
+          Headers
+        </button>
+      )}
+      <button
         className={classNames(
           "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
         )}
       >
         {responseInfo.duration.toFixed(2)} ms
-      </div>
+      </button>
+      {showHeaders && (
+        <HeadersModal
+          headers={responseInfo.headers}
+          onClose={() => setShowHeaders(false)}
+        />
+      )}
     </>
   );
 }
+
+function HeadersModal({
+  onClose,
+  headers,
+}: {
+  headers: Record<string, string>;
+  onClose: () => void;
+}) {
+  return (
+    <Modal header="" onClose={onClose}>
+      <div className="overflow-x-auto">
+        <table className="table table-zebra table-pin-rows">
+          <thead className="">
+            <tr className="grid grid-cols-2">
+              <th>Header</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(headers).map(([key, value]) => {
+              return (
+                <tr key={key} className="grid grid-cols-2 overflow-x-auto">
+                  <td>{key}</td>
+                  <td>{value}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </Modal>
+  );
+}
+
+// <div className="overflow-x-auto">
+//   <table className="table">
+//     {/* head */}
+//     <thead>
+//       <tr>
+//         <th></th>
+//         <th>Name</th>
+//         <th>Job</th>
+//         <th>Favorite Color</th>
+//       </tr>
+//     </thead>
+//     <tbody>
+//       {/* row 1 */}
+//       <tr>
+//         <th>1</th>
+//         <td>Cy Ganderton</td>
+//         <td>Quality Control Specialist</td>
+//         <td>Blue</td>
+//       </tr>
+//       {/* row 2 */}
+//       <tr>
+//         <th>2</th>
+//         <td>Hart Hagerty</td>
+//         <td>Desktop Support Technician</td>
+//         <td>Purple</td>
+//       </tr>
+//       {/* row 3 */}
+//       <tr>
+//         <th>3</th>
+//         <td>Brice Swyre</td>
+//         <td>Tax Accountant</td>
+//         <td>Red</td>
+//       </tr>
+//     </tbody>
+//   </table>
+// </div>

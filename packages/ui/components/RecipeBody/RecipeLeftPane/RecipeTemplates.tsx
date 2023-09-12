@@ -27,10 +27,6 @@ import { ProjectScope, QueryKey } from "types/enums";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import {
-  EllipsisHorizontalCircleIcon,
-  EllipsisHorizontalIcon,
-} from "@heroicons/react/24/outline";
 import { useSecret } from "../../../state/apiSession";
 import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
 import { RecipeForkTab } from "./RecipeForkTab";
@@ -56,8 +52,37 @@ export function StarterTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
   const templates = selectedRecipe.templates || [];
 
+  const [_, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const router = useRouter();
+
   if (templates.length === 0) {
-    return null;
+    return (
+      <div>
+        <h1 className="text-xl font-bold">Fork API</h1>
+        <p className="mt-2">
+          This API does not have any sample recipes. Fork it directly to play
+          with it!
+        </p>
+        <button
+          className="btn btn-neutral btn-sm mt-4"
+          onClick={() => {
+            setRecipeFork(`${selectedRecipe.id}`);
+
+            if (isTauri) {
+              setDesktopPage({
+                page: DesktopPage.Editor,
+              });
+            } else {
+              router.push(`/editor`);
+            }
+          }}
+        >
+          Fork
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -107,8 +132,6 @@ function StarterTemplateItem({ template }: { template: RecipeTemplate }) {
     setCurrentTab(RecipeOutputTab.Docs);
     setBodyRoute(RecipeBodyRoute.Parameters);
   };
-
-  const secretInfo = useSecret(template.recipe?.id);
 
   const isTauri = useIsTauri();
   const [_, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");

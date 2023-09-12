@@ -17,11 +17,8 @@ import { useForm } from "react-hook-form";
 import { ProjectScope } from "types/enums";
 import {} from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import {
-  MiniRecipeAPI,
-  useMiniRecipes,
-  useOutput,
-} from "../../../state/apiSession";
+import { MiniRecipeAPI, useMiniRecipes } from "../../../state/apiSession";
+import { useOutput } from "../../../state/apiSession/OutputAPI";
 import { differenceInMinutes, differenceInSeconds } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 import { parse } from "json5";

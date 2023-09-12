@@ -11,14 +11,10 @@ import classNames from "classnames";
 
 import { Recipe, RecipeProject, UserTemplatePreview } from "types/database";
 import { useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
-import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
-import { RecipeHomeHero } from "./RecipeHomeHero";
-import { DownloadContainer } from "../DownloadContainer/DownloadContainer";
-import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function RecipeHomeContainer({
   globalProjects,
@@ -32,8 +28,6 @@ export function RecipeHomeContainer({
   sharedTemplate?: UserTemplatePreview;
 }) {
   const router = useRouter();
-
-  const [showShareModal, setShowShareModal] = useState(sharedTemplate != null);
 
   const [localForked, setLocalForked] = useLocalStorage(
     UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,

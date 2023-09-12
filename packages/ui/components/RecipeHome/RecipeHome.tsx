@@ -1,15 +1,16 @@
 import classNames from "classnames";
 import { ReactNode, useEffect, useMemo } from "react";
 import { RecipeProject } from "types/database";
-import { RecipeProjectStatus } from "types/enums";
+import { QueryKey, RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
-import { useRouter, useSearchParams } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { open } from "@tauri-apps/api/shell";
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
+import { useQuery } from "@tanstack/react-query";
 
 export function RecipeHome({
   globalProjects,
@@ -24,17 +25,13 @@ export function RecipeHome({
     const ycombinator: RecipeProject[] = [];
     const more: RecipeProject[] = [];
 
-    globalProjects.forEach((recipe) => {
-      const tags = recipe.tags || [];
+    globalProjects.forEach((project) => {
+      const tags = project.tags || [];
 
       if (tags.includes("Popular")) {
-        popular.push(recipe);
+        popular.push(project);
       } else if (tags.includes("Free")) {
-        free.push(recipe);
-      } else if (tags.includes("YCombinator")) {
-        // ycombinator.push(recipe);
-      } else {
-        more.push(recipe);
+        free.push(project);
       }
     });
 
@@ -46,21 +43,19 @@ export function RecipeHome({
     };
   }, [globalProjects]);
 
-  const queryParams = useSearchParams();
-
-  useEffect(() => {
-    if (queryParams.get("collections") != undefined) {
-      document.getElementById("popular")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [queryParams]);
-
   const isTauri = useIsTauri();
+  const user = useRecipeSessionStore((state) => state.user);
 
   return (
     <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
+      {projects.length > 0 && user && (
+        <MarketplaceSection
+          id="personal"
+          header="Personal Collections"
+          description={<p>{`${user.username}'s personal collections.`}</p>}
+          projects={projects}
+        />
+      )}
       <MarketplaceSection
         id="popular"
         header="Popular APIs"
