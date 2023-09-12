@@ -1,11 +1,13 @@
 #!/bin/bash
 
+echo "test"
+
 echo "VERCEL_ENV: $VERCEL_ENV"
 echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
 
 # Check if there are changes in the /apps or /packages/ directories
-changed_apps=$(git diff --quiet HEAD^ HEAD ./apps/)
-changed_packages=$(git diff --quiet HEAD^ HEAD ./packages/)
+changed_apps=$(git diff --quiet HEAD^ HEAD ../../apps/)
+changed_packages=$(git diff --quiet HEAD^ HEAD ../../packages/)
 
 # If there are no changes in /apps and /packages/, then don't proceed with the build.
 if [ -z "$changed_apps" ] && [ -z "$changed_packages" ]; then

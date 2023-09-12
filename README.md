@@ -18,11 +18,6 @@ Couldn't have built this app without some really amazing packages
 - 🦖 Docusaurus for docs!
 - Other fun stuff: pnpm, downshift, fuse, react18-json-view
 
-Contributors
-
-- @[dvtng] for the continuous feedback on system design and ux of the overall project
-
-
 ## Open source
 
 We are open sourced because we use so much open source technology and we want to be transparent about how we actually make API requests. We don't store any API secrets in the cloud and we limit the telemetry we collect to the user experience portions.
@@ -39,9 +34,10 @@ Currently, we allow some support for running our desktop app built with Tauri Ru
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://til.grayvines.com/"><img src="https://avatars.githubusercontent.com/u/329822?v=4?s=100" width="100px;" alt="Julian Berman"/><br /><sub><b>Julian Berman</b></sub></a><br /><a href="#bug-Julian" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dvtng"><img src="https://avatars.githubusercontent.com/u/617233?v=4?s=100" width="100px;" alt="Dave Tang"/><br /><sub><b>Dave Tang</b></sub></a><br /><a href="#ideas-dvtng" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/RecipeUI/RecipeUI/commits?author=dvtng" title="Documentation">📖</a> <a href="#mentoring-dvtng" title="Mentoring">🧑‍🏫</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://til.grayvines.com/"><img src="https://avatars.githubusercontent.com/u/329822?v=4?s=100" width="100px;" alt="Julian Berman"/><br /><sub><b>Julian Berman</b></sub></a><br /><a href="https://github.com/RecipeUI/RecipeUI/issues?q=author%3AJulian" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rrevi.github.io"><img src="https://avatars.githubusercontent.com/u/1561054?v=4?s=100" width="100px;" alt="Rafael Revi"/><br /><sub><b>Rafael Revi</b></sub></a><br /><a href="#plugin-rrevi" title="Plugin/utility libraries">🔌</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://bennycode.com"><img src="https://avatars.githubusercontent.com/u/469989?v=4?s=100" width="100px;" alt="Benny Neugebauer"/><br /><sub><b>Benny Neugebauer</b></sub></a><br /><a href="#bug-bennycode" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://bennycode.com"><img src="https://avatars.githubusercontent.com/u/469989?v=4?s=100" width="100px;" alt="Benny Neugebauer"/><br /><sub><b>Benny Neugebauer</b></sub></a><br /><a href="https://github.com/RecipeUI/RecipeUI/issues?q=author%3Abennycode" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/0x80085"><img src="https://avatars.githubusercontent.com/u/53451414?v=4?s=100" width="100px;" alt="0x80085"/><br /><sub><b>0x80085</b></sub></a><br /><a href="#ideas-0x80085" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
