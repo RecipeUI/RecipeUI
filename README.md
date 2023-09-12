@@ -42,6 +42,7 @@ Currently, we allow some support for running our desktop app built with Tauri Ru
       <td align="center" valign="top" width="14.28%"><a href="https://til.grayvines.com/"><img src="https://avatars.githubusercontent.com/u/329822?v=4?s=100" width="100px;" alt="Julian Berman"/><br /><sub><b>Julian Berman</b></sub></a><br /><a href="#bug-Julian" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rrevi.github.io"><img src="https://avatars.githubusercontent.com/u/1561054?v=4?s=100" width="100px;" alt="Rafael Revi"/><br /><sub><b>Rafael Revi</b></sub></a><br /><a href="#plugin-rrevi" title="Plugin/utility libraries">🔌</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://bennycode.com"><img src="https://avatars.githubusercontent.com/u/469989?v=4?s=100" width="100px;" alt="Benny Neugebauer"/><br /><sub><b>Benny Neugebauer</b></sub></a><br /><a href="#bug-bennycode" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/0x80085"><img src="https://avatars.githubusercontent.com/u/53451414?v=4?s=100" width="100px;" alt="0x80085"/><br /><sub><b>0x80085</b></sub></a><br /><a href="#ideas-0x80085" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
