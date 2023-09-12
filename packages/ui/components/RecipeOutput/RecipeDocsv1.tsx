@@ -20,8 +20,14 @@ import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 
 export function RecipeDocs() {
-  const selectedRecipe = useContext(RecipeContext)!;
+  const selectedRecipe = useContext(RecipeContext);
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
+  if (!selectedRecipe) {
+    return null;
+  }
   const requestBody =
     "requestBody" in selectedRecipe ? selectedRecipe.requestBody : null;
   const queryParams =
@@ -35,10 +41,6 @@ export function RecipeDocs() {
   //     .length > 1;
 
   const hasMultipleParams = false;
-
-  const loadingTemplate = useRecipeSessionStore(
-    (state) => state.loadingTemplate
-  );
 
   return (
     <div
