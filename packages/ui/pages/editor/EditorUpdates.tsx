@@ -1,21 +1,33 @@
 "use client";
 import { useLocalStorage } from "usehooks-ts";
 import { LATEST_APP_VERSION } from "../../utils/constants/main";
-import { useEffect } from "react";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { isSemverLessThan } from "../../utils/main";
 
 const VERSION_LOGS: {
   version: string;
   update: string;
+  update_type?: "bug" | "feature";
 }[] = [
+  {
+    version: "0.8.0",
+    update: "Ability to share and publish folders as collections!",
+    update_type: "feature",
+  },
+  {
+    version: "0.8.0",
+    update: "Add headers to output response.",
+    update_type: "feature",
+  },
   {
     version: "0.7.7",
     update: "Request history. Preview, replay, and save past request runs!",
+    update_type: "feature",
   },
   {
     version: "0.7.6",
     update: "Allow recipe save once a request is made.",
+    update_type: "feature",
   },
   {
     version: "0.7.5",
@@ -24,26 +36,22 @@ const VERSION_LOGS: {
 ];
 
 export function EditorUpdates() {
-  const [latestVersionDismiss, setLatestVersionDismissed] = useLocalStorage<
-    undefined | string
-  >("latestVersion", "0.7.6");
+  const { latestVersionDismiss, isLatest, setToLatestVersion } =
+    useLatestVersionDetails();
 
-  if (
-    latestVersionDismiss == undefined ||
-    latestVersionDismiss === LATEST_APP_VERSION
-  ) {
+  if (isLatest) {
     return null;
   }
 
   return (
-    <section className="space-y-2 flex flex-col border border-dashed rounded-md p-4 text-sm mt-12">
+    <section className="space-y-2 flex flex-col border border-dashed border-accent  rounded-md p-4 text-sm mt-12">
       <div className="space-x-2 flex items-center">
         <h1 className="font-bold text-lg">Recent Updates</h1>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <ul className="list-disc pl-[3%]">
-          {VERSION_LOGS.map((log) => {
+      <div className="">
+        <ul className="list-disc pl-[3%] space-y-2">
+          {VERSION_LOGS.map((log, i) => {
             if (
               isSemverLessThan({
                 oldVer: log.version,
@@ -54,10 +62,17 @@ export function EditorUpdates() {
             }
 
             return (
-              <li key={log.version}>
-                <div className="flex items-center">
+              <li key={i}>
+                <div className="flex items-start">
                   <span className="font-bold w-[25px]">{log.version}</span>
-                  <span className="ml-6">{log.update}</span>
+                  <p className="ml-6 align-middle">
+                    {log.update_type === "feature" ? (
+                      <span className="badge badge-accent badge-xs text-white inline mr-1 middle">
+                        New
+                      </span>
+                    ) : null}{" "}
+                    {log.update}
+                  </p>
                 </div>
               </li>
             );
@@ -65,15 +80,37 @@ export function EditorUpdates() {
         </ul>
       </div>
       <button
-        className="btn btn-outline btn-sm w-fit !mt-4 group"
+        className="btn btn-outline btn-sm w-fit !mt-4 "
         onClick={() => {
-          setLatestVersionDismissed(LATEST_APP_VERSION);
+          setToLatestVersion();
         }}
       >
-        <SparklesIcon className="hidden group-hover:block group-hover:animate-spin w-4 h-4 mr-2" />
+        <SparklesIcon className="hidden  w-4 h-4 mr-2" />
         Dismiss
-        <SparklesIcon className="hidden group-hover:block group-hover:animate-spin w-4 h-4 mr-2" />
+        <SparklesIcon className="hidden  w-4 h-4 mr-2" />
       </button>
     </section>
   );
+}
+
+export function useLatestVersionDetails() {
+  const [latestVersionDismiss, setLatestVersionDismissed] = useLocalStorage(
+    "latestVersion",
+    "0.7.6"
+  );
+
+  // useEffect(() => {
+  //   localStorage.removeItem("latestVersion");
+  // }, []);
+
+  return {
+    latestVersionDismiss,
+    isLatest: !isSemverLessThan({
+      oldVer: latestVersionDismiss,
+      newVer: LATEST_APP_VERSION,
+    }),
+    setToLatestVersion: () => {
+      setLatestVersionDismissed(LATEST_APP_VERSION);
+    },
+  };
 }

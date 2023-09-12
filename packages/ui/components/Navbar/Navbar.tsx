@@ -76,6 +76,8 @@ export function Navbar() {
     }
   }, [isTauri, router, setCurrentSession, setDesktopPage]);
 
+  const { isLatest } = useLatestVersionDetails();
+
   return (
     <div
       className={classNames(
@@ -130,10 +132,21 @@ export function Navbar() {
               </h1>
             </button>
           )}
-          <button onClick={goEditor}>
+
+          <button
+            onClick={goEditor}
+            className={classNames(
+              isLatest ? undefined : "indicator tooltip tooltip-bottom"
+            )}
+            data-tip={isLatest ? undefined : "See what's new!"}
+          >
             <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
               {isTauri ? "Home" : "Editor"}
             </h1>
+
+            {!isLatest && (
+              <span className="indicator-item h-2 w-2 bg-error rounded-full -right-1 top-1"></span>
+            )}
           </button>
           {!isTauri && (
             <Link href="/collections">
@@ -255,6 +268,7 @@ import { useQuery } from "@tanstack/react-query";
 import { RecipeMethod } from "types/enums";
 
 import { emit } from "@tauri-apps/api/event";
+import { useLatestVersionDetails } from "../../pages/editor/EditorUpdates";
 
 function TauriUpdateExtension() {
   const [version, setVersion] = useState("");
