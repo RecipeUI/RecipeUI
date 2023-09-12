@@ -30,3 +30,14 @@ We are open sourced because we use so much open source technology and we want to
 ## Running locally
 
 Currently, we allow some support for running our desktop app built with Tauri Rust. Check out the readme at [apps/desktop](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop)
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
