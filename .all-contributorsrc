@@ -1,4 +1,21 @@
 {
   "projectName": "RecipeUI",
-  "projectOwner": "RecipeUI"
+  "projectOwner": "RecipeUI",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "Julian",
+      "name": "Julian Berman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/329822?v=4",
+      "profile": "https://til.grayvines.com/",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ]
 }
