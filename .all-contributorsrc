@@ -25,6 +25,15 @@
       "contributions": [
         "plugin"
       ]
+    },
+    {
+      "login": "bennycode",
+      "name": "Benny Neugebauer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/469989?v=4",
+      "profile": "http://bennycode.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
