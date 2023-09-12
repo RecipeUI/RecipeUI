@@ -26,7 +26,7 @@ const VERSION_LOGS: {
   },
   {
     version: "0.7.6",
-    update: "Allow recipe save once a request is made.",
+    update: "Save requests as recipes that you can replay quickly.",
     update_type: "feature",
   },
   {

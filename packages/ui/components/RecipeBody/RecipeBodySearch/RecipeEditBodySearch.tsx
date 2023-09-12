@@ -44,7 +44,9 @@ export function RecipeEditBodySearch() {
                 className={classNames("select select-sm  select-ghost", {
                   "text-green-600": method === RecipeMethod.GET,
                   "text-orange-600":
-                    method === RecipeMethod.POST || method === RecipeMethod.PUT,
+                    method === RecipeMethod.POST ||
+                    method === RecipeMethod.PUT ||
+                    method === RecipeMethod.PATCH,
                   "text-red-600": method === RecipeMethod.DELETE,
                 })}
                 onChange={(e) => {
@@ -56,6 +58,7 @@ export function RecipeEditBodySearch() {
                 <option value={RecipeMethod.GET}>{RecipeMethod.GET}</option>
                 <option value={RecipeMethod.POST}>{RecipeMethod.POST}</option>
                 <option value={RecipeMethod.PUT}>{RecipeMethod.PUT}</option>
+                <option value={RecipeMethod.PATCH}>{RecipeMethod.PATCH}</option>
                 <option value={RecipeMethod.DELETE}>
                   {RecipeMethod.DELETE}
                 </option>

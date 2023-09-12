@@ -113,6 +113,7 @@ export function ImportBuilderModal({
             <option value={RecipeMethod.GET}>GET</option>
             <option value={RecipeMethod.POST}>POST</option>
             <option value={RecipeMethod.PUT}>PUT</option>
+            <option value={RecipeMethod.PATCH}>PATCH</option>
             <option value={RecipeMethod.DELETE}>DELETE</option>
           </select>
         </FormLabelWrapper>

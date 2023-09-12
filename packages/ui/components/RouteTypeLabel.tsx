@@ -18,6 +18,7 @@ export function RouteTypeLabel({
         recipeMethod === RecipeMethod.GET && "text-green-600",
         recipeMethod === RecipeMethod.POST && "text-orange-600",
         recipeMethod === RecipeMethod.PUT && "text-orange-600",
+        recipeMethod === RecipeMethod.PATCH && "text-orange-600",
         recipeMethod === RecipeMethod.DELETE && "text-red-600"
       )}
     >
