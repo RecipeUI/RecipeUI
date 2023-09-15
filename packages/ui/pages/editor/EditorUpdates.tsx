@@ -10,6 +10,11 @@ const VERSION_LOGS: {
   update_type?: "bug" | "feature";
 }[] = [
   {
+    version: "0.8.2",
+    update: "Bug fixes. Added Patch. Preparing for API Storybook feature.",
+    update_type: "bug",
+  },
+  {
     version: "0.8.0",
     update: "Ability to share and publish folders as collections!",
     update_type: "feature",

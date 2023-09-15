@@ -36,7 +36,7 @@
     "required": ["{mars_rover}"],
     "properties": {
       "{mars_rover}": {
-        "enum": ["Perseverance", "Curiosity", "Opportunity", "..."],
+        "enum": ["Perseverance", "Curiosity", "Opportunity", "Spirit"],
         "type": "string",
         "description": "Name of the Mars Rover",
         "default": "Perseverance"

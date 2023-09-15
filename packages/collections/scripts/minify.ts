@@ -1,5 +1,5 @@
 import fs from "fs";
-import { findFilesInDir, restrictObjectsAndArrays } from "./utils";
+import { findFilesInDir, restrictRecipes } from "./utils";
 
 findFilesInDir("./core", "recipes.json", (filePath: string) => {
   const content = fs.readFileSync(filePath, "utf8");
@@ -15,7 +15,7 @@ findFilesInDir("./core", "recipes.json", (filePath: string) => {
   // Overwrite the file with updated content
   fs.writeFileSync(
     filePath,
-    JSON.stringify(restrictObjectsAndArrays(jsonContent), null, 2),
+    JSON.stringify(restrictRecipes(jsonContent), null, 2),
     "utf8"
   );
 });

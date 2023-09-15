@@ -58,7 +58,11 @@
                 }
               ],
               "absolute_magnitude_h": 21.3,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3591759",
@@ -107,7 +111,11 @@
                 }
               ],
               "absolute_magnitude_h": 25.2,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3630817",
@@ -156,7 +164,11 @@
                 }
               ],
               "absolute_magnitude_h": 29,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -208,7 +220,11 @@
                 }
               ],
               "absolute_magnitude_h": 18.66,
-              "is_potentially_hazardous_asteroid": true
+              "is_potentially_hazardous_asteroid": true,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2506491",
@@ -257,7 +273,11 @@
                 }
               ],
               "absolute_magnitude_h": 20.77,
-              "is_potentially_hazardous_asteroid": true
+              "is_potentially_hazardous_asteroid": true,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3591616",
@@ -306,7 +326,11 @@
                 }
               ],
               "absolute_magnitude_h": 24.6,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -358,7 +382,11 @@
                 }
               ],
               "absolute_magnitude_h": 21.4,
-              "is_potentially_hazardous_asteroid": true
+              "is_potentially_hazardous_asteroid": true,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3623610",
@@ -407,7 +435,11 @@
                 }
               ],
               "absolute_magnitude_h": 22.9,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3678563",
@@ -456,7 +488,11 @@
                 }
               ],
               "absolute_magnitude_h": 20.85,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -508,7 +544,11 @@
                 }
               ],
               "absolute_magnitude_h": 20.12,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3252104",
@@ -557,7 +597,11 @@
                 }
               ],
               "absolute_magnitude_h": 23.3,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3414251",
@@ -606,7 +650,11 @@
                 }
               ],
               "absolute_magnitude_h": 19.95,
-              "is_potentially_hazardous_asteroid": true
+              "is_potentially_hazardous_asteroid": true,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -658,7 +706,11 @@
                 }
               ],
               "absolute_magnitude_h": 19.09,
-              "is_potentially_hazardous_asteroid": true
+              "is_potentially_hazardous_asteroid": true,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2538644",
@@ -707,7 +759,11 @@
                 }
               ],
               "absolute_magnitude_h": 19.48,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3388355",
@@ -756,7 +812,11 @@
                 }
               ],
               "absolute_magnitude_h": 21.57,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -808,7 +868,11 @@
                 }
               ],
               "absolute_magnitude_h": 22.29,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3714175",
@@ -857,7 +921,11 @@
                 }
               ],
               "absolute_magnitude_h": 20.01,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "3795086",
@@ -906,7 +974,11 @@
                 }
               ],
               "absolute_magnitude_h": 24.7,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -958,7 +1030,11 @@
                 }
               ],
               "absolute_magnitude_h": 17.53,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2481442",
@@ -1007,7 +1083,11 @@
                 }
               ],
               "absolute_magnitude_h": 21.58,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2512244",
@@ -1056,7 +1136,11 @@
                 }
               ],
               "absolute_magnitude_h": 17.81,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ],
@@ -1108,7 +1192,11 @@
                 }
               ],
               "absolute_magnitude_h": 15.71,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2086450",
@@ -1157,7 +1245,11 @@
                 }
               ],
               "absolute_magnitude_h": 18.4,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             {
               "id": "2307070",
@@ -1206,7 +1298,11 @@
                 }
               ],
               "absolute_magnitude_h": 20.64,
-              "is_potentially_hazardous_asteroid": false
+              "is_potentially_hazardous_asteroid": false,
+              "_recipeui_additionalProperties": [
+                "is_potentially_hazardous_asteroid",
+                "_recipeui_additionalProperties"
+              ]
             },
             "..."
           ]
