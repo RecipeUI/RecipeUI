@@ -1,0 +1,561 @@
+[
+  {
+    "title": "Pikachu",
+    "replay": {
+      "output": {
+        "id": 25,
+        "name": "pikachu",
+        "forms": [
+          {
+            "url": "https://pokeapi.co/api/v2/pokemon-form/25/",
+            "name": "pikachu"
+          }
+        ],
+        "moves": [
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/5/",
+              "name": "mega-punch"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/1/",
+                  "name": "red-blue"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/2/",
+                  "name": "yellow"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/6/",
+                  "name": "emerald"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              "..."
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/6/",
+              "name": "pay-day"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/1/",
+                  "name": "red-blue"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/2/",
+                  "name": "yellow"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/19/",
+                  "name": "lets-go-pikachu-lets-go-eevee"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              "..."
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/9/",
+              "name": "thunder-punch"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/3/",
+                  "name": "gold-silver"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/4/",
+                  "name": "crystal"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/6/",
+                  "name": "emerald"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              "..."
+            ]
+          },
+          "..."
+        ],
+        "order": 35,
+        "stats": [
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/1/",
+              "name": "hp"
+            },
+            "effort": 0,
+            "base_stat": 35
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/2/",
+              "name": "attack"
+            },
+            "effort": 0,
+            "base_stat": 55
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/3/",
+              "name": "defense"
+            },
+            "effort": 0,
+            "base_stat": 40
+          },
+          "..."
+        ],
+        "types": [
+          {
+            "slot": 1,
+            "type": {
+              "url": "https://pokeapi.co/api/v2/type/13/",
+              "name": "electric"
+            }
+          }
+        ],
+        "height": 4,
+        "weight": 60,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 270,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "pikachu"
+    },
+    "description": "Get info about the legendary Pikachu.",
+    "queryParams": {},
+    "requestBody": {}
+  },
+  {
+    "title": "Who is Pokemon #100",
+    "replay": {
+      "output": {
+        "id": 100,
+        "name": "voltorb",
+        "forms": [
+          {
+            "url": "https://pokeapi.co/api/v2/pokemon-form/100/",
+            "name": "voltorb"
+          }
+        ],
+        "moves": [
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/29/",
+              "name": "headbutt"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/3/",
+                  "name": "gold-silver"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/4/",
+                  "name": "crystal"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/10/",
+                  "name": "heartgold-soulsilver"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              "..."
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/33/",
+              "name": "tackle"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/1/",
+                  "name": "red-blue"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/2/",
+                  "name": "yellow"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/3/",
+                  "name": "gold-silver"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              "..."
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/36/",
+              "name": "take-down"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/1/",
+                  "name": "red-blue"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/2/",
+                  "name": "yellow"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/25/",
+                  "name": "scarlet-violet"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              },
+              "..."
+            ]
+          },
+          "..."
+        ],
+        "order": 158,
+        "stats": [
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/1/",
+              "name": "hp"
+            },
+            "effort": 0,
+            "base_stat": 40
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/2/",
+              "name": "attack"
+            },
+            "effort": 0,
+            "base_stat": 30
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/3/",
+              "name": "defense"
+            },
+            "effort": 0,
+            "base_stat": 50
+          },
+          "..."
+        ],
+        "types": [
+          {
+            "slot": 1,
+            "type": {
+              "url": "https://pokeapi.co/api/v2/type/13/",
+              "name": "electric"
+            }
+          }
+        ],
+        "height": 5,
+        "weight": 104,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 116,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "100"
+    },
+    "description": "Guess that pokemon!",
+    "queryParams": {},
+    "requestBody": {}
+  },
+  {
+    "title": "Lopunny",
+    "replay": {
+      "output": {
+        "id": 428,
+        "name": "lopunny",
+        "forms": [
+          {
+            "url": "https://pokeapi.co/api/v2/pokemon-form/428/",
+            "name": "lopunny"
+          }
+        ],
+        "moves": [
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/1/",
+              "name": "pound"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/8/",
+                  "name": "diamond-pearl"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/9/",
+                  "name": "platinum"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/10/",
+                  "name": "heartgold-soulsilver"
+                },
+                "level_learned_at": 1,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/1/",
+                  "name": "level-up"
+                }
+              },
+              "..."
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/5/",
+              "name": "mega-punch"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/20/",
+                  "name": "sword-shield"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/4/",
+                  "name": "machine"
+                }
+              }
+            ]
+          },
+          {
+            "move": {
+              "url": "https://pokeapi.co/api/v2/move/7/",
+              "name": "fire-punch"
+            },
+            "version_group_details": [
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/9/",
+                  "name": "platinum"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/10/",
+                  "name": "heartgold-soulsilver"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              {
+                "version_group": {
+                  "url": "https://pokeapi.co/api/v2/version-group/14/",
+                  "name": "black-2-white-2"
+                },
+                "level_learned_at": 0,
+                "move_learn_method": {
+                  "url": "https://pokeapi.co/api/v2/move-learn-method/3/",
+                  "name": "tutor"
+                }
+              },
+              "..."
+            ]
+          },
+          "..."
+        ],
+        "order": 558,
+        "stats": [
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/1/",
+              "name": "hp"
+            },
+            "effort": 0,
+            "base_stat": 65
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/2/",
+              "name": "attack"
+            },
+            "effort": 0,
+            "base_stat": 76
+          },
+          {
+            "stat": {
+              "url": "https://pokeapi.co/api/v2/stat/3/",
+              "name": "defense"
+            },
+            "effort": 0,
+            "base_stat": 84
+          },
+          "..."
+        ],
+        "types": [
+          {
+            "slot": 1,
+            "type": {
+              "url": "https://pokeapi.co/api/v2/type/1/",
+              "name": "normal"
+            }
+          }
+        ],
+        "height": 12,
+        "weight": 333,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 253,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "lopunny"
+    },
+    "description": "Info on Lopunny",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

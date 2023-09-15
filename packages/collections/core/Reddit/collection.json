@@ -1,0 +1,14 @@
+{
+  "created_at": "2023-08-06T08:58:36.251358+00:00",
+  "project": "Reddit",
+  "title": "Reddit",
+  "subheader": "Social Content Feeds and Comments",
+  "description": "Dive into a sea of content. Integrate Reddit's vast community discussions and user-generated content to enrich your platforms with dynamic social insights.",
+  "status": "Active",
+  "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/reddit.png",
+  "tags": ["Popular"],
+  "scope": "global",
+  "visibility": "public",
+  "owner_id": null,
+  "id": "078deb59-7d63-496b-a8e6-33b194e44ce1"
+}

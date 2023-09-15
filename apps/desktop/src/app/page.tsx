@@ -72,9 +72,11 @@ function HomePage() {
       }),
   });
 
-  const { globalProjects, userProjects } = getProjectSplit(
+  const { userProjects } = getProjectSplit(
     (projectData?.data || []) as RecipeProject[]
   );
+
+  const globalProjects = useLocalProjects();
 
   const { data: recipe, isLoading: isLoadingRecipe } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -109,7 +111,7 @@ function HomePage() {
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          <RecipeHome globalProjects={globalProjects} projects={userProjects} />
+          <RecipeHome projects={userProjects} />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
@@ -121,6 +123,7 @@ import { ProjectContainer } from "ui/components/Project/ProjectContainer";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 import { initializeDB } from "ui/state/apiSession";
 import { Navbar } from "ui/components/Navbar/Navbar";
+import { useLocalProjects } from "ui/state/apiSession/RecipeUICoreAPI";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = useSupabaseClient();

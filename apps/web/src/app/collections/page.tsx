@@ -21,16 +21,12 @@ export default async function Collections({
     cookies,
   });
 
-  const { globalProjects, userProjects, recipe } = await fetchHome({
+  const { userProjects, recipe } = await fetchHome({
     searchParams,
     supabase,
   });
 
   return (
-    <RecipeHomeContainer
-      globalProjects={globalProjects}
-      projects={userProjects}
-      recipe={recipe || undefined}
-    />
+    <RecipeHomeContainer projects={userProjects} recipe={recipe || undefined} />
   );
 }

@@ -147,3 +147,14 @@ export function useCoreRecipe({ recipeId }: { recipeId: string }) {
     recipeInfo,
   };
 }
+
+export function useLocalProjects() {
+  const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
+  useEffect(() => {
+    RecipeUICoreAPI.getStore().then((store) => {
+      setLocalProjects(store.collections);
+    });
+  }, []);
+
+  return localProjects;
+}

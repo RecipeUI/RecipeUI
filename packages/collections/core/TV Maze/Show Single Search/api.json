@@ -1,0 +1,43 @@
+{
+  "created_at": "2023-08-29T08:46:08.748745+00:00",
+  "title": "Show Single Search",
+  "summary": "Returns exact show match by name, along with optionals params to retrieve specific episode and cast information.",
+  "method": "GET",
+  "path": "https://api.tvmaze.com/singlesearch/shows",
+  "project": "TV Maze",
+  "auth": null,
+  "tags": [
+    "Main",
+    "Popular",
+    "Examples"
+  ],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": [
+      "q"
+    ],
+    "properties": {
+      "q": {
+        "type": "string",
+        "description": "Show name."
+      },
+      "embed": {
+        "type": "string",
+        "description": "Specify additional information such as cast or episode info."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "774a148e-4a1b-4c43-a3e2-4eb434c3a426",
+  "queryParamsType": "export interface APIQueryParams {\n  q: string;\n  embed?: string;\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

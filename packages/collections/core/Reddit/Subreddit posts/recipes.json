@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Best of r/kitty for 2023",
+    "urlParams": {
+      "{sort}": "top",
+      "{subreddit}": "kitty"
+    },
+    "description": "Get the top cat posts for r/kitty in 2023.",
+    "queryParams": {
+      "t": "year"
+    }
+  },
+  {
+    "title": "Top desserts of the year",
+    "urlParams": {
+      "{sort}": "top",
+      "{subreddit}": "desserts"
+    },
+    "description": "Get the top desserts posts for r/desserts in 2023.",
+    "queryParams": {
+      "t": "year"
+    }
+  }
+]

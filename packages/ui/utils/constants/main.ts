@@ -46,6 +46,6 @@ export const ONBOARDING_CONSTANTS = {
 export const APP_GITHUB_LATEST_RELEASE_URL =
   "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json";
 
-export const LATEST_APP_VERSION = "0.8.0";
+export const LATEST_APP_VERSION = "0.8.2";
 
 export const DISCORD_LINK = "https://discord.gg/rXmpYmCNNA";

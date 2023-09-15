@@ -27,7 +27,6 @@ export async function fetchHome({
   searchParams,
   supabase,
 }: HomeFetcher): Promise<{
-  globalProjects: RecipeProject[];
   userProjects: RecipeProject[];
   recipe: Recipe | null;
 }> {
@@ -35,12 +34,11 @@ export async function fetchHome({
   const projectRes = await fetchHomeProjects({
     supabase,
   });
-  const { globalProjects, userProjects } = getProjectSplit(
+  const { userProjects } = getProjectSplit(
     (projectRes.data || []) as RecipeProject[]
   );
 
   return {
-    globalProjects,
     userProjects,
     recipe: recipeId
       ? await fetchHomeRecipe({ recipeId: recipeId, supabase })

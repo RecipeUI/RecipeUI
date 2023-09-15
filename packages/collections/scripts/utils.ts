@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { mkdirp } from "mkdirp";
 import { produce } from "immer";
 import { Recipe } from "types/database";
 
@@ -24,11 +23,13 @@ export function restrictObjectsAndArrays(obj: Record<string, unknown>) {
     let count = 0;
     let additionalProperties: string[] = [];
 
-    for (const [key, value] of Object.entries(_obj)) {
+    const entries = Object.entries(_obj);
+    for (const [key, value] of entries) {
       count += 1;
 
       if (count >= OBJECT_REDUCE_FACTOR) {
         additionalProperties.push(key);
+        delete _obj[key];
         continue;
       }
 

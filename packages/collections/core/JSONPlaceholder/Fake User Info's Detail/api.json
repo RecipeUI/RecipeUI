@@ -1,0 +1,50 @@
+{
+  "created_at": "2023-08-06T23:00:30+00:00",
+  "title": "Fake User Info's Detail",
+  "summary": "Get info about a fake user's photos, todos, or albums.",
+  "method": "GET",
+  "path": "https://jsonplaceholder.typicode.com/users/{user_id}/{resource}",
+  "project": "{JSON} Placeholder",
+  "auth": null,
+  "tags": [
+    "Main",
+    "Examples"
+  ],
+  "queryParams": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{user_id}": {
+        "type": "string",
+        "description": "Provide the user_id. This is an integer string, e.g '1'.",
+        "default": "1"
+      },
+      "{resource}": {
+        "type": "string",
+        "enum": [
+          "todos",
+          "albums",
+          "photos",
+          "comments",
+          ""
+        ],
+        "description": "Provide the resource. Leave blank to get general info."
+      }
+    },
+    "required": [
+      "{user_id}"
+    ],
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "6bd53e59-8994-4382-ba41-d81146003b8d",
+  "queryParamsType": "",
+  "urlParamsType": "export interface APIUrlParams {\n  \"{user_id}\": string;\n  \"{resource}\"?: \"todos\" | \"albums\" | \"photos\" | \"comments\" | \"\";\n}",
+  "requestBodyType": null
+}

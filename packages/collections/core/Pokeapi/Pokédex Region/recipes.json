@@ -1,0 +1,111 @@
+[
+  {
+    "title": "Kanto",
+    "replay": {
+      "output": {
+        "id": 2,
+        "name": "kanto",
+        "names": [
+          {
+            "name": "Kanto",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/5/",
+              "name": "fr"
+            }
+          },
+          {
+            "name": "Kanto",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/6/",
+              "name": "de"
+            }
+          },
+          {
+            "name": "Kanto",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/7/",
+              "name": "es"
+            }
+          },
+          "..."
+        ],
+        "region": {
+          "url": "https://pokeapi.co/api/v2/region/1/",
+          "name": "kanto"
+        },
+        "descriptions": [
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/5/",
+              "name": "fr"
+            },
+            "description": "Pokédex régional de Kanto dans Rouge/Bleu/Jaune"
+          },
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/6/",
+              "name": "de"
+            },
+            "description": "Rot/Blau/Gelb Kanto Dex"
+          },
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/7/",
+              "name": "es"
+            },
+            "description": "Pokédex regional de Rojo/Azul/Amarillo"
+          },
+          "..."
+        ],
+        "is_main_series": true,
+        "version_groups": [
+          {
+            "url": "https://pokeapi.co/api/v2/version-group/1/",
+            "name": "red-blue"
+          },
+          {
+            "url": "https://pokeapi.co/api/v2/version-group/2/",
+            "name": "yellow"
+          },
+          {
+            "url": "https://pokeapi.co/api/v2/version-group/7/",
+            "name": "firered-leafgreen"
+          },
+          "..."
+        ],
+        "pokemon_entries": [
+          {
+            "entry_number": 1,
+            "pokemon_species": {
+              "url": "https://pokeapi.co/api/v2/pokemon-species/1/",
+              "name": "bulbasaur"
+            }
+          },
+          {
+            "entry_number": 2,
+            "pokemon_species": {
+              "url": "https://pokeapi.co/api/v2/pokemon-species/2/",
+              "name": "ivysaur"
+            }
+          },
+          {
+            "entry_number": 3,
+            "pokemon_species": {
+              "url": "https://pokeapi.co/api/v2/pokemon-species/3/",
+              "name": "venusaur"
+            }
+          },
+          "..."
+        ]
+      },
+      "duration": 583,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "kanto"
+    },
+    "description": "Pokedex info for kanto region",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

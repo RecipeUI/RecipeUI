@@ -1,0 +1,59 @@
+{
+  "created_at": "2023-08-07T07:08:06+00:00",
+  "title": "Subreddit Search",
+  "summary": "Search subreddits by title and description. The [official docs](https://www.reddit.com/dev/api/#GET_search) from reddit are very vague.",
+  "method": "GET",
+  "path": "https://oauth.reddit.com/subreddits/search",
+  "project": "Reddit",
+  "auth": "bearer",
+  "tags": null,
+  "queryParams": [
+    {
+      "name": "q",
+      "type": "string",
+      "description": "a search query"
+    },
+    {
+      "name": "after",
+      "type": "string",
+      "description": "fullname of a thing. A fullname is a combination of a thing's type and its unique ID, e.g. t3_15bfi0"
+    },
+    {
+      "name": "before",
+      "type": "string",
+      "description": "fullname of a thing. A fullname is a combination of a thing's type and its unique ID, e.g. t3_15bfi0"
+    },
+    {
+      "name": "limit",
+      "type": "integer",
+      "default": 25,
+      "maximum": 100,
+      "minimum": 1,
+      "description": "the maximum number of items desired"
+    },
+    {
+      "name": "search_query_id",
+      "type": "string",
+      "description": "a uuid"
+    },
+    {
+      "enum": [
+        "relevance, activiity"
+      ],
+      "name": "sort",
+      "type": "string",
+      "description": "one of (relevance, activity)"
+    }
+  ],
+  "urlParams": null,
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "unlisted",
+  "version": 0.5,
+  "id": "e17735f1-5413-4918-9731-8397bfa48fba",
+  "queryParamsType": null,
+  "urlParamsType": null,
+  "requestBodyType": null
+}

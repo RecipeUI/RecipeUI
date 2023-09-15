@@ -1,0 +1,152 @@
+[
+  {
+    "title": "Double Slap",
+    "replay": {
+      "output": {
+        "id": 3,
+        "pp": 10,
+        "meta": {
+          "drain": 0,
+          "ailment": {
+            "url": "https://pokeapi.co/api/v2/move-ailment/0/",
+            "name": "none"
+          },
+          "healing": 0,
+          "category": {
+            "url": "https://pokeapi.co/api/v2/move-category/0/",
+            "name": "damage"
+          },
+          "max_hits": 5,
+          "min_hits": 2,
+          "crit_rate": 0,
+          "max_turns": null,
+          "min_turns": null,
+          "_recipeui_additionalProperties": [
+            "_recipeui_additionalProperties"
+          ]
+        },
+        "name": "double-slap",
+        "type": {
+          "url": "https://pokeapi.co/api/v2/type/1/",
+          "name": "normal"
+        },
+        "names": [
+          {
+            "name": "おうふくビンタ",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            }
+          },
+          {
+            "name": "연속뺨치기",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            }
+          },
+          {
+            "name": "連環巴掌",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/4/",
+              "name": "zh-Hant"
+            }
+          },
+          "..."
+        ],
+        "power": 15,
+        "target": {
+          "url": "https://pokeapi.co/api/v2/move-target/10/",
+          "name": "selected-pokemon"
+        },
+        "accuracy": 85,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 460,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "double-slap"
+    },
+    "description": "Info on the move double slap",
+    "queryParams": {},
+    "requestBody": {}
+  },
+  {
+    "title": "Thunderbolt",
+    "replay": {
+      "output": {
+        "id": 85,
+        "pp": 15,
+        "meta": {
+          "drain": 0,
+          "ailment": {
+            "url": "https://pokeapi.co/api/v2/move-ailment/1/",
+            "name": "paralysis"
+          },
+          "healing": 0,
+          "category": {
+            "url": "https://pokeapi.co/api/v2/move-category/4/",
+            "name": "damage+ailment"
+          },
+          "max_hits": null,
+          "min_hits": null,
+          "crit_rate": 0,
+          "max_turns": null,
+          "min_turns": null,
+          "_recipeui_additionalProperties": [
+            "_recipeui_additionalProperties"
+          ]
+        },
+        "name": "thunderbolt",
+        "type": {
+          "url": "https://pokeapi.co/api/v2/type/13/",
+          "name": "electric"
+        },
+        "names": [
+          {
+            "name": "１０まんボルト",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            }
+          },
+          {
+            "name": "10만볼트",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            }
+          },
+          {
+            "name": "十萬伏特",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/4/",
+              "name": "zh-Hant"
+            }
+          },
+          "..."
+        ],
+        "power": 90,
+        "target": {
+          "url": "https://pokeapi.co/api/v2/move-target/10/",
+          "name": "selected-pokemon"
+        },
+        "accuracy": 100,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 270,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "thunderbolt"
+    },
+    "description": "Pikachu's famous move",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

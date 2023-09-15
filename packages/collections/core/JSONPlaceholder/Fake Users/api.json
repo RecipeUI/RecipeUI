@@ -1,0 +1,25 @@
+{
+  "created_at": "2023-08-06T22:59:02.534895+00:00",
+  "title": "Fake Users",
+  "summary": "Get a list of fake users to use in your app.",
+  "method": "GET",
+  "path": "https://jsonplaceholder.typicode.com/users/",
+  "project": "{JSON} Placeholder",
+  "auth": null,
+  "tags": [
+    "Popular",
+    "Main"
+  ],
+  "queryParams": null,
+  "urlParams": null,
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "6dd254cf-1733-47fd-8e0d-746b00dc682f",
+  "queryParamsType": null,
+  "urlParamsType": null,
+  "requestBodyType": null
+}

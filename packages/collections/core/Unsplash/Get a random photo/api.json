@@ -1,0 +1,80 @@
+{
+  "created_at": "2023-08-29T08:31:26.3424+00:00",
+  "title": "Get a random photo",
+  "summary": "Retrieve a photos, given optional filters.",
+  "method": "GET",
+  "path": "https://api.unsplash.com/photos/random",
+  "project": "Unsplash",
+  "auth": "header",
+  "tags": null,
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+      "count": {
+        "type": "number",
+        "default": 1,
+        "maximum": 30,
+        "minimum": 1,
+        "description": "The number of photos to return."
+      },
+      "query": {
+        "type": "string",
+        "description": "Limit selection to photos matching a search term."
+      },
+      "topics": {
+        "type": "string",
+        "description": "Public topic ID(‘s) to filter selection. If multiple, comma-separated."
+      },
+      "username": {
+        "type": "string",
+        "description": "Limit selection to a single user."
+      },
+      "collections": {
+        "type": "string",
+        "description": "Public collection ID(‘s) to filter selection. If multiple, comma-separated."
+      },
+      "orientation": {
+        "enum": [
+          "landscape",
+          "portrait",
+          "squarish"
+        ],
+        "type": "string",
+        "description": "Filter by photo orientation."
+      },
+      "content_filter": {
+        "enum": [
+          "low",
+          "high"
+        ],
+        "type": "string",
+        "description": "Limit results by content safety."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "header",
+        "payload": {
+          "name": "Authorization"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/unsplash"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "5f569f3e-15ed-4231-8eaa-3e6ca3dcbff8",
+  "queryParamsType": "export interface APIQueryParams {\n  query?: string;\n  collections?: string;\n  topics?: string;\n  username?: string;\n  orientation?: \"landscape\" | \"portrat\" | \"squarish\";\n  content_filter?: \"low\" | \"high\";\n  count?: number;\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

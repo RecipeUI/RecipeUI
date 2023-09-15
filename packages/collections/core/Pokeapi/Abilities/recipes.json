@@ -1,0 +1,113 @@
+[
+  {
+    "title": "Primordial Sea",
+    "replay": {
+      "output": {
+        "id": 189,
+        "name": "primordial-sea",
+        "names": [
+          {
+            "name": "はじまりのうみ",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            }
+          },
+          {
+            "name": "시작의바다",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            }
+          },
+          {
+            "name": "始源之海",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/4/",
+              "name": "zh-Hant"
+            }
+          },
+          "..."
+        ],
+        "pokemon": [
+          {
+            "slot": 1,
+            "pokemon": {
+              "url": "https://pokeapi.co/api/v2/pokemon/10077/",
+              "name": "kyogre-primal"
+            },
+            "is_hidden": false
+          }
+        ],
+        "generation": {
+          "url": "https://pokeapi.co/api/v2/generation/6/",
+          "name": "generation-vi"
+        },
+        "effect_changes": [],
+        "effect_entries": [
+          {
+            "effect": "Wenn ein Pokémon mit dieser Fähigkeit den Kampf betritt, ändert sich das weather in heftigen rain. Das weather kann weder durch Fähigkeiten wie drought noch durch Attacken wie sandstorm geändert werden und solche Attacken schlagen fehl.\n\nDer rain hört auf, wenn das Pokémon mit dieser Fähigkeit den Kampf verlässt oder in eine hintere Position rotiert wird und kein Anderes mit derselben Fähigkeit noch im Kampf ist, wenn die Fähigkeit deaktiviert wird oder ein Pokémon mit der Fähigkeit delta stream oder desolate land den Kampf betritt. Die Wettereffekte können durch Fähigkeiten wie cloud nine aufgehoben werden.",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/6/",
+              "name": "de"
+            },
+            "short_effect": "Ändert beim Betreten des Kampfes das weather in heftigen rain und verhindert fire Attacken."
+          },
+          {
+            "effect": "When this Pokémon enters battle or gains this ability, the weather becomes heavy rain.  Heavy rain has all the properties of rain dance and also causes damaging Fire moves to fail.\n\nHeavy rain ends when this Pokémon leaves battle or loses this ability, or when this ability is nullified.  The weather cannot otherwise be changed except by the effects of delta stream and desolate land.\n\nair lock and cloud nine will prevent the effects of heavy rain, including allowing Fire moves to work, but will not allow the weather to be changed.",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/9/",
+              "name": "en"
+            },
+            "short_effect": "Creates heavy rain, which has all the properties of Rain Dance, cannot be replaced, and causes damaging Fire moves to fail."
+          }
+        ],
+        "is_main_series": true,
+        "flavor_text_entries": [
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            },
+            "flavor_text": "ほのおタイプの　こうげきを\nうけない　てんきにする。",
+            "version_group": {
+              "url": "https://pokeapi.co/api/v2/version-group/16/",
+              "name": "omega-ruby-alpha-sapphire"
+            }
+          },
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            },
+            "flavor_text": "불꽃타입의 공격을\n받지 않는 날씨로 만든다.",
+            "version_group": {
+              "url": "https://pokeapi.co/api/v2/version-group/16/",
+              "name": "omega-ruby-alpha-sapphire"
+            }
+          },
+          {
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/5/",
+              "name": "fr"
+            },
+            "flavor_text": "Altère les conditions météo et\nrend inefficaces les attaques Feu.",
+            "version_group": {
+              "url": "https://pokeapi.co/api/v2/version-group/16/",
+              "name": "omega-ruby-alpha-sapphire"
+            }
+          },
+          "..."
+        ]
+      },
+      "duration": 209,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "primordial-sea"
+    },
+    "description": "Primal Kyogre's signature ability",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

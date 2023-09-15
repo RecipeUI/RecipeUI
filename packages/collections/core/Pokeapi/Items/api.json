@@ -1,0 +1,38 @@
+{
+  "created_at": "2023-08-07T10:00:18+00:00",
+  "title": "Items",
+  "summary": "An item is an object in the games which the player can pick up, keep in their bag, and use in some manner. They have various uses, including healing, powering up, helping catch Pokémon, or to access a new area.",
+  "method": "GET",
+  "path": "https://pokeapi.co/api/v2/item/{id_or_name}",
+  "project": "Pokéapi",
+  "auth": null,
+  "tags": [
+    "Examples"
+  ],
+  "queryParams": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{id_or_name}": {
+        "type": "string",
+        "description": "Item name or description. e.g master-ball or 1",
+        "default": "master-ball"
+      }
+    },
+    "required": [
+      "{id_or_name}"
+    ],
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "4f72ce1d-d8da-4998-8170-7e114ff435f4",
+  "queryParamsType": "",
+  "urlParamsType": "export interface APIUrlParams {\n  \"{id_or_name}\":string;\n}",
+  "requestBodyType": null
+}

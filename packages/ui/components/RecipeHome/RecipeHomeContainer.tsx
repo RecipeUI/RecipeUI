@@ -15,19 +15,20 @@ import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
 
 export function RecipeHomeContainer({
-  globalProjects,
   projects,
   recipe,
   sharedTemplate,
 }: {
-  globalProjects: RecipeProject[];
   projects: RecipeProject[];
   recipe?: Recipe;
   sharedTemplate?: UserTemplatePreview;
 }) {
   const router = useRouter();
+
+  const globalProjects = useLocalProjects();
 
   const [localForked, setLocalForked] = useLocalStorage(
     UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
@@ -62,7 +63,7 @@ export function RecipeHomeContainer({
         <RecipeContext.Provider value={recipe || null}>
           <RecipeProjectContext.Provider value={project || null}>
             <RecipeNativeFetchContext.Provider value={fetchServer}>
-              <RecipeHome globalProjects={globalProjects} projects={projects} />
+              <RecipeHome projects={projects} />
             </RecipeNativeFetchContext.Provider>
           </RecipeProjectContext.Provider>
         </RecipeContext.Provider>

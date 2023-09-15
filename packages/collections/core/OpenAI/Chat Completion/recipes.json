@@ -1,0 +1,109 @@
+[
+  {
+    "title": "Hello World",
+    "author": "Jeane Carlos",
+    "replay": {
+      "output": {
+        "content": "Sure! Here's the \"Hello World\" code in three different programming languages:\n\n1. Python:\n\n```python\nprint(\"Hello, World!\")\n```2. Java:\n\n```java\npublic class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n```3. C++:\n\n```cpp\n#include <iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n```These codes will output \"Hello, World!\" to the console when executed."
+      },
+      "duration": 5316.5,
+      "streaming": true
+    },
+    "description": "Ask the AI to write hello world in 3 different programming languages.",
+    "requestBody": {
+      "model": "gpt-3.5-turbo",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are an excellent programmer and teacher."
+        },
+        {
+          "role": "user",
+          "content": "Write me Hello World in 3 different programming languages."
+        }
+      ],
+      "max_tokens": 500
+    }
+  },
+  {
+    "title": "ELI5 (Explain Like I'm Five)",
+    "author": "Eli Badgio",
+    "replay": {
+      "output": {
+        "content": "Quantum physics is a branch of science that deals with really, really tiny things, like atoms and subatomic particles. It helps us understand how these tiny things behave and interact with each other. In quantum physics, things can sometimes behave in strange ways, different from how we see regular-sized objects in the world around us. It's a bit like a different set of rules for the tiny world!"
+      },
+      "duration": 4545,
+      "streaming": true
+    },
+    "description": "We ask the system to explain a complex topic in simple terms.",
+    "requestBody": {
+      "model": "gpt-3.5-turbo",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You a helpful AI tasked with proving users with well structured \"Explain Like I am Five\" explanations. Every time you receive a question you treat that as a request to Explain Like I am Five (ELI5). Your primary goal is to give users accurate and easy to understand/digest answers to their questions. Make sure your response is short and can actually be understood by someone in elementary school. Respond using markdown."
+        },
+        {
+          "role": "user",
+          "content": "What is quantum physics?"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Python Scraper",
+    "author": "Jeane Carlos",
+    "replay": {
+      "output": {
+        "content": "Certainly! Scraping data from Reddit's API is a great way to extract information from the platform. Let's go through a step-by-step guide on how to do it using Python. \n\nStep 1: Set up a Reddit developer account:\nTo access Reddit's API, you need to set up a developer account. Go to https://www.reddit.com/prefs/apps and create a new application. Once created, note down the Client ID and Client Secret, as we will need them later.\n\nStep 2: Install the required libraries:\nYou'll need the `praw` library, which is a Python wrapper for the Reddit API. Install it by running the following command in your terminal:\n```python\npip install praw\n```Step 3: Import the necessary libraries and set up authentication:\nIn your Python script, start by importing the `praw` library and creating an instance of the `Reddit` class with your authentication credentials:\n```python\nimport praw\n\nreddit = praw.Reddit(\n    client_id=\"YOUR_CLIENT_ID\",\n    client_secret=\"YOUR_CLIENT_SECRET\",\n    user_agent=\"YOUR_USER_AGENT\",\n)\n```Replace \"YOUR_CLIENT_ID\", \"YOUR_CLIENT_SECRET\", and \"YOUR_USER_AGENT\" with your actual credentials. The user agent should be descriptive of your application but doesn't need to be specific.\n\nStep 4: Scrape data from a subreddit:\nTo scrape data from a subreddit, specify the subreddit name and use the `subreddit` attribute of the `Reddit` instance. For example, let's scrape the top 5 posts from the \"python\" subreddit:\n```python\nsubreddit = reddit.subreddit(\"python\")\ntop_posts = subreddit.top(limit=5)\nfor post in top_posts:\n    print(post.title)\n```This code will print the title of each top post in the \"python\" subreddit. You can access various attributes of a post, such as `title`, `author`, `score`, `url`, and many more.\n\nStep 5: Scraping comments from a post:\nTo scrape comments from a specific post, use the `comments` attribute of a submission object. For example, let's scrape the top-level comments from the first post we scraped earlier:\n```python\nfirst_post = next(top_posts)\nfor comment in first_post.comments:\n    print(comment.body)\n```This code will print the body of each top-level comment in the first post.\n\nThat's it! You now have a basic understanding of"
+      },
+      "duration": 23865,
+      "streaming": true
+    },
+    "description": "Ask the AI to scrape a website in python.",
+    "requestBody": {
+      "model": "gpt-3.5-turbo",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are an excellent Python programmer."
+        },
+        {
+          "role": "user",
+          "content": "Teach me how to scrape data from reddit.com with an API. Please provide a step-by-step guide with code explanations."
+        }
+      ],
+      "max_tokens": 500
+    }
+  },
+  {
+    "title": "Write a Haiku",
+    "author": "Samuel San",
+    "replay": {
+      "output": {
+        "content": "Silicon Valley hums\nAI whispers through the streets\nSan Francisco booms"
+      },
+      "duration": 1150,
+      "streaming": true
+    },
+    "description": "We ask the system to act as a Haiku poet and ask it to write a poem about San Francisco.",
+    "requestBody": {
+      "model": "gpt-3.5-turbo",
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a Haiku poet"
+        },
+        {
+          "role": "user",
+          "content": "Write me a poem about San Francisco"
+        },
+        {
+          "role": "assistant",
+          "content": "Golden Gate stretches\nFog whispers 'neath the bridges\nSan Francisco dreams"
+        },
+        "..."
+      ]
+    }
+  }
+]

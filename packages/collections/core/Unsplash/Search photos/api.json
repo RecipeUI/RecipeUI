@@ -1,0 +1,107 @@
+{
+  "created_at": "2023-08-29T08:34:45.00135+00:00",
+  "title": "Search photos",
+  "summary": "Get a single page of photo results for a query.",
+  "method": "GET",
+  "path": "https://api.unsplash.com/search/photos",
+  "project": "Unsplash",
+  "auth": "header",
+  "tags": [
+    "Popular",
+    "Main",
+    "Examples"
+  ],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": [
+      "query"
+    ],
+    "properties": {
+      "page": {
+        "type": "number",
+        "default": 1,
+        "description": "Page number to retrieve."
+      },
+      "color": {
+        "enum": [
+          "black_and_white",
+          "black",
+          "white",
+          "yellow",
+          "orange",
+          "red",
+          "purple",
+          "magenta",
+          "green",
+          "teal",
+          "blue"
+        ],
+        "type": "string",
+        "description": "Filter results by color."
+      },
+      "query": {
+        "type": "string",
+        "description": "Search terms."
+      },
+      "order_by": {
+        "enum": [
+          "latest",
+          "relevant"
+        ],
+        "type": "string",
+        "description": "How to sort the photos."
+      },
+      "per_page": {
+        "type": "number",
+        "default": 10,
+        "description": "Number of items per page."
+      },
+      "collections": {
+        "type": "string",
+        "description": "Collection ID(‘s) to narrow search. If multiple, comma-separated."
+      },
+      "orientation": {
+        "enum": [
+          "landscape",
+          "portrat",
+          "squarish"
+        ],
+        "type": "string",
+        "description": "Filter by photo orientation."
+      },
+      "content_filter": {
+        "enum": [
+          "low",
+          "high"
+        ],
+        "type": "string",
+        "description": "Limit results by content safety."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "header",
+        "payload": {
+          "name": "Authorization"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/unsplash"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "7e96b0cc-9684-4deb-8425-4f2ce98e9ae6",
+  "queryParamsType": "export interface APIQueryParams {\n  query: string;\n  page?: number;\n  per_page?: number;\n  order_by?: \"latest\" | \"relevant\";\n  content_filter?: \"low\" | \"high\";\n  color?: Color;\n  orientation?: \"landscape\" | \"portrat\" | \"squarish\";\n  collections?: string;\n}\n\nenum Color {\n    BlackAndWhite = \"black_and_white\",\n    Black = \"black\",\n    White = \"white\",\n    Yellow = \"yellow\",\n    Orange = \"orange\",\n    Red = \"red\",\n    Purple = \"purple\",\n    Magenta = \"magenta\",\n    Green = \"green\",\n    Teal = \"teal\",\n    Blue = \"blue\"\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

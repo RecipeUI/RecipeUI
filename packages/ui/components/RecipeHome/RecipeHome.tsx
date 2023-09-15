@@ -11,18 +11,10 @@ import { open } from "@tauri-apps/api/shell";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
 
-export function RecipeHome({
-  globalProjects,
-  projects,
-}: {
-  globalProjects: RecipeProject[];
-  projects: RecipeProject[];
-}) {
+export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
   useEffect(() => {
-    console.log("getting store");
     RecipeUICoreAPI.getStore().then((store) => {
-      console.log("got store", store.collections);
       setLocalProjects(store.collections);
     });
   }, []);
@@ -33,9 +25,7 @@ export function RecipeHome({
     const ycombinator: RecipeProject[] = [];
     const more: RecipeProject[] = [];
 
-    const projects = [...globalProjects, ...localProjects];
-    // const projects = [...localProjects];
-    projects.forEach((project) => {
+    localProjects.forEach((project) => {
       const tags = project.tags || [];
 
       if (tags.includes("Popular")) {
@@ -51,7 +41,7 @@ export function RecipeHome({
       ycombinator,
       more,
     };
-  }, [globalProjects, localProjects]);
+  }, [localProjects]);
 
   const isTauri = useIsTauri();
   const user = useRecipeSessionStore((state) => state.user);

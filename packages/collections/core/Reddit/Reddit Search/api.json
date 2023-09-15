@@ -1,0 +1,71 @@
+{
+  "created_at": "2023-08-29T15:57:01.200551+00:00",
+  "title": "Reddit Search",
+  "summary": "Search across all of reddit",
+  "method": "GET",
+  "path": "https://www.reddit.com/search.json",
+  "project": "Reddit",
+  "auth": null,
+  "tags": [
+    "Popular",
+    "Examples"
+  ],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": [
+      "q"
+    ],
+    "properties": {
+      "q": {
+        "type": "string",
+        "description": "Search term."
+      },
+      "t": {
+        "enum": [
+          "hour",
+          "day",
+          "week",
+          "month",
+          "year",
+          "all"
+        ],
+        "type": "string",
+        "description": "Use this query parameter in conjunction with the 'top' filter."
+      },
+      "sort": {
+        "enum": [
+          "hot",
+          "top",
+          "new",
+          "relevance",
+          "comments"
+        ],
+        "type": "string",
+        "description": "A way to sort the posts"
+      },
+      "type": {
+        "enum": [
+          "link",
+          "comment",
+          "sr",
+          "user"
+        ],
+        "type": "string",
+        "description": "The type of content you're searching. link=posts, sr=communities, user=users, comment=comments"
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "5280469b-9f6d-413b-9d46-9955fdf3735a",
+  "queryParamsType": "export interface APIQueryParams {\n  q: string;\n  t?: \"hour\" | \"day\" | \"week\" | \"month\" | \"year\" | \"all\";\n  sort?: \"hot\" | \"top\" | \"new\" | \"relevance\" | \"comments\";\n  type?: \"link\" | \"comment\" | \"sr\" | \"user\";\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}
