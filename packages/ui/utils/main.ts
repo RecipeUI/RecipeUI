@@ -127,6 +127,11 @@ export function getProjectSplit(projects: RecipeProject[]) {
 
   for (const project of projects) {
     if (project.scope === ProjectScope.Global) {
+      // TODO: Temp filter for migration
+      if (["GIPHY"].includes(project.project)) {
+        continue;
+      }
+
       globalProjects.push(project);
     } else if (project.scope === ProjectScope.Personal) {
       userProjects.push(project);

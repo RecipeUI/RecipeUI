@@ -1,0 +1,14 @@
+{
+  "created_at": "2023-08-06T09:01:44.244621+00:00",
+  "project": "GIPHY",
+  "title": "GIPHY",
+  "subheader": "Dynamic GIFs at Your Fingertips",
+  "description": "Bring your platform to life! Embed GIPHY's vast library of animated GIFs to add fun, expression, and creativity to any digital experience.",
+  "status": "Active",
+  "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/giphy.png",
+  "tags": ["Popular"],
+  "scope": "global",
+  "visibility": "public",
+  "owner_id": null,
+  "id": "5ad1e5ac-a1bb-43b4-9415-db69711964ff"
+}

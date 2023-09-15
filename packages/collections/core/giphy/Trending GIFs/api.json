@@ -1,0 +1,50 @@
+{
+  "created_at": "2023-08-29T06:40:38.515202+00:00",
+  "title": "Trending GIFs",
+  "summary": "GIPHY Trending returns a list of the most relevant and engaging content each and every day. Our feed of trending content is continuously updated, so you always have the latest and greatest at your fingertips.",
+  "method": "GET",
+  "path": "https://api.giphy.com/v1/gifs/trending",
+  "project": "GIPHY",
+  "auth": "query",
+  "tags": ["Popular"],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+      "limit": {
+        "type": "number",
+        "default": 25,
+        "description": "The maximum number of objects to return. (Default: “25”)"
+      },
+      "rating": {
+        "enum": ["g", "pg", "pg-13", "r"],
+        "type": "string",
+        "description": "Filters results by specified rating. Acceptable values include g, pg, pg-13, r. If you do not specify a rating, you will receive results from all possible ratings."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "query",
+        "payload": {
+          "name": "api_key"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/giphy"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "68d71d3e-a1a3-4e1c-9463-0961dc1f6c46",
+  "queryParamsType": "export interface APIQueryParams {\n  limit?: number;\n  rating?: \"g\" |  \"pg\" |\"pg-13\" | \"r\";\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}
