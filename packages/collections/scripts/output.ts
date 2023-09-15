@@ -4,7 +4,9 @@ import { RecipeProject, Recipe } from "types/database";
 import { findFilesInDir, restrictObjectsAndArrays } from "./utils";
 import "./minify";
 
-let collections: RecipeProject[] = [];
+let collections: (RecipeProject & {
+  rank?: number;
+})[] = [];
 findFilesInDir(
   "./core",
   "collection.json",
@@ -16,6 +18,20 @@ findFilesInDir(
   },
   () => {
     const outputPathForCollections = "./build/core";
+
+    // If rank field, sort higher rank first. Rank is higher than no rank
+    collections.sort((a, b) => {
+      if (a.rank && b.rank) {
+        return a.rank - b.rank;
+      } else if (a.rank) {
+        return -1;
+      } else if (b.rank) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
     try {
       mkdirp.sync(outputPathForCollections);
     } catch (e) {}
