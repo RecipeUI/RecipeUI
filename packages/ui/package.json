@@ -40,7 +40,8 @@
     "tailwindcss": "^3.3.3",
     "usehooks-ts": "^2.9.1",
     "uuid": "^9.0.0",
-    "zustand": "^4.3.9"
+    "zustand": "^4.3.9",
+    "collections": "workspace:*"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.3",

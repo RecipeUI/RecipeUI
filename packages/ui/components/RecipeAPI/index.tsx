@@ -14,18 +14,27 @@ import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "../RecipeBody";
 import { Loading } from "../Loading";
 import { OutputAPI } from "../../state/apiSession/OutputAPI";
+import { useCoreRecipe } from "../../state/apiSession/RecipeUICoreAPI";
 
 export function RecipeAPI({
-  recipe,
-  project,
+  recipe: _recipe,
+  project: _project,
+  apiId,
 }: {
   project?: RecipeProject | null;
   recipe?: Recipe | null;
+  apiId: string;
 }) {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const { recipeInfo } = useCoreRecipe({
+    recipeId: apiId,
+  });
+
+  const recipe = _recipe || recipeInfo?.recipe;
+  const project = _project || recipeInfo?.project;
 
   useEffect(() => {
     if (recipe) {
@@ -40,7 +49,7 @@ export function RecipeAPI({
       );
     }
     OutputAPI.clearOutput(PLAYGROUND_SESSION_ID);
-  }, []);
+  }, [recipe]);
 
   if (!recipe) {
     return (

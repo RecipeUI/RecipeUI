@@ -4,6 +4,7 @@ import { SessionOutput } from "../recipeSession";
 import { useEffect, useState } from "react";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 import { getOutputStore, eventEmitter } from ".";
+import { restrictObjectsAndArrays } from "../../utils/main";
 
 export class OutputAPI {
   static clearOutput = async (sessionId: string) => {
@@ -58,7 +59,15 @@ export class OutputAPI {
           sessionId
         );
       } else {
-        const newOutput = [...outputs, sessionOutput];
+        // Let's make sure the old output is minified.
+        const minifiedOutput = outputs.map((output) => {
+          return {
+            ...output,
+            output: restrictObjectsAndArrays(output.output),
+          };
+        });
+
+        const newOutput = [...minifiedOutput, sessionOutput];
 
         // TODO: Let's let users add an option to limit the output.
         // Limiting to 10 because it should be enough for most use cases.
@@ -66,7 +75,7 @@ export class OutputAPI {
           newOutput.shift();
         }
 
-        await store.put([...outputs, sessionOutput], sessionId);
+        await store.put(newOutput, sessionId);
       }
     }
 
@@ -76,24 +85,27 @@ export class OutputAPI {
   static setOutput = async (outputId: string) => {
     eventEmitter.emit("refreshState", outputId);
   };
-}
-async function getOutput(sessionId?: string) {
-  if (!sessionId) return undefined;
 
-  const store = await getOutputStore();
-  return store.get(sessionId);
+  static getOutput = async (sessionId?: string) => {
+    if (!sessionId) return undefined;
+
+    const store = await getOutputStore();
+    return store.get(sessionId);
+  };
 }
+
 const DEFAULT_OUTPUT: SessionOutput = {
   output: {},
   type: RecipeOutputType.Void,
 };
+
 export function useOutput(sessionId?: string) {
   const [output, _setOutput] = useState<SessionOutput>(DEFAULT_OUTPUT);
   const [allOutputs, setAllOutputs] = useState<SessionOutput[]>([]);
 
   useEffect(() => {
     function refreshState(outputId?: string) {
-      getOutput(sessionId).then((_output) => {
+      OutputAPI.getOutput(sessionId).then((_output) => {
         setAllOutputs(_output?.reverse() || []);
 
         if (outputId && _output) {

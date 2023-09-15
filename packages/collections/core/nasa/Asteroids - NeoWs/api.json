@@ -1,0 +1,48 @@
+{
+  "created_at": "2023-08-29T16:58:50.975831+00:00",
+  "title": "Asteroids - NeoWs",
+  "summary": "NeoWs (Near Earth Object Web Service) is a RESTful web service for near earth Asteroid information. With NeoWs a user can: search for Asteroids based on their closest approach date to Earth, lookup a specific Asteroid with its NASA JPL small body id, as well as browse the overall data-set.",
+  "method": "GET",
+  "path": "https://api.nasa.gov/neo/rest/v1/feed",
+  "project": "NASA",
+  "auth": "query",
+  "tags": ["Examples"],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+      "end_date": {
+        "type": "string",
+        "description": "Ending date for asteroid search. Default is 7 days after start_date. Format in YYYY-MM-DD."
+      },
+      "start_date": {
+        "type": "string",
+        "description": "Starting date for asteroid search. Format in YYYY-MM-DD."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "query",
+        "payload": {
+          "name": "api_key"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/nasa"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "8955daf5-4054-41c8-9d38-5d98887ea63b",
+  "queryParamsType": "export interface APIQueryParams {\n  start_date?: string;\n  end_date?: string;\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

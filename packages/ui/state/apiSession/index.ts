@@ -3,6 +3,7 @@
 import { JSONSchema6 } from "json-schema";
 import {
   Recipe,
+  RecipeProject,
   RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
@@ -64,6 +65,7 @@ enum APIStore {
   Output = "Output",
   MiniRecipes = "MiniRecipes",
   ProjectCollections = "ProjectCollections",
+  RecipeUICore = "RecipeUICore",
 }
 
 export interface SessionsStore extends DBSchema {
@@ -95,12 +97,19 @@ export interface SessionsStore extends DBSchema {
     key: string;
     value: SessionOutput[];
   };
+  [APIStore.RecipeUICore]: {
+    key: "core";
+    value: {
+      collections: RecipeProject[];
+      recipes: Recipe[];
+    };
+  };
 }
 
 const DB_CONFIG = {
   NAME: "RECIPEUI_ALPHA_0.5",
   // TODO: Need a better migration plan this is bad
-  VERSION: 1,
+  VERSION: 2,
 };
 let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 
@@ -108,22 +117,20 @@ function getDB() {
   if (!db) {
     db = openDB<SessionsStore>(DB_CONFIG.NAME, DB_CONFIG.VERSION, {
       upgrade(db, old, newVersion, transaction) {
-        // TODO: Need a better migration plan this is bad
-        // db.clear(APIStore.Parameters);
-        // db.clear(APIStore.Config);
-        // db.clear(APIStore.Sessions);
-        // db.clear(APIStore.Secrets);
-        // db.clear(APIStore.Output);
-        // db.clear(APIStore.MiniRecipes);
-        // db.clear(APIStore.SessionFolders);
-
-        db.createObjectStore(APIStore.Parameters);
-        db.createObjectStore(APIStore.Config);
-        db.createObjectStore(APIStore.Sessions);
-        db.createObjectStore(APIStore.SessionFolders);
-        db.createObjectStore(APIStore.Secrets);
-        db.createObjectStore(APIStore.Output);
-        db.createObjectStore(APIStore.MiniRecipes);
+        [
+          APIStore.Parameters,
+          APIStore.Config,
+          APIStore.Sessions,
+          APIStore.Secrets,
+          APIStore.Output,
+          APIStore.MiniRecipes,
+          APIStore.SessionFolders,
+          APIStore.RecipeUICore,
+        ].forEach((store) => {
+          if (!db.objectStoreNames.contains(store as any)) {
+            db.createObjectStore(store as any);
+          }
+        });
       },
     });
   }
@@ -154,6 +161,10 @@ export async function getOutputStore() {
 export async function getFolderStore() {
   return (await getDB()).transaction(APIStore.SessionFolders, "readwrite")
     .store;
+}
+
+export async function getRecipeUICoreStore() {
+  return (await getDB()).transaction(APIStore.RecipeUICore, "readwrite").store;
 }
 
 export async function getSessionsFromStore() {
@@ -402,19 +413,6 @@ export function useMiniRecipes(primaryRecipeId?: string) {
     deleteRecipe,
   };
 }
-
-// [APIStore.Parameters]: {
-//   key: string;
-//   value: APISessionParameters;
-// };
-// [APIStore.Config]: {
-//   key: string;
-//   value: APISessionConfig;
-// };
-// [APIStore.MiniRecipes]: {
-//   key: string;
-//   value: RecipeTemplateFragment[];
-// };
 
 export async function getSessionRecord() {
   const sessions = (await getSessionsFromStore()) || [];

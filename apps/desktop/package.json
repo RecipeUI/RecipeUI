@@ -26,7 +26,8 @@
     "react-dom": "18.2.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
-    "ui": "workspace:*"
+    "ui": "workspace:*",
+    "collections": "workspace:*"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",

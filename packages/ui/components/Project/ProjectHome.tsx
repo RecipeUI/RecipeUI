@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 import Link from "next/link";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   AdjustmentsHorizontalIcon,
   Cog6ToothIcon,
@@ -175,9 +175,33 @@ function EditModal({
 
   const onSubmit = handleSubmit(async (data) => {
     async function _submit() {
+      let publicUrl: string | null = null;
+
+      if (selectedImage) {
+        const { data, error } = await supabase.storage
+          .from("assets")
+          .upload(`collections/${project.id}/main`, selectedImage, {
+            upsert: true,
+          });
+
+        if (!error) {
+          const { data: publicUrlData } = supabase.storage
+            .from("assets")
+            .getPublicUrl(`collections/${project.id}/main`);
+
+          publicUrl = publicUrlData.publicUrl || null;
+        } else {
+          setError(error.message);
+          return;
+        }
+      }
+
       const updateRes = await supabase
         .from("project")
-        .update(data)
+        .update({
+          ...data,
+          image: publicUrl,
+        })
         .match({ id: project.id });
 
       if (updateRes.error) {
@@ -198,6 +222,29 @@ function EditModal({
   });
 
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+  const [selectedImage, setSelectedImage] = useState<File | null>();
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+  const user = useRecipeSessionStore((state) => state.user);
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (!selectedFile?.type.startsWith("image/")) {
+      setError("You can only upload image files.");
+      return;
+    }
+
+    if (selectedFile) {
+      setSelectedImage(selectedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgSrc(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
   return (
     <Modal header="Edit Collection Details" onClose={onClose}>
       <form className="w-full space-y-4 mt-4" onSubmit={onSubmit}>
@@ -215,6 +262,21 @@ function EditModal({
             className="textarea textarea-bordered w-full"
             {...register("description", { required: true })}
           />
+        </FormLabelWrapper>
+        <FormLabelWrapper label="Image (Optional)">
+          <input
+            type="file"
+            className="file-input file-input-bordered w-full max-w-xs mt-2"
+            onChange={handleFileChange}
+          />
+
+          {imgSrc && (
+            <img
+              src={imgSrc}
+              className="max-w-[10rem] rounded-lg my-4"
+              alt={project.title}
+            />
+          )}
         </FormLabelWrapper>
 
         {(errors.title || errors.description) && (

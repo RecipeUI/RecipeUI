@@ -261,7 +261,6 @@ export function ResponseInfo({
 }) {
   const [showHeaders, setShowHeaders] = useState(false);
 
-  console.log(responseInfo);
   return (
     <>
       <button

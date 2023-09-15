@@ -80,15 +80,8 @@ export function RecipeForkTab({
       return;
     }
 
-    // if (!user) {
-    //   alert("You must be logged in to fork a recipe");
-    //   // Nothing really blocking this! So if you fork this code, you can just remove it.
-    //   return;
-    // }
-
     try {
       setLoading(true);
-
       setRecipeFork(`${selectedRecipe.id}::${template.title}`);
 
       if (isTauri) {

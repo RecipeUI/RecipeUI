@@ -15,7 +15,7 @@ import { usePostHog } from "posthog-js/react";
 import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProjectScope } from "types/enums";
-import {} from "../../../utils/main";
+import { restrictObjectsAndArrays } from "../../../utils/main";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { MiniRecipeAPI, useMiniRecipes } from "../../../state/apiSession";
 import { useOutput } from "../../../state/apiSession/OutputAPI";
@@ -131,7 +131,7 @@ export function RecipeCreationFlow({ onClose }: { onClose: () => void }) {
         id: uuidv4(),
         replay: {
           duration: duration ? duration : 3000,
-          output,
+          output: restrictObjectsAndArrays(output),
           streaming: false,
         },
         project_scope: ProjectScope.Personal,

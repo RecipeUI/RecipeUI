@@ -41,8 +41,6 @@ export async function fetchProjectPage({
       project_id: projectName,
     });
 
-    console.log("in here22", unlistedProjectInfo);
-
     if (!unlistedProjectInfo.data) {
       return {
         project: null,

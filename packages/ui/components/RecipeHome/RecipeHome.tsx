@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { RecipeProject } from "types/database";
-import { QueryKey, RecipeProjectStatus } from "types/enums";
+import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
@@ -9,8 +9,7 @@ import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { open } from "@tauri-apps/api/shell";
 import { SparklesIcon } from "@heroicons/react/24/outline";
-import { useSupabaseClient } from "../Providers/SupabaseProvider";
-import { useQuery } from "@tanstack/react-query";
+import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
 
 export function RecipeHome({
   globalProjects,
@@ -19,13 +18,24 @@ export function RecipeHome({
   globalProjects: RecipeProject[];
   projects: RecipeProject[];
 }) {
+  const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
+  useEffect(() => {
+    console.log("getting store");
+    RecipeUICoreAPI.getStore().then((store) => {
+      console.log("got store", store.collections);
+      setLocalProjects(store.collections);
+    });
+  }, []);
+
   const { popular, free, ycombinator, more } = useMemo(() => {
     const popular: RecipeProject[] = [];
     const free: RecipeProject[] = [];
     const ycombinator: RecipeProject[] = [];
     const more: RecipeProject[] = [];
 
-    globalProjects.forEach((project) => {
+    const projects = [...globalProjects, ...localProjects];
+    // const projects = [...localProjects];
+    projects.forEach((project) => {
       const tags = project.tags || [];
 
       if (tags.includes("Popular")) {
@@ -41,7 +51,7 @@ export function RecipeHome({
       ycombinator,
       more,
     };
-  }, [globalProjects]);
+  }, [globalProjects, localProjects]);
 
   const isTauri = useIsTauri();
   const user = useRecipeSessionStore((state) => state.user);

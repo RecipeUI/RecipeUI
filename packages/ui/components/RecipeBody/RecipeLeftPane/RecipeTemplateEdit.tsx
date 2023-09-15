@@ -15,6 +15,7 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import {
+  RecipeOutputType,
   RecipeTemplate,
   RecipeTemplateFragment,
   UserTemplatePreview,
@@ -50,6 +51,7 @@ import { Modal } from "../../Modal";
 import { URLHighlight } from "../../../pages/editor/EditorURL";
 import { ResponseOutput } from "../../RecipeOutput/RecipeOutputConsole";
 import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
+import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 
 export function RecipeTemplateEdit() {
   return (
@@ -93,15 +95,10 @@ function UserMiniRecipe({
   deleteRecipe: (templateId: string) => Promise<void>;
 }) {
   const posthog = usePostHog();
-
-  const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
-  const setEditorQuery = useRecipeSessionStore((state) => state.setEditorQuery);
-  const setURLCode = useRecipeSessionStore((state) => state.setEditorURLCode);
-
   const hoverRef = useRef<HTMLButtonElement>(null);
   const isHover = useHover(hoverRef);
-
   const [action, setAction] = useState<null | "prefill" | "send">(null);
+
   return (
     <>
       <div
@@ -242,6 +239,7 @@ export function RecipeSendModal({
     // Delay in milliseconds or null to stop it
     count > 0 && ["send", "prefill"].includes(action) ? 1000 : null
   );
+
   const onSubmit = async () => {
     await setTemplate();
 
@@ -346,12 +344,24 @@ export function RecipeSendModal({
         </>
       )}
 
-      {sessionOutput && (
+      {(sessionOutput || miniRecipe.replay) && (
         <>
           <div className="divider" />
           <div className="">
             <h2 className="font-bold mb-2">Original Response</h2>
-            <ResponseOutput sessionOutput={sessionOutput} />
+            <ResponseOutput
+              sessionOutput={
+                sessionOutput
+                  ? sessionOutput
+                  : ({
+                      output: miniRecipe.replay?.output as Record<
+                        string,
+                        unknown
+                      >,
+                      type: RecipeOutputType.Response,
+                    } satisfies SessionOutput)
+              }
+            />
           </div>
         </>
       )}

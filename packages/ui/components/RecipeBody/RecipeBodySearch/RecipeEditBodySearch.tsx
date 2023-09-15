@@ -68,21 +68,14 @@ export function RecipeEditBodySearch() {
                 <input
                   id="url-input"
                   onPaste={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
                     const pasteString = e.clipboardData
                       .getData("text/plain")
                       .trim();
 
                     if (pasteString.toLowerCase().startsWith("curl")) {
+                      e.preventDefault();
                       setCurlString(pasteString);
-                    } else {
-                      setUrl(pasteString);
                     }
-                    // else if (pasteString.startsWith("http") && !url) {
-                    //   setImportString(pasteString);
-                    // }
                   }}
                   placeholder="Enter URL here"
                   className={classNames(

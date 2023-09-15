@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useRef } from "react";
 import {
   DesktopPage,
   RecipeOutputTab,
@@ -17,6 +17,8 @@ import { FolderAPI } from "../state/apiSession/FolderAPI";
 import { SupabaseContext } from "../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../fetchers/home";
 import { getConfigFromRecipe } from "../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
+import { RecipeUICoreAPI } from "../state/apiSession/RecipeUICoreAPI";
+import { Recipe } from "types/database";
 
 export function useInitializeRecipe() {
   const supabase = useContext(SupabaseContext);
@@ -31,11 +33,21 @@ export function useInitializeRecipe() {
     async (recipeId: string, recipeTitle?: string) => {
       try {
         // get the recipe information first
-        const recipe = await fetchHomeRecipe({
-          recipeId: recipeId,
-          supabase,
+
+        let recipe: Recipe | null = null;
+
+        let coreInfo = await RecipeUICoreAPI.getRecipeWithRecipeId({
+          recipeId,
         });
 
+        if (coreInfo) {
+          recipe = coreInfo.recipe;
+        } else {
+          recipe = await fetchHomeRecipe({
+            recipeId: recipeId,
+            supabase,
+          });
+        }
         if (!recipe) {
           throw new Error("Recipe not found");
         }

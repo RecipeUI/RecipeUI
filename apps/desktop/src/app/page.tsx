@@ -186,5 +186,7 @@ function RecipePage({ api_id }: { api_id: string }) {
     return <div>App 404</div>;
   }
 
-  return <RecipeAPI project={data.project} recipe={data.recipe} />;
+  return (
+    <RecipeAPI project={data.project} recipe={data.recipe} apiId={api_id} />
+  );
 }

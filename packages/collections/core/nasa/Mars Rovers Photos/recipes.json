@@ -1,0 +1,265 @@
+[
+  {
+    "title": "Photos from Perseverance",
+    "replay": {
+      "output": {
+        "photos": [
+          {
+            "id": 1139802,
+            "sol": 800,
+            "rover": {
+              "id": 8,
+              "name": "Perseverance",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "EDL_RUCAM",
+                  "full_name": "Rover Up-Look Camera"
+                },
+                {
+                  "name": "EDL_DDCAM",
+                  "full_name": "Descent Stage Down-Look Camera"
+                },
+                {
+                  "name": "EDL_PUCAM1",
+                  "full_name": "Parachute Up-Look Camera A"
+                },
+                "..."
+              ],
+              "max_sol": 879,
+              "max_date": "2023-08-10",
+              "launch_date": "2020-07-30",
+              "landing_date": "2021-02-18",
+              "total_photos": 173718
+            },
+            "camera": {
+              "id": 38,
+              "name": "NAVCAM_LEFT",
+              "rover_id": 8,
+              "full_name": "Navigation Camera - Left"
+            },
+            "img_src": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/ncam/NLF_0800_0737945673_612ECM_N0391170NCAM02799_01_195J01_1200.jpg",
+            "earth_date": "2023-05-20"
+          },
+          {
+            "id": 1139803,
+            "sol": 800,
+            "rover": {
+              "id": 8,
+              "name": "Perseverance",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "EDL_RUCAM",
+                  "full_name": "Rover Up-Look Camera"
+                },
+                {
+                  "name": "EDL_DDCAM",
+                  "full_name": "Descent Stage Down-Look Camera"
+                },
+                {
+                  "name": "EDL_PUCAM1",
+                  "full_name": "Parachute Up-Look Camera A"
+                },
+                "..."
+              ],
+              "max_sol": 879,
+              "max_date": "2023-08-10",
+              "launch_date": "2020-07-30",
+              "landing_date": "2021-02-18",
+              "total_photos": 173718
+            },
+            "camera": {
+              "id": 38,
+              "name": "NAVCAM_LEFT",
+              "rover_id": 8,
+              "full_name": "Navigation Camera - Left"
+            },
+            "img_src": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/ncam/NLF_0800_0737945822_612ECM_N0391170NCAM02799_10_195J01_1200.jpg",
+            "earth_date": "2023-05-20"
+          },
+          {
+            "id": 1139804,
+            "sol": 800,
+            "rover": {
+              "id": 8,
+              "name": "Perseverance",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "EDL_RUCAM",
+                  "full_name": "Rover Up-Look Camera"
+                },
+                {
+                  "name": "EDL_DDCAM",
+                  "full_name": "Descent Stage Down-Look Camera"
+                },
+                {
+                  "name": "EDL_PUCAM1",
+                  "full_name": "Parachute Up-Look Camera A"
+                },
+                "..."
+              ],
+              "max_sol": 879,
+              "max_date": "2023-08-10",
+              "launch_date": "2020-07-30",
+              "landing_date": "2021-02-18",
+              "total_photos": 173718
+            },
+            "camera": {
+              "id": 38,
+              "name": "NAVCAM_LEFT",
+              "rover_id": 8,
+              "full_name": "Navigation Camera - Left"
+            },
+            "img_src": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00800/ids/edr/browse/ncam/NLG_0800_0737959244_489ECM_N0391170NCAM00500_00_2I4J01_1200.jpg",
+            "earth_date": "2023-05-20"
+          },
+          "..."
+        ]
+      },
+      "duration": 1007,
+      "streaming": false
+    },
+    "urlParams": {
+      "{mars_rover}": "Perseverance"
+    },
+    "description": "Data from Perseverance's 800th sol day on Mars",
+    "queryParams": {
+      "sol": 800
+    },
+    "requestBody": {}
+  },
+  {
+    "title": "Photos from Curiosity",
+    "replay": {
+      "output": {
+        "photos": [
+          {
+            "id": 1153322,
+            "sol": 3869,
+            "rover": {
+              "id": 5,
+              "name": "Curiosity",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "FHAZ",
+                  "full_name": "Front Hazard Avoidance Camera"
+                },
+                {
+                  "name": "NAVCAM",
+                  "full_name": "Navigation Camera"
+                },
+                {
+                  "name": "MAST",
+                  "full_name": "Mast Camera"
+                },
+                "..."
+              ],
+              "max_sol": 3914,
+              "max_date": "2023-08-10",
+              "launch_date": "2011-11-26",
+              "landing_date": "2012-08-06",
+              "total_photos": 671140
+            },
+            "camera": {
+              "id": 22,
+              "name": "MAST",
+              "rover_id": 5,
+              "full_name": "Mast Camera"
+            },
+            "img_src": "https://mars.nasa.gov/msl-raw-images/msss/03869/mcam/3869MR1042850031901309C00_DXXX.jpg",
+            "earth_date": "2023-06-25"
+          },
+          {
+            "id": 1153323,
+            "sol": 3869,
+            "rover": {
+              "id": 5,
+              "name": "Curiosity",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "FHAZ",
+                  "full_name": "Front Hazard Avoidance Camera"
+                },
+                {
+                  "name": "NAVCAM",
+                  "full_name": "Navigation Camera"
+                },
+                {
+                  "name": "MAST",
+                  "full_name": "Mast Camera"
+                },
+                "..."
+              ],
+              "max_sol": 3914,
+              "max_date": "2023-08-10",
+              "launch_date": "2011-11-26",
+              "landing_date": "2012-08-06",
+              "total_photos": 671140
+            },
+            "camera": {
+              "id": 22,
+              "name": "MAST",
+              "rover_id": 5,
+              "full_name": "Mast Camera"
+            },
+            "img_src": "https://mars.nasa.gov/msl-raw-images/msss/03869/mcam/3869MR1042850021901308C00_DXXX.jpg",
+            "earth_date": "2023-06-25"
+          },
+          {
+            "id": 1153324,
+            "sol": 3869,
+            "rover": {
+              "id": 5,
+              "name": "Curiosity",
+              "status": "active",
+              "cameras": [
+                {
+                  "name": "FHAZ",
+                  "full_name": "Front Hazard Avoidance Camera"
+                },
+                {
+                  "name": "NAVCAM",
+                  "full_name": "Navigation Camera"
+                },
+                {
+                  "name": "MAST",
+                  "full_name": "Mast Camera"
+                },
+                "..."
+              ],
+              "max_sol": 3914,
+              "max_date": "2023-08-10",
+              "launch_date": "2011-11-26",
+              "landing_date": "2012-08-06",
+              "total_photos": 671140
+            },
+            "camera": {
+              "id": 22,
+              "name": "MAST",
+              "rover_id": 5,
+              "full_name": "Mast Camera"
+            },
+            "img_src": "https://mars.nasa.gov/msl-raw-images/msss/03869/mcam/3869MR1042850011901307C00_DXXX.jpg",
+            "earth_date": "2023-06-25"
+          },
+          "..."
+        ]
+      },
+      "duration": 1112,
+      "streaming": false
+    },
+    "urlParams": {
+      "{mars_rover}": "Curiosity"
+    },
+    "description": "Data from Earth Day June 25th, 2023 on Curiosity's MAST camera",
+    "queryParams": {
+      "camera": "mast",
+      "earth_date": "2023-06-25"
+    },
+    "requestBody": {}
+  }
+]

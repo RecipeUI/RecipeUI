@@ -12,6 +12,7 @@ import {
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
 import { createClient } from "@supabase/supabase-js";
+import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
 
 // Remember initPosthog has to be run
 export function initPosthog() {
@@ -86,6 +87,10 @@ export function Providers({ children }: { children: ReactNode }) {
     } else {
       setSupabase(createClientComponentClient());
     }
+  }, []);
+
+  useEffect(() => {
+    RecipeUICoreAPI.syncCore();
   }, []);
 
   return (

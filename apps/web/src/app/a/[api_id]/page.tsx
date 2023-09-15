@@ -35,5 +35,5 @@ export default async function APIPage({
       })
     : null;
 
-  return <RecipeAPI project={project} recipe={recipe} />;
+  return <RecipeAPI project={project} recipe={recipe} apiId={api_id} />;
 }

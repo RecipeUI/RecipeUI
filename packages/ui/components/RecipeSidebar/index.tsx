@@ -59,6 +59,7 @@ export function RecipeSidebar() {
   const { initializeRecipe } = useInitializeRecipe();
 
   useEffect(() => {
+    // The only place we initialize forks from collections
     async function initialize() {
       if (!recipeFork) return;
 
@@ -234,6 +235,7 @@ export function RecipeSidebar() {
                           key={session.id}
                           session={session}
                           isCurrentSession={isCurrentSession}
+                          folderId={folderId}
                         />
                       );
                     })}
@@ -408,9 +410,11 @@ function EditFolderModal({
 function SessionTab({
   isCurrentSession,
   session,
+  folderId,
 }: {
   isCurrentSession: boolean;
   session: RecipeSession;
+  folderId?: string;
 }) {
   const hoverRef = useRef(null);
   const isHover = useHover(hoverRef);
@@ -434,7 +438,9 @@ function SessionTab({
     (state) => state.saveEditorSession
   );
 
-  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateModal, setDuplicateModal] = useState<null | {
+    folder_id?: string;
+  }>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
   return (
@@ -509,7 +515,7 @@ function SessionTab({
             <label
               className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-primary"
               onClick={() => {
-                setShowDuplicateModal(true);
+                setDuplicateModal({ folder_id: folderId });
               }}
             >
               <DocumentDuplicateIcon className="w-3" />
@@ -550,9 +556,10 @@ function SessionTab({
           </div>
         )}
       </div>
-      {showDuplicateModal && (
+      {duplicateModal && (
         <DuplicateModal
-          onClose={() => setShowDuplicateModal(false)}
+          folderId={duplicateModal.folder_id}
+          onClose={() => setDuplicateModal(null)}
           session={session}
         />
       )}
@@ -596,42 +603,8 @@ function EditSessionModal({
 
   return (
     <Modal header="Edit Session" onClose={onClose}>
-      <div className="mt-2 form-control">
-        <label>Session Name</label>
-        <input
-          type="text"
-          className="input input-bordered input-sm"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-
-      {folders.length > 0 && (
-        <div className="form-control mt-2">
-          <label className="label">
-            <span className="label-text">Folder</span>
-          </label>
-          <select
-            className="select select-bordered select-sm"
-            value={selectedFolder}
-            onChange={(e) => {
-              setSelectedFolder(e.target.value);
-            }}
-          >
-            {folders.map((folder) => {
-              return (
-                <option key={folder.id} value={folder.id}>
-                  {folder.name}
-                </option>
-              );
-            })}
-            <option value="NO_FOLDER_ID">No Folder</option>
-          </select>
-        </div>
-      )}
-      <button
-        className="btn btn-accent btn-sm mt-4"
-        onClick={async () => {
+      <form
+        onSubmit={async () => {
           updateSessionName(session, name);
 
           if (currentFolder?.id !== selectedFolder) {
@@ -647,8 +620,43 @@ function EditSessionModal({
           onClose();
         }}
       >
-        Submit
-      </button>
+        <div className="mt-2 form-control">
+          <label>Session Name</label>
+          <input
+            type="text"
+            className="input input-bordered input-sm"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        {folders.length > 0 && (
+          <div className="form-control mt-2">
+            <label className="label">
+              <span className="label-text">Folder</span>
+            </label>
+            <select
+              className="select select-bordered select-sm"
+              value={selectedFolder}
+              onChange={(e) => {
+                setSelectedFolder(e.target.value);
+              }}
+            >
+              {folders.map((folder) => {
+                return (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </option>
+                );
+              })}
+              <option value="NO_FOLDER_ID">No Folder</option>
+            </select>
+          </div>
+        )}
+        <button type="submit" className="btn btn-accent btn-sm mt-4">
+          Submit
+        </button>
+      </form>
     </Modal>
   );
 }
@@ -656,9 +664,11 @@ function EditSessionModal({
 function DuplicateModal({
   onClose,
   session,
+  folderId,
 }: {
   onClose: () => void;
   session: RecipeSession;
+  folderId?: string;
 }) {
   const [sessionName, setSessionName] = useState(session.name + " copy");
   const [isRecipeCopy, setIsRecipeCopy] = useState(false);
@@ -672,11 +682,12 @@ function DuplicateModal({
   );
   const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!sessionName) {
       alert("Please enter a session name");
       return;
     }
+
     saveSession().then(() => {
       const newSession: RecipeSession = addEditorSession({
         ...session,
@@ -698,6 +709,10 @@ function DuplicateModal({
           ...parameters,
           ...config,
         });
+
+        if (folderId) {
+          await FolderAPI.addSessionToFolder(newSession.id, folderId);
+        }
 
         onClose();
       }, 0);

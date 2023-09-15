@@ -2,6 +2,7 @@ import { RecipeParam, RecipeProject } from "types/database";
 import { ProjectScope, RecipeParamType } from "types/enums";
 import { RecipeSession } from "../state/recipeSession";
 import { JSONSchema6 } from "json-schema";
+import { produce } from "immer";
 
 export function isArrayPath(str: string): boolean {
   // Check to see if string in format of [number]
@@ -34,61 +35,6 @@ export function getValueInObjPath<T = unknown>(
 
   return value as T;
 }
-
-// export function getDefaultValue<T>(
-//   param: RecipeParam,
-//   checkRequired = false
-// ): T | null | undefined {
-//   if (checkRequired && !param.required) {
-//     return undefined;
-//   } else if (param["default"] !== undefined) {
-//     return param.default as T;
-//   } else if (param.type === RecipeParamType.String) {
-//     if (param.enum && param.enum.length > 0) {
-//       return param.enum[0] as T;
-//     }
-
-//     return "" as T;
-//   } else if (param.type === RecipeParamType.Number) {
-//     return (param["minimum"] || param["maximum"] || 0) as T;
-//   } else if (param.type === RecipeParamType.Boolean) {
-//     return false as T;
-//   } else if (param.type === RecipeParamType.File) {
-//     return null as T;
-//   } else if (param.type === RecipeParamType.Array) {
-//     return [getDefaultValue(param.arraySchema)] as T;
-//   } else if (param.type === RecipeParamType.Object) {
-//     const obj = {} as T;
-//     for (const keySchema of param.objectSchema) {
-//       const value = getDefaultValue(keySchema, true);
-//       if (value !== undefined) {
-//         // @ts-expect-error IDK what the type should be here
-//         obj[keySchema.name] = value;
-//       }
-//     }
-//     return obj as T;
-//   } else if (
-//     // TODO: AllOf is wrong here in some cases
-//     "variants" in param
-//   ) {
-//     // Check to see if we can find an enum or default value in one of these
-//     const hasEnumVariant = param.variants.find((variant) => "enum" in variant);
-//     if (hasEnumVariant) {
-//       return getDefaultValue(hasEnumVariant);
-//     }
-
-//     const hasVariantWithDefault = param.variants.find(
-//       (variant) => variant.default != undefined
-//     );
-//     if (hasVariantWithDefault) {
-//       return getDefaultValue(hasVariantWithDefault);
-//     }
-
-//     return getDefaultValue(param.variants[0]);
-//   }
-
-//   return null;
-// }
 
 export function getDefaultValuev1<T>(
   param: JSONSchema6,
@@ -229,4 +175,37 @@ export function isUUID(id: string) {
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
 
   return regexExp.test(id);
+}
+
+export function restrictObjectsAndArrays(obj: Record<string, unknown>) {
+  const ARRAY_REDUCE_FACTOR = 3;
+
+  function recursivelyReduce(_obj: Record<string, unknown>) {
+    let count = 0;
+
+    for (const [key, value] of Object.entries(_obj)) {
+      count += 1;
+
+      if (Array.isArray(value)) {
+        const restrictedArray = value.slice(0, ARRAY_REDUCE_FACTOR);
+        _obj[key] = restrictedArray;
+
+        for (const item of restrictedArray) {
+          if (typeof item === "object" && item !== null) {
+            recursivelyReduce(item as Record<string, unknown>);
+          }
+        }
+
+        if (value.length >= 3) {
+          restrictedArray.push("...");
+        }
+      } else if (typeof value === "object" && value !== null) {
+        recursivelyReduce(value as Record<string, unknown>);
+      }
+    }
+  }
+
+  return produce(obj, (draft) => {
+    recursivelyReduce(draft);
+  });
 }
