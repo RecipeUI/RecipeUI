@@ -3,19 +3,13 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { DesktopAppUpsell } from "../../../ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { useIsMobile } from "../../hooks";
-import { useQuery } from "@tanstack/react-query";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
-import { RecipeMethod } from "types/enums";
-import {
-  APP_GITHUB_LATEST_RELEASE_URL,
-  LATEST_APP_VERSION,
-} from "../../utils/constants/main";
+import { LATEST_APP_VERSION } from "../../utils/constants/main";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",

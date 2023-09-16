@@ -9,12 +9,10 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { useRouter } from "next/navigation";
-import { setConfigForSessionStore } from "../../../state/apiSession";
 import { JSONSchema6 } from "json-schema";
 import { useSessionStorage } from "usehooks-ts";
 import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
 import { useIsTauri } from "../../../hooks/useIsTauri";
-import { DesktopAppUpsell } from "../../../pages/editor/EditorPage";
 import { Recipe, RecipeTemplate } from "types/database";
 import { Modal } from "../../Modal";
 
@@ -51,6 +49,7 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
       },
 
       editorURLCode: "",
+      editorProject: selectedRecipe.project,
     },
   };
 }

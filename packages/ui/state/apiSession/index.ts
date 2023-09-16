@@ -54,6 +54,12 @@ interface APISessionConfig {
   editorURLCode: string;
   editorURLSchemaType: string | null;
   editorURLSchemaJSON: JSONSchema6 | null;
+  editorProject?: string | null;
+  editorSessionOptions?: EditorSessionOptions;
+}
+
+export interface EditorSessionOptions {
+  ignoreProject?: string;
 }
 
 enum APIStore {
@@ -150,7 +156,7 @@ async function getConfigStore() {
   return (await getDB()).transaction(APIStore.Config, "readwrite").store;
 }
 
-async function getSecretStore() {
+export async function getSecretStore() {
   return (await getDB()).transaction(APIStore.Secrets, "readwrite").store;
 }
 
@@ -260,62 +266,13 @@ export async function deleteConfigForSessionStore({
 
     configStore.delete(String(recipeId));
     miniRecipeStore.delete(String(recipeId));
-    deleteSecret({ secretId: recipeId });
+    SecretAPI.deleteSecret({ secretId: recipeId });
   }
-}
-
-export async function getSecret({
-  secretId,
-}: {
-  secretId: string;
-}): Promise<string | undefined> {
-  const store = await getSecretStore();
-  return store.get(String(secretId));
-}
-
-interface SaveSecret {
-  secretId: string;
-  secretValue: string;
-}
-export async function saveSecret({ secretId, secretValue }: SaveSecret) {
-  const store = await getSecretStore();
-  store.put(secretValue, String(secretId));
-}
-
-export async function deleteSecret({ secretId }: { secretId: string }) {
-  const store = await getSecretStore();
-  store.delete(String(secretId));
-}
-
-export function useSecret(recipeId: string) {
-  const [secret, setSecret] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    getSecret({ secretId: recipeId }).then((secret) => setSecret(secret));
-  }, [recipeId]);
-
-  const _updateSecret = useCallback(
-    ({ secretValue }: SaveSecret) => {
-      saveSecret({ secretId: recipeId, secretValue });
-      setSecret(secretValue);
-    },
-    [recipeId]
-  );
-
-  const _deleteSecret = useCallback(() => {
-    deleteSecret({ secretId: recipeId });
-    setSecret(undefined);
-  }, [recipeId]);
-
-  return {
-    secret,
-    updateSecret: _updateSecret,
-    deleteSecret: _deleteSecret,
-  };
 }
 
 import EventEmitter from "events";
 import { OutputAPI } from "./OutputAPI";
+import { SecretAPI } from "./SecretAPI";
 export const eventEmitter = new EventEmitter();
 
 async function getMiniRecipeStore() {

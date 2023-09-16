@@ -1,57 +1,22 @@
-import {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   RecipeBodyRoute,
-  RecipeContext,
-  RecipeOutputTab,
-  RecipeProjectContext,
   SessionOutput,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import {
-  RecipeOutputType,
-  RecipeTemplate,
-  RecipeTemplateFragment,
-  UserTemplatePreview,
-} from "types/database";
-import { getTemplate } from "../actions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { RecipeOutputType, RecipeTemplateFragment } from "types/database";
 import classNames from "classnames";
 
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
-import { Dialog } from "@headlessui/react";
-import {
-  DB_FUNC_ERRORS,
-  FORM_LINKS,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
-import { useHover, useInterval, useLocalStorage } from "usehooks-ts";
-import Link from "next/link";
-import { ProjectScope, QueryKey } from "types/enums";
-import { useQueryClient } from "@tanstack/react-query";
-import { useIsTauri } from "../../../hooks/useIsTauri";
-import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import {
-  EllipsisHorizontalCircleIcon,
-  EllipsisHorizontalIcon,
-} from "@heroicons/react/24/outline";
-import {
-  MiniRecipeAPI,
-  useMiniRecipes,
-  useSecret,
-} from "../../../state/apiSession";
+import { UNIQUE_ELEMENT_IDS } from "../../../utils/constants/main";
+import { useHover, useInterval } from "usehooks-ts";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { MiniRecipeAPI, useMiniRecipes } from "../../../state/apiSession";
 import { Modal } from "../../Modal";
 import { URLHighlight } from "../../../pages/editor/EditorURL";
 import { ResponseOutput } from "../../RecipeOutput/RecipeOutputConsole";
 import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
-import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 
 export function RecipeTemplateEdit() {
   return (

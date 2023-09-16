@@ -1,6 +1,6 @@
 "use client";
 import { RecipeProject } from "types/database";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
@@ -8,6 +8,7 @@ import { fetchHomeProjects, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
 import {
   DesktopPage,
+  DesktopPageShape,
   FetchRequest,
   FetchResponse,
   RecipeContext,
@@ -20,7 +21,7 @@ import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 import EditorPage from "ui/pages/editor/EditorPage";
-
+import { useLocalStorage } from "usehooks-ts";
 export default function Page() {
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>

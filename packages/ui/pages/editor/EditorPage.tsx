@@ -1,12 +1,13 @@
 "use client";
 
 import classNames from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
   GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { EditorBody } from "./EditorBody";
@@ -30,6 +31,10 @@ import {
 import { useDarkMode } from "usehooks-ts";
 import { EditorUpdates } from "./EditorUpdates";
 import { DISCORD_LINK } from "../../utils/constants/main";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
+import { CollectionModule, isCollectionModule } from "../../modules";
+import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
+import { useComplexSecrets } from "../../state/apiSession/SecretAPI";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -37,13 +42,24 @@ const CONFIG_ROUTES = [RecipeBodyRoute.Headers, RecipeBodyRoute.Auth];
 
 export default function EditorPage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const currentProject = useRecipeSessionStore((state) => state.editorProject);
+
+  const localProjects = useLocalProjects();
   useEffect(() => localStorage.removeItem("usehooks-ts-dark-mode"), []);
 
   return (
-    <div className="flex h-full overflow-y-auto">
-      <RecipeSidebar />
-      {currentSession ? <CoreEditor /> : <NewRequest />}
-    </div>
+    <RecipeProjectContext.Provider
+      value={
+        currentProject
+          ? localProjects.find((p) => p.project === currentProject) || null
+          : null
+      }
+    >
+      <div className="flex h-full overflow-y-auto">
+        <RecipeSidebar />
+        {currentSession ? <CoreEditor /> : <NewRequest />}
+      </div>
+    </RecipeProjectContext.Provider>
   );
 }
 
@@ -406,6 +422,9 @@ function CoreEditor() {
   );
 
   const { recipes } = useMiniRecipes(session?.recipeId);
+
+  const selectedProject = useContext(RecipeProjectContext);
+
   useEffect(() => {
     // console.log(
     //   "Change of sessionId",
@@ -424,7 +443,7 @@ function CoreEditor() {
 
   const BODY_ROUTES = useMemo(() => {
     const hasURLParams = editorUrl.match(/{(\w+)}/g);
-    const mainRoutes = [...EDITOR_ROUTES];
+    let mainRoutes = [...EDITOR_ROUTES];
 
     if (!hasURLParams && editorURLCode) {
       setEditorURLCode("");
@@ -442,26 +461,49 @@ function CoreEditor() {
       mainRoutes.push(RecipeBodyRoute.Templates);
     }
 
+    if (selectedProject && isCollectionModule(selectedProject.project)) {
+      mainRoutes.push(RecipeBodyRoute.Collection);
+      mainRoutes = mainRoutes.filter((route) => route !== RecipeBodyRoute.Auth);
+    }
+
     // Lets also do cleanup if the person removes urlParams
     return mainRoutes;
-  }, [editorUrl, recipes.length]);
+  }, [editorUrl, recipes.length, selectedProject]);
+
+  const { hasAuthSetup } = useComplexSecrets({
+    collection: selectedProject?.project,
+  });
 
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
       <RecipeEditBodySearch />
       <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
         {BODY_ROUTES.map((route) => {
+          let label: string = route;
+
+          if (
+            route === RecipeBodyRoute.Collection &&
+            isCollectionModule(selectedProject?.project)
+          ) {
+            label = selectedProject!.project;
+          }
+
           return (
             <div
               key={route}
               className={classNames(
                 "font-bold text-sm",
                 bodyRoute === route && "underline underline-offset-4",
-                "cursor-pointer"
+                "cursor-pointer",
+                isCollectionModule(selectedProject?.project) &&
+                  !hasAuthSetup &&
+                  route === RecipeBodyRoute.Collection &&
+                  bodyRoute !== RecipeBodyRoute.Collection &&
+                  "animate-bounce text-error"
               )}
               onClick={() => setBodyRoute(route)}
             >
-              {route}
+              {label}
             </div>
           );
         })}
@@ -474,6 +516,11 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplateEdit />}
+        {bodyRoute === RecipeBodyRoute.Collection && (
+          <RecipeCustomModule
+            module={selectedProject?.project! as CollectionModule}
+          />
+        )}
         <RecipeOutput />
       </div>
     </div>

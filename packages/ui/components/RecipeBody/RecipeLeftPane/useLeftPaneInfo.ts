@@ -3,7 +3,7 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { useSecret } from "../../../state/apiSession";
+import { useSecret } from "../../../state/apiSession/SecretAPI";
 
 export function useLeftPaneInfo() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -11,7 +11,7 @@ export function useLeftPaneInfo() {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const secretInfo = useSecret(selectedRecipe.id);
+  const secretInfo = useSecret({ secretId: selectedRecipe.id });
 
   const {
     hasNoAuth,

@@ -1,18 +1,16 @@
 "use client";
 
 import classNames from "classnames";
-import { RouteTypeLabel } from "../../RouteTypeLabel";
-import {
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../../state/recipeSession";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RecipeMethod } from "types/enums";
-import { RecipeSaveButton } from "./RecipeSaveButton";
 import { CurlModal } from "../../../pages/editor/Builders/CurlModal";
 import { useDebounce } from "usehooks-ts";
 import { ImportBuilderModal } from "../../../pages/editor/Builders/ImportBuilderModal";
+import { pathModuleSetting as getPathModuleSetting } from "../../../modules/authConfigs";
+import { ModuleSetting } from "../../../modules";
+import { UpsellModuleContainer } from "../../../modules/components/UpsellModuleContainer";
 
 export function RecipeEditBodySearch() {
   const url = useRecipeSessionStore((state) => state.editorUrl);
@@ -29,6 +27,33 @@ export function RecipeEditBodySearch() {
   const [importString, setImportString] = useState("");
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
+  const editorProject = useRecipeSessionStore((state) => state.editorProject);
+  const editorSessionOptions = useRecipeSessionStore(
+    (state) => state.editorSessionOptions
+  );
+
+  const debouncedUrl = useDebounce(url, 500);
+
+  const upsellSpecialCollection = useMemo(() => {
+    if (editorProject) return;
+
+    if (debouncedUrl === url) {
+      const specialModule = getPathModuleSetting(debouncedUrl);
+
+      if (specialModule) {
+        if (
+          editorSessionOptions?.ignoreProject?.includes(specialModule.module)
+        ) {
+          return;
+        }
+
+        return specialModule;
+      }
+    }
+
+    return undefined;
+  }, [debouncedUrl, editorProject, editorSessionOptions, url]);
 
   return (
     <>
@@ -105,6 +130,9 @@ export function RecipeEditBodySearch() {
           initialUrl={importString}
           onClose={() => setImportString("")}
         />
+      )}
+      {upsellSpecialCollection && (
+        <UpsellModuleContainer module={upsellSpecialCollection} />
       )}
     </>
   );
