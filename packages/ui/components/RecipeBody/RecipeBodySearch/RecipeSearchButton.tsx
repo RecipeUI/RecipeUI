@@ -77,7 +77,8 @@ export function RecipeSearchButton() {
   };
 
   const nativeFetch = useContext(RecipeNativeFetchContext)!;
-  const selectedProject = useContext(RecipeProjectContext)?.project;
+
+  const editorProject = useRecipeSessionStore((state) => state.editorProject);
 
   const _onSubmit = async () => {
     if (!currentSession) return;
@@ -184,82 +185,80 @@ export function RecipeSearchButton() {
     let url = new URL(path);
 
     // ------ Parse Auth -------
-    if (recipe.auth) {
-      if (selectedProject && isCollectionModule(selectedProject)) {
-        const { hasAuthSetup, secretRecord } =
-          await SecretAPI.getComplexSecrets({
-            collection: selectedProject,
-          });
+    if (editorProject && isCollectionModule(editorProject)) {
+      const { hasAuthSetup, secretRecord } = await SecretAPI.getComplexSecrets({
+        collection: editorProject,
+      });
 
-        if (!hasAuthSetup) {
-          alert("Please setup authentication first.");
-          return false;
-        }
+      if (!hasAuthSetup) {
+        alert("Please setup authentication first.");
+        return false;
+      }
 
-        const authConfigs = ModuleSettings[selectedProject]?.authConfigs || [];
+      const authConfigs = ModuleSettings[editorProject]?.authConfigs || [];
 
-        for (const config of authConfigs) {
-          const secretKey = SecretAPI.getSecretKeyFromConfig(
-            config,
-            selectedProject
-          );
-          let secretValue = secretRecord[secretKey];
-
-          if (!secretValue) {
-            // This really shouldn't happen because of hasAuthSetup
-            alert(
-              `Please setup authentication first for the API Key ${config.type}::${config.payload.name}`
-            );
-            return false;
-          }
-
-          if (config.payload.prefix) {
-            secretValue = `${config.payload.prefix}${secretValue}`;
-          }
-
-          if (config.type === RecipeAuthType.Query) {
-            url.searchParams.append(config.payload.name, secretValue);
-          } else if (config.type === RecipeAuthType.Header) {
-            fetchHeaders[config.payload.name] = secretValue;
-          }
-        }
-      } else {
-        const primaryToken = await SecretAPI.getSecret({
-          secretId: currentSession.recipeId,
-        });
-
-        if (!primaryToken) {
-          alert("Please setup authentication first.");
-          return false;
-        }
-
-        if (recipe.auth === RecipeAuthType.Bearer) {
-          fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
-        }
-
-        const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
-          (auth) => auth.type === recipe.auth
+      for (const config of authConfigs) {
+        const secretKey = SecretAPI.getSecretKeyFromConfig(
+          config,
+          editorProject
         );
+        let secretValue = secretRecord[secretKey];
 
-        if (recipe.auth === RecipeAuthType.Header) {
-          const headerName = editorAuth?.meta || relevantOption?.payload.name;
-          if (!headerName) {
-            alert("The auth for this API is not setup correctly.");
-            return false;
-          }
-
-          fetchHeaders[headerName!] = primaryToken;
+        if (!secretValue) {
+          // This really shouldn't happen because of hasAuthSetup
+          alert(
+            `Please setup authentication first for the API Key ${config.type}::${config.payload.name}`
+          );
+          return false;
         }
 
-        if (recipe.auth === RecipeAuthType.Query) {
-          let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
-          if (!QUERY_KEY_NAME) {
-            alert("The auth for this API is not setup correctly.");
-            return false;
-          }
-
-          url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+        if (config.payload.prefix) {
+          secretValue = `${config.payload.prefix}${secretValue}`;
         }
+
+        if (config.type === RecipeAuthType.Query) {
+          url.searchParams.append(config.payload.name, secretValue);
+        } else if (config.type === RecipeAuthType.Header) {
+          fetchHeaders[config.payload.name] = secretValue;
+        }
+      }
+    }
+    if (recipe.auth && !isCollectionModule(editorProject || "")) {
+      const primaryToken = await SecretAPI.getSecret({
+        secretId: currentSession.recipeId,
+      });
+
+      if (!primaryToken) {
+        alert("Please setup authentication first.");
+        return false;
+      }
+
+      if (recipe.auth === RecipeAuthType.Bearer) {
+        fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
+      }
+
+      const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
+        (auth) => auth.type === recipe.auth
+      );
+
+      if (recipe.auth === RecipeAuthType.Header) {
+        const headerName = editorAuth?.meta || relevantOption?.payload.name;
+        if (!headerName) {
+          alert("The auth for this API is not setup correctly.");
+          return false;
+        }
+
+        fetchHeaders[headerName!] = primaryToken;
+      }
+
+      if (recipe.auth === RecipeAuthType.Query) {
+        let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
+        if (!QUERY_KEY_NAME) {
+          alert("The auth for this API is not setup correctly.");
+          return false;
+        }
+
+        url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
       }
     }
 

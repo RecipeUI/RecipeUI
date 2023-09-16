@@ -8,8 +8,6 @@ export const NASA_QUERY_API_KEY_CONFIG = {
   },
 } as const;
 
-export const NASA_DEMO_KEY = "DEMO_KEY";
-
 export default {
   module: CollectionModule.NASA,
   title: "NASA",

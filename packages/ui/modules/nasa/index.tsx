@@ -61,7 +61,7 @@ function NASAAuthModule() {
         {!hasAuthSetup && (
           <div className="alert alert-error flex items-center gap-x-2 mb-4">
             <InformationCircleIcon className="h-6" />
-            <span className="mt-0.5">Setup auth.</span>
+            <span className="mt-0.5">Setup auth here.</span>
           </div>
         )}
         <h2 className="text-xl font-bold">Auth</h2>
@@ -75,8 +75,10 @@ function NASAAuthModule() {
             onClick={(e) => {
               setValue("NASA_QUERY_API_KEY", NASA_DEMO_KEY);
               onSubmit(e);
+
+              alert("API key set! Hit send to try it out.");
             }}
-            data-tip="Set the API key to DEMO_KEY"
+            data-tip="Set key!"
           >
             DEMO_KEY
           </button>

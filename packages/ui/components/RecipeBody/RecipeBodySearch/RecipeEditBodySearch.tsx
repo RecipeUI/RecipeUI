@@ -3,13 +3,12 @@
 import classNames from "classnames";
 import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { RecipeMethod } from "types/enums";
 import { CurlModal } from "../../../pages/editor/Builders/CurlModal";
 import { useDebounce } from "usehooks-ts";
 import { ImportBuilderModal } from "../../../pages/editor/Builders/ImportBuilderModal";
 import { pathModuleSetting as getPathModuleSetting } from "../../../modules/authConfigs";
-import { ModuleSetting } from "../../../modules";
 import { UpsellModuleContainer } from "../../../modules/components/UpsellModuleContainer";
 
 export function RecipeEditBodySearch() {
