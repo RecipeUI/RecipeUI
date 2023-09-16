@@ -55,6 +55,11 @@ interface APISessionConfig {
   editorURLSchemaType: string | null;
   editorURLSchemaJSON: JSONSchema6 | null;
   editorProject?: string | null;
+  editorSessionOptions?: EditorSessionOptions;
+}
+
+export interface EditorSessionOptions {
+  ignoreProject?: string;
 }
 
 enum APIStore {

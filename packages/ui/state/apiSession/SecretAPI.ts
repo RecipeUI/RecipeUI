@@ -1,9 +1,9 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getSecretStore } from ".";
+import { eventEmitter, getSecretStore } from ".";
 import { AuthConfig } from "types/database";
-import { CollectionModule } from "../../modules";
-import { ModuleToConfigs } from "../../modules/authConfigs";
+import { CollectionModule, isCollectionModule } from "../../modules";
+import { ModuleSettings } from "../../modules/authConfigs";
 
 export class SecretAPI {
   static getSecret = async ({
@@ -30,7 +30,7 @@ export class SecretAPI {
   }: {
     collection: CollectionModule;
   }) => {
-    let authConfigs = ModuleToConfigs[collection];
+    let authConfigs = ModuleSettings[collection]?.authConfigs;
 
     if (!authConfigs) {
       alert("No auth configs found for collection: " + collection);
@@ -91,7 +91,7 @@ export function useSecret({ secretId }: { secretId: string }) {
 }
 
 interface ComplexSecretProps {
-  collection: CollectionModule;
+  collection?: string | CollectionModule;
   onSave?: (secrets: Record<string, string | undefined>) => void;
 }
 export function useComplexSecrets({ collection, onSave }: ComplexSecretProps) {
@@ -100,41 +100,44 @@ export function useComplexSecrets({ collection, onSave }: ComplexSecretProps) {
   >({});
   const [hasAuthSetup, setHasAuthSetup] = useState<boolean>(false);
 
-  const refreshSecrets = useCallback(async () => {
-    const response = await SecretAPI.getComplexSecrets({
-      collection,
-    });
-    if (response.secretRecord) {
-      setSecretRecord(response.secretRecord);
-      setHasAuthSetup(response.hasAuthSetup);
+  useEffect(() => {
+    async function refreshSecrets() {
+      if (!collection || !isCollectionModule(collection)) {
+        setSecretRecord({});
+        setHasAuthSetup(false);
+        return;
+      }
 
-      onSave?.(response.secretRecord);
+      const response = await SecretAPI.getComplexSecrets({
+        collection,
+      });
+      if (response.secretRecord) {
+        setSecretRecord(response.secretRecord);
+        setHasAuthSetup(response.hasAuthSetup);
+
+        onSave?.(response.secretRecord);
+      }
     }
+    refreshSecrets();
+    eventEmitter.on("refreshSecrets", refreshSecrets);
+
+    return () => {
+      eventEmitter.off("refreshSecrets", refreshSecrets);
+    };
 
     // Do not add onSave to dependency array
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
-  useEffect(() => {
-    refreshSecrets();
-  }, [refreshSecrets]);
+  const updateSecrets = useCallback(async (saveSecrets: SaveSecret[]) => {
+    await Promise.all(
+      saveSecrets.map(async (saveSecret) => {
+        await SecretAPI.saveSecret(saveSecret);
+      })
+    );
 
-  const updateSecrets = useCallback(
-    async (saveSecrets: SaveSecret[]) => {
-      await Promise.all(
-        saveSecrets.map(async (saveSecret) => {
-          await SecretAPI.saveSecret(saveSecret);
-        })
-      );
-
-      await refreshSecrets();
-    },
-    [refreshSecrets]
-  );
-
-  const authConfigs = useMemo(() => {
-    return ModuleToConfigs[collection] || [];
-  }, [collection]);
+    eventEmitter.emit("refreshSecrets");
+  }, []);
 
   return {
     secretRecord,

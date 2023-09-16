@@ -25,6 +25,7 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import {
+  EditorSessionOptions,
   deleteSession,
   setConfigForSessionStore,
   setParametersForSessionStore,
@@ -151,6 +152,7 @@ export type EditorSliceValues = Pick<
   | "editorURLSchemaType"
   | "editorURLCode"
   | "editorProject"
+  | "editorSessionOptions"
 >;
 
 export interface RecipeEditorSlice {
@@ -217,8 +219,13 @@ export interface RecipeEditorSlice {
     merge: boolean;
   }) => void;
 
-  editorProject: string | null;
+  editorProject: string | null | undefined;
   setEditorProject: (editorProject: string | null) => void;
+
+  editorSessionOptions: EditorSessionOptions | undefined;
+  setEditorSessionOptions: (
+    editorSessionOptions?: EditorSessionOptions
+  ) => void;
 
   initializeEditorSession: (
     editorSession: Partial<
@@ -408,7 +415,8 @@ function resetEditorSlice(): EditorSliceValues {
     editorURLSchemaJSON: null,
     editorURLCode: "",
 
-    editorProject: null,
+    editorProject: undefined,
+    editorSessionOptions: undefined,
   };
 }
 
@@ -515,6 +523,10 @@ export const createRecipeEditorSlice: StateCreator<
           source: prevState.editorQuerySchemaJSON || {},
         }),
       }));
+    },
+
+    setEditorSessionOptions(editorSessionOptions) {
+      set(() => ({ editorSessionOptions }));
     },
     updateEditorBodySchemaJSON({ path, update, merge = true }) {
       set((prevState) => {

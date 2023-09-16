@@ -26,7 +26,7 @@ import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
 import { isCollectionModule } from "../../../modules";
-import { ModuleToConfigs } from "../../../modules/authConfigs";
+import { ModuleSettings } from "../../../modules/authConfigs";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -196,7 +196,7 @@ export function RecipeSearchButton() {
           return false;
         }
 
-        const authConfigs = ModuleToConfigs[selectedProject];
+        const authConfigs = ModuleSettings[selectedProject]?.authConfigs || [];
 
         for (const config of authConfigs) {
           const secretKey = SecretAPI.getSecretKeyFromConfig(

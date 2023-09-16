@@ -34,6 +34,7 @@ import { DISCORD_LINK } from "../../utils/constants/main";
 import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
 import { CollectionModule, isCollectionModule } from "../../modules";
 import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
+import { useComplexSecrets } from "../../state/apiSession/SecretAPI";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -469,6 +470,10 @@ function CoreEditor() {
     return mainRoutes;
   }, [editorUrl, recipes.length, selectedProject]);
 
+  const { hasAuthSetup } = useComplexSecrets({
+    collection: selectedProject?.project,
+  });
+
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
       <RecipeEditBodySearch />
@@ -478,10 +483,9 @@ function CoreEditor() {
 
           if (
             route === RecipeBodyRoute.Collection &&
-            selectedProject?.project &&
-            isCollectionModule(selectedProject.project)
+            isCollectionModule(selectedProject?.project)
           ) {
-            label = selectedProject.project;
+            label = selectedProject!.project;
           }
 
           return (
@@ -490,7 +494,12 @@ function CoreEditor() {
               className={classNames(
                 "font-bold text-sm",
                 bodyRoute === route && "underline underline-offset-4",
-                "cursor-pointer"
+                "cursor-pointer",
+                isCollectionModule(selectedProject?.project) &&
+                  !hasAuthSetup &&
+                  route === RecipeBodyRoute.Collection &&
+                  bodyRoute !== RecipeBodyRoute.Collection &&
+                  "animate-bounce text-error"
               )}
               onClick={() => setBodyRoute(route)}
             >
