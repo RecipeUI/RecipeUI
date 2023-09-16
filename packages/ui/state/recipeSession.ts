@@ -357,6 +357,7 @@ async function savePrevSessionPre(prevState: Slices) {
     editorURLSchemaType,
     editorURLCode,
     editorProject,
+    editorSessionOptions,
   } = prevState;
 
   await setParametersForSessionStore({
@@ -384,6 +385,7 @@ async function savePrevSessionPre(prevState: Slices) {
       editorURLSchemaType,
       editorURLCode,
       editorProject,
+      editorSessionOptions,
     },
   });
 }

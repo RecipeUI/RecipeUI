@@ -2,7 +2,7 @@
 
 import { SecretAPI, useComplexSecrets } from "../../state/apiSession/SecretAPI";
 import { CollectionModule } from "..";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";
 import ModuleSettings, { NASA_QUERY_API_KEY_CONFIG } from "./settings";
@@ -59,9 +59,11 @@ function NASAAuthModule() {
     <>
       <form className="border p-4 rounded-md" onSubmit={onSubmit}>
         {!hasAuthSetup && (
-          <div className="alert alert-error flex items-center gap-x-2 mb-4">
+          <div className="alert alert-error flex items-center gap-x-2 mb-4 text-sm">
             <InformationCircleIcon className="h-6" />
-            <span className="mt-0.5">Setup auth here.</span>
+            <span className="mt-0.5">
+              Setup auth here. Use NASA demo key to get started right away!
+            </span>
           </div>
         )}
         <h2 className="text-xl font-bold">Auth</h2>
@@ -76,7 +78,7 @@ function NASAAuthModule() {
               setValue("NASA_QUERY_API_KEY", NASA_DEMO_KEY);
               onSubmit(e);
 
-              alert("API key set! Hit send to try it out.");
+              alert("Done! Try making a request.");
             }}
             data-tip="Set key!"
           >
@@ -84,11 +86,11 @@ function NASAAuthModule() {
           </button>
           . For intensive usage, request an API key from them.{" "}
           <a
-            className="btn btn-ghost btn-xs underline underline-offset-2"
+            className="inline-block underline underline-offset-2 text-sm"
             href="https://docs.recipeui.com/docs/Auth/nasa"
             target="_blank"
           >
-            View Auth Docs
+            View auth docs.
           </a>
         </p>
 
