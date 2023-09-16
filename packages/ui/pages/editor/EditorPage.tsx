@@ -40,7 +40,7 @@ export default function EditorPage() {
   useEffect(() => localStorage.removeItem("usehooks-ts-dark-mode"), []);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full overflow-y-auto">
       <RecipeSidebar />
       {currentSession ? <CoreEditor /> : <NewRequest />}
     </div>

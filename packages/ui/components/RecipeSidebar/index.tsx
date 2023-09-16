@@ -124,7 +124,7 @@ export function RecipeSidebar() {
   }
 
   return (
-    <div className="hidden sm:block w-60 border-r border-r-slate-200 dark:border-r-slate-600 overflow-x-clip">
+    <div className="hidden sm:block w-60 border-r border-r-slate-200 dark:border-r-slate-600 overflow-x-clip overflow-y-auto">
       <div className="dropdown cursor-pointer w-full right-0 text-start border-b border-recipe-slate mb-2">
         <label
           tabIndex={0}
