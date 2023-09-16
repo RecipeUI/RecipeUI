@@ -184,7 +184,7 @@ export function RecipeSidebar() {
             return (
               <li key={folderId}>
                 <details className="relative group" open>
-                  <summary className="text-xs font-bold p-0 px-2 py-2 pr-4 relative">
+                  <summary className="text-xs font-bold p-0 px-2 py-2 pr-4  w-full">
                     {folder.name}
                     <div className="flex space-x-2">
                       <a
@@ -450,7 +450,7 @@ function SessionTab({
         key={session.id}
         className={classNames(
           "pl-4 py-2 text-xs ",
-          isCurrentSession && "bg-gray-400 dark:text-white"
+          isCurrentSession && "bg-gray-400 dark:text-black"
         )}
         onClick={async (e) => {
           e.stopPropagation();
@@ -474,13 +474,13 @@ function SessionTab({
           });
         }}
       >
-        <div className="flex text-start">
+        <div className="text-start whitespace-pre-wrap">
           {!isEditing && (
             <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
           )}
           {isEditing ? (
             <input
-              className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4"
+              className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4 inline"
               onBlur={onUpdateSessionName}
               onKeyDown={(e) => {
                 if (e.key === "Enter") onUpdateSessionName();
@@ -493,7 +493,7 @@ function SessionTab({
               }}
             />
           ) : (
-            <h4 className="ml-2">{session.name || "New Session"}</h4>
+            <h4 className="ml-2 inline">{session.name || "New Session"}</h4>
           )}
         </div>
         {isHover && !isEditing && (

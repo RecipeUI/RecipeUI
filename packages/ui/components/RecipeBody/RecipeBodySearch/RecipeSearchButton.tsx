@@ -1,9 +1,6 @@
 import classNames from "classnames";
 import { useContext, useEffect, useRef } from "react";
-import {
-  RECIPE_PROXY,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
+import { UNIQUE_ELEMENT_IDS } from "../../../utils/constants/main";
 import {
   FetchRequest,
   FetchResponse,
@@ -23,9 +20,8 @@ import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
-import { usePathname } from "next/navigation";
-import { getSecret } from "../../../state/apiSession";
-import { OutputAPI, useOutput } from "../../../state/apiSession/OutputAPI";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
+import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
 
@@ -185,7 +181,7 @@ export function RecipeSearchButton() {
 
     // ------ Parse Auth -------
     if (recipe.auth) {
-      const primaryToken = await getSecret({
+      const primaryToken = await SecretAPI.getSecret({
         secretId: currentSession.recipeId,
       });
 

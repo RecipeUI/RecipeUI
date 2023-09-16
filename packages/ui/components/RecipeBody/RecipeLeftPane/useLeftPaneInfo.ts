@@ -3,7 +3,7 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { useSecret } from "../../../state/apiSession";
+import { useSecret } from "../../../state/apiSession/SecretAPI";
 
 export function useLeftPaneInfo() {
   const selectedRecipe = useContext(RecipeContext)!;

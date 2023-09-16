@@ -27,7 +27,7 @@ import { ProjectScope, QueryKey } from "types/enums";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import { useSecret } from "../../../state/apiSession";
+import { useSecret } from "../../../state/apiSession/SecretAPI";
 import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
 import { RecipeForkTab } from "./RecipeForkTab";
 

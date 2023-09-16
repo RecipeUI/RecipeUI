@@ -24,7 +24,7 @@ We are open sourced because we use so much open source technology and we want to
 
 ## Running locally
 
-Currently, we allow some support for running our desktop app built with Tauri Rust. Check out the readme at [apps/desktop](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop)
+Fork and run our desktop app locally. Check out the readme at [apps/desktop](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop). 
 
 ## Contributors
 

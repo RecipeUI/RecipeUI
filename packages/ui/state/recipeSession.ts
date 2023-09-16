@@ -73,6 +73,7 @@ export enum RecipeBodyRoute {
   URL = "URL",
   Headers = "Headers",
   Auth = "Auth",
+  Collection = "Collection",
 }
 
 export enum RecipeOutputTab {
@@ -149,6 +150,7 @@ export type EditorSliceValues = Pick<
   | "editorURLSchemaJSON"
   | "editorURLSchemaType"
   | "editorURLCode"
+  | "editorProject"
 >;
 
 export interface RecipeEditorSlice {
@@ -214,6 +216,9 @@ export interface RecipeEditorSlice {
     update: JSONSchema6;
     merge: boolean;
   }) => void;
+
+  editorProject: string | null;
+  setEditorProject: (editorProject: string | null) => void;
 
   initializeEditorSession: (
     editorSession: Partial<
@@ -344,6 +349,7 @@ async function savePrevSessionPre(prevState: Slices) {
     editorURLSchemaJSON,
     editorURLSchemaType,
     editorURLCode,
+    editorProject,
   } = prevState;
 
   await setParametersForSessionStore({
@@ -370,6 +376,7 @@ async function savePrevSessionPre(prevState: Slices) {
       editorURLSchemaJSON,
       editorURLSchemaType,
       editorURLCode,
+      editorProject,
     },
   });
 }
@@ -400,6 +407,8 @@ function resetEditorSlice(): EditorSliceValues {
     editorURLSchemaType: null,
     editorURLSchemaJSON: null,
     editorURLCode: "",
+
+    editorProject: null,
   };
 }
 
@@ -474,6 +483,9 @@ export const createRecipeEditorSlice: StateCreator<
       });
     },
 
+    setEditorProject(editorProject) {
+      set(() => ({ editorProject }));
+    },
     setEditorMode: (editorModeOn) => set(() => ({ editorMode: editorModeOn })),
     setEditorUrl: (url) => set(() => ({ editorUrl: url })),
     setEditorMethod: (editorMethod: RecipeMethod) =>
@@ -641,7 +653,7 @@ export enum DesktopPage {
   Editor = "Editor",
 }
 
-type DesktopPageShape =
+export type DesktopPageShape =
   | {
       page: DesktopPage.Project;
       pageParam: string;

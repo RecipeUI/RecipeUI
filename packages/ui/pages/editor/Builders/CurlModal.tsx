@@ -12,7 +12,7 @@ import { RecipeAuthType, RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
 
 import { getQueryAndBodyInfo } from "./helpers";
-import { saveSecret } from "../../../state/apiSession";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 
 export function CurlModal({
   onClose,
@@ -81,7 +81,7 @@ export function CurlModal({
                 type: RecipeAuthType.Bearer,
               };
 
-              saveSecret({
+              SecretAPI.saveSecret({
                 secretId: newSession.recipeId,
                 secretValue: header.value.replace("Bearer ", ""),
               });

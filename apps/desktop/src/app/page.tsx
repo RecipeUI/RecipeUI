@@ -8,6 +8,7 @@ import { fetchHomeProjects, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
 import {
   DesktopPage,
+  DesktopPageShape,
   FetchRequest,
   FetchResponse,
   RecipeContext,
@@ -20,7 +21,7 @@ import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 import EditorPage from "ui/pages/editor/EditorPage";
-
+import { useLocalStorage } from "usehooks-ts";
 export default function Page() {
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>
@@ -41,6 +42,24 @@ export default function Page() {
 
 function Container() {
   const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
+
+  const [desktopState, setDesktopState] = useLocalStorage<DesktopPageShape>(
+    "desktopState",
+    null
+  );
+  const setDesktopStage = useRecipeSessionStore(
+    (state) => state.setDesktopPage
+  );
+
+  useEffect(() => {
+    if (desktopState) {
+      setDesktopState(desktopPage);
+    }
+  }, [desktopPage, desktopState, setDesktopState]);
+
+  useEffect(() => {
+    if (desktopState !== null) setDesktopStage(desktopState);
+  }, []);
 
   if (!desktopPage) {
     return <HomePage />;
