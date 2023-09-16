@@ -11,7 +11,7 @@ export function useLeftPaneInfo() {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const secretInfo = useSecret(selectedRecipe.id);
+  const secretInfo = useSecret({ secretId: selectedRecipe.id });
 
   const {
     hasNoAuth,

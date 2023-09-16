@@ -13,7 +13,7 @@ export function RecipeCustomModule({ module }: { module: CollectionModule }) {
   }, [module]);
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 overflow-y-auto">
       <Suspense fallback={<Loading />}>
         {ModuleComponent ? <ModuleComponent /> : null}
       </Suspense>

@@ -701,10 +701,6 @@ export const createDesktopSlice: StateCreator<
 };
 
 export type LocalStorageState = RecipeParameters;
-// {
-//   sessions: RecipeSession[];
-//   currentSession: RecipeSessionSlice["currentSession"];
-// }
 
 const createRecipeSessionSlice: StateCreator<
   Slices,

@@ -7,6 +7,7 @@ import {
   RecipeContext,
   RecipeNativeFetchContext,
   RecipeOutputTab,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeOptions, RecipeOutputType } from "types/database";
@@ -24,6 +25,8 @@ import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
+import { isCollectionModule } from "../../../modules";
+import { ModuleToConfigs } from "../../../modules/authConfigs";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -74,6 +77,7 @@ export function RecipeSearchButton() {
   };
 
   const nativeFetch = useContext(RecipeNativeFetchContext)!;
+  const selectedProject = useContext(RecipeProjectContext)?.project;
 
   const _onSubmit = async () => {
     if (!currentSession) return;
@@ -181,41 +185,81 @@ export function RecipeSearchButton() {
 
     // ------ Parse Auth -------
     if (recipe.auth) {
-      const primaryToken = await SecretAPI.getSecret({
-        secretId: currentSession.recipeId,
-      });
+      if (selectedProject && isCollectionModule(selectedProject)) {
+        const { hasAuthSetup, secretRecord } =
+          await SecretAPI.getComplexSecrets({
+            collection: selectedProject,
+          });
 
-      if (!primaryToken) {
-        alert("Please setup authentication first.");
-        return false;
-      }
-
-      if (recipe.auth === RecipeAuthType.Bearer) {
-        fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
-      }
-
-      const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
-        (auth) => auth.type === recipe.auth
-      );
-
-      if (recipe.auth === RecipeAuthType.Header) {
-        const headerName = editorAuth?.meta || relevantOption?.payload.name;
-        if (!headerName) {
-          alert("The auth for this API is not setup correctly.");
+        if (!hasAuthSetup) {
+          alert("Please setup authentication first.");
           return false;
         }
 
-        fetchHeaders[headerName!] = primaryToken;
-      }
+        const authConfigs = ModuleToConfigs[selectedProject];
 
-      if (recipe.auth === RecipeAuthType.Query) {
-        let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
-        if (!QUERY_KEY_NAME) {
-          alert("The auth for this API is not setup correctly.");
+        for (const config of authConfigs) {
+          const secretKey = SecretAPI.getSecretKeyFromConfig(
+            config,
+            selectedProject
+          );
+          let secretValue = secretRecord[secretKey];
+
+          if (!secretValue) {
+            // This really shouldn't happen because of hasAuthSetup
+            alert(
+              `Please setup authentication first for the API Key ${config.type}::${config.payload.name}`
+            );
+            return false;
+          }
+
+          if (config.payload.prefix) {
+            secretValue = `${config.payload.prefix}${secretValue}`;
+          }
+
+          if (config.type === RecipeAuthType.Query) {
+            url.searchParams.append(config.payload.name, secretValue);
+          } else if (config.type === RecipeAuthType.Header) {
+            fetchHeaders[config.payload.name] = secretValue;
+          }
+        }
+      } else {
+        const primaryToken = await SecretAPI.getSecret({
+          secretId: currentSession.recipeId,
+        });
+
+        if (!primaryToken) {
+          alert("Please setup authentication first.");
           return false;
         }
 
-        url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+        if (recipe.auth === RecipeAuthType.Bearer) {
+          fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
+        }
+
+        const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
+          (auth) => auth.type === recipe.auth
+        );
+
+        if (recipe.auth === RecipeAuthType.Header) {
+          const headerName = editorAuth?.meta || relevantOption?.payload.name;
+          if (!headerName) {
+            alert("The auth for this API is not setup correctly.");
+            return false;
+          }
+
+          fetchHeaders[headerName!] = primaryToken;
+        }
+
+        if (recipe.auth === RecipeAuthType.Query) {
+          let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
+          if (!QUERY_KEY_NAME) {
+            alert("The auth for this API is not setup correctly.");
+            return false;
+          }
+
+          url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+        }
       }
     }
 

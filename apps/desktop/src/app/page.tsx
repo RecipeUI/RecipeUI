@@ -1,6 +1,6 @@
 "use client";
 import { RecipeProject } from "types/database";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
@@ -42,24 +42,6 @@ export default function Page() {
 
 function Container() {
   const desktopPage = useRecipeSessionStore((state) => state.desktopPage);
-
-  const [desktopState, setDesktopState] = useLocalStorage<DesktopPageShape>(
-    "desktopState",
-    null
-  );
-  const setDesktopStage = useRecipeSessionStore(
-    (state) => state.setDesktopPage
-  );
-
-  useEffect(() => {
-    if (desktopState) {
-      setDesktopState(desktopPage);
-    }
-  }, [desktopPage, desktopState, setDesktopState]);
-
-  useEffect(() => {
-    if (desktopState !== null) setDesktopStage(desktopState);
-  }, []);
 
   if (!desktopPage) {
     return <HomePage />;
