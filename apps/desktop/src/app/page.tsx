@@ -65,11 +65,15 @@ function HomePage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   const { data: projectData, isLoading: isLoadingHome } = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [QueryKey.Projects, supabase],
     queryFn: async () =>
-      fetchHomeProjects({
-        supabase,
-      }),
+      // @ts-expect-error override
+      supabase["fake"]
+        ? undefined
+        : fetchHomeProjects({
+            supabase,
+          }),
   });
 
   const { userProjects } = getProjectSplit(
@@ -130,11 +134,13 @@ function ProjectPage({ project: projectParam }: { project: string }) {
 
   const { data: projectData, isLoading } = useQuery({
     queryKey: [QueryKey.Projects, projectParam, supabase],
-    queryFn: async () => (supabase as any)['fake'] ? undefined :
-      fetchProjectPage({
-        project: projectParam,
-        supabase,
-      }),
+    queryFn: async () =>
+      (supabase as any)["fake"]
+        ? undefined
+        : fetchProjectPage({
+            project: projectParam,
+            supabase,
+          }),
   });
 
   if (isLoading) {
@@ -142,6 +148,16 @@ function ProjectPage({ project: projectParam }: { project: string }) {
   }
 
   if (!projectData) {
+    if (projectData === undefined) {
+      return (
+        <ProjectContainer
+          projectName={projectParam}
+          project={null}
+          recipes={null}
+        />
+      );
+    }
+
     return <div>App 404</div>;
   }
 
@@ -162,6 +178,10 @@ function RecipePage({ api_id }: { api_id: string }) {
   const { data, isLoading } = useQuery({
     queryKey: [QueryKey.RecipesView, api_id, supabase],
     queryFn: async () => {
+      if ((supabase as any)["fake"]) {
+        return undefined;
+      }
+
       const recipe = await fetchHomeRecipe({
         supabase,
         recipeId: api_id,
@@ -186,6 +206,10 @@ function RecipePage({ api_id }: { api_id: string }) {
   }
 
   if (!data) {
+    if (data === undefined) {
+      return <RecipeAPI project={null} recipe={null} apiId={api_id} />;
+    }
+
     return <div>App 404</div>;
   }
 
