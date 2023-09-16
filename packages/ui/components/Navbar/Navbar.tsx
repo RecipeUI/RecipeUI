@@ -122,17 +122,14 @@ export function Navbar() {
             isTauri && "flex-row-reverse"
           )}
         >
-          {process.env.NEXT_PUBLIC_ENV && (
-            <button
-              className="cursor-pointer flex items-center"
-              onClick={goCollections}
-            >
-              <h1 className="ml-4 dark:text-white  sm:block hidden">
-                {isTauri ? "Collections" : "Home"}
-              </h1>
-            </button>
-          )}
-
+          <button
+            className="cursor-pointer flex items-center"
+            onClick={goCollections}
+          >
+            <h1 className="ml-4 dark:text-white  sm:block hidden">
+              {isTauri ? "Collections" : "Home"}
+            </h1>
+          </button>
           <button
             onClick={goEditor}
             className={classNames(

@@ -82,6 +82,7 @@ export function Providers({ children }: { children: ReactNode }) {
           auth: {
             onAuthStateChange: () => {},
           },
+          fake: true
         } as any);
       }
     } else {

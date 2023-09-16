@@ -130,7 +130,7 @@ function ProjectPage({ project: projectParam }: { project: string }) {
 
   const { data: projectData, isLoading } = useQuery({
     queryKey: [QueryKey.Projects, projectParam, supabase],
-    queryFn: async () =>
+    queryFn: async () => (supabase as any)['fake'] ? undefined :
       fetchProjectPage({
         project: projectParam,
         supabase,
