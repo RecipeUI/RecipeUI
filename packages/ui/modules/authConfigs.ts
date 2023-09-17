@@ -1,7 +1,7 @@
 // We need to make sure usages of this file are LAZY LOADED
 
 import { CollectionModule, ModuleSetting } from ".";
-import NASA_MODULE from "./NASA/settings";
+import NASA_MODULE from "./NASA_/settings";
 import GIPHY_MODULE from "./GIPHY/settings";
 
 export const ModuleSettings: Record<
