@@ -21,8 +21,7 @@ import {
 } from "types/enums";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useRouter } from "next/navigation";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { DISCORD_LINK } from "../../../utils/constants/main";
+import { DISCORD_LINK } from "utils/constants";
 
 export function PublishFolderModal({
   onClose,

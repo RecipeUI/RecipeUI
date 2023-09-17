@@ -2,6 +2,7 @@ import { AuthConfig } from "types/database";
 
 export enum CollectionModule {
   NASA = "NASA",
+  GIPHY = "GIPHY",
 }
 
 export enum CollectionComponentModule {
@@ -11,6 +12,12 @@ export enum CollectionComponentModule {
 }
 
 const modules = Object.values(CollectionModule);
+
+export const DEFAULT_COMPONENT_MODULES = [
+  CollectionComponentModule.Custom,
+  CollectionComponentModule.Header,
+  CollectionComponentModule.Resources,
+];
 
 export function isCollectionModule(value?: string): value is CollectionModule {
   if (value === undefined) return false;
@@ -32,8 +39,8 @@ export interface ModuleSetting {
   title: string;
   description: string;
   image?: string;
-  authConfigs: AuthConfig[] | null;
+  authConfigs?: AuthConfig[] | null;
   resources?: ResourceSection;
-  components: CollectionComponentModule[];
+  components?: CollectionComponentModule[];
   urls: string[];
 }

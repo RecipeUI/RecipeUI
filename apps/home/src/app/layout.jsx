@@ -8,6 +8,7 @@ const metadataConstants = {
     'Open source Postman alternative with type safety. Make error-free requests to ChatGPT, OpenAI, Nasa, Reddit, and more.',
   image_url: 'https://www.recipeui.com/opengraph-image.png',
 }
+import { redirect } from 'next/navigation'
 export const metadata = {
   openGraph: {
     title: metadataConstants.title,
@@ -47,6 +48,8 @@ const sora = Sora({
 })
 
 export default function RootLayout({ children }) {
+  redirect('https://www.recipeui.com')
+
   return (
     <html
       lang="en"

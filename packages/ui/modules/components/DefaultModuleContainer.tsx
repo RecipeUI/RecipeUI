@@ -1,36 +1,64 @@
 "use client";
 
 import { SecretAPI, useComplexSecrets } from "../../state/apiSession/SecretAPI";
-import { CollectionModule } from "..";
+import { CollectionModule, ModuleSetting } from "..";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
-import classNames from "classnames";
-import ModuleSettings from "./settings";
 import { ComponentModuleContainer } from "../components/ComponentModuleContainer";
-import { FormFieldWrapper } from "../components/FormFieldWrapper";
+import { ModuleSettings } from "../authConfigs";
+import { DiscordLink } from "../../components/CommonLinks";
+import { FormFieldWrapper } from "./FormFieldWrapper";
 
-export default function NASAModule() {
+export function DefaultModuleContainer({
+  module,
+}: {
+  module: CollectionModule;
+}) {
+  // Make this only work for single API key for now
+  const ModuleSetting = ModuleSettings[module];
+
+  if (!ModuleSetting) {
+    return (
+      <div className="p-4">
+        No Module setup. Please report to our <DiscordLink />.
+      </div>
+    );
+  }
+
   return (
-    <ComponentModuleContainer module={ModuleSettings}>
-      <AuthModule />
+    <ComponentModuleContainer module={ModuleSetting}>
+      {ModuleSetting.authConfigs && (
+        <>
+          {ModuleSetting.authConfigs.length === 1 && (
+            <AuthModule
+              authConfig={ModuleSetting.authConfigs[0]}
+              module={ModuleSetting.module}
+            />
+          )}
+          {ModuleSetting.authConfigs.length > 1 && (
+            <div>Multiple config not supported yet</div>
+          )}
+        </>
+      )}
     </ComponentModuleContainer>
   );
 }
 
-const SINGLE_API_KEY = SecretAPI.getSecretKeyFromConfig(
-  ModuleSettings.authConfigs[0],
-  ModuleSettings.module
-);
+function AuthModule({
+  authConfig,
+  module,
+}: {
+  authConfig: NonNullable<ModuleSetting["authConfigs"]>[number];
+  module: CollectionModule;
+}) {
+  const SINGLE_API_KEY = SecretAPI.getSecretKeyFromConfig(authConfig, module);
 
-const NASA_DEMO_KEY = "DEMO_KEY";
-
-function AuthModule() {
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isDirty },
+    formState: { isDirty },
   } = useForm<{ API_KEY: string }>();
 
   const onSubmit = handleSubmit((data) => {
@@ -45,7 +73,7 @@ function AuthModule() {
   });
 
   const { updateSecrets, hasAuthSetup } = useComplexSecrets({
-    collection: CollectionModule.NASA,
+    collection: module,
     onSave(secrets) {
       if (secrets) {
         setValue("API_KEY", secrets[SINGLE_API_KEY] || "");
@@ -59,47 +87,22 @@ function AuthModule() {
         {!hasAuthSetup && (
           <div className="alert alert-error flex items-center gap-x-2 mb-4 text-sm">
             <InformationCircleIcon className="h-6" />
-            <span className="mt-0.5">
-              Setup auth here. Use NASA demo key to get started right away!
-            </span>
+            <span className="mt-0.5">Setup auth here!</span>
           </div>
         )}
         <h2 className="text-xl font-bold">Auth</h2>
-        <p className="text-sm">
-          NASA's API can be used immediately with the api key{" "}
-          <button
-            className={classNames(
-              "btn  btn-xs mr-0.5 tooltip",
-              !hasAuthSetup ? "btn-accent" : "btn-outline"
-            )}
-            onClick={(e) => {
-              setValue("API_KEY", NASA_DEMO_KEY);
-              onSubmit(e);
 
-              alert("Done! Try making a request.");
-            }}
-            data-tip="Set key!"
-          >
-            DEMO_KEY
-          </button>
-          . For intensive usage, request an API key from them.{" "}
-          <a
-            className="inline-block underline underline-offset-2 text-sm"
-            href="https://docs.recipeui.com/docs/Auth/nasa"
-            target="_blank"
-          >
-            View auth docs.
-          </a>
-        </p>
-
-        <div className="mt-2 flex gap-x-2"></div>
         <div className="bg-base-300 rounded-md p-4 mt-4">
-          <FormFieldWrapper label="API Key">
+          <FormFieldWrapper
+            label="API KEY"
+            description={authConfig.payload.description}
+          >
             <input
               className="input input-bordered input-sm w-full"
               {...register("API_KEY", { required: false })}
             />
           </FormFieldWrapper>
+
           <div className="mt-4 space-x-2">
             <>
               <button

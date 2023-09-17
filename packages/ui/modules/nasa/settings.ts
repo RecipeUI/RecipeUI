@@ -1,20 +1,20 @@
 import { RecipeAuthType } from "types/enums";
 import { CollectionComponentModule, CollectionModule, ModuleSetting } from "..";
 
-export const NASA_QUERY_API_KEY_CONFIG = {
-  type: RecipeAuthType.Query,
-  payload: {
-    name: "api_key",
-  },
-} as const;
-
 export default {
   module: CollectionModule.NASA,
   title: "NASA",
   description:
     "Use NASA's API to get the latest imagery and insights about Earth, Mars, and more about the Solar System.",
   image: "https://api.nasa.gov/assets/img/favicons/favicon-192.png",
-  authConfigs: [NASA_QUERY_API_KEY_CONFIG],
+  authConfigs: [
+    {
+      type: RecipeAuthType.Query,
+      payload: {
+        name: "api_key",
+      },
+    } as const,
+  ],
   resources: {
     title: "Resources",
     docs: [

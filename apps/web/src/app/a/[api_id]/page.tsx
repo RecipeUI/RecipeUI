@@ -1,12 +1,9 @@
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
-import { redirect } from "next/navigation";
 import { fetchHomeRecipe } from "ui/fetchers/home";
 import { RecipeAPI } from "ui/components/RecipeAPI";
 import { fetchProject } from "ui/fetchers/project";
-import { RecipeNativeFetchContext } from "ui/state/recipeSession";
-import { ServerFetchProvider } from "ui/components/Providers/ServerFetchProvider";
 
 export const dynamic = "force-dynamic";
 

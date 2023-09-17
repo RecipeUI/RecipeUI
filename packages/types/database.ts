@@ -103,6 +103,7 @@ export interface AuthConfig {
   payload: {
     name: string;
     prefix?: string;
+    description?: string;
   };
 }
 

@@ -20,9 +20,8 @@ import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 import { useMiniRecipes } from "../../state/apiSession";
 import Link from "next/link";
-import { MegaphoneIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 import { CurlModal } from "./Builders/CurlModal";
-import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 import {
   FreeForkExamples,
@@ -30,7 +29,7 @@ import {
 } from "../../utils/constants/recipe";
 import { useDarkMode } from "usehooks-ts";
 import { EditorUpdates } from "./EditorUpdates";
-import { DISCORD_LINK } from "../../utils/constants/main";
+import { DISCORD_LINK } from "utils/constants";
 import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
 import { CollectionModule, isCollectionModule } from "../../modules";
 import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
