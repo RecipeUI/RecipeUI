@@ -15,6 +15,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import {
   AdjustmentsHorizontalIcon,
   Cog6ToothIcon,
+  FolderArrowDownIcon,
   ShareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -23,6 +24,8 @@ import { Modal } from "../Modal";
 import { FormLabelWrapper } from "../Navbar/FormLabelWrapper";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSessionStorage } from "usehooks-ts";
+import { COLLECTION_FORKING_ID } from "utils/constants";
 
 export function ProjectHome({
   project,
@@ -42,6 +45,11 @@ export function ProjectHome({
   const queryClient = useQueryClient();
 
   const clipboard = useClipboard();
+  const [_, setCollectionFork] = useSessionStorage<string | null>(
+    COLLECTION_FORKING_ID,
+    null
+  );
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
     <div className="flex-1 px-4 pt-4">
@@ -54,39 +62,64 @@ export function ProjectHome({
               alt={project.title}
             />
           )}
-          {user && user.user_id === project.owner_id && (
-            <div className="absolute top-6 right-6 flex space-x-2">
-              <button
-                className="tooltip tooltip-left"
-                data-tip="Edit APIs"
-                onClick={() => {
-                  setEditing(!editing);
-                }}
-              >
-                <AdjustmentsHorizontalIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
-              </button>
-              <button
-                className="tooltip tooltip-left"
-                data-tip="Edit Collection Details"
-                onClick={() => {
-                  setEditProject(true);
-                }}
-              >
-                <Cog6ToothIcon className="w-8 h-8 hover:animate-spin hover:text-accent cursor-pointer" />
-              </button>
-              <button
-                onClick={async () => {
-                  await clipboard.writeText(
-                    `${RECIPE_UI_BASE_URL}/${project.id}`
-                  );
+          <div className="absolute top-0 lg:top-6 lg:flex-row right-6 flex flex-col gap-2 ">
+            <button
+              className="tooltip tooltip-left"
+              data-tip="Fork collection"
+              onClick={async () => {
+                const confirmFork = await confirm(
+                  "Are you sure you want to fork this collection?"
+                );
 
-                  alert("Copied to clipboard!");
-                }}
-              >
-                <ShareIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
-              </button>
-            </div>
-          )}
+                if (confirmFork) {
+                  setCollectionFork(project.id);
+
+                  if (isTauri) {
+                    setDesktopPage({
+                      page: DesktopPage.Editor,
+                    });
+                  } else {
+                    router.push("/editor");
+                  }
+                }
+              }}
+            >
+              <FolderArrowDownIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
+            </button>
+            {user && user.user_id === project.owner_id && (
+              <>
+                <button
+                  className="tooltip tooltip-left"
+                  data-tip="Edit APIs"
+                  onClick={() => {
+                    setEditing(!editing);
+                  }}
+                >
+                  <AdjustmentsHorizontalIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
+                </button>
+                <button
+                  className="tooltip tooltip-left"
+                  data-tip="Edit Collection Details"
+                  onClick={() => {
+                    setEditProject(true);
+                  }}
+                >
+                  <Cog6ToothIcon className="w-8 h-8 hover:animate-spin hover:text-accent cursor-pointer" />
+                </button>
+                <button
+                  onClick={async () => {
+                    await clipboard.writeText(
+                      `${RECIPE_UI_BASE_URL}/${project.id}`
+                    );
+
+                    alert("Copied to clipboard!");
+                  }}
+                >
+                  <ShareIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
+                </button>
+              </>
+            )}
+          </div>
           <div className="sm:ml-4">
             <h1 className="text-5xl font-bold">{project.title}</h1>
             <p className="py-4">{project.description}</p>
@@ -363,7 +396,7 @@ function ProjectHomeBox({
       }}
     >
       <div className="flex justify-between ">
-        <div className="flex items-center">
+        <div className="flex items-center mr-2">
           <h2 className="font-bold text-lg dark:text-gray-300">
             {recipe.title}
           </h2>

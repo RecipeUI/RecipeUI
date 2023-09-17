@@ -30,7 +30,7 @@ import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
 
-import { RECIPE_FORKING_ID } from "utils/constants";
+import { COLLECTION_FORKING_ID, RECIPE_FORKING_ID } from "utils/constants";
 import { isUUID } from "utils";
 
 import { useForm } from "react-hook-form";
@@ -43,7 +43,8 @@ import { Recipe, RecipeProject } from "types/database";
 import { clipboard } from "@tauri-apps/api";
 import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
-import { fetchProjectById } from "../../fetchers/project";
+import { fetchProjectById, fetchProjectPage } from "../../fetchers/project";
+import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -65,14 +66,19 @@ export function RecipeSidebar() {
   }, [loaded, sessions, setSessions]);
 
   const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
+  const [collectionFork, setCollectionFork] = useSessionStorage(
+    COLLECTION_FORKING_ID,
+    ""
+  );
 
   const [curlModal, setCurlModal] = useState(false);
 
   const { initializeRecipe } = useInitializeRecipe();
+  const supabase = useSupabaseClient();
 
   useEffect(() => {
-    // The only place we initialize forks from collections
-    async function initialize() {
+    // The only place we initialize forks from APIs
+    async function initializeAPIs() {
       if (!recipeFork) return;
 
       let [forkId, recipeTitle] = recipeFork.split("::");
@@ -81,11 +87,46 @@ export function RecipeSidebar() {
       initializeRecipe(forkId, recipeTitle);
     }
 
+    async function initializeCollection() {
+      console.log("initializing, collection", collectionFork);
+
+      let recipes: Recipe[] = [];
+      const localProject =
+        await RecipeUICoreAPI.getProjectInfoWithProjectNameOrId({
+          projectNameOrId: collectionFork,
+        });
+
+      if (localProject) {
+        recipes = localProject.recipes;
+      } else {
+        const { recipes: _recipes } = await fetchProjectPage({
+          project: collectionFork,
+          supabase,
+        });
+
+        if (_recipes) {
+          recipes = _recipes;
+        }
+      }
+
+      setCollectionFork("");
+
+      if (recipes && recipes.length > 0) {
+        for (const recipe of recipes) {
+          await initializeRecipe(recipe.id, recipe.title);
+        }
+      }
+    }
+
     getSessionsFromStore().then(async (sessions) => {
       setSessions(sessions || []);
       setLoaded(true);
 
-      initialize();
+      if (collectionFork) {
+        initializeCollection();
+      } else {
+        initializeAPIs();
+      }
     });
   }, [setSessions]);
 
@@ -344,7 +385,7 @@ function ViewCollectionModal({ onClose }: { onClose: () => void }) {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   return (
-    <Modal header="View Collection" onClose={onClose}>
+    <Modal header="Import Collection" onClose={onClose}>
       <p className="text-sm">
         Found a collection someone made online? Import it here
       </p>

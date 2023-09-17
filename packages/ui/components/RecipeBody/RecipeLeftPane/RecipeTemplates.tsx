@@ -49,7 +49,6 @@ export function RecipeTemplatesTab() {
   );
 }
 
-const AuthBlock = `You need to setup authentication. Consider the mock option or setting up auth in the Config tab.`;
 export function StarterTemplates() {
   const selectedRecipe = useContext(RecipeContext)!;
   const templates = selectedRecipe.templates || [];

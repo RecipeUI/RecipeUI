@@ -30,23 +30,29 @@ export function useInitializeRecipe() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   const initializeRecipe = useCallback(
-    async (recipeId: string, recipeTitle?: string) => {
+    async (
+      recipeId: string,
+      recipeTitle?: string,
+      recipePreDefined?: Recipe
+    ) => {
       try {
         // get the recipe information first
 
-        let recipe: Recipe | null = null;
+        let recipe: Recipe | null = recipePreDefined || null;
 
-        let coreInfo = await RecipeUICoreAPI.getRecipeWithRecipeId({
-          recipeId,
-        });
-
-        if (coreInfo) {
-          recipe = coreInfo.recipe;
-        } else {
-          recipe = await fetchHomeRecipe({
-            recipeId: recipeId,
-            supabase,
+        if (!recipe) {
+          let coreInfo = await RecipeUICoreAPI.getRecipeWithRecipeId({
+            recipeId,
           });
+
+          if (coreInfo) {
+            recipe = coreInfo.recipe;
+          } else {
+            recipe = await fetchHomeRecipe({
+              recipeId: recipeId,
+              supabase,
+            });
+          }
         }
         if (!recipe) {
           throw new Error("Recipe not found");

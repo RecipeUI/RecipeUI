@@ -1,5 +1,6 @@
 import { SupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Database, Recipe, RecipeProject } from "types/database";
+import { isUUID } from "utils";
 
 interface ProjectFetcher {
   project: string;
@@ -15,6 +16,10 @@ export async function fetchProjectPage({
   projectName: string;
 }> {
   const projectName = decodeURIComponent(project);
+
+  if (isUUID(projectName)) {
+    return await fetchProjectById({ projectId: projectName, supabase });
+  }
 
   const { data: projectInfo } = await supabase
     .from("project")
@@ -35,7 +40,11 @@ export async function fetchProjectPage({
       projectName,
     };
   } else {
-    return await fetchProjectById({ projectId: projectName, supabase });
+    return {
+      project: projectInfo,
+      recipes: null,
+      projectName,
+    };
   }
 }
 

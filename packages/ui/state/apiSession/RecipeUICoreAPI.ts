@@ -2,6 +2,7 @@ import { RecipeProject, Recipe } from "types/database";
 import { getRecipeUICoreStore } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useInterval } from "usehooks-ts";
+import { isUUID } from "utils";
 
 let recipeUICoreAPIloaded = false;
 
@@ -58,20 +59,22 @@ export class RecipeUICoreAPI {
     recipeUICoreAPIloaded = true;
   };
 
-  static getProjectInfoWithProjectName = async ({
-    projectName,
+  static getProjectInfoWithProjectNameOrId = async ({
+    projectNameOrId,
   }: {
-    projectName: string;
+    projectNameOrId: string;
   }): Promise<UICoreProjectInfo> => {
     const core = await this.getStore();
 
-    const project = core?.collections.find(
-      (p: RecipeProject) => p.project === projectName
+    const project = core?.collections.find((p: RecipeProject) =>
+      isUUID(projectNameOrId)
+        ? p.id === projectNameOrId
+        : p.project === projectNameOrId
     );
 
-    const recipes = core?.recipes.filter(
-      (r: Recipe) => r.project === projectName
-    );
+    const recipes = project?.project
+      ? core?.recipes.filter((r: Recipe) => r.project === project.project)
+      : [];
 
     return project
       ? {
@@ -111,7 +114,9 @@ export function useCoreProject({ projectName }: { projectName: string }) {
   useEffect(() => {
     setLoading(true);
 
-    RecipeUICoreAPI.getProjectInfoWithProjectName({ projectName })
+    RecipeUICoreAPI.getProjectInfoWithProjectNameOrId({
+      projectNameOrId: projectName,
+    })
       .then((result) => {
         setProject(result);
       })
