@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  DesktopPage,
   RecipeSession,
   RecipeSessionFolder,
   useRecipeSessionStore,
@@ -28,16 +29,21 @@ import {
 import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
-import { RECIPE_FORKING_ID } from "../../utils/constants/main";
+
+import { RECIPE_FORKING_ID } from "utils/constants";
+import { isUUID } from "utils";
+
 import { useForm } from "react-hook-form";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 import { PublishFolderModal } from "../../pages/editor/Builders/PublishModal";
 import { EditSessionModal } from "./EditSessionModal";
 import { CoreRecipeAPI } from "../../state/apiSession/RecipeAPI";
-import { Recipe } from "types/database";
+import { Recipe, RecipeProject } from "types/database";
 import { clipboard } from "@tauri-apps/api";
 import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
+import { fetchProjectById } from "../../fetchers/project";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -89,6 +95,8 @@ export function RecipeSidebar() {
   );
   const [publishFolder, setPublishFolder] =
     useState<RecipeSessionFolder | null>(null);
+
+  const [viewCollectionModal, setViewCollectionModal] = useState(false);
 
   const folders = useSessionFolders();
 
@@ -160,6 +168,16 @@ export function RecipeSidebar() {
               Request
             </button>
           </li>
+          <li className="">
+            <button
+              className=""
+              onClick={() => {
+                setAddFolderModal(true);
+              }}
+            >
+              Folder
+            </button>
+          </li>
           <li>
             <button
               onClick={() => {
@@ -169,14 +187,13 @@ export function RecipeSidebar() {
               Import from cURL
             </button>
           </li>
-          <li className="">
+          <li>
             <button
-              className=""
               onClick={() => {
-                setAddFolderModal(true);
+                setViewCollectionModal(true);
               }}
             >
-              Folder
+              Import collection
             </button>
           </li>
         </ul>
@@ -294,7 +311,76 @@ export function RecipeSidebar() {
         />
       )}
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
+      {viewCollectionModal && (
+        <ViewCollectionModal onClose={() => setViewCollectionModal(false)} />
+      )}
     </div>
+  );
+}
+
+function ViewCollectionModal({ onClose }: { onClose: () => void }) {
+  const [collectionUrl, setCollectionUrl] = useState("");
+  const supabase = useSupabaseClient();
+  const [project, setProject] = useState<null | RecipeProject>(null);
+
+  const onPreview = async () => {
+    const collectionId = collectionUrl.split("/").pop();
+
+    if (!collectionId || !isUUID(collectionId)) {
+      alert("Invalid collection URL");
+      return;
+    }
+
+    const { project } = await fetchProjectById({
+      projectId: collectionId,
+      supabase,
+      projectOnly: true,
+    });
+
+    setProject(project);
+  };
+
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
+  return (
+    <Modal header="View Collection" onClose={onClose}>
+      <p className="text-sm">
+        Found a collection someone made online? Import it here
+      </p>
+      <div className="space-y-2">
+        <input
+          type="text"
+          className="input input-bordered input-sm mt-2 w-full"
+          value={collectionUrl}
+          onChange={(e) => setCollectionUrl(e.target.value)}
+        />
+        <button className="btn btn-sm btn-neutral" onClick={onPreview}>
+          Preview
+        </button>
+      </div>
+      {project && (
+        <div className="border rounded-md p-4 mt-4">
+          <h2 className="font-bold">{project.title}</h2>
+          <p className="text-sm">{project.description}</p>
+          <a
+            className="btn btn-accent btn-xs mt-2"
+            href={`/${project.id}`}
+            onClick={(e) => {
+              if (isTauri) {
+                e.preventDefault();
+                setDesktopPage({
+                  page: DesktopPage.Project,
+                  pageParam: project.id,
+                });
+              }
+            }}
+          >
+            View Collection
+          </a>
+        </div>
+      )}
+    </Modal>
   );
 }
 

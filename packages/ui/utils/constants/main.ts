@@ -34,8 +34,6 @@ export const API_LOCAL_PROCESSING_URLS = {
   TS_TO_JSON: `${baseURL}/ts-to-jsonschema`,
 };
 
-export const RECIPE_FORKING_ID = "recipeForkingId";
-
 export const REDIRECT_PAGE = "redirectURL";
 
 export const ONBOARDING_CONSTANTS = {

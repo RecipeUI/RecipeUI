@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { JSONSchema6 } from "json-schema";
 import { useSessionStorage } from "usehooks-ts";
-import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
+import { RECIPE_FORKING_ID } from "utils/constants";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { Recipe, RecipeTemplate } from "types/database";
 import { Modal } from "../../Modal";

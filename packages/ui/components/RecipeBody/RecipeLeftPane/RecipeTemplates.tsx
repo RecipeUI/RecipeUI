@@ -18,9 +18,11 @@ import { Dialog } from "@headlessui/react";
 import {
   DB_FUNC_ERRORS,
   FORM_LINKS,
-  RECIPE_FORKING_ID,
   UNIQUE_ELEMENT_IDS,
 } from "../../../utils/constants/main";
+
+import { RECIPE_FORKING_ID } from "utils/constants";
+
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";

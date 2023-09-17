@@ -1,8 +1,6 @@
-import { RecipeParam, RecipeProject } from "types/database";
+import { RecipeProject } from "types/database";
 import { ProjectScope, RecipeParamType } from "types/enums";
-import { RecipeSession } from "../state/recipeSession";
 import { JSONSchema6 } from "json-schema";
-import { produce } from "immer";
 
 export function isArrayPath(str: string): boolean {
   // Check to see if string in format of [number]
@@ -164,11 +162,4 @@ export function isSemverLessThan({
 
   // If minor versions are equal, compare patch versions
   return patch1 < patch2;
-}
-
-export function isUUID(id: string) {
-  const regexExp =
-    /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
-
-  return regexExp.test(id);
 }

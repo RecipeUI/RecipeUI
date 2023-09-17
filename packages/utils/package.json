@@ -2,8 +2,8 @@
   "name": "utils",
   "version": "0.0.0",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "index.ts",
+  "types": "index.ts",
   "scripts": {},
   "dependencies": {
     "immer": "^10.0.2"

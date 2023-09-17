@@ -35,30 +35,41 @@ export async function fetchProjectPage({
       projectName,
     };
   } else {
-    // This could be unlisted
+    return await fetchProjectById({ projectId: projectName, supabase });
+  }
+}
 
-    const unlistedProjectInfo = await supabase.rpc("get_unlisted_project", {
-      project_id: projectName,
-    });
+export async function fetchProjectById({
+  projectId,
+  supabase,
+  projectOnly = false,
+}: {
+  projectId: string;
+  supabase: SupabaseClient<Database>;
+  projectOnly?: boolean;
+}) {
+  const unlistedProjectInfo = await supabase.rpc("get_unlisted_project", {
+    project_id: projectId,
+  });
 
-    if (!unlistedProjectInfo.data) {
-      return {
-        project: null,
-        recipes: null,
-        projectName,
-      };
-    }
-
-    const recipeInfo = await supabase.rpc("get_recipes_from_unlisted_project", {
-      project_id: projectName,
-    });
-
+  if (!unlistedProjectInfo.data) {
     return {
-      project: (unlistedProjectInfo.data[0] as RecipeProject) || null,
-      recipes: (recipeInfo.data as Recipe[]) || null,
-      projectName,
+      project: null,
+      recipes: null,
+      projectName: projectId,
     };
   }
+  const recipeInfo = projectOnly
+    ? null
+    : await supabase.rpc("get_recipes_from_unlisted_project", {
+        project_id: projectId,
+      });
+
+  return {
+    project: (unlistedProjectInfo.data[0] as RecipeProject) || null,
+    recipes: recipeInfo ? (recipeInfo.data as Recipe[]) || null : null,
+    projectName: unlistedProjectInfo.data[0].project,
+  };
 }
 
 export async function fetchProject({
