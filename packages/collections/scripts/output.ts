@@ -69,6 +69,29 @@ findFilesInDir(
   () => {
     const outputPathForFolder = `./build/core`;
 
+    // If their is a rank for the recipe, it will take place over those without a rank
+    // The lower the rank, the higher it's priority
+    // If no rank, then we sort by tag count
+    apiRecipes.sort((a, b) => {
+      if (a.rank && b.rank) {
+        return a.rank - b.rank;
+      } else if (a.rank) {
+        return -1;
+      } else if (b.rank) {
+        return 1;
+      } else {
+        const bTags = b.tags?.length ?? 0;
+        const aTags = a.tags?.length ?? 0;
+
+        if (bTags === aTags) {
+          const bDate = b.created_at ? new Date(b.created_at) : new Date();
+          const aDate = a.created_at ? new Date(a.created_at) : new Date();
+
+          return bDate.getTime() - aDate.getTime();
+        }
+        return bTags - aTags;
+      }
+    });
     try {
       mkdirp.sync(outputPathForFolder);
     } catch (e) {}

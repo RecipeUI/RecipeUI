@@ -23,7 +23,8 @@
           "associatedCMEID": "2023-08-17T02:48:00-CME-001",
           "note": "Measurement using longitude where eruption is likely centered beyond west limb based on EUV imagery, but longitude may vary between approximately 90 to 110 degrees. This measurement of the leading edge is similar to the measurement for the shock of this CME. The shock of this CME was not clearly discernible in SOHO C3 difference imagery, so the most reliable measurements for this CME were taken for the leading edge.",
           "_recipeui_additionalProperties": [
-            "_recipeui_additionalProperties"
+            "catalog",
+            "link"
           ]
         },
         {
@@ -37,7 +38,8 @@
           "associatedCMEID": "2023-08-17T12:48:00-CME-001",
           "note": "Measurement of the leading edge using coordinates based on source location of eruption, around W80.",
           "_recipeui_additionalProperties": [
-            "_recipeui_additionalProperties"
+            "catalog",
+            "link"
           ]
         },
         {
@@ -51,7 +53,8 @@
           "associatedCMEID": "2023-08-17T12:48:00-CME-001",
           "note": "Measurement of what is likely the shock of this CME, which appears to be traveling slightly more northward than the brighter, slower bulk of the CME in the field of view of the coronagraphs.",
           "_recipeui_additionalProperties": [
-            "_recipeui_additionalProperties"
+            "catalog",
+            "link"
           ]
         },
         "..."

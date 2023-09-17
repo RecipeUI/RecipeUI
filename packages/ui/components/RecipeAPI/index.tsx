@@ -33,7 +33,7 @@ export function RecipeAPI({
     recipeId: apiId,
   });
 
-  const recipe = _recipe || recipeInfo?.recipe;
+  const recipe = recipeInfo?.recipe || _recipe;
   const project = _project || recipeInfo?.project;
 
   useEffect(() => {

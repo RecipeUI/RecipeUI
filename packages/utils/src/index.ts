@@ -10,6 +10,10 @@ export function restrictObjectsAndArrays<T>(
   const OBJECT_REDUCE_FACTOR = 10;
 
   function recursivelyReduce(_obj: Record<string, unknown>) {
+    if (_obj["_recipeui_additionalProperties"] !== undefined) {
+      return;
+    }
+
     let count = 0;
     let additionalProperties: string[] = [];
 
