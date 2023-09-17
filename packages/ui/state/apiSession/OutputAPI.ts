@@ -4,7 +4,8 @@ import { SessionOutput } from "../recipeSession";
 import { useEffect, useState } from "react";
 import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 import { getOutputStore, eventEmitter } from ".";
-import { restrictObjectsAndArrays } from "../../utils/main";
+
+import { restrictObjectsAndArrays } from "utils";
 
 export class OutputAPI {
   static clearOutput = async (sessionId: string) => {
@@ -63,7 +64,9 @@ export class OutputAPI {
         const minifiedOutput = outputs.map((output) => {
           return {
             ...output,
-            output: restrictObjectsAndArrays(output.output),
+            output: restrictObjectsAndArrays<typeof output.output>(
+              output.output
+            ),
           };
         });
 

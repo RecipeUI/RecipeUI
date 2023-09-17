@@ -18,6 +18,7 @@ export function HeaderModule({ module }: { module: ModuleSetting }) {
           <a
             className="btn btn-sm btn-neutral"
             href={`/${module.module}`}
+            target="_blank"
             onClick={(e) => {
               if (isTauri) {
                 e.preventDefault();

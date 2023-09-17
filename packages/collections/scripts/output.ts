@@ -1,7 +1,7 @@
 import fs from "fs";
 import { mkdirp } from "mkdirp";
 import { RecipeProject, Recipe } from "types/database";
-import { findFilesInDir, restrictObjectsAndArrays } from "./utils";
+import { findFilesInDir } from "./utils";
 import "./minify";
 
 let collections: (RecipeProject & {

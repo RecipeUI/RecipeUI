@@ -21,7 +21,6 @@ import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 import EditorPage from "ui/pages/editor/EditorPage";
-import { useLocalStorage } from "usehooks-ts";
 export default function Page() {
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>
@@ -71,7 +70,7 @@ function HomePage() {
     queryFn: async () =>
       // @ts-expect-error override
       supabase["fake"]
-        ? undefined
+        ? null
         : fetchHomeProjects({
             supabase,
           }),
@@ -137,7 +136,7 @@ function ProjectPage({ project: projectParam }: { project: string }) {
     queryKey: [QueryKey.Projects, projectParam, supabase],
     queryFn: async () =>
       (supabase as any)["fake"]
-        ? undefined
+        ? null
         : fetchProjectPage({
             project: projectParam,
             supabase,

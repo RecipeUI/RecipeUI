@@ -10,6 +10,7 @@ import { Recipe } from "types/database";
 import { RecipeParamType } from "types/enums";
 import { useOutput } from "../../state/apiSession/OutputAPI";
 import { JSONSchema6 } from "json-schema";
+import { useClipboard } from "../../hooks/useIsTauri";
 
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
@@ -37,6 +38,8 @@ export function RecipeCodeView() {
   const selectedRecipe = useContext(RecipeContext)!;
 
   const hasFileBinary = false;
+
+  const clipboard = useClipboard();
   useEffect(() => {
     if (!requestInfo) {
       return;
@@ -74,7 +77,7 @@ export function RecipeCodeView() {
         </select>
         <button
           onClick={async () => {
-            await navigator.clipboard.writeText(output);
+            await clipboard.writeText(output);
             alert("Copied to clipboard");
           }}
           className="px-4 py-2 rounded-md  text-white btn btn-sm  btn-accent h-full"

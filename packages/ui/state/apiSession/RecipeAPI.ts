@@ -3,13 +3,15 @@ import { getConfigForSessionStore, getMiniRecipes } from ".";
 import { ProjectScope, Visibility } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
 
+import { restrictObjectsAndArrays } from "utils";
+
 export class CoreRecipeAPI {
   static getCoreRecipe = async ({
     recipeId,
-    userId,
+    userId = "anonymous",
   }: {
     recipeId: string;
-    userId: string;
+    userId?: string;
   }): Promise<TableInserts<"recipe">> => {
     const config = (await getConfigForSessionStore({ recipeId }))!;
     const miniRecipes = await getMiniRecipes(recipeId);
@@ -46,7 +48,12 @@ export class CoreRecipeAPI {
             urlParams: r.urlParams,
             queryParams: r.queryParams,
             requestBody: r.requestBody,
-            replay: r.replay,
+            replay: r.replay
+              ? {
+                  ...r.replay,
+                  output: restrictObjectsAndArrays(r.replay.output),
+                }
+              : null,
           }))
         : [],
 

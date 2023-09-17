@@ -17,6 +17,9 @@
         "all": true
       },
       "all": false,
+      "clipboard": {
+        "all": true
+      },
       "http": {
         "all": true,
         "request": true

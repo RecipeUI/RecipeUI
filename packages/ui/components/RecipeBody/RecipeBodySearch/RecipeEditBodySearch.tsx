@@ -35,12 +35,10 @@ export function RecipeEditBodySearch() {
   const debouncedUrl = useDebounce(url, 500);
 
   const upsellSpecialCollection = useMemo(() => {
-    if (editorProject) return;
-
     if (debouncedUrl === url) {
       const specialModule = getPathModuleSetting(debouncedUrl);
 
-      if (specialModule) {
+      if (specialModule && editorProject !== specialModule.module) {
         if (
           editorSessionOptions?.ignoreProject?.includes(specialModule.module)
         ) {

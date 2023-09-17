@@ -15,7 +15,9 @@ import { usePostHog } from "posthog-js/react";
 import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProjectScope } from "types/enums";
-import { restrictObjectsAndArrays } from "../../../utils/main";
+
+import { restrictObjectsAndArrays } from "utils";
+
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { MiniRecipeAPI, useMiniRecipes } from "../../../state/apiSession";
 import { useOutput } from "../../../state/apiSession/OutputAPI";

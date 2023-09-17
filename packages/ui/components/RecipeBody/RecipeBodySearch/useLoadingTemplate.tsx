@@ -83,6 +83,10 @@ export function useLoadingTemplate() {
     }) {
       t += 12.5;
 
+      if (!paramSchema) {
+        return;
+      }
+
       if (
         paramSchema.type === RecipeParamType.Array &&
         Array.isArray(paramValue)

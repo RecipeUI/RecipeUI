@@ -5,8 +5,11 @@ import { Recipe, RecipeProject } from "types/database";
 import { QueryKey, RecipeProjectStatus } from "types/enums";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { useIsTauri } from "../../hooks/useIsTauri";
-import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
+import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
+import {
+  PLAYGROUND_SESSION_ID,
+  RECIPE_UI_BASE_URL,
+} from "../../utils/constants/main";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
 import {
@@ -37,6 +40,8 @@ export function ProjectHome({
   const router = useRouter();
   const isTauri = useIsTauri();
   const queryClient = useQueryClient();
+
+  const clipboard = useClipboard();
 
   return (
     <div className="flex-1 px-4 pt-4">
@@ -71,8 +76,8 @@ export function ProjectHome({
               </button>
               <button
                 onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    `${window.location.origin}/${project.project}`
+                  await clipboard.writeText(
+                    `${RECIPE_UI_BASE_URL}/${project.id}`
                   );
 
                   alert("Copied to clipboard!");

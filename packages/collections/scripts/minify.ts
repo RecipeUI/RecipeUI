@@ -1,68 +1,86 @@
 import fs from "fs";
 import { mkdirp } from "mkdirp";
 import { RecipeProject, Recipe } from "types/database";
-import {
-  findFilesInDir,
-  restrictObjectsAndArrays,
-  restrictRecipes,
-} from "./utils";
+import { findFilesInDir, restrictRecipes } from "./utils";
 
-findFilesInDir("./core", "recipes.json", (filePath: string) => {
-  const content = fs.readFileSync(filePath, "utf8");
-  let jsonContent;
+findFilesInDir("./core", "import.json", (filePath: string) => {
+  const recipe: Recipe | Recipe[] = JSON.parse(
+    fs.readFileSync(filePath, "utf8")
+  );
 
+  let recipes = Array.isArray(recipe) ? recipe : [recipe];
+
+  let collectionInfo: RecipeProject | null = null;
   try {
-    jsonContent = JSON.parse(content);
+    collectionInfo = JSON.parse(
+      fs.readFileSync(
+        filePath.replace("import.json", "collection.json"),
+        "utf8"
+      )
+    );
   } catch (e) {
     console.error(`Error parsing JSON from file: ${filePath}. Error: ${e}`);
     return;
   }
 
-  // Overwrite the file with updated content
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify(restrictObjectsAndArrays(jsonContent), null, 2),
-    "utf8"
-  );
+  if (!collectionInfo) {
+    throw new Error("No collection info found");
+  }
+
+  const projectName = collectionInfo.project;
+
+  return recipes.map((recipe) => {
+    const folderPath = filePath.replace("import.json", recipe.title);
+
+    try {
+      mkdirp.sync(folderPath);
+    } catch (e) {}
+
+    recipe.project = projectName || recipe.project;
+
+    if (recipe.templates) {
+      const templates = recipe.templates;
+
+      // @ts-expect-error override
+      delete recipe.templates;
+
+      if (templates.length > 0) {
+        fs.writeFileSync(
+          `${folderPath}/recipes.json`,
+          JSON.stringify(restrictRecipes(templates), null, 2),
+          "utf8"
+        );
+      }
+    }
+
+    // Restructure the keys a bit
+    const {
+      title,
+      project,
+      summary,
+      created_at,
+      path,
+      method,
+      ...remainingData
+    } = recipe;
+
+    // Overwrite the file with updated content
+    fs.writeFileSync(
+      `${folderPath}/api.json`,
+      JSON.stringify(
+        {
+          title,
+          project,
+          summary,
+          created_at,
+          path,
+          method,
+          ...remainingData,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+  });
 });
-
-// findFilesInDir("./core", "starter.json", (filePath: string) => {
-//   const content = fs.readFileSync(filePath, "utf8");
-//   let jsonContent: Recipe[];
-
-//   try {
-//     jsonContent = JSON.parse(content);
-//   } catch (e) {
-//     console.error(`Error parsing JSON from file: ${filePath}. Error: ${e}`);
-//     return;
-//   }
-
-//   for (const recipe of jsonContent) {
-//     const folderPath = filePath.replace("starter.json", recipe.title);
-
-//     try {
-//       mkdirp.sync(folderPath);
-//     } catch (e) {}
-
-//     if (recipe.templates) {
-//       const templates = recipe.templates;
-
-//       // @ts-expect-error override
-//       delete recipe.templates;
-
-//       fs.writeFileSync(
-//         `${folderPath}/recipes.json`,
-//         JSON.stringify(restrictRecipes(templates), null, 2),
-//         "utf8"
-//       );
-//     }
-
-//     // Overwrite the file with updated content
-//     fs.writeFileSync(
-//       `${folderPath}/api.json`,
-//       JSON.stringify(recipe, null, 2),
-//       "utf8"
-//     );
-//   }
-//   fs.unlinkSync(filePath);
-// });

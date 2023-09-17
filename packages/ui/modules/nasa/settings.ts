@@ -33,8 +33,8 @@ export default {
     ],
   },
   components: [
-    CollectionComponentModule.Header,
     CollectionComponentModule.Custom,
+    CollectionComponentModule.Header,
     CollectionComponentModule.Resources,
   ],
   urls: ["https://api.nasa.gov"],

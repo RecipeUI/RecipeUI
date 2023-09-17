@@ -21,6 +21,7 @@ import {
 import {
   getConfigForSessionStore,
   getParametersForSessionStore,
+  getSessionRecord,
   getSessionsFromStore,
   saveSessionToStore,
 } from "../../state/apiSession";
@@ -32,6 +33,11 @@ import { useForm } from "react-hook-form";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 import { PublishFolderModal } from "../../pages/editor/Builders/PublishModal";
+import { EditSessionModal } from "./EditSessionModal";
+import { CoreRecipeAPI } from "../../state/apiSession/RecipeAPI";
+import { Recipe } from "types/database";
+import { clipboard } from "@tauri-apps/api";
+import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -403,7 +409,53 @@ function EditFolderModal({
           </button>
         </div>
       </div>
+      {folder.sessionIds.length > 0 && (
+        <>
+          <div className="divider" />
+          <div className="mt-4">
+            <h2 className="text-xl font-bold">Export (Experimental)</h2>
+            <p className="text-sm">
+              It'd be awesome if you contribute this to our community
+              collections!
+            </p>
+            <RecipeDownloadButton folder={folder} />
+          </div>
+        </>
+      )}
     </Modal>
+  );
+}
+
+function RecipeDownloadButton({ folder }: { folder: RecipeSessionFolder }) {
+  const user = useRecipeSessionStore((state) => state.user);
+
+  const clipboard = useClipboard();
+
+  const onSubmit = async () => {
+    let recipes: Recipe[] = [];
+    const sessionRecord = await getSessionRecord();
+
+    for (const sessionId of folder.sessionIds) {
+      const session = sessionRecord[sessionId];
+      if (!session) continue;
+
+      const recipe = await CoreRecipeAPI.getCoreRecipe({
+        recipeId: session.recipeId,
+        userId: user?.user_id || "",
+      });
+      recipes.push(recipe as Recipe);
+    }
+
+    const recipeString = JSON.stringify(recipes);
+
+    await clipboard.writeText(recipeString);
+    alert("Copied APIs to clipboard");
+  };
+
+  return (
+    <button className="btn btn-sm mt-2" onClick={onSubmit}>
+      Export APIs
+    </button>
   );
 }
 
@@ -570,94 +622,6 @@ function SessionTab({
         />
       )}
     </li>
-  );
-}
-
-function EditSessionModal({
-  onClose,
-  session,
-}: {
-  onClose: () => void;
-  session: RecipeSession;
-}) {
-  const [name, setName] = useState(session.name);
-  const folders = useSessionFolders();
-  const updateSessionName = useRecipeSessionStore(
-    (state) => state.updateSessionName
-  );
-
-  const [selectedFolder, setSelectedFolder] = useState("NO_FOLDER_ID");
-  const [currentFolder, setCurrentFolder] =
-    useState<RecipeSessionFolder | null>(null);
-
-  useEffect(() => {
-    const currentFolder = folders.find((folder) => {
-      return folder.sessionIds.includes(session.id);
-    });
-
-    if (currentFolder) {
-      setSelectedFolder(currentFolder.id);
-      setCurrentFolder(currentFolder);
-    }
-  }, [folders]);
-
-  return (
-    <Modal header="Edit Session" onClose={onClose}>
-      <form
-        onSubmit={async () => {
-          updateSessionName(session, name);
-
-          if (currentFolder?.id !== selectedFolder) {
-            if (folders.length > 0) {
-              await FolderAPI.deleteSessionFromFolder(session.id);
-
-              if (selectedFolder !== "NO_FOLDER_ID") {
-                await FolderAPI.addSessionToFolder(session.id, selectedFolder);
-              }
-            }
-          }
-
-          onClose();
-        }}
-      >
-        <div className="mt-2 form-control">
-          <label>Session Name</label>
-          <input
-            type="text"
-            className="input input-bordered input-sm"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-
-        {folders.length > 0 && (
-          <div className="form-control mt-2">
-            <label className="label">
-              <span className="label-text">Folder</span>
-            </label>
-            <select
-              className="select select-bordered select-sm"
-              value={selectedFolder}
-              onChange={(e) => {
-                setSelectedFolder(e.target.value);
-              }}
-            >
-              {folders.map((folder) => {
-                return (
-                  <option key={folder.id} value={folder.id}>
-                    {folder.name}
-                  </option>
-                );
-              })}
-              <option value="NO_FOLDER_ID">No Folder</option>
-            </select>
-          </div>
-        )}
-        <button type="submit" className="btn btn-accent btn-sm mt-4">
-          Submit
-        </button>
-      </form>
-    </Modal>
   );
 }
 

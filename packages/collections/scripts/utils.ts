@@ -2,62 +2,17 @@ import fs from "fs";
 import path from "path";
 import { produce } from "immer";
 import { Recipe } from "types/database";
+import { restrictObjectsAndArrays } from "utils";
 
 export function restrictRecipes(recipes: NonNullable<Recipe["templates"]>) {
   return produce(recipes, (draft) => {
     for (const recipe of draft) {
       if (recipe.replay) {
-        recipe.replay = restrictObjectsAndArrays(
-          recipe.replay
-        ) as typeof recipe.replay;
+        recipe.replay = restrictObjectsAndArrays(recipe.replay, {
+          ignoreInitialArrayLength: true,
+        }) as typeof recipe.replay;
       }
     }
-  });
-}
-
-export function restrictObjectsAndArrays(obj: Record<string, unknown>) {
-  const ARRAY_REDUCE_FACTOR = 3;
-  const OBJECT_REDUCE_FACTOR = 10;
-
-  function recursivelyReduce(_obj: Record<string, unknown>) {
-    let count = 0;
-    let additionalProperties: string[] = [];
-
-    const entries = Object.entries(_obj);
-    for (const [key, value] of entries) {
-      count += 1;
-
-      if (count >= OBJECT_REDUCE_FACTOR) {
-        additionalProperties.push(key);
-        delete _obj[key];
-        continue;
-      }
-
-      if (Array.isArray(value)) {
-        const restrictedArray = value.slice(0, ARRAY_REDUCE_FACTOR);
-        _obj[key] = restrictedArray;
-
-        for (const item of restrictedArray) {
-          if (typeof item === "object" && item !== null) {
-            recursivelyReduce(item as Record<string, unknown>);
-          }
-        }
-
-        if (value.length >= 3) {
-          restrictedArray.push("...");
-        }
-      } else if (typeof value === "object" && value !== null) {
-        recursivelyReduce(value as Record<string, unknown>);
-      }
-    }
-
-    if (additionalProperties.length > 0) {
-      _obj["_recipeui_additionalProperties"] = additionalProperties;
-    }
-  }
-
-  return produce(obj, (draft) => {
-    recursivelyReduce(draft);
   });
 }
 

@@ -1,0 +1,134 @@
+{
+  "title": "DONKI",
+  "project": "NASA",
+  "summary": "The Space Weather Database Of Notifications, Knowledge, Information (DONKI) is a comprehensive on-line tool for space weather forecasters, scientists, and the general space science community. ",
+  "path": "https://api.nasa.gov/DONKI/{Service}",
+  "method": "GET",
+  "id": "6377adc2-316b-48a4-8202-b936298ecf1e",
+  "author_id": "c00e59bc-e5eb-43ea-b34e-5c6ca4026b83",
+  "queryParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "startDate": {
+        "type": "string",
+        "description": "Default to 30 days prior to current UTC date if left out."
+      },
+      "endDate": {
+        "type": "string",
+        "description": "Default to current UTC date if left out."
+      },
+      "mostAccurateOnly": {
+        "type": "boolean",
+        "description": "Only for CME Analysis. Default is true when if left out.\n"
+      },
+      "completeEntryOnly": {
+        "type": "boolean",
+        "description": "Only for CME Analysis. Default is true when if left out.\n"
+      },
+      "speed": {
+        "type": "number",
+        "description": "Only for CME Analysis. Default is set to 0 (lower limit) when left out.\n"
+      },
+      "halfAngle": {
+        "type": "number",
+        "description": "Only for CME Analysis. Default is set to 0 (lower limit) when left out."
+      },
+      "catalog": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "SWRC_CATALOG",
+          "JANG_ET_AL_CATALOG",
+          "WINSLOW_MESSENGER_ICME_CATALOG"
+        ],
+        "description": "Only for CME Analysis and IPS. Default is ALL when left out.\n"
+      },
+      "keyword": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "swpc_annex"
+        ],
+        "description": "Only for CME Analysis. Default is NONE when left out."
+      },
+      "location": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "Earth",
+          "MESSENGER",
+          "STEREO A",
+          "STEREO B"
+        ],
+        "description": "Only for IPS. Default is ALL when left out."
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "all",
+          "FLR",
+          "SEP",
+          "CME",
+          "IPS",
+          "MPC",
+          "GST",
+          "RBE",
+          "report"
+        ],
+        "description": "Only for notifications. Default is all when left out."
+      }
+    },
+    "additionalProperties": false
+  },
+  "queryParamsType": "export interface APIQueryParams {\n    startDate?:        string;\n    endDate?:          string;\n    mostAccurateOnly?: boolean;\n    completeEntryOnly?: boolean;\n    speed?:            number;\n    halfAngle?:        number;\n    catalog?:          'ALL' | 'SWRC_CATALOG' | 'JANG_ET_AL_CATALOG' | 'WINSLOW_MESSENGER_ICME_CATALOG';\n    keyword?:          'NONE' | 'swpc_annex';\n    location?:         'ALL' | 'Earth' | 'MESSENGER' | 'STEREO A' | 'STEREO B';\n    type?:              'all' | 'FLR' | 'SEP' | 'CME' | 'IPS' | 'MPC' | 'GST' | 'RBE' | 'report';\n}\n",
+  "requestBody": null,
+  "requestBodyType": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{Service}": {
+        "type": "string",
+        "enum": [
+          "CME",
+          "CMEAnalysis",
+          "GST",
+          "IPS",
+          "FLR",
+          "SEP",
+          "MPC",
+          "RBE",
+          "HSS",
+          "WSAEnlilSimulation",
+          "Notifications"
+        ],
+        "description": "Service component of DONKI",
+        "default": "CME"
+      }
+    },
+    "required": [
+      "{Service}"
+    ],
+    "additionalProperties": false
+  },
+  "urlParamsType": "// Define your url params with TypeScript.\n// This will add auto-complete (CMD+SPACE) and validation!\n\n\nexport interface APIUrlParams {\n  \"{Service}\": 'CME' | 'CMEAnalysis' | 'GST' | 'IPS' | 'FLR' | 'SEP' | 'MPC' | 'RBE' | 'HSS' | 'WSAEnlilSimulation' | 'Notifications';\n}",
+  "visibility": "unlisted",
+  "auth": "query",
+  "options": {
+    "docs": {
+      "auth": "https://api.nasa.gov/"
+    },
+    "auth": [
+      {
+        "type": "query",
+        "payload": {
+          "name": "api_key"
+        }
+      }
+    ]
+  },
+  "version": 1,
+  "rank": null,
+  "tags": []
+}

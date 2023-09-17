@@ -172,36 +172,3 @@ export function isUUID(id: string) {
 
   return regexExp.test(id);
 }
-
-export function restrictObjectsAndArrays(obj: Record<string, unknown>) {
-  const ARRAY_REDUCE_FACTOR = 3;
-
-  function recursivelyReduce(_obj: Record<string, unknown>) {
-    let count = 0;
-
-    for (const [key, value] of Object.entries(_obj)) {
-      count += 1;
-
-      if (Array.isArray(value)) {
-        const restrictedArray = value.slice(0, ARRAY_REDUCE_FACTOR);
-        _obj[key] = restrictedArray;
-
-        for (const item of restrictedArray) {
-          if (typeof item === "object" && item !== null) {
-            recursivelyReduce(item as Record<string, unknown>);
-          }
-        }
-
-        if (value.length >= 3) {
-          restrictedArray.push("...");
-        }
-      } else if (typeof value === "object" && value !== null) {
-        recursivelyReduce(value as Record<string, unknown>);
-      }
-    }
-  }
-
-  return produce(obj, (draft) => {
-    recursivelyReduce(draft);
-  });
-}

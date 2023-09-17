@@ -14,6 +14,7 @@
     "typescript": "^5.0.2",
     "uuid": "^9.0.0",
     "mkdirp": "^3.0.1",
-    "types": "workspace:*"
+    "types": "workspace:*",
+    "utils": "workspace:*"
   }
 }

@@ -95,7 +95,7 @@ function NASAAuthModule() {
         </p>
 
         <div className="mt-2 flex gap-x-2"></div>
-        <div className="border rounded-md p-4 mt-4">
+        <div className="bg-base-300 rounded-md p-4 mt-4">
           <div>
             <label className="mb-2 text-sm font-bold block">API Key</label>
             <input

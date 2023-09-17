@@ -25,7 +25,7 @@ import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import Link from "next/link";
 import { ProjectScope, QueryKey } from "types/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import { useIsTauri } from "../../../hooks/useIsTauri";
+import { useClipboard, useIsTauri } from "../../../hooks/useIsTauri";
 import { useSupabaseClient } from "../../Providers/SupabaseProvider";
 import { useSecret } from "../../../state/apiSession/SecretAPI";
 import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
@@ -539,6 +539,7 @@ function ShareModal({
   const posthog = usePostHog();
   const isTauri = useIsTauri();
   const project = useContext(RecipeProjectContext);
+  const clipboard = useClipboard();
 
   return (
     <Dialog open={true} onClose={onClose} className="relative z-50">
@@ -551,7 +552,7 @@ function ShareModal({
           <button
             className="btn btn-accent w-full mt-4"
             onClick={async () => {
-              await navigator.clipboard.writeText(
+              await clipboard.writeText(
                 `${isTauri ? "https://recipeui.com" : location.origin}/r/${
                   template.alias
                 }`

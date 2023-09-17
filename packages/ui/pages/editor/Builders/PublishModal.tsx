@@ -156,10 +156,8 @@ export function PublishFolderModal({
           </div>
         )}
         <p className="text-sm">
-          {
-            "This will publish all APIs in your folder as a collection so you can share them."
-          }
-          Visibility of collections is defaulted to{" "}
+          This will publish all APIs in your folder as a collection so you can
+          share them. Visibility of collections is defaulted to{" "}
           <span
             className="underline underline-offset-2 tooltip tooltip-right"
             data-tip="Users can only
@@ -168,7 +166,10 @@ export function PublishFolderModal({
             unlisted
           </span>
           . If you need a team use case reach out in our{" "}
-          <a href={DISCORD_LINK}>Discord</a>.
+          <a href={DISCORD_LINK} className="underline underline-offset-2">
+            Discord
+          </a>
+          .
         </p>
         <div className="divider" />
         {error && (
