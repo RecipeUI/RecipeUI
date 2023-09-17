@@ -2,6 +2,7 @@ import fs from "fs";
 import { mkdirp } from "mkdirp";
 import { RecipeProject, Recipe } from "types/database";
 import { findFilesInDir } from "./utils";
+import { PATHS } from "./constants";
 
 export function buildOutput() {
   let collections: (RecipeProject & {
@@ -36,6 +37,12 @@ export function buildOutput() {
 
       fs.writeFileSync(
         `${outputPathForCollections}/collections.json`,
+        JSON.stringify(collections),
+        "utf8"
+      );
+
+      fs.writeFileSync(
+        PATHS.WEB_PUBLIC_CORE + "/collections.json",
         JSON.stringify(collections),
         "utf8"
       );
@@ -96,6 +103,12 @@ export function buildOutput() {
 
       fs.writeFileSync(
         `${outputPathForFolder}/apis.json`,
+        JSON.stringify(apiRecipes),
+        "utf8"
+      );
+
+      fs.writeFileSync(
+        PATHS.WEB_PUBLIC_CORE + "/apis.json",
         JSON.stringify(apiRecipes),
         "utf8"
       );

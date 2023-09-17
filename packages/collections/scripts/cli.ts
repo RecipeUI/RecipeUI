@@ -5,18 +5,12 @@ import Fuse from "fuse.js";
 import path from "path";
 import { mkdirp } from "mkdirp";
 import { buildOutput } from "./output";
+import prompts from "prompts";
+import { RECIPE_UI_BASE_URL } from "utils/constants";
+import { isUUID } from "utils";
+import { PATHS } from "./constants";
 
 const program = new Command();
-
-const ROOT_DIR = path.join(process.cwd(), "../..");
-
-export const PATHS = {
-  CORE_COLLECTION: process.cwd() + "/build/core/collections.json",
-  CORE_APIS: process.cwd() + "/build/core/apis.json",
-  ROOT_DIR: ROOT_DIR,
-  WEB: ROOT_DIR + "/apps/web",
-  WEB_PUBLIC_CORE: ROOT_DIR + "/apps/web/public/core",
-};
 
 const getCollections = () => {
   return JSON.parse(
@@ -31,7 +25,7 @@ const getAPIs = () => {
 program.version("1.0.0").description("An example CLI for managing a directory");
 
 program
-  .command("collections")
+  .command("list")
   .description("List all collections")
   .action(() => {
     const collections = getCollections();
@@ -110,20 +104,124 @@ program
     const collections = getCollections();
 
     mkdirp.sync(PATHS.WEB_PUBLIC_CORE);
+  });
 
-    fs.writeFileSync(
-      PATHS.WEB_PUBLIC_CORE + "/collections.json",
-      JSON.stringify(collections),
-      "utf8"
+program
+  .command("contribute")
+  .description("Contribute APIs from a collection to RecipeUI")
+  .argument("<collection_id>", "collection id")
+  .option("--core", "add to core lib")
+  .action(async (collection_id, options: { core?: boolean }) => {
+    if (!isUUID(collection_id)) {
+      console.error("Invalid collection id");
+      return;
+    }
+
+    if (!options.core) {
+      console.error(
+        "Support for only adding to core lib for now. Please add --core"
+      );
+      return;
+    }
+
+    let collectionInfo: {
+      project: RecipeProject | null;
+      recipes: Recipe[] | null;
+    } | null = null;
+
+    try {
+      const res = await fetch(
+        `${RECIPE_UI_BASE_URL}/${collection_id}/info.json`
+      );
+      collectionInfo = await res.json();
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    if (!collectionInfo?.recipes || !collectionInfo?.project) {
+      console.error("No collection or APIs found on RecipeUI.");
+      return;
+    }
+
+    const selectedAPIs = await prompts({
+      type: "multiselect",
+      name: "apis",
+      message: "Select APis you want to contribute",
+      choices: collectionInfo.recipes.map((recipe) => ({
+        title: recipe.title,
+        description: recipe.summary.slice(0, 50),
+        value: recipe,
+      })),
+    });
+
+    if (selectedAPIs.apis.length === 0) {
+      console.log("No APIs selected");
+      return;
+    }
+
+    let projectName = collectionInfo.project.title;
+
+    // Check to see if collection folder already exists
+    const folderPath = path.join(
+      PATHS.CORE_DIR,
+      projectName // Title here is a bit of a gotcha, be careful a bit
     );
+    let collectionExists = fs.existsSync(`${folderPath}/collection.json`);
 
-    fs.writeFileSync(
-      PATHS.WEB_PUBLIC_CORE + "/apis.json",
-      JSON.stringify(apis),
-      "utf8"
-    );
+    if (!collectionExists) {
+      // Ask user about project name
+      const projectNameRes = await prompts({
+        type: "text",
+        name: "projectName",
+        initial: collectionInfo.project.title,
+        message:
+          "What would you like to name the project? (no spaces in name, prefer title case)",
+        validate: (value) => {
+          if (value.includes(" ")) {
+            return "Project name cannot contain spaces.";
+          }
 
-    // We also need to build this inside the web package
+          return true;
+        },
+      });
+
+      projectName = projectNameRes.projectName;
+      collectionInfo.project.project = projectName;
+
+      try {
+        mkdirp.sync(folderPath);
+
+        fs.writeFileSync(
+          `${folderPath}/collection.json`,
+          JSON.stringify(collectionInfo.project, null, 2),
+          "utf8"
+        );
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+    }
+
+    for (const api of selectedAPIs.apis as Recipe[]) {
+      try {
+        const APIPath = path.join(folderPath, api.title);
+        api.project = projectName;
+
+        mkdirp.sync(APIPath);
+
+        fs.writeFileSync(
+          `${APIPath}/api.json`,
+          JSON.stringify(api, null, 2),
+          "utf8"
+        );
+      } catch (error) {
+        console.log(`Error writing API ${api.title}`);
+        console.error(error);
+        return;
+      }
+    }
+
+    buildOutput();
   });
 
 program.parse(process.argv);

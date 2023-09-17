@@ -32,6 +32,8 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
         popular.push(project);
       } else if (tags.includes("Free")) {
         free.push(project);
+      } else {
+        more.push(project);
       }
     });
 
@@ -92,8 +94,8 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
       />
       {more.length > 0 && (
         <MarketplaceSection
-          header="Discover"
-          description="Checkout these APIs and let us know what you think!"
+          header="Community"
+          description="Checkout these publicly contributed API collections!"
           projects={more}
         />
       )}

@@ -4,12 +4,10 @@
   "description": "",
   "scripts": {
     "web:dev": "turbo run dev --filter=web",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "collections": "pnpm -C packages/collections cli",
     "cleanup_node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "all-contributors-cli": "^6.26.1",
     "encoding": "^0.1.13",

@@ -8,7 +8,7 @@ GIT_DIFF=$(git diff --name-only HEAD^ HEAD)
 echo "Changed files:"
 echo "$GIT_DIFF"
 
-if [[ "$GIT_DIFF" == apps* ]] || [[ "$GIT_DIFF" == packages* ]]; then
+if [[ "$GIT_DIFF" == *apps* ]] || [[ "$GIT_DIFF" == *packages* ]]; then
     CHANGES_FOUND=true
 else
     CHANGES_FOUND=false
