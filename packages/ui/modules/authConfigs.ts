@@ -1,6 +1,6 @@
 import { AuthConfig } from "types/database";
 import { CollectionModule, ModuleSetting, ResourceSection } from ".";
-import NASA_MODULE from "./nasa/settings";
+import NASA_MODULE from "./NASA/settings";
 
 export const ModuleSettings: Record<
   CollectionModule,

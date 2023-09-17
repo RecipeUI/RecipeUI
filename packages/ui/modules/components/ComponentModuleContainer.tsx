@@ -2,7 +2,7 @@
 
 import { CollectionComponentModule, ModuleSetting } from "..";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import ModuleSettings from "../nasa/settings";
+import ModuleSettings from "../NASA/settings";
 import { ResourcesModule } from "./ResourcesModule";
 import { HeaderModule } from "./HeaderModule";
 import { Fragment, ReactNode } from "react";

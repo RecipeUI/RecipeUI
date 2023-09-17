@@ -2,7 +2,7 @@ import { Suspense, lazy, useMemo } from "react";
 import { CollectionModule } from "../../../modules";
 import { Loading } from "../../Loading";
 
-const NASA = lazy(() => import("../../../modules/nasa"));
+const NASA = lazy(() => import("../../../modules/NASA"));
 export function RecipeCustomModule({ module }: { module: CollectionModule }) {
   const ModuleComponent = useMemo(() => {
     if (module === CollectionModule.NASA) {
