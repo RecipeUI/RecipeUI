@@ -3,7 +3,7 @@ import { CollectionModule } from "../../../modules";
 import { Loading } from "../../Loading";
 import { DefaultModuleContainer } from "../../../modules/components/DefaultModuleContainer";
 
-const NASA = lazy(() => import("../../../modules/NASA_"));
+const NASA = lazy(() => import("../../../modules/NASA"));
 
 export function RecipeCustomModule({ module }: { module: CollectionModule }) {
   const ModuleComponent = useMemo(() => {
