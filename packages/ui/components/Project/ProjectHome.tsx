@@ -62,7 +62,7 @@ export function ProjectHome({
               alt={project.title}
             />
           )}
-          <div className="absolute top-0 lg:top-6 lg:flex-row right-6 flex flex-col gap-2 ">
+          <div className="hidden absolute top-0 lg:top-6 lg:flex-row right-6 sm:flex flex-col gap-2 ">
             <button
               className="tooltip tooltip-left"
               data-tip="Fork collection"
