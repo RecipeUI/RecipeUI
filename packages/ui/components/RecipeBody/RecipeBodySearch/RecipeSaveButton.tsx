@@ -50,7 +50,7 @@ export function RecipeSaveButton() {
 
     let bouncingTimer = setTimeout(() => {
       setBouncing(false);
-    }, 3000);
+    }, 500);
 
     return () => {
       clearTimeout(bouncingTimer);

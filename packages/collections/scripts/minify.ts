@@ -32,9 +32,7 @@ findFilesInDir("./core", "import.json", (filePath: string) => {
   return recipes.map((recipe) => {
     const folderPath = filePath.replace("import.json", recipe.title);
 
-    try {
-      mkdirp.sync(folderPath);
-    } catch (e) {}
+    mkdirp.sync(folderPath);
 
     recipe.project = projectName || recipe.project;
 

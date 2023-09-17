@@ -59,7 +59,7 @@ export function RecipeCodeView() {
   }, [codeView, requestInfo]);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg">
+    <div className="sm:absolute inset-0 px-4 py-8 overflow-y-auto right-pane-bg">
       <h1 className="text-xl font-bold mb-4 text-black dark:text-white">
         Code
       </h1>

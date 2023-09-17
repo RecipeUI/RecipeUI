@@ -50,7 +50,7 @@ export function RecipeHistoryView() {
   const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg">
+    <div className="sm:absolute inset-0 px-4 py-8 overflow-y-auto right-pane-bg">
       <div className="flex items-center mb-4 space-x-2">
         <h1 className="text-xl font-bold  text-black dark:text-white">
           History

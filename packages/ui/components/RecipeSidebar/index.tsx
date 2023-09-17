@@ -761,7 +761,9 @@ function DuplicateModal({
   session: RecipeSession;
   folderId?: string;
 }) {
-  const [sessionName, setSessionName] = useState(session.name + " copy");
+  const [sessionName, setSessionName] = useState(
+    (session.name || "New Session") + " copy"
+  );
   const [isRecipeCopy, setIsRecipeCopy] = useState(false);
 
   const initializeEditorSession = useRecipeSessionStore(
@@ -813,7 +815,7 @@ function DuplicateModal({
   return (
     <Modal header="Duplicate Request" onClose={onClose}>
       <div className="mt-4 flex flex-col space-y-2">
-        <label>Session Name</label>
+        <label>New Session Name</label>
         <input
           type="text"
           className="input input-bordered input-sm"

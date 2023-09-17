@@ -98,7 +98,7 @@ export function RecipeEditDocs() {
   return (
     <div
       className={classNames(
-        "sm:absolute inset-0 px-4 overflow-y-auto right-pane-bg pb-8 pt-4 "
+        "sm:absolute inset-0 px-4 overflow-y-auto right-pane-bg pb-8 pt-8 "
         // loadingTemplate && "cursor-wait pointer-events-none"
       )}
     >

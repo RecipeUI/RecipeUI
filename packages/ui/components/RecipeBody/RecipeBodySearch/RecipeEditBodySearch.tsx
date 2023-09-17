@@ -89,6 +89,7 @@ export function RecipeEditBodySearch() {
               <div className="relative flex-1">
                 <input
                   id="url-input"
+                  autoComplete="off"
                   onPaste={(e) => {
                     const pasteString = e.clipboardData
                       .getData("text/plain")

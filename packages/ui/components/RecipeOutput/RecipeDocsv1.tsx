@@ -68,7 +68,6 @@ export function RecipeDocs() {
           )}
         </>
       )}
-
       {urlParams && (
         <RecipeUrlDocsContainer
           urlParamsSchema={urlParams as unknown as JSONSchema6}

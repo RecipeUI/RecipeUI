@@ -24,7 +24,7 @@ export function RecipeOutputConsole() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const sessionOutput = useOutput(currentSession?.id);
   const {
-    output: { id, output, type },
+    output: { id, output, type, contentType },
   } = sessionOutput;
 
   const { isDarkMode } = useDarkMode();
@@ -73,7 +73,7 @@ export function RecipeOutputConsole() {
   }, [output, id]);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg space-y-6">
+    <div className="sm:absolute inset-0 px-4 py-8 overflow-y-auto right-pane-bg space-y-6">
       {imageBlocks.length > 0 && (
         <>
           <OutputModule
@@ -199,16 +199,53 @@ export function ResponseOutput({
 
   const { isDarkMode } = useDarkMode();
 
+  const { contentType } = sessionOutput;
   return (
-    <CodeMirror
-      readOnly={true}
-      value={output}
-      maxHeight="100vh"
-      className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-      basicSetup={codeMirrorSetup}
-      theme={isDarkMode ? "dark" : "light"}
-      extensions={extensions}
-    />
+    <>
+      <CodeMirror
+        readOnly={true}
+        value={output}
+        maxHeight="100vh"
+        className="h-full !outline-none border-none max-w-sm sm:max-w-none"
+        basicSetup={codeMirrorSetup}
+        theme={isDarkMode ? "dark" : "light"}
+        extensions={extensions}
+      />
+      {contentType?.includes("text/html") && <HTMLPreview html={output} />}
+    </>
+  );
+}
+
+function HTMLPreview({ html }: { html: string }) {
+  const [showPreview, setShowPreview] = useState(false);
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+
+  return (
+    <div>
+      {!showPreview ? (
+        <div className="border rounded-md mt-2 p-4">
+          <p className="text-sm">Do you want to render the HTML?</p>
+          <button
+            className="btn btn-neutral btn-xs mt-2"
+            onClick={() => {
+              setShowPreview(true);
+            }}
+          >
+            Preview
+          </button>
+        </div>
+      ) : (
+        <div className="mockup-browser  bg-base-300 mt-4">
+          <div className="mockup-browser-toolbar">
+            <div className="input">{editorUrl}</div>
+          </div>
+          <div
+            dangerouslySetInnerHTML={{ __html: html }}
+            className="h-full w-full bg-base-200 p-4 min-h-[100px]"
+          ></div>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -4,17 +4,21 @@
   "main": "build/",
   "types": "index.d.ts",
   "scripts": {
-    "build": "ts-node-dev ./scripts/output.ts",
-    "minify-recipes": "ts-node-dev ./scripts/minify.ts"
+    "cli": "ts-node ./scripts/cli.ts"
   },
   "devDependencies": {
     "@types/node": "20.4.8",
+    "commander": "^11.0.0",
     "immer": "^10.0.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.0.2",
-    "uuid": "^9.0.0",
+    "inquirer": "^9.2.11",
     "mkdirp": "^3.0.1",
+    "ts-node": "^10.9.1",
     "types": "workspace:*",
-    "utils": "workspace:*"
+    "typescript": "^5.0.2",
+    "utils": "workspace:*",
+    "uuid": "^9.0.0"
+  },
+  "dependencies": {
+    "fuse.js": "^6.6.2"
   }
 }
