@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isUUID } from "utils";
+import { fetchProjectPage } from "ui/fetchers/project";
 
 export const revalidate = 3600;
 
@@ -13,20 +14,40 @@ export async function GET(
     params,
   }: {
     params: {
-      api_id: string;
+      project: string;
     };
   }
 ) {
-  const project = params.api_id;
+  const project = params.project;
   const supabase = createRouteHandlerClient<Database>({ cookies });
   // const coreAPIs
 
-  if (!isUUID(project)) {
-    return NextResponse.error();
+  if (!project || !isUUID(project)) {
+    return NextResponse.json(
+      {
+        error: "Invalid project ID.",
+      },
+      {
+        status: 404,
+      }
+    );
   }
 
-  return NextResponse.json({
-    message: "Hello from the API",
-    params,
+  const projectInfo = await fetchProjectPage({
+    supabase,
+    project: project,
   });
+
+  if (!projectInfo) {
+    return NextResponse.json(
+      {
+        error: "Project not found.",
+      },
+      {
+        status: 404,
+      }
+    );
+  }
+
+  return NextResponse.json(projectInfo);
 }

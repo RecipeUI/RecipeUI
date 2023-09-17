@@ -61,13 +61,14 @@ export async function fetchProjectById({
     project_id: projectId,
   });
 
-  if (!unlistedProjectInfo.data) {
+  if (!unlistedProjectInfo.data || unlistedProjectInfo.data.length === 0) {
     return {
       project: null,
       recipes: null,
       projectName: projectId,
     };
   }
+
   const recipeInfo = projectOnly
     ? null
     : await supabase.rpc("get_recipes_from_unlisted_project", {
