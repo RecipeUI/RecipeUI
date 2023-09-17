@@ -27,6 +27,7 @@ import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
 import { isCollectionModule } from "../../../modules";
 import { ModuleSettings } from "../../../modules/authConfigs";
+import { DISCORD_LINK } from "utils/constants";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -619,8 +620,7 @@ export function RecipeSearchButton() {
       });
     } catch (e) {
       console.error(e);
-      let output =
-        "Something went wrong. Can you report this issue to us on our discord?";
+      let output = `Is this error unexpected? Debug with inspector window or report in our discord ${DISCORD_LINK}.`;
 
       if ((e as Error)?.message === RecipeError.AbortedRequest) {
         output = "Request cancelled.";
@@ -629,7 +629,11 @@ export function RecipeSearchButton() {
       let errorMessage: string = "";
 
       try {
-        errorMessage = parse(e as any);
+        if (e instanceof Error) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = parse(e as any);
+        }
       } catch (_) {
         //
       }
