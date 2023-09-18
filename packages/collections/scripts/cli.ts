@@ -8,7 +8,7 @@ import { buildOutput } from "./output";
 import prompts from "prompts";
 import { RECIPE_UI_BASE_URL } from "utils/constants";
 import { isUUID } from "utils";
-import { PATHS } from "./constants";
+import { CollectionType, PATHS } from "./constants";
 
 const program = new Command();
 
@@ -117,13 +117,6 @@ program
       return;
     }
 
-    if (!options.core) {
-      console.error(
-        "Support for only adding to core lib for now. Please add --core"
-      );
-      return;
-    }
-
     let collectionInfo: {
       project: RecipeProject | null;
       recipes: Recipe[] | null;
@@ -180,7 +173,8 @@ program
 
     // Check to see if collection folder already exists
     const folderPath = path.join(
-      PATHS.CORE_DIR,
+      PATHS.COLLECTIONS_DIR,
+      options.core ? CollectionType.Core : CollectionType.Community,
       projectName // Title here is a bit of a gotcha, be careful a bit
     );
     let collectionExists = fs.existsSync(`${folderPath}/collection.json`);
