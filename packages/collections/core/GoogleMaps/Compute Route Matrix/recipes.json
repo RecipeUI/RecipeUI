@@ -1,0 +1,95 @@
+[
+  {
+    "title": "Route Matrix Example",
+    "replay": {
+      "output": [
+        {
+          "status": {},
+          "duration": "455s",
+          "condition": "ROUTE_EXISTS",
+          "originIndex": 1,
+          "distanceMeters": 5598,
+          "destinationIndex": 1
+        },
+        {
+          "status": {},
+          "duration": "293s",
+          "condition": "ROUTE_EXISTS",
+          "originIndex": 1,
+          "distanceMeters": 2919,
+          "destinationIndex": 0
+        },
+        {
+          "status": {},
+          "duration": "119s",
+          "condition": "ROUTE_EXISTS",
+          "originIndex": 0,
+          "distanceMeters": 824,
+          "destinationIndex": 0
+        },
+        "..."
+      ],
+      "duration": 228,
+      "streaming": false
+    },
+    "author_id": "42c07d36-f124-47b8-8c1a-41c9a93e1fa4",
+    "urlParams": null,
+    "description": "Example from the Google Maps Docs",
+    "queryParams": null,
+    "requestBody": {
+      "origins": [
+        {
+          "waypoint": {
+            "location": {
+              "latLng": {
+                "latitude": 37.420761,
+                "longitude": -122.081356
+              }
+            }
+          },
+          "routeModifiers": {
+            "avoidFerries": true
+          }
+        },
+        {
+          "waypoint": {
+            "location": {
+              "latLng": {
+                "latitude": 37.403184,
+                "longitude": -122.097371
+              }
+            }
+          },
+          "routeModifiers": {
+            "avoidFerries": true
+          }
+        }
+      ],
+      "travelMode": "DRIVE",
+      "destinations": [
+        {
+          "waypoint": {
+            "location": {
+              "latLng": {
+                "latitude": 37.420999,
+                "longitude": -122.086894
+              }
+            }
+          }
+        },
+        {
+          "waypoint": {
+            "location": {
+              "latLng": {
+                "latitude": 37.383047,
+                "longitude": -122.044651
+              }
+            }
+          }
+        }
+      ],
+      "routingPreference": "TRAFFIC_AWARE"
+    },
+    "project_scope": "personal"
+  }
+]

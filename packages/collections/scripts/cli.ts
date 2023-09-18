@@ -9,6 +9,7 @@ import prompts from "prompts";
 import { CollectionType, RECIPE_UI_BASE_URL } from "utils/constants";
 import { isUUID } from "utils";
 import { PATHS } from "./constants";
+import { minifyRecipeTemplates } from "./minify";
 
 const program = new Command();
 
@@ -204,17 +205,14 @@ program
     for (const api of selectedAPIs.apis as Recipe[]) {
       try {
         const APIPath = path.join(folderPath, api.title);
-        api.project = projectName;
 
-        api.visibility = "public";
+        minifyRecipeTemplates({
+          collectionName: projectName,
+          folderPath: APIPath,
+          recipe: api,
+        });
 
-        mkdirp.sync(APIPath);
-
-        fs.writeFileSync(
-          `${APIPath}/api.json`,
-          JSON.stringify(api, null, 2),
-          "utf8"
-        );
+        // Need something here to create temapltes
       } catch (error) {
         console.log(`Error writing API ${api.title}`);
         console.error(error);

@@ -1,0 +1,54 @@
+[
+  {
+    "title": "Compute Routes Example",
+    "replay": {
+      "output": {
+        "routes": [
+          {
+            "duration": "129s",
+            "polyline": {
+              "encodedPolyline": "ipkcFjichVzQ@d@gU{E?"
+            },
+            "distanceMeters": 773
+          }
+        ]
+      },
+      "duration": 53.10000002384186,
+      "streaming": false
+    },
+    "author_id": "42c07d36-f124-47b8-8c1a-41c9a93e1fa4",
+    "urlParams": null,
+    "description": "Example from Google Maps docs",
+    "queryParams": null,
+    "requestBody": {
+      "units": "IMPERIAL",
+      "origin": {
+        "location": {
+          "latLng": {
+            "latitude": 37.419734,
+            "longitude": -122.0827784
+          }
+        }
+      },
+      "travelMode": "DRIVE",
+      "destination": {
+        "location": {
+          "latLng": {
+            "latitude": 37.41767,
+            "longitude": -122.079595
+          }
+        }
+      },
+      "languageCode": "en-US",
+      "departureTime": "2023-10-15T15:01:23.045123456Z",
+      "routeModifiers": {
+        "avoidTolls": false,
+        "avoidFerries": false,
+        "avoidHighways": false
+      },
+      "routingPreference": "TRAFFIC_AWARE",
+      "computeAlternativeRoutes": false
+    },
+    "project_scope": "personal"
+  }
+]

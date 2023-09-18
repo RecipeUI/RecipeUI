@@ -7,8 +7,8 @@
   "status": "Active",
   "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/collections/29a2fa52-f049-4298-b65d-cbaf41814f0a/main",
   "tags": [],
-  "scope": "personal",
-  "visibility": "unlisted",
+  "scope": "global",
+  "visibility": "public",
   "owner_id": "42c07d36-f124-47b8-8c1a-41c9a93e1fa4",
   "id": "29a2fa52-f049-4298-b65d-cbaf41814f0a"
 }
