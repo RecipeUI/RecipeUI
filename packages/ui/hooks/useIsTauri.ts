@@ -14,11 +14,14 @@ export function useIsTauri() {
 }
 
 export function useClipboard() {
-  const isTauri = useIsTauri();
+  const [clipboard, setClipboard] = useState(navigator.clipboard);
 
-  if (isTauri) {
-    return clipboard;
-  } else {
-    return navigator.clipboard;
-  }
+  useEffect(() => {
+    // BUG: This cannot be combined with the useIsTauri hook above
+    if (typeof window !== undefined && "__TAURI__" in window) {
+      setClipboard(clipboard);
+    }
+  }, []);
+
+  return clipboard;
 }

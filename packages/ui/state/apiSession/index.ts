@@ -72,6 +72,7 @@ enum APIStore {
   MiniRecipes = "MiniRecipes",
   ProjectCollections = "ProjectCollections",
   RecipeUICore = "RecipeUICore",
+  Onboarding = "Onboarding",
 }
 
 export interface SessionsStore extends DBSchema {
@@ -110,12 +111,16 @@ export interface SessionsStore extends DBSchema {
       recipes: Recipe[];
     };
   };
+  [APIStore.Onboarding]: {
+    key: OnboardingKey;
+    value: boolean;
+  };
 }
 
 const DB_CONFIG = {
   NAME: "RECIPEUI_ALPHA_0.5",
   // TODO: Need a better migration plan this is bad
-  VERSION: 2,
+  VERSION: 3,
 };
 let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 
@@ -132,6 +137,7 @@ function getDB() {
           APIStore.MiniRecipes,
           APIStore.SessionFolders,
           APIStore.RecipeUICore,
+          APIStore.Onboarding,
         ].forEach((store) => {
           if (!db.objectStoreNames.contains(store as any)) {
             db.createObjectStore(store as any);
@@ -169,6 +175,9 @@ export async function getFolderStore() {
     .store;
 }
 
+export async function getOnboardingStore() {
+  return (await getDB()).transaction(APIStore.Onboarding, "readwrite").store;
+}
 export async function getRecipeUICoreStore() {
   return (await getDB()).transaction(APIStore.RecipeUICore, "readwrite").store;
 }
@@ -273,6 +282,7 @@ export async function deleteConfigForSessionStore({
 import EventEmitter from "events";
 import { OutputAPI } from "./OutputAPI";
 import { SecretAPI } from "./SecretAPI";
+import { OnboardingKey } from "utils/constants";
 export const eventEmitter = new EventEmitter();
 
 async function getMiniRecipeStore() {

@@ -84,7 +84,7 @@ export function RecipeSidebar() {
       let [forkId, recipeTitle] = recipeFork.split("::");
 
       setRecipeFork("");
-      initializeRecipe(forkId, recipeTitle);
+      initializeRecipe(forkId, { recipeTitle });
     }
 
     async function initializeCollection() {
@@ -113,7 +113,7 @@ export function RecipeSidebar() {
 
       if (recipes && recipes.length > 0) {
         for (const recipe of recipes) {
-          await initializeRecipe(recipe.id, recipe.title);
+          await initializeRecipe(recipe.id, { recipePreDefined: recipe });
         }
       }
     }
@@ -536,7 +536,7 @@ function EditFolderModal({
           </button>
         </div>
       </div>
-      {folder.sessionIds.length > 0 && (
+      {/* {folder.sessionIds.length > 0 && (
         <>
           <div className="divider" />
           <div className="mt-4">
@@ -548,7 +548,7 @@ function EditFolderModal({
             <RecipeDownloadButton folder={folder} />
           </div>
         </>
-      )}
+      )} */}
     </Modal>
   );
 }

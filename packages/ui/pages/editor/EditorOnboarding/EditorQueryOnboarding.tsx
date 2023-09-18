@@ -2,16 +2,16 @@
 import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { ONBOARDING_CONSTANTS } from "../../../utils/constants/main";
 import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
 import { API_TYPE_NAMES, RECIPE_IDS } from "../../../utils/constants/recipe";
 import { Modal } from "../../../components/Modal";
+import { useNeedsOnboarding } from "../../../state/apiSession/OnboardingAPI";
+import { ONBOARDING_CONSTANTS } from "utils/constants";
 
 // ONBOARDING_CONSTANTS
 export function EditorQueryOnboarding() {
-  const [_, setOnboarded] = useLocalStorage(
-    ONBOARDING_CONSTANTS.QUERY_ONBOARDING,
-    false
+  const { turnOffOnboarding } = useNeedsOnboarding(
+    ONBOARDING_CONSTANTS.QUERY_ONBOARDING
   );
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
@@ -52,7 +52,7 @@ export function EditorQueryOnboarding() {
             className="btn btn-sm mt-2 w-fit btn-outline"
             disabled={loading}
             onClick={() => {
-              setOnboarded(true);
+              turnOffOnboarding();
             }}
           >
             DISMISS
@@ -67,7 +67,7 @@ export function EditorQueryOnboarding() {
                     "Failed to initialize example. Sorry, explore on your own for now."
                   );
                 });
-                setOnboarded(true);
+                turnOffOnboarding();
               }}
             >
               Fork Reddit example

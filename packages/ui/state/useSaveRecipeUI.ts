@@ -10,8 +10,6 @@ import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 import { shallow } from "zustand/shallow";
 import { useDebounce, useSessionStorage } from "usehooks-ts";
 import { useIsTauri } from "../hooks/useIsTauri";
-import { usePostHog } from "posthog-js/react";
-import { v4 as uuidv4 } from "uuid";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -23,7 +21,6 @@ export function useSaveRecipeUI() {
   const router = useRouter();
 
   const isTauri = useIsTauri();
-  const posthog = usePostHog();
 
   const [redirect, setRedirect] = useSessionStorage(REDIRECT_PAGE, null);
   useEffect(() => {
@@ -86,6 +83,7 @@ export function useSaveRecipeUI() {
     });
   }, []);
 
+  // Model after savePrevSessionPre
   const newState = useRecipeSessionStore(
     (state) => ({
       editorBody: state.editorBody,
@@ -99,11 +97,21 @@ export function useSaveRecipeUI() {
       editorBodySchemaJSON: state.editorBodySchemaJSON,
       editorQuerySchemaType: state.editorQuerySchemaType,
       editorQuerySchemaJSON: state.editorQuerySchemaJSON,
+
+      editorURLSchemaJSON: state.editorURLSchemaJSON,
+      editorURLSchemaType: state.editorURLSchemaType,
+      editorURLCode: state.editorURLCode,
+
+      editorAuth: state.editorAuth,
+      editorHeader: state.editorHeader,
+      editorProject: state.editorProject,
+      editorSessionOptions: state.editorSessionOptions,
     }),
     shallow
   );
 
-  const debouncedStateChanges = useDebounce(newState, 2000);
+  // It's really hard to say
+  const debouncedStateChanges = useDebounce(newState, 500);
   const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
   useEffect(() => {
     saveSession();

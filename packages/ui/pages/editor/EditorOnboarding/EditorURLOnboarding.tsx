@@ -1,17 +1,16 @@
 "use client";
 import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { ONBOARDING_CONSTANTS } from "../../../utils/constants/main";
 import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
-import { API_TYPE_NAMES, RECIPE_IDS } from "../../../utils/constants/recipe";
+import { RECIPE_IDS } from "../../../utils/constants/recipe";
 import { Modal } from "../../../components/Modal";
 import { URLHighlight } from "../EditorURL";
+import { useNeedsOnboarding } from "../../../state/apiSession/OnboardingAPI";
+import { ONBOARDING_CONSTANTS } from "utils/constants";
 
 export function EditorURLOnboarding() {
-  const [_, setOnboarded] = useLocalStorage(
-    ONBOARDING_CONSTANTS.URL_ONBOARDING,
-    false
+  const { turnOffOnboarding } = useNeedsOnboarding(
+    ONBOARDING_CONSTANTS.URL_ONBOARDING
   );
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
@@ -61,7 +60,7 @@ export function EditorURLOnboarding() {
             className="btn btn-sm mt-2 w-fit btn-outline"
             disabled={loading}
             onClick={() => {
-              setOnboarded(true);
+              turnOffOnboarding();
             }}
           >
             DISMISS
@@ -76,7 +75,7 @@ export function EditorURLOnboarding() {
                     "Failed to initialize example. Sorry, explore on your own for now."
                   );
                 });
-                setOnboarded(true);
+                turnOffOnboarding();
               }}
             >
               Fork Reddit example

@@ -32,9 +32,10 @@ export function useInitializeRecipe() {
   const initializeRecipe = useCallback(
     async (
       recipeId: string,
-      recipeTitle?: string,
-      recipePreDefined?: Recipe
+      options?: { recipeTitle?: string; recipePreDefined?: Recipe }
     ) => {
+      const { recipeTitle, recipePreDefined } = options || {};
+
       try {
         // get the recipe information first
 

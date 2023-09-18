@@ -192,8 +192,6 @@ export function RecipeSendModal({
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const [count, setCount] = useState(10);
 
-  const { initializeRecipe } = useInitializeRecipe();
-
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   useInterval(
