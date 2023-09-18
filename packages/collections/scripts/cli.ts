@@ -99,23 +99,28 @@ program
   .description("Build the collections and apis")
   .action(() => {
     buildOutput();
-
-    const apis = getAPIs();
-    const collections = getCollections();
-
-    mkdirp.sync(PATHS.WEB_PUBLIC_CORE);
   });
 
 program
   .command("contribute")
   .description("Contribute APIs from a collection to RecipeUI")
-  .argument("<collection_id>", "collection id")
   .option("--core", "add to core lib")
-  .action(async (collection_id, options: { core?: boolean }) => {
-    if (!isUUID(collection_id)) {
-      console.error("Invalid collection id");
-      return;
-    }
+  .action(async (options: { core?: boolean }) => {
+    console.log("here", options);
+
+    const collectionIdPrompt = await prompts({
+      type: "text",
+      name: "collectionId",
+      message: "Enter the collection id from your collection share URL.",
+      validate: (value) => {
+        if (!isUUID(value)) {
+          return "Invalid collection id. Must be a uuid like b8b3109d-38b0-4ea6-81a7-059cf64e3550";
+        }
+
+        return true;
+      },
+    });
+    const collection_id = collectionIdPrompt.collectionId;
 
     let collectionInfo: {
       project: RecipeProject | null;
@@ -170,6 +175,8 @@ program
 
     let projectName = projectNameRes.projectName;
     collectionInfo.project.project = projectName;
+    collectionInfo.project.visibility = "public";
+    collectionInfo.project.scope = "global";
 
     // Check to see if collection folder already exists
     const folderPath = path.join(
@@ -198,6 +205,8 @@ program
       try {
         const APIPath = path.join(folderPath, api.title);
         api.project = projectName;
+
+        api.visibility = "public";
 
         mkdirp.sync(APIPath);
 
