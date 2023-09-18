@@ -18,13 +18,21 @@ Couldn't have built this app without some really amazing packages
 - 🦖 Docusaurus for docs!
 - Other fun stuff: pnpm, downshift, fuse, react18-json-view
 
+## Contributing
+
+Contributing code to our repo is as simple as building an API collection to share with the community! APIs are always a pain to deal with, so it'd be awesome if you could help other people use public or private APIs by building collections.
+
+You will need to run our desktop app locally.
+https://docs.recipeui.com/docs/Contributing/setup
+
+Then read our guide on contributing to our repo.
+https://docs.recipeui.com/docs/Contributing/collections
+
+
 ## Open source
 
 We are open sourced because we use so much open source technology and we want to be transparent about how we actually make API requests. We don't store any API secrets in the cloud and we limit the telemetry we collect to the user experience portions.
 
-## Running locally
-
-Fork and run our desktop app locally. Check out the readme at [apps/desktop](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop). 
 
 ## Contributors
 

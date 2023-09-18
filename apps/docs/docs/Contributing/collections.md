@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 sidebar_label: Building collections
 ---
 
@@ -36,7 +36,7 @@ Before moving on, you should edit the title, description, and possibly add an im
 
 :::info
 
-You will need to have cloned our repo to do this step. Please follow the [instructions](https://github.com/RecipeUI/RecipeUI/tree/main/apps/desktop) to clone and run our repo locally.
+You will need to have cloned our repo to do this step. Please follow the [instructions](setup) to clone and run our repo locally.
 
 If you are unable to clone a repo, you can message our discord group so we can pair program or we can create the pull request for you (we will attribute you).
 
@@ -48,8 +48,12 @@ Inside of the root folder of the monorepo (**NOT  /apps/desktop**), run
 pnpm collections contribute
 ```
 
+![Use CLI](@site/static/img/contributing/4collection.jpg)
 
-<!-- https://recipeui.com/e4d6883b-16fe-46fa-88e5-be8b9ba60e56 -->
+### Step 5 - Create a PR
+
+After step 4, you should have some code changes that you can commit. Create a PR for us to review similar to [GitHub PR](https://github.com/RecipeUI/RecipeUI/pull/30). Ping us on [discord](https://discord.gg/rXmpYmCNNA) so we can showcase and approve it faster!
+
 
 
 

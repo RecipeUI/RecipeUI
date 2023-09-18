@@ -1,6 +1,5 @@
 ---
-sidebar_position: 2
-sidebar_label: Building a custom module
+sidebar_label: Creating custom modules
 ---
 
 # IN PROGRESS
