@@ -45,8 +45,6 @@ export const EditorURL = () => {
     ONBOARDING_CONSTANTS.URL_ONBOARDING
   );
 
-  console.log({ needsOnboarding });
-
   return (
     <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
       <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-scroll break-all">

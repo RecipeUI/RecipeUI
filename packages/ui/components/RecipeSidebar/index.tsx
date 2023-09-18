@@ -88,8 +88,6 @@ export function RecipeSidebar() {
     }
 
     async function initializeCollection() {
-      console.log("initializing, collection", collectionFork);
-
       let recipes: Recipe[] = [];
       const localProject =
         await RecipeUICollectionsAPI.getProjectInfoWithProjectNameOrId({
