@@ -334,6 +334,7 @@ function EditModal({
               const deletionConfirm = await confirm(
                 "Are you sure you want to delete this collection? This cannot be undone."
               );
+              if (!deletionConfirm) return;
 
               await supabase
                 .from("recipe")
