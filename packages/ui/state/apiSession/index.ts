@@ -24,6 +24,7 @@ import {
 } from "../recipeSession";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 interface APISessionParameters {
   editorBody: string;
   editorQuery: string;
@@ -71,7 +72,7 @@ enum APIStore {
   Output = "Output",
   MiniRecipes = "MiniRecipes",
   ProjectCollections = "ProjectCollections",
-  RecipeUICore = "RecipeUICore",
+  RecipeUICollections = "RecipeUICollections",
   Onboarding = "Onboarding",
 }
 
@@ -104,13 +105,14 @@ export interface SessionsStore extends DBSchema {
     key: string;
     value: SessionOutput[];
   };
-  [APIStore.RecipeUICore]: {
-    key: "core";
+  [APIStore.RecipeUICollections]: {
+    key: CollectionType;
     value: {
       collections: RecipeProject[];
       recipes: Recipe[];
     };
   };
+
   [APIStore.Onboarding]: {
     key: OnboardingKey;
     value: boolean;
@@ -120,7 +122,7 @@ export interface SessionsStore extends DBSchema {
 const DB_CONFIG = {
   NAME: "RECIPEUI_ALPHA_0.5",
   // TODO: Need a better migration plan this is bad
-  VERSION: 3,
+  VERSION: 5,
 };
 let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 
@@ -136,7 +138,7 @@ function getDB() {
           APIStore.Output,
           APIStore.MiniRecipes,
           APIStore.SessionFolders,
-          APIStore.RecipeUICore,
+          APIStore.RecipeUICollections,
           APIStore.Onboarding,
         ].forEach((store) => {
           if (!db.objectStoreNames.contains(store as any)) {
@@ -178,8 +180,9 @@ export async function getFolderStore() {
 export async function getOnboardingStore() {
   return (await getDB()).transaction(APIStore.Onboarding, "readwrite").store;
 }
-export async function getRecipeUICoreStore() {
-  return (await getDB()).transaction(APIStore.RecipeUICore, "readwrite").store;
+export async function getRecipeUICollectionStore() {
+  return (await getDB()).transaction(APIStore.RecipeUICollections, "readwrite")
+    .store;
 }
 
 export async function getSessionsFromStore() {
@@ -282,7 +285,7 @@ export async function deleteConfigForSessionStore({
 import EventEmitter from "events";
 import { OutputAPI } from "./OutputAPI";
 import { SecretAPI } from "./SecretAPI";
-import { OnboardingKey } from "utils/constants";
+import { CollectionType, OnboardingKey } from "utils/constants";
 export const eventEmitter = new EventEmitter();
 
 async function getMiniRecipeStore() {

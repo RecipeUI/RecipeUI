@@ -17,7 +17,7 @@ import { FolderAPI } from "../state/apiSession/FolderAPI";
 import { SupabaseContext } from "../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../fetchers/home";
 import { getConfigFromRecipe } from "../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
-import { RecipeUICoreAPI } from "../state/apiSession/RecipeUICoreAPI";
+import { RecipeUICollectionsAPI } from "../state/apiSession/RecipeUICollectionsAPI";
 import { Recipe } from "types/database";
 
 export function useInitializeRecipe() {
@@ -42,7 +42,7 @@ export function useInitializeRecipe() {
         let recipe: Recipe | null = recipePreDefined || null;
 
         if (!recipe) {
-          let coreInfo = await RecipeUICoreAPI.getRecipeWithRecipeId({
+          let coreInfo = await RecipeUICollectionsAPI.getRecipeWithRecipeId({
             recipeId,
           });
 

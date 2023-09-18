@@ -30,7 +30,7 @@ import {
 import { useDarkMode } from "usehooks-ts";
 import { EditorUpdates } from "./EditorUpdates";
 import { DISCORD_LINK } from "utils/constants";
-import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
 import { CollectionModule, isCollectionModule } from "../../modules";
 import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
 import { useComplexSecrets } from "../../state/apiSession/SecretAPI";

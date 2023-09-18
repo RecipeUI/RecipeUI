@@ -9,14 +9,17 @@ import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { open } from "@tauri-apps/api/shell";
 import { SparklesIcon } from "@heroicons/react/24/outline";
-import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
+import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
   const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
   useEffect(() => {
-    RecipeUICoreAPI.getStore().then((store) => {
-      setLocalProjects(store.collections);
-    });
+    async function initializeProjects() {
+      const mainCollections = await RecipeUICollectionsAPI.getStore();
+      setLocalProjects(mainCollections.collections);
+    }
+
+    initializeProjects();
   }, []);
 
   const { popular, free, ycombinator, more } = useMemo(() => {

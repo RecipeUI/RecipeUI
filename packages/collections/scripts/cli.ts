@@ -6,9 +6,9 @@ import path from "path";
 import { mkdirp } from "mkdirp";
 import { buildOutput } from "./output";
 import prompts from "prompts";
-import { RECIPE_UI_BASE_URL } from "utils/constants";
+import { CollectionType, RECIPE_UI_BASE_URL } from "utils/constants";
 import { isUUID } from "utils";
-import { CollectionType, PATHS } from "./constants";
+import { PATHS } from "./constants";
 
 const program = new Command();
 

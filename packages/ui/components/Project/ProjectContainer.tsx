@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useIsTauri } from "../../hooks/useIsTauri";
-import { useCoreProject } from "../../state/apiSession/RecipeUICoreAPI";
+import { useCoreProject } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function ProjectContainer({
   projectName,

@@ -44,7 +44,7 @@ import { clipboard } from "@tauri-apps/api";
 import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { fetchProjectById, fetchProjectPage } from "../../fetchers/project";
-import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
+import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -92,7 +92,7 @@ export function RecipeSidebar() {
 
       let recipes: Recipe[] = [];
       const localProject =
-        await RecipeUICoreAPI.getProjectInfoWithProjectNameOrId({
+        await RecipeUICollectionsAPI.getProjectInfoWithProjectNameOrId({
           projectNameOrId: collectionFork,
         });
 

@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
-import { useLocalProjects } from "../../state/apiSession/RecipeUICoreAPI";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function RecipeHomeContainer({
   projects,

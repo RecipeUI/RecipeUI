@@ -17,8 +17,3 @@ export const PATHS = {
   WEB_PUBLIC_CORE: ROOT_DIR + "/apps/web/public/core",
   WEB_PUBLIC_COMMUNITY: ROOT_DIR + "/apps/web/public/community", // We gonna change this eventually
 };
-
-export enum CollectionType {
-  Core = "core",
-  Community = "community",
-}

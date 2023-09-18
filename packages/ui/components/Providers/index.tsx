@@ -12,7 +12,7 @@ import {
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
 import { createClient } from "@supabase/supabase-js";
-import { RecipeUICoreAPI } from "../../state/apiSession/RecipeUICoreAPI";
+import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 // Remember initPosthog has to be run
 export function initPosthog() {
@@ -82,7 +82,7 @@ export function Providers({ children }: { children: ReactNode }) {
           auth: {
             onAuthStateChange: () => {},
           },
-          fake: true
+          fake: true,
         } as any);
       }
     } else {
@@ -91,7 +91,7 @@ export function Providers({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    RecipeUICoreAPI.syncCore();
+    RecipeUICollectionsAPI.syncAllCollections();
   }, []);
 
   return (

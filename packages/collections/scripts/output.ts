@@ -2,7 +2,8 @@ import fs from "fs";
 import { mkdirp } from "mkdirp";
 import { RecipeProject, Recipe } from "types/database";
 import { findFilesInDir } from "./utils";
-import { CollectionType, PATHS } from "./constants";
+import { PATHS } from "./constants";
+import { CollectionType } from "utils/constants";
 
 type ExtendedCollection = RecipeProject & {
   rank?: number;

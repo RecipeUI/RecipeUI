@@ -14,7 +14,7 @@ import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "../RecipeBody";
 import { Loading } from "../Loading";
 import { OutputAPI } from "../../state/apiSession/OutputAPI";
-import { useCoreRecipe } from "../../state/apiSession/RecipeUICoreAPI";
+import { useCoreRecipe } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function RecipeAPI({
   recipe: _recipe,

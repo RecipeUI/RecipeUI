@@ -1,69 +1,87 @@
 import { RecipeProject, Recipe } from "types/database";
-import { getRecipeUICoreStore } from ".";
+import { getRecipeUICollectionStore } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useInterval } from "usehooks-ts";
 import { isUUID } from "utils";
+import { CollectionType } from "utils/constants";
 
 let recipeUICoreAPIloaded = false;
+let recipeUICommunityAPIloaded = false;
 
-type UICoreProjectInfo = {
+type UIProjectInfo = {
   project: RecipeProject;
   recipes: Recipe[];
 } | null;
 
-type UICoreRecipeInfo = {
+type UIRecipeInfo = {
   recipe: Recipe;
   project: RecipeProject | null;
 } | null;
 
-export class RecipeUICoreAPI {
+export class RecipeUICollectionsAPI {
   static getStore = async () => {
-    await this.syncCore();
+    await this.syncCollections(CollectionType.Core);
+    await this.syncCollections(CollectionType.Community);
 
-    const store = await getRecipeUICoreStore();
-    const core = await store.get("core");
+    const store = await getRecipeUICollectionStore();
+    const core = await store.get(CollectionType.Core);
+    const community = await store.get(CollectionType.Community);
+
+    const collections = [
+      ...(core?.collections ?? []),
+      ...(community?.collections ?? []),
+    ];
+    const apis = [...(core?.recipes ?? []), ...(community?.recipes ?? [])];
 
     return {
-      collections: core?.collections ?? [],
-      recipes: core?.recipes ?? [],
+      collections,
+      recipes: apis,
     };
   };
 
-  static syncCore = async () => {
-    if (recipeUICoreAPIloaded) {
+  static syncAllCollections = async () => {
+    await this.syncCollections(CollectionType.Core);
+    await this.syncCollections(CollectionType.Community);
+  };
+
+  static syncCollections = async (type: CollectionType) => {
+    if (type === CollectionType.Core && recipeUICoreAPIloaded) {
+      return;
+    } else if (
+      type === CollectionType.Community &&
+      recipeUICommunityAPIloaded
+    ) {
       return;
     }
 
     let collections: RecipeProject[] = [];
     let recipes: Recipe[] = [];
     try {
-      collections = (await import("collections/build/core/collections.json"))
+      collections = (await import(`collections/build/${type}/collections.json`))
         .default as RecipeProject[];
 
-      recipes = (await import("collections/build/core/apis.json"))
+      recipes = (await import(`collections/build/${type}/apis.json`))
         .default as unknown as Recipe[];
     } catch (error) {
       console.error(error);
     }
 
-    const store = await getRecipeUICoreStore();
+    const store = await getRecipeUICollectionStore();
 
     await store.put(
       {
         collections,
         recipes,
       },
-      "core"
+      type
     );
-
-    recipeUICoreAPIloaded = true;
   };
 
   static getProjectInfoWithProjectNameOrId = async ({
     projectNameOrId,
   }: {
     projectNameOrId: string;
-  }): Promise<UICoreProjectInfo> => {
+  }): Promise<UIProjectInfo> => {
     const core = await this.getStore();
 
     const project = core?.collections.find((p: RecipeProject) =>
@@ -88,7 +106,7 @@ export class RecipeUICoreAPI {
     recipeId,
   }: {
     recipeId: string;
-  }): Promise<UICoreRecipeInfo> => {
+  }): Promise<UIRecipeInfo> => {
     const core = await this.getStore();
 
     const recipe = core?.recipes.find((r: Recipe) => r.id === recipeId);
@@ -109,12 +127,12 @@ export class RecipeUICoreAPI {
 
 export function useCoreProject({ projectName }: { projectName: string }) {
   const [loading, setLoading] = useState(true);
-  const [projectInfo, setProject] = useState<UICoreProjectInfo>(null);
+  const [projectInfo, setProject] = useState<UIProjectInfo>(null);
 
   useEffect(() => {
     setLoading(true);
 
-    RecipeUICoreAPI.getProjectInfoWithProjectNameOrId({
+    RecipeUICollectionsAPI.getProjectInfoWithProjectNameOrId({
       projectNameOrId: projectName,
     })
       .then((result) => {
@@ -133,12 +151,12 @@ export function useCoreProject({ projectName }: { projectName: string }) {
 
 export function useCoreRecipe({ recipeId }: { recipeId: string }) {
   const [loading, setLoading] = useState(true);
-  const [recipeInfo, setRecipe] = useState<UICoreRecipeInfo>(null);
+  const [recipeInfo, setRecipe] = useState<UIRecipeInfo>(null);
 
   useEffect(() => {
     setLoading(true);
 
-    RecipeUICoreAPI.getRecipeWithRecipeId({ recipeId })
+    RecipeUICollectionsAPI.getRecipeWithRecipeId({ recipeId })
       .then((result) => {
         setRecipe(result);
       })
@@ -156,7 +174,7 @@ export function useCoreRecipe({ recipeId }: { recipeId: string }) {
 export function useLocalProjects() {
   const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
   useEffect(() => {
-    RecipeUICoreAPI.getStore().then((store) => {
+    RecipeUICollectionsAPI.getStore().then((store) => {
       setLocalProjects(store.collections);
     });
   }, []);

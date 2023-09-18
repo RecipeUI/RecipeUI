@@ -9,3 +9,8 @@ export const ONBOARDING_CONSTANTS = {
 } as const;
 
 export type OnboardingKey = keyof typeof ONBOARDING_CONSTANTS;
+
+export enum CollectionType {
+  Core = "core",
+  Community = "community",
+}
