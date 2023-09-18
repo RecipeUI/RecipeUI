@@ -10,6 +10,11 @@ const VERSION_LOGS: {
   update_type?: "bug" | "feature";
 }[] = [
   {
+    version: "0.8.3",
+    update: "Bug fixes and multiple UX improvements.",
+    update_type: "bug",
+  },
+  {
     version: "0.8.2",
     update: "Bug fixes. Migrate to API storybook (more details soon).",
     update_type: "bug",
