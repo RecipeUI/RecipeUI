@@ -1,0 +1,46 @@
+{
+  "created_at": "2023-08-06T23:02:22+00:00",
+  "title": "Fake Post Detail",
+  "summary": "A specific info about a post and it's posdId, content, and comments.",
+  "method": "GET",
+  "path": "https://jsonplaceholder.typicode.com/posts/{post_id}/{resource}",
+  "project": "{JSON} Placeholder",
+  "auth": null,
+  "tags": [
+    "Examples"
+  ],
+  "queryParams": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{post_id}": {
+        "type": "string",
+        "description": "Provide the post id"
+      },
+      "{resource}": {
+        "type": "string",
+        "enum": [
+          "comments",
+          ""
+        ],
+        "description": "Select 'comments' if you want to see this posts comments. Otherwise leave blank"
+      }
+    },
+    "required": [
+      "{post_id}",
+      "{resource}"
+    ],
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "b14845f0-5d3c-4d28-bef7-178c3bcbcedf",
+  "queryParamsType": null,
+  "urlParamsType": "export interface APIUrlParams {\n  \"{post_id}\": string;\n  \"{resource}\": \"comments\" | \"\";\n}",
+  "requestBodyType": null
+}

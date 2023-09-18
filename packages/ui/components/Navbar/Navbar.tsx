@@ -76,6 +76,8 @@ export function Navbar() {
     }
   }, [isTauri, router, setCurrentSession, setDesktopPage]);
 
+  const { isLatest } = useLatestVersionDetails();
+
   return (
     <div
       className={classNames(
@@ -128,10 +130,20 @@ export function Navbar() {
               {isTauri ? "Collections" : "Home"}
             </h1>
           </button>
-          <button onClick={goEditor}>
+          <button
+            onClick={goEditor}
+            className={classNames(
+              isLatest ? undefined : "indicator tooltip tooltip-bottom"
+            )}
+            data-tip={isLatest ? undefined : "See what's new!"}
+          >
             <h1 className="ml-4 text-sm dark:text-white sm:block hidden">
               {isTauri ? "Home" : "Editor"}
             </h1>
+
+            {!isLatest && (
+              <span className="indicator-item h-2 w-2 bg-error rounded-full -right-1 top-1"></span>
+            )}
           </button>
           {!isTauri && (
             <Link href="/collections">
@@ -143,53 +155,39 @@ export function Navbar() {
         </div>
       </div>
       <div />
-      <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
-        <li className="">
-          <Link
-            href="https://github.com/RecipeUI/RecipeUI"
-            className="btn btn-ghost btn-sm font-sm text-xs"
-            target="_blank"
-            as=""
-          >
-            <StarIcon className="w-3 h-3" />
-            Star us on Github!
-          </Link>
-        </li>
-        {/* {pathname !== "/" && (
-          <li className="hidden sm:block">
+      {process.env.NEXT_PUBLIC_ENV && (
+        <ul className="menu menu-horizontal px-1 dark:text-white space-x-2 ">
+          <li className="group">
             <Link
-              href="/"
+              href="https://github.com/RecipeUI/RecipeUI"
               className="btn btn-ghost btn-sm font-sm text-xs"
               target="_blank"
               as=""
-              onClick={() => {
-                // if (isTauri) {
-                //   setDesktopPage(null);
-                // }
-              }}
             >
-              Home
+              <StarIcon className="w-3 h-3 group-hover:spin group-hover:fill-accent group-hover:text-accent" />
+              Star us on Github!
             </Link>
           </li>
-        )} */}
-        {!user ? (
-          <li>
-            <button
-              id={UNIQUE_ELEMENT_IDS.SIGN_IN}
-              className="btn bg-chefYellow text-black btn-sm"
-              onClick={() => {
-                setIsLoginModalOpen(true);
-              }}
-            >
-              Log in
-            </button>
-          </li>
-        ) : (
-          <>
-            <NavMenu user={user} />
-          </>
-        )}
-      </ul>
+
+          {!user ? (
+            <li>
+              <button
+                id={UNIQUE_ELEMENT_IDS.SIGN_IN}
+                className="btn bg-chefYellow text-black btn-sm"
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                }}
+              >
+                Log in
+              </button>
+            </li>
+          ) : (
+            <>
+              <NavMenu user={user} />
+            </>
+          )}
+        </ul>
+      )}
       {showForm && (
         <NavAuthForm
           isModalOpen={isLoginModalOpen}
@@ -267,6 +265,7 @@ import { useQuery } from "@tanstack/react-query";
 import { RecipeMethod } from "types/enums";
 
 import { emit } from "@tauri-apps/api/event";
+import { useLatestVersionDetails } from "../../pages/editor/EditorUpdates";
 
 function TauriUpdateExtension() {
   const [version, setVersion] = useState("");

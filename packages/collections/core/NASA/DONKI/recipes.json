@@ -1,0 +1,65 @@
+[
+  {
+    "title": "Simple recipe test",
+    "author_id": "c00e59bc-e5eb-43ea-b34e-5c6ca4026b83",
+    "description": "abcd",
+    "project_scope": "personal",
+    "urlParams": {
+      "{Service}": "CMEAnalysis"
+    },
+    "queryParams": null,
+    "requestBody": null,
+    "replay": {
+      "duration": 59.299999952316284,
+      "output": [
+        {
+          "time21_5": "2023-08-17T06:50Z",
+          "latitude": -26,
+          "longitude": 105,
+          "halfAngle": 43,
+          "speed": 859,
+          "type": "C",
+          "isMostAccurate": true,
+          "associatedCMEID": "2023-08-17T02:48:00-CME-001",
+          "note": "Measurement using longitude where eruption is likely centered beyond west limb based on EUV imagery, but longitude may vary between approximately 90 to 110 degrees. This measurement of the leading edge is similar to the measurement for the shock of this CME. The shock of this CME was not clearly discernible in SOHO C3 difference imagery, so the most reliable measurements for this CME were taken for the leading edge.",
+          "_recipeui_additionalProperties": [
+            "catalog",
+            "link"
+          ]
+        },
+        {
+          "time21_5": "2023-08-17T18:49Z",
+          "latitude": 7,
+          "longitude": 80,
+          "halfAngle": 26,
+          "speed": 606,
+          "type": "C",
+          "isMostAccurate": true,
+          "associatedCMEID": "2023-08-17T12:48:00-CME-001",
+          "note": "Measurement of the leading edge using coordinates based on source location of eruption, around W80.",
+          "_recipeui_additionalProperties": [
+            "catalog",
+            "link"
+          ]
+        },
+        {
+          "time21_5": "2023-08-17T15:46Z",
+          "latitude": 15,
+          "longitude": 80,
+          "halfAngle": 23,
+          "speed": 1052,
+          "type": "O",
+          "isMostAccurate": true,
+          "associatedCMEID": "2023-08-17T12:48:00-CME-001",
+          "note": "Measurement of what is likely the shock of this CME, which appears to be traveling slightly more northward than the brighter, slower bulk of the CME in the field of view of the coronagraphs.",
+          "_recipeui_additionalProperties": [
+            "catalog",
+            "link"
+          ]
+        },
+        "..."
+      ],
+      "streaming": false
+    }
+  }
+]

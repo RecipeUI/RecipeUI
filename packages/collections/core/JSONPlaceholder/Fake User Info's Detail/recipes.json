@@ -1,0 +1,40 @@
+[
+  {
+    "title": "Comments from Post 5",
+    "replay": {
+      "output": [
+        {
+          "id": 21,
+          "body": "deleniti aut sed molestias explicabo\ncommodi odio ratione nesciunt\nvoluptate doloremque est\nnam autem error delectus",
+          "name": "aliquid rerum mollitia qui a consectetur eum sed",
+          "email": "Noemie@marques.me",
+          "postId": 5
+        },
+        {
+          "id": 22,
+          "body": "qui ipsa animi nostrum praesentium voluptatibus odit\nqui non impedit cum qui nostrum aliquid fuga explicabo\nvoluptatem fugit earum voluptas exercitationem temporibus dignissimos distinctio\nesse inventore reprehenderit quidem ut incidunt nihil necessitatibus rerum",
+          "name": "porro repellendus aut tempore quis hic",
+          "email": "Khalil@emile.co.uk",
+          "postId": 5
+        },
+        {
+          "id": 23,
+          "body": "voluptates provident repellendus iusto perspiciatis ex fugiat ut\nut dolor nam aliquid et expedita voluptate\nsunt vitae illo rerum in quos\nvel eligendi enim quae fugiat est",
+          "name": "quis tempora quidem nihil iste",
+          "email": "Sophia@arianna.co.uk",
+          "postId": 5
+        },
+        "..."
+      ],
+      "duration": 329,
+      "streaming": false
+    },
+    "urlParams": {
+      "{user_id}": "5",
+      "{resource}": "comments"
+    },
+    "description": "Data and comments from post with id 5 ",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

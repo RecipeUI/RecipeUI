@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useRef } from "react";
 import {
   DesktopPage,
   RecipeOutputTab,
@@ -10,13 +10,15 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { useIsTauri } from "./useIsTauri";
 import {
-  FolderAPI,
   initializeRecipeList,
   setConfigForSessionStore,
 } from "../state/apiSession";
+import { FolderAPI } from "../state/apiSession/FolderAPI";
 import { SupabaseContext } from "../components/Providers/SupabaseProvider";
 import { fetchHomeRecipe } from "../fetchers/home";
 import { getConfigFromRecipe } from "../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
+import { RecipeUICollectionsAPI } from "../state/apiSession/RecipeUICollectionsAPI";
+import { Recipe } from "types/database";
 
 export function useInitializeRecipe() {
   const supabase = useContext(SupabaseContext);
@@ -28,14 +30,31 @@ export function useInitializeRecipe() {
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
 
   const initializeRecipe = useCallback(
-    async (recipeId: string, recipeTitle?: string) => {
+    async (
+      recipeId: string,
+      options?: { recipeTitle?: string; recipePreDefined?: Recipe }
+    ) => {
+      const { recipeTitle, recipePreDefined } = options || {};
+
       try {
         // get the recipe information first
-        const recipe = await fetchHomeRecipe({
-          recipeId: recipeId,
-          supabase,
-        });
 
+        let recipe: Recipe | null = recipePreDefined || null;
+
+        if (!recipe) {
+          let coreInfo = await RecipeUICollectionsAPI.getRecipeWithRecipeId({
+            recipeId,
+          });
+
+          if (coreInfo) {
+            recipe = coreInfo.recipe;
+          } else {
+            recipe = await fetchHomeRecipe({
+              recipeId: recipeId,
+              supabase,
+            });
+          }
+        }
         if (!recipe) {
           throw new Error("Recipe not found");
         }

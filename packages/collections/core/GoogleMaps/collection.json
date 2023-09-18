@@ -1,0 +1,14 @@
+{
+  "created_at": "2023-09-18T05:31:36.744873+00:00",
+  "project": "GoogleMaps",
+  "title": "Google Maps",
+  "subheader": null,
+  "description": "Build awesome apps with Google’s knowledge of the real world.\nCreate real-world, real-time experiences with the latest Maps, Routes, and Places features from Google Maps Platform. Built by the Google team for developers everywhere.",
+  "status": "Active",
+  "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/collections/29a2fa52-f049-4298-b65d-cbaf41814f0a/main",
+  "tags": [],
+  "scope": "global",
+  "visibility": "public",
+  "owner_id": "42c07d36-f124-47b8-8c1a-41c9a93e1fa4",
+  "id": "29a2fa52-f049-4298-b65d-cbaf41814f0a"
+}

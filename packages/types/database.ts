@@ -50,6 +50,7 @@ export type Database = MergeDeep<
           Row: {
             replay: Nullable<RecipeTemplateOutput>;
             project_scope: ProjectScope;
+            headers: Nullable<RequestHeader[]>;
           } & NullableRecipeParams;
           Insert: {
             replay: Nullable<RecipeTemplateOutput>;
@@ -102,6 +103,7 @@ export interface AuthConfig {
   payload: {
     name: string;
     prefix?: string;
+    description?: string;
   };
 }
 
@@ -188,7 +190,14 @@ export type RecipeParam =
 
 export type RecipeTemplate = Omit<
   UserTemplate,
-  "id" | "created_at" | "project" | "recipe_id" | "visibility"
+  | "id"
+  | "created_at"
+  | "project"
+  | "recipe_id"
+  | "visibility"
+  | "alias"
+  | "original_author"
+  | "recipe"
 >;
 
 interface RecipeTemplateOutput {

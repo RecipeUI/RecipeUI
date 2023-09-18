@@ -1,0 +1,68 @@
+{
+  "created_at": "2023-08-29T15:44:38.571744+00:00",
+  "title": "Subreddit posts",
+  "summary": "Get current posts of a subreddit.",
+  "method": "GET",
+  "path": "https://www.reddit.com/r/{subreddit}/{sort}.json",
+  "project": "Reddit",
+  "auth": null,
+  "tags": [
+    "Popular",
+    "Main",
+    "Examples"
+  ],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+      "t": {
+        "enum": [
+          "hour",
+          "day",
+          "week",
+          "month",
+          "year",
+          "all"
+        ],
+        "type": "string",
+        "description": "Filter by time."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": [
+      "{subreddit}",
+      "{sort}"
+    ],
+    "properties": {
+      "{sort}": {
+        "enum": [
+          "hot",
+          "top",
+          "new"
+        ],
+        "type": "string",
+        "description": "Sort by recentness."
+      },
+      "{subreddit}": {
+        "type": "string",
+        "description": "subreddit name",
+        "default": "gifs"
+      }
+    },
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "183eea98-32c9-4cf6-8c03-6084147e30db",
+  "queryParamsType": "export interface APIQueryParams {\n  t?: \"hour\" | \"day\" | \"week\" | \"month\" | \"year\" | \"all\";\n}",
+  "urlParamsType": "export interface APIUrlParams {\n  \"{subreddit}\": string;\n  \"{sort}\": \"hot\" | \"top\" | \"new\";\n}",
+  "requestBodyType": null
+}

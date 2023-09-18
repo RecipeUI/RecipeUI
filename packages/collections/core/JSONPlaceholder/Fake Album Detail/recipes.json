@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Comments from Album 2",
+    "urlParams": {
+      "{album_id}": "2",
+      "{resource}": "comments"
+    },
+    "description": "Data and comments from album with id 2.",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

@@ -20,7 +20,7 @@ export default async function RecipePage({
   });
 
   const projectRes = await supabase.from("project").select();
-  const { globalProjects, userProjects } = getProjectSplit(
+  const { userProjects } = getProjectSplit(
     (projectRes.data || []) as RecipeProject[]
   );
 
@@ -29,7 +29,7 @@ export default async function RecipePage({
     const { data: templateData } = await supabase
       .from("template_view")
       .select(
-        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id,project_scope"
+        "id, created_at, title, description, original_author, recipe, visibility, alias, author_id, project_scope"
       )
       .eq("alias", recipeName);
 
@@ -41,7 +41,6 @@ export default async function RecipePage({
   return (
     <RecipeHomeContainer
       projects={userProjects}
-      globalProjects={globalProjects}
       sharedTemplate={sharedTemplateInfo || undefined}
     />
   );

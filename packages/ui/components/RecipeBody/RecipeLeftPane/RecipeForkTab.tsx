@@ -9,12 +9,10 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { useRouter } from "next/navigation";
-import { setConfigForSessionStore } from "../../../state/apiSession";
 import { JSONSchema6 } from "json-schema";
 import { useSessionStorage } from "usehooks-ts";
-import { RECIPE_FORKING_ID } from "../../../utils/constants/main";
+import { RECIPE_FORKING_ID } from "utils/constants";
 import { useIsTauri } from "../../../hooks/useIsTauri";
-import { DesktopAppUpsell } from "../../../pages/editor/EditorPage";
 import { Recipe, RecipeTemplate } from "types/database";
 import { Modal } from "../../Modal";
 
@@ -51,6 +49,7 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
       },
 
       editorURLCode: "",
+      editorProject: selectedRecipe.project,
     },
   };
 }
@@ -80,15 +79,8 @@ export function RecipeForkTab({
       return;
     }
 
-    // if (!user) {
-    //   alert("You must be logged in to fork a recipe");
-    //   // Nothing really blocking this! So if you fork this code, you can just remove it.
-    //   return;
-    // }
-
     try {
       setLoading(true);
-
       setRecipeFork(`${selectedRecipe.id}::${template.title}`);
 
       if (isTauri) {

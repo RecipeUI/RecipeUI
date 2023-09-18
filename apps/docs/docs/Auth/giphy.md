@@ -26,7 +26,7 @@ Create/login to your account at https://giphy.com
 
 Go to your Dashboard using this link
 
-https://developers.giphy.com/dashboard/?create=true
+https://developers.giphy.com/dashboard
 
 Create an app to get your API Key. You can choose the SDK option on the left (either is fine).
 ![Get_Api_Key](@site/static/img/guides/giphy2.gif)

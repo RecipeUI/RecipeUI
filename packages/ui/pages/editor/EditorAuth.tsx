@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
-import {
-  deleteSecret,
-  getSecret,
-  saveSecret,
-} from "../../../ui/state/apiSession";
+import { SecretAPI } from "../../state/apiSession/SecretAPI";
 
 export function EditorAuth() {
   const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
@@ -33,15 +29,17 @@ export function EditorAuth() {
   }, [editorAuth]);
 
   useEffect(() => {
-    getSecret({ secretId: currentSession.recipeId }).then((secret) => {
-      setSecret(secret || "");
+    SecretAPI.getSecret({ secretId: currentSession.recipeId }).then(
+      (secret) => {
+        setSecret(secret || "");
 
-      if (secret) {
-        setShowAuth(false);
-      } else {
-        setShowAuth(true);
+        if (secret) {
+          setShowAuth(false);
+        } else {
+          setShowAuth(true);
+        }
       }
-    });
+    );
   }, [currentSession?.recipeId]);
 
   const [showAuth, setShowAuth] = useState(false);
@@ -120,7 +118,7 @@ export function EditorAuth() {
                 !hasChanged && "btn-disabled"
               )}
               onClick={() => {
-                saveSecret({
+                SecretAPI.saveSecret({
                   secretId: currentSession!.recipeId,
                   secretValue: secret,
                 });
@@ -143,7 +141,7 @@ export function EditorAuth() {
               )}
               onClick={() => {
                 setHasChanged(false);
-                deleteSecret({
+                SecretAPI.deleteSecret({
                   secretId: currentSession!.recipeId,
                 });
                 setSecret("");

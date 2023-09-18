@@ -1,0 +1,25 @@
+{
+  "created_at": "2023-08-06T23:01:16.745915+00:00",
+  "title": "Fake Posts",
+  "summary": "A JSON list of posts with userIds and content.",
+  "method": "GET",
+  "path": "https://jsonplaceholder.typicode.com/posts/",
+  "project": "{JSON} Placeholder",
+  "auth": null,
+  "tags": [
+    "Examples"
+  ],
+  "queryParams": null,
+  "urlParams": null,
+  "requestBody": null,
+  "templates": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "fb79a093-7354-47ea-8dd4-ef586156ad47",
+  "queryParamsType": null,
+  "urlParamsType": null,
+  "requestBodyType": null
+}

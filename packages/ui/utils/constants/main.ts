@@ -7,6 +7,7 @@ export const APP_COOKIE = "showApp";
 export enum QueryKeys {
   Projects = "projects",
   Recipes = "recipes",
+  PersonalCollections = "personalCollections",
 }
 
 export const UNIQUE_ELEMENT_IDS = {
@@ -33,14 +34,11 @@ export const API_LOCAL_PROCESSING_URLS = {
   TS_TO_JSON: `${baseURL}/ts-to-jsonschema`,
 };
 
-export const RECIPE_FORKING_ID = "recipeForkingId";
-
 export const REDIRECT_PAGE = "redirectURL";
 
-export const ONBOARDING_CONSTANTS = {
-  QUERY_ONBOARDING: "QUERY_ONBOARDING",
-  URL_ONBOARDING: "URL_ONBOARDING",
-};
+export const RECIPE_UI_BASE_URL = "https://recipeui.com";
 
 export const APP_GITHUB_LATEST_RELEASE_URL =
   "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json";
+
+export const LATEST_APP_VERSION = "0.8.3";

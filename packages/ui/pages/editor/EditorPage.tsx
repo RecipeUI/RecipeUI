@@ -1,12 +1,13 @@
 "use client";
 
 import classNames from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { RecipeEditBodySearch } from "../../components/RecipeBody/RecipeBodySearch/RecipeEditBodySearch";
 import { RecipeSidebar } from "../../components/RecipeSidebar";
 import {
   GLOBAL_POLLING_FACTOR,
   RecipeBodyRoute,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { EditorBody } from "./EditorBody";
@@ -19,15 +20,20 @@ import { useIsTauri } from "../../hooks/useIsTauri";
 import { RecipeTemplateEdit } from "../../components/RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 import { useMiniRecipes } from "../../state/apiSession";
 import Link from "next/link";
-import { MegaphoneIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 import { CurlModal } from "./Builders/CurlModal";
-import { ImportBuilderModal } from "./Builders/ImportBuilderModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 import {
   FreeForkExamples,
   SuggestedExamples,
 } from "../../utils/constants/recipe";
 import { useDarkMode } from "usehooks-ts";
+import { EditorUpdates } from "./EditorUpdates";
+import { DISCORD_LINK } from "utils/constants";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
+import { CollectionModule, isCollectionModule } from "../../modules";
+import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
+import { useComplexSecrets } from "../../state/apiSession/SecretAPI";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -35,13 +41,24 @@ const CONFIG_ROUTES = [RecipeBodyRoute.Headers, RecipeBodyRoute.Auth];
 
 export default function EditorPage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const currentProject = useRecipeSessionStore((state) => state.editorProject);
+
+  const localProjects = useLocalProjects();
   useEffect(() => localStorage.removeItem("usehooks-ts-dark-mode"), []);
 
   return (
-    <div className="flex h-full">
-      <RecipeSidebar />
-      {currentSession ? <CoreEditor /> : <NewRequest />}
-    </div>
+    <RecipeProjectContext.Provider
+      value={
+        currentProject
+          ? localProjects.find((p) => p.project === currentProject) || null
+          : null
+      }
+    >
+      <div className="flex h-full overflow-y-auto">
+        <RecipeSidebar />
+        {currentSession ? <CoreEditor /> : <NewRequest />}
+      </div>
+    </RecipeProjectContext.Provider>
   );
 }
 
@@ -92,7 +109,7 @@ function NewRequest() {
             </div>
 
             <div className="flex flex-col gap-4">
-              {!showForkExamples && (
+              {!showForkExamples && process.env.NEXT_PUBLIC_ENV && (
                 <NewRequestAction
                   label="Fork from our public API collection"
                   description="Try NASA, Giphy, Reddit, Pokemon, ChatGPT and more in seconds."
@@ -108,17 +125,6 @@ function NewRequest() {
                   addEditorSession();
                 }}
               />
-
-              {/* <NewRequestAction
-                label="Import from CURL"
-                onClick={() => setCurlModal(true)}
-                description="Use CURL to prefill request info, TypeScript types, and JSON Schema."
-              /> */}
-              {/* <NewRequestAction
-                label="Import builder"
-                onClick={() => setImportBuilderModal(true)}
-                description="Have a request body or query params? Our builder will help generate types for you."
-              /> */}
             </div>
           </section>
           {showForkExamples && (
@@ -136,34 +142,9 @@ function NewRequest() {
               />
             </>
           )}
+          <EditorUpdates />
         </div>
         <section className="col-span-1 h-fit space-y-8 sm:mt-8 lg:mt-0">
-          <div className="">
-            <a
-              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-              target="_blank"
-              className="cursor-pointer"
-            >
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=411024&theme=light`}
-                alt="RecipeUI - Open&#0032;source&#0032;type&#0045;safe&#0032;Postman&#0032;alternative | Product Hunt"
-                width="250"
-                height="54"
-              />
-            </a>
-            <a
-              className={classNames(
-                "border rounded-md p-4  flex justify-center items-center mt-8 cursor-pointer bg-accent text-white"
-              )}
-              href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-            >
-              <MegaphoneIcon className="h-12 mb-2 text-sm  mr-2" />
-              <p>
-                Just launched on ProductHunt. Help us with an{" "}
-                <span className="underline underline-offset-2">upvote</span>!
-              </p>
-            </a>
-          </div>
           {!isTauri && (
             <div className="bg-neutral p-4 rounded-md text-white">
               <p className="my-2 sm:text-base text-lg">
@@ -188,12 +169,6 @@ function NewRequest() {
                   href="https://github.com/RecipeUI/RecipeUI"
                   target="_blank"
                   className="underline underline-offset-2 cursor-pointer"
-                  // onClick={(e) => {
-                  // if (isTauri) {
-                  //   e.preventDefault();
-                  //   shell.open("https://discord.gg/rXmpYmCNNA");
-                  // }
-                  // }}
                 >
                   Star us on GitHub
                 </a>
@@ -212,15 +187,9 @@ function NewRequest() {
               )}
               <li>
                 <a
-                  href="https://discord.gg/rXmpYmCNNA"
+                  href={DISCORD_LINK}
                   target="_blank"
                   className="underline underline-offset-2 cursor-pointer"
-                  // onClick={(e) => {
-                  // if (isTauri) {
-                  //   e.preventDefault();
-                  //   shell.open("https://discord.gg/rXmpYmCNNA");
-                  // }
-                  // }}
                 >
                   Discord Community
                 </a>
@@ -239,7 +208,7 @@ function NewRequest() {
 
           <div
             className={classNames(
-              "border rounded-md p-4  flex justify-center items-center",
+              "border rounded-md p-4  flex justify-center items-center group",
               isTauri && "bg-neutral text-white border-none"
             )}
           >
@@ -259,9 +228,11 @@ function NewRequest() {
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
-      {importBuilderModal && (
-        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} />
-      )}
+      {/* {importBuilderModal && (
+        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} 
+          initialUrl={im}
+        />
+      )} */}
     </div>
   );
 }
@@ -450,6 +421,9 @@ function CoreEditor() {
   );
 
   const { recipes } = useMiniRecipes(session?.recipeId);
+
+  const selectedProject = useContext(RecipeProjectContext);
+
   useEffect(() => {
     // console.log(
     //   "Change of sessionId",
@@ -468,7 +442,7 @@ function CoreEditor() {
 
   const BODY_ROUTES = useMemo(() => {
     const hasURLParams = editorUrl.match(/{(\w+)}/g);
-    const mainRoutes = [...EDITOR_ROUTES];
+    let mainRoutes = [...EDITOR_ROUTES];
 
     if (!hasURLParams && editorURLCode) {
       setEditorURLCode("");
@@ -486,26 +460,49 @@ function CoreEditor() {
       mainRoutes.push(RecipeBodyRoute.Templates);
     }
 
+    if (selectedProject && isCollectionModule(selectedProject.project)) {
+      mainRoutes.push(RecipeBodyRoute.Collection);
+      mainRoutes = mainRoutes.filter((route) => route !== RecipeBodyRoute.Auth);
+    }
+
     // Lets also do cleanup if the person removes urlParams
     return mainRoutes;
-  }, [editorUrl, recipes.length]);
+  }, [editorUrl, recipes.length, selectedProject]);
+
+  const { hasAuthSetup } = useComplexSecrets({
+    collection: selectedProject?.project,
+  });
 
   return (
     <div className={classNames("flex-1 flex flex-col relative")}>
       <RecipeEditBodySearch />
       <div className="flex space-x-6 sm:p-4 sm:pt-2 pl-4 pb-4">
         {BODY_ROUTES.map((route) => {
+          let label: string = route;
+
+          if (
+            route === RecipeBodyRoute.Collection &&
+            isCollectionModule(selectedProject?.project)
+          ) {
+            label = selectedProject!.project;
+          }
+
           return (
             <div
               key={route}
               className={classNames(
                 "font-bold text-sm",
                 bodyRoute === route && "underline underline-offset-4",
-                "cursor-pointer"
+                "cursor-pointer",
+                isCollectionModule(selectedProject?.project) &&
+                  !hasAuthSetup &&
+                  route === RecipeBodyRoute.Collection &&
+                  bodyRoute !== RecipeBodyRoute.Collection &&
+                  "animate-bounce text-error"
               )}
               onClick={() => setBodyRoute(route)}
             >
-              {route}
+              {label}
             </div>
           );
         })}
@@ -518,6 +515,11 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplateEdit />}
+        {bodyRoute === RecipeBodyRoute.Collection && (
+          <RecipeCustomModule
+            module={selectedProject?.project! as CollectionModule}
+          />
+        )}
         <RecipeOutput />
       </div>
     </div>

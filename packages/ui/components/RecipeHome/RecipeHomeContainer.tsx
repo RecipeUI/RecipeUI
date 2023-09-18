@@ -11,30 +11,24 @@ import classNames from "classnames";
 
 import { Recipe, RecipeProject, UserTemplatePreview } from "types/database";
 import { useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import { UNIQUE_ELEMENT_IDS } from "../../utils/constants/main";
-import Link from "next/link";
 import { fetchServer } from "../RecipeBody/RecipeBodySearch/fetchServer";
-import { RecipeHomeHero } from "./RecipeHomeHero";
-import { ShareInviteModal } from "../RecipeBody/RecipeLeftPane/RecipeTemplates";
-import { DownloadContainer } from "../DownloadContainer/DownloadContainer";
-import { useIsTauri } from "../../hooks/useIsTauri";
+import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function RecipeHomeContainer({
-  globalProjects,
   projects,
   recipe,
   sharedTemplate,
 }: {
-  globalProjects: RecipeProject[];
   projects: RecipeProject[];
   recipe?: Recipe;
   sharedTemplate?: UserTemplatePreview;
 }) {
   const router = useRouter();
 
-  const [showShareModal, setShowShareModal] = useState(sharedTemplate != null);
+  const globalProjects = useLocalProjects();
 
   const [localForked, setLocalForked] = useLocalStorage(
     UNIQUE_ELEMENT_IDS.FORK_REGISTER_ID,
@@ -69,15 +63,7 @@ export function RecipeHomeContainer({
         <RecipeContext.Provider value={recipe || null}>
           <RecipeProjectContext.Provider value={project || null}>
             <RecipeNativeFetchContext.Provider value={fetchServer}>
-              <RecipeHome globalProjects={globalProjects} projects={projects} />
-              {showShareModal && sharedTemplate && (
-                <ShareInviteModal
-                  template={sharedTemplate}
-                  onClose={() => {
-                    setShowShareModal(false);
-                  }}
-                />
-              )}
+              <RecipeHome projects={projects} />
             </RecipeNativeFetchContext.Provider>
           </RecipeProjectContext.Provider>
         </RecipeContext.Provider>

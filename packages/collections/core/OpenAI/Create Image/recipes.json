@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Build a futuristic city",
+    "replay": {
+      "output": {
+        "data": [
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image1.png"
+          },
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image2.png"
+          },
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image3.png"
+          },
+          "..."
+        ],
+        "created": 1691733538
+      },
+      "duration": 3000,
+      "streaming": false
+    },
+    "description": "This example generates a 1024x1024 image of a futuristic cityscape at twilight.",
+    "requestBody": {
+      "n": 5,
+      "size": "1024x1024",
+      "prompt": "A Futuristic Cityscape at Twilight: A sprawling, neon-lit cityscape seen from the viewpoint of a skyscraper's rooftop, with flying cars weaving through towering buildings, all bathed in the soft glow of a setting sun."
+    }
+  },
+  {
+    "title": "Valley with Waterfall",
+    "replay": {
+      "output": {
+        "data": [
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image8.png"
+          },
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image6.png"
+          },
+          {
+            "url": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai/2/image7.png"
+          },
+          "..."
+        ],
+        "created": 1691733538
+      },
+      "duration": 3000,
+      "streaming": false
+    },
+    "description": "Builds three 1024x1024 nature images that describes a valley with a waterfall.",
+    "requestBody": {
+      "n": 3,
+      "size": "1024x1024",
+      "prompt": "Nestled in a vibrant valley, a playful river twists like a serpentine through emerald rolling hills dotted with wildflowers. Quaint wooden bridges arch over the water, connecting paths that meander through dense, sun-dappled forests. A majestic waterfall cascades from a high cliff, its misty spray forming rainbows that dance in the sunlight."
+    }
+  }
+]

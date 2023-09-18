@@ -1,15 +1,14 @@
 "use client";
-import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContainer";
-import { Database, RecipeProject } from "types/database";
-import { redirect } from "next/navigation";
-import { useEffect, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { RecipeProject } from "types/database";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "types/enums";
 import { Loading } from "ui/components/Loading";
-import { fetchHome, fetchHomeRecipe } from "ui/fetchers/home";
+import { fetchHomeProjects, fetchHomeRecipe } from "ui/fetchers/home";
 import { getProjectSplit } from "ui/utils/main";
 import {
   DesktopPage,
+  DesktopPageShape,
   FetchRequest,
   FetchResponse,
   RecipeContext,
@@ -17,14 +16,11 @@ import {
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "ui/state/recipeSession";
-import { RecipeBodySearch } from "ui/components/RecipeBody/RecipeBodySearch";
-import { RecipeBody } from "ui/components/RecipeBody";
 import { RecipeHome } from "ui/components/RecipeHome/RecipeHome";
 import { RecipeAPI } from "ui/components/RecipeAPI";
 import classNames from "classnames";
 import { InvokeArgs, invoke } from "@tauri-apps/api/tauri";
 import EditorPage from "ui/pages/editor/EditorPage";
-
 export default function Page() {
   const invokeMemoized = useMemo(() => {
     return (payload: FetchRequest) =>
@@ -69,13 +65,22 @@ function HomePage() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   const { data: projectData, isLoading: isLoadingHome } = useQuery({
-    queryKey: [QueryKey.Projects],
-    queryFn: async () => supabase.from("project").select(),
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [QueryKey.Projects, supabase],
+    queryFn: async () =>
+      // @ts-expect-error override
+      supabase["fake"]
+        ? null
+        : fetchHomeProjects({
+            supabase,
+          }),
   });
 
-  const { globalProjects, userProjects } = getProjectSplit(
+  const { userProjects } = getProjectSplit(
     (projectData?.data || []) as RecipeProject[]
   );
+
+  const globalProjects = useLocalProjects();
 
   const { data: recipe, isLoading: isLoadingRecipe } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -110,8 +115,7 @@ function HomePage() {
     >
       <RecipeContext.Provider value={recipe || null}>
         <RecipeProjectContext.Provider value={project || null}>
-          {/* <RecipeHomeHero /> */}
-          <RecipeHome globalProjects={globalProjects} projects={userProjects} />
+          <RecipeHome projects={userProjects} />
         </RecipeProjectContext.Provider>
       </RecipeContext.Provider>
     </div>
@@ -120,10 +124,10 @@ function HomePage() {
 
 import { fetchProject, fetchProjectPage } from "ui/fetchers/project";
 import { ProjectContainer } from "ui/components/Project/ProjectContainer";
-import { RecipeHomeHero } from "ui/components/RecipeHome/RecipeHomeHero";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 import { initializeDB } from "ui/state/apiSession";
 import { Navbar } from "ui/components/Navbar/Navbar";
+import { useLocalProjects } from "ui/state/apiSession/RecipeUICollectionsAPI";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = useSupabaseClient();
@@ -131,10 +135,12 @@ function ProjectPage({ project: projectParam }: { project: string }) {
   const { data: projectData, isLoading } = useQuery({
     queryKey: [QueryKey.Projects, projectParam, supabase],
     queryFn: async () =>
-      fetchProjectPage({
-        project: projectParam,
-        supabase,
-      }),
+      (supabase as any)["fake"]
+        ? null
+        : fetchProjectPage({
+            project: projectParam,
+            supabase,
+          }),
   });
 
   if (isLoading) {
@@ -142,6 +148,16 @@ function ProjectPage({ project: projectParam }: { project: string }) {
   }
 
   if (!projectData) {
+    if (projectData === undefined) {
+      return (
+        <ProjectContainer
+          projectName={projectParam}
+          project={null}
+          recipes={null}
+        />
+      );
+    }
+
     return <div>App 404</div>;
   }
 
@@ -162,6 +178,10 @@ function RecipePage({ api_id }: { api_id: string }) {
   const { data, isLoading } = useQuery({
     queryKey: [QueryKey.RecipesView, api_id, supabase],
     queryFn: async () => {
+      if ((supabase as any)["fake"]) {
+        return undefined;
+      }
+
       const recipe = await fetchHomeRecipe({
         supabase,
         recipeId: api_id,
@@ -186,8 +206,14 @@ function RecipePage({ api_id }: { api_id: string }) {
   }
 
   if (!data) {
+    if (data === undefined) {
+      return <RecipeAPI project={null} recipe={null} apiId={api_id} />;
+    }
+
     return <div>App 404</div>;
   }
 
-  return <RecipeAPI project={data.project} recipe={data.recipe} />;
+  return (
+    <RecipeAPI project={data.project} recipe={data.recipe} apiId={api_id} />
+  );
 }

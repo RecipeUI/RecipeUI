@@ -1,0 +1,267 @@
+{
+  "title": "Compute Routes",
+  "project": "GoogleMaps",
+  "summary": "Returns the primary route along with optional alternate routes, given a set of terminal and intermediate waypoints.",
+  "created_at": "2023-09-18T05:31:37.105455+00:00",
+  "path": "https://routes.googleapis.com/directions/v2:computeRoutes",
+  "method": "POST",
+  "auth": "header",
+  "tags": [],
+  "queryParams": null,
+  "urlParams": null,
+  "requestBody": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "origin": {
+        "$ref": "#/definitions/Waypoint"
+      },
+      "destination": {
+        "$ref": "#/definitions/Waypoint"
+      },
+      "intermediates": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Waypoint"
+        }
+      },
+      "travelMode": {
+        "type": "string",
+        "enum": [
+          "DRIVE",
+          "BICYCLE",
+          "WALK",
+          "TWO_WHEELER",
+          "TRANSIT"
+        ],
+        "description": "A set of values used to specify the mode of travel. NOTE: WALK, BICYCLE, and TWO_WHEELER routes are in beta and might sometimes be missing clear sidewalks, pedestrian paths, or bicycling paths. You must display this warning to the user for all walking, bicycling, and two-wheel routes that you display in your app.",
+        "default": "DRIVE"
+      },
+      "routingPreference": {
+        "type": "string",
+        "enum": [
+          "TRAFFIC_UNAWARE",
+          "TRAFFIC_AWARE",
+          "TRAFFIC_AWARE_OPTIMAL"
+        ],
+        "description": "A set of values that specify factors to take into consideration when calculating the route.",
+        "default": "TRAFFIC_UNAWARE"
+      },
+      "polylineQuality": {
+        "type": "string",
+        "enum": [
+          "OVERVIEW",
+          "HIGH_QUALITY"
+        ]
+      },
+      "polylineEncoding": {
+        "type": "string",
+        "enum": [
+          "ENCODED_POLYLINE",
+          "GEO_JSON_LINESTRING"
+        ]
+      },
+      "departureTime": {
+        "type": "string"
+      },
+      "arrivalTime": {
+        "type": "string"
+      },
+      "computeAlternativeRoutes": {
+        "type": "boolean"
+      },
+      "routeModifiers": {
+        "$ref": "#/definitions/RouteModifiers"
+      },
+      "languageCode": {
+        "type": "string"
+      },
+      "units": {
+        "type": "string",
+        "enum": [
+          "METRIC",
+          "IMPERIAL"
+        ]
+      },
+      "optimizeWaypointOrder": {
+        "type": "boolean"
+      },
+      "requestedReferenceRoutes": {
+        "type": "string",
+        "const": "FUEL_EFFICIENT"
+      },
+      "extraComputations": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "TOLLS",
+            "FUEL_CONSUMPTION",
+            "TRAFFIC_ON_POLYLINE",
+            "HTML_FORMATTED_NAVIGATION_INSTRUCTIONS"
+          ]
+        }
+      },
+      "trafficModel": {
+        "type": "string",
+        "enum": [
+          "BEST_GUESS",
+          "PESSIMISTIC",
+          "OPTIMISTIC"
+        ]
+      },
+      "transitPreferences": {
+        "$ref": "#/definitions/TransitPreferences"
+      }
+    },
+    "required": [
+      "origin",
+      "destination"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+      "Waypoint": {
+        "type": "object",
+        "properties": {
+          "via": {
+            "type": "boolean"
+          },
+          "vehicleStopover": {
+            "type": "boolean"
+          },
+          "sideOfRoad": {
+            "type": "boolean"
+          },
+          "location": {
+            "$ref": "#/definitions/Location"
+          },
+          "placeId": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "latLng": {
+            "$ref": "#/definitions/LatLng"
+          },
+          "heading": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "latLng"
+        ],
+        "additionalProperties": false
+      },
+      "LatLng": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "additionalProperties": false
+      },
+      "RouteModifiers": {
+        "type": "object",
+        "properties": {
+          "avoidTolls": {
+            "type": "boolean"
+          },
+          "avoidHighways": {
+            "type": "boolean"
+          },
+          "avoidFerries": {
+            "type": "boolean"
+          },
+          "avoidIndoor": {
+            "type": "boolean"
+          },
+          "vehicleInfo": {
+            "$ref": "#/definitions/VehicleInfo"
+          },
+          "tollPasses": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VehicleInfo": {
+        "type": "object",
+        "properties": {
+          "emissionType": {
+            "type": "string",
+            "enum": [
+              "GASOLINE",
+              "ELECTRIC",
+              "HYBRID",
+              "DIESEL"
+            ]
+          }
+        },
+        "required": [
+          "emissionType"
+        ],
+        "additionalProperties": false
+      },
+      "TransitPreferences": {
+        "type": "object",
+        "properties": {
+          "allowedTravelModes": {
+            "type": "string",
+            "enum": [
+              "BUS",
+              "SUBWAY",
+              "TRAIN",
+              "LIGHT_RAIL",
+              "RAIL"
+            ]
+          },
+          "routingPreference": {
+            "type": "string",
+            "enum": [
+              "LESS_WALKING",
+              "FEWER_TRANSFERS"
+            ]
+          }
+        },
+        "required": [
+          "allowedTravelModes",
+          "routingPreference"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "options": {
+    "auth": [
+      {
+        "type": "header",
+        "payload": {
+          "name": "X-Goog-Api-Key"
+        }
+      }
+    ]
+  },
+  "rank": null,
+  "author_id": "42c07d36-f124-47b8-8c1a-41c9a93e1fa4",
+  "visibility": "unlisted",
+  "version": 1,
+  "id": "76cfe9c5-3751-4810-8db4-27ffbab5cd99",
+  "queryParamsType": null,
+  "urlParamsType": null,
+  "requestBodyType": "export interface APIRequestParams {\n    origin:      Waypoint;\n    destination: Waypoint;\n    intermediates?: Waypoint[];\n    travelMode?:  'DRIVE' | 'BICYCLE' | 'WALK' | 'TWO_WHEELER' | 'TRANSIT';\n    routingPreference?: 'TRAFFIC_UNAWARE' | 'TRAFFIC_AWARE' | 'TRAFFIC_AWARE_OPTIMAL';\n    polylineQuality?: 'OVERVIEW' | 'HIGH_QUALITY';\n    polylineEncoding?: 'ENCODED_POLYLINE' | 'GEO_JSON_LINESTRING';\n    departureTime? : string;\n    arrivalTime?: string;\n    computeAlternativeRoutes?: boolean;\n    routeModifiers?: RouteModifiers;\n    languageCode?: string;\n    units?: 'METRIC' | 'IMPERIAL';\n    optimizeWaypointOrder?: boolean;\n    requestedReferenceRoutes?: 'FUEL_EFFICIENT';\n    extraComputations?: ExtraComputation[];\n    trafficModel?: 'BEST_GUESS' | 'PESSIMISTIC' | 'OPTIMISTIC';\n    transitPreferences?: TransitPreferences;\n}\n\nexport interface Waypoint {\n    via?: boolean;\n    vehicleStopover?: boolean;\n    sideOfRoad?: boolean;\n    location?: Location;\n    placeId?: string;\n    address?: string;\n}\n\nexport interface Location {\n    latLng: LatLng;\n    heading?: number;\n}\n\nexport interface LatLng {\n    latitude: number;\n    longitude: number;\n}\n\nexport interface TransitPreferences {\n    allowedTravelModes: 'BUS' | 'SUBWAY' | 'TRAIN' | 'LIGHT_RAIL' | 'RAIL';\n    routingPreference: 'LESS_WALKING' | 'FEWER_TRANSFERS';\n}\n\nexport interface RouteModifiers {\n    avoidTolls?: boolean;\n    avoidHighways?: boolean;\n    avoidFerries?: boolean;\n    avoidIndoor?: boolean;\n    vehicleInfo?: VehicleInfo;\n    tollPasses?: string;\n}\n\nexport interface VehicleInfo {\n    emissionType: 'GASOLINE' | 'ELECTRIC' | 'HYBRID' | 'DIESEL';\n}\n\ntype ExtraComputation = 'TOLLS' | 'FUEL_CONSUMPTION' | 'TRAFFIC_ON_POLYLINE' | 'HTML_FORMATTED_NAVIGATION_INSTRUCTIONS';"
+}

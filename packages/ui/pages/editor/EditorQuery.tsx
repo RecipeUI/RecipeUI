@@ -2,17 +2,18 @@
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useMemo } from "react";
-import { useDebounce, useLocalStorage } from "usehooks-ts";
+import { useDebounce } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
   InitializeSchema,
 } from "./CodeEditors/EditorJSON";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
-import { ONBOARDING_CONSTANTS } from "../../utils/constants/main";
 import { EditorQueryOnboarding } from "./EditorOnboarding/EditorQueryOnboarding";
 import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 import { parse } from "json5";
+import { useNeedsOnboarding } from "../../state/apiSession/OnboardingAPI";
+import { ONBOARDING_CONSTANTS } from "utils/constants";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -49,9 +50,8 @@ export const EditorQuery = () => {
     (state) => state.editorQuerySchemaType
   );
 
-  const [onboardedToQuery] = useLocalStorage(
-    ONBOARDING_CONSTANTS.QUERY_ONBOARDING,
-    false
+  const { needsOnboarding } = useNeedsOnboarding(
+    ONBOARDING_CONSTANTS.QUERY_ONBOARDING
   );
 
   const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
@@ -91,7 +91,9 @@ export const EditorQuery = () => {
           defaultExport={API_TYPE_NAMES.APIQueryParams}
         />
       </div>
-      {showJSONEditor && !onboardedToQuery && <EditorQueryOnboarding />}
+      {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV && (
+        <EditorQueryOnboarding />
+      )}
     </>
   );
 };

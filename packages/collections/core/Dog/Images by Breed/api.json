@@ -1,0 +1,48 @@
+{
+  "created_at": "2023-08-15T00:45:44.784779+00:00",
+  "title": "Images by Breed",
+  "summary": "Returns an array of all the images from a breed, e.g. hound",
+  "method": "GET",
+  "path": "https://dog.ceo/api/breed/{breed_name}/images/{is_random}",
+  "project": "Dog",
+  "auth": null,
+  "tags": null,
+  "queryParams": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{breed_name}": {
+        "type": "string",
+        "description": "Name of the dog breed in lowercase.",
+        "default": "retriever"
+      },
+      "{is_random}": {
+        "type": "string",
+        "enum": [
+          "random",
+          ""
+        ],
+        "default": "random",
+        "description": "Choose 'random' to get one random image. Leave empty string to get a lot of images."
+      }
+    },
+    "required": [
+      "{breed_name}",
+      "{is_random}"
+    ],
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": {
+    "cors": true
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "cc37a0b6-e138-4e30-8dda-7fa28d4c0f65",
+  "queryParamsType": null,
+  "urlParamsType": "export interface APIUrlParams {\n  \"{breed_name}\": string;\n  \"{is_random}\": \"random\" | \"\";\n}",
+  "requestBodyType": null
+}

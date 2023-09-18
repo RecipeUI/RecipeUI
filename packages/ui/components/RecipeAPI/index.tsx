@@ -13,19 +13,28 @@ import { PLAYGROUND_SESSION_ID } from "../../utils/constants/main";
 import { RecipeBodySearch } from "../RecipeBody/RecipeBodySearch";
 import { RecipeBody } from "../RecipeBody";
 import { Loading } from "../Loading";
-import { OutputAPI } from "../../state/apiSession";
+import { OutputAPI } from "../../state/apiSession/OutputAPI";
+import { useCoreRecipe } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 export function RecipeAPI({
-  recipe,
-  project,
+  recipe: _recipe,
+  project: _project,
+  apiId,
 }: {
   project?: RecipeProject | null;
   recipe?: Recipe | null;
+  apiId: string;
 }) {
   const setCurrentSession = useRecipeSessionStore(
     (state) => state.setCurrentSession
   );
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+  const { recipeInfo } = useCoreRecipe({
+    recipeId: apiId,
+  });
+
+  const recipe = recipeInfo?.recipe || _recipe;
+  const project = _project || recipeInfo?.project;
 
   useEffect(() => {
     if (recipe) {
@@ -40,13 +49,13 @@ export function RecipeAPI({
       );
     }
     OutputAPI.clearOutput(PLAYGROUND_SESSION_ID);
-  }, []);
+  }, [recipe]);
 
-  if (!project || !recipe) {
+  if (!recipe) {
     return (
       <div className="flex items-center space-x-4 px-4 pt-4">
         <span className="text-xl font-bold">
-          Unable to fetch recipe details. Recipe no long exists or you do not
+          Unable to fetch recipe details. Recipe no longer exists or you do not
           have enough access.
         </span>
         <span className="loading loading-bars loading-lg"></span>
@@ -61,7 +70,7 @@ export function RecipeAPI({
   return (
     <div className={classNames("flex-1 flex flex-col z-0")}>
       <RecipeContext.Provider value={recipe}>
-        <RecipeProjectContext.Provider value={project}>
+        <RecipeProjectContext.Provider value={project || null}>
           <RecipeBodySearch />
           <RecipeBody />
         </RecipeProjectContext.Provider>

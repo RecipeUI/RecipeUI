@@ -1,40 +1,42 @@
 import classNames from "classnames";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { RecipeProject } from "types/database";
 import { RecipeProjectStatus } from "types/enums";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
-import { useRouter, useSearchParams } from "next/navigation";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { open } from "@tauri-apps/api/shell";
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 
-export function RecipeHome({
-  globalProjects,
-  projects,
-}: {
-  globalProjects: RecipeProject[];
-  projects: RecipeProject[];
-}) {
+export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
+  const [localProjects, setLocalProjects] = useState<RecipeProject[]>([]);
+  useEffect(() => {
+    async function initializeProjects() {
+      const mainCollections = await RecipeUICollectionsAPI.getStore();
+      setLocalProjects(mainCollections.collections);
+    }
+
+    initializeProjects();
+  }, []);
+
   const { popular, free, ycombinator, more } = useMemo(() => {
     const popular: RecipeProject[] = [];
     const free: RecipeProject[] = [];
     const ycombinator: RecipeProject[] = [];
     const more: RecipeProject[] = [];
 
-    globalProjects.forEach((recipe) => {
-      const tags = recipe.tags || [];
+    localProjects.forEach((project) => {
+      const tags = project.tags || [];
 
       if (tags.includes("Popular")) {
-        popular.push(recipe);
+        popular.push(project);
       } else if (tags.includes("Free")) {
-        free.push(recipe);
-      } else if (tags.includes("YCombinator")) {
-        ycombinator.push(recipe);
+        free.push(project);
       } else {
-        more.push(recipe);
+        more.push(project);
       }
     });
 
@@ -44,23 +46,22 @@ export function RecipeHome({
       ycombinator,
       more,
     };
-  }, [globalProjects]);
-
-  const queryParams = useSearchParams();
-
-  useEffect(() => {
-    if (queryParams.get("collections") != undefined) {
-      document.getElementById("popular")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [queryParams]);
+  }, [localProjects]);
 
   const isTauri = useIsTauri();
+  const user = useRecipeSessionStore((state) => state.user);
 
   return (
     <div className="sm:mt-0 flex-1 flex flex-col sm:p-4 space-y-12">
+      {projects.length > 0 && user && (
+        <MarketplaceSection
+          id="personal"
+          header="Personal Collections"
+          description={<p>{`${user.username}'s personal collections.`}</p>}
+          preferId
+          projects={projects}
+        />
+      )}
       <MarketplaceSection
         id="popular"
         header="Popular APIs"
@@ -69,23 +70,6 @@ export function RecipeHome({
         }
         projects={popular}
       />
-      <MarketplaceSection
-        header="No Auth"
-        description="API key not required -> these APIs can be run right away!"
-        projects={free}
-      />
-      {/* <MarketplaceSection
-        header="YCombinator"
-        description="We are part of YC S23! The first few recipes were ones we built internally at Robinhood and Meta to save our coworkers time. Check out these API's from our YC family."
-        projects={ycombinator}
-      /> */}
-      {more.length > 0 && (
-        <MarketplaceSection
-          header="Discover"
-          description="Checkout these APIs and let us know what you think!"
-          projects={more}
-        />
-      )}
       <div className="alert w-fit">
         <SparklesIcon className="w-6" />
         <span>Suggest us APIs to support!</span>
@@ -107,6 +91,18 @@ export function RecipeHome({
           </Link>
         </div>
       </div>
+      <MarketplaceSection
+        header="No Auth"
+        description="API key not required -> these APIs can be run right away!"
+        projects={free}
+      />
+      {more.length > 0 && (
+        <MarketplaceSection
+          header="Community"
+          description="Checkout these publicly contributed API collections!"
+          projects={more}
+        />
+      )}
     </div>
   );
 }
@@ -115,11 +111,13 @@ function MarketplaceSection({
   header,
   description,
   projects,
+  preferId = false,
   id,
 }: {
   header: string;
   description?: string | ReactNode;
   projects: RecipeProject[];
+  preferId?: boolean;
   id?: string;
 }) {
   return (
@@ -133,16 +131,16 @@ function MarketplaceSection({
         )
       ) : null}
       <div className="projects-home-container">
-        {projects.map((recipe) => {
+        {projects.map((project) => {
           return (
             <RecipeHomeBox
-              key={recipe.title}
-              project={recipe.project}
-              title={recipe.title}
-              subheader={recipe.subheader}
-              description={recipe.description}
-              status={recipe.status}
-              image={recipe.image}
+              key={project.title}
+              project={preferId ? project.id : project.project}
+              title={project.title}
+              subheader={project.subheader}
+              description={project.description}
+              status={project.status}
+              image={project.image}
             />
           );
         })}

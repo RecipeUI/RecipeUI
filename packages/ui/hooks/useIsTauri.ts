@@ -1,3 +1,4 @@
+import { clipboard } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 
 export function useIsTauri() {
@@ -10,4 +11,17 @@ export function useIsTauri() {
   }, []);
 
   return isTauri;
+}
+
+export function useClipboard() {
+  const [clipboard, setClipboard] = useState(navigator.clipboard);
+
+  useEffect(() => {
+    // BUG: This cannot be combined with the useIsTauri hook above
+    if (typeof window !== undefined && "__TAURI__" in window) {
+      setClipboard(clipboard);
+    }
+  }, []);
+
+  return clipboard;
 }

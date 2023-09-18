@@ -11,8 +11,9 @@ import {
 import classNames from "classnames";
 import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 import { API_TYPE_NAMES } from "../../utils/constants/recipe";
-import { ONBOARDING_CONSTANTS } from "../../utils/constants/main";
 import { EditorURLOnboarding } from "./EditorOnboarding/EditorURLOnboarding";
+import { useNeedsOnboarding } from "../../state/apiSession/OnboardingAPI";
+import { ONBOARDING_CONSTANTS } from "utils/constants";
 
 export const EditorURL = () => {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
@@ -39,9 +40,9 @@ export const EditorURL = () => {
   );
 
   const showJSONEditor = Boolean(editorURLSchemaJSON || editorURLCode);
-  const [onboardedToURL] = useLocalStorage(
-    ONBOARDING_CONSTANTS.URL_ONBOARDING,
-    false
+
+  const { needsOnboarding } = useNeedsOnboarding(
+    ONBOARDING_CONSTANTS.URL_ONBOARDING
   );
 
   return (
@@ -68,7 +69,9 @@ export const EditorURL = () => {
         setSchemaType={setSchemaType}
         defaultExport={API_TYPE_NAMES.APIUrlParams}
       />
-      {showJSONEditor && !onboardedToURL && <EditorURLOnboarding />}
+      {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV && (
+        <EditorURLOnboarding />
+      )}
     </div>
   );
 };

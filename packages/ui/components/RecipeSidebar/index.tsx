@@ -2,14 +2,12 @@
 
 import {
   DesktopPage,
-  RecipeOutputTab,
   RecipeSession,
   RecipeSessionFolder,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
-import {} from "../../utils/main";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover, useSessionStorage } from "usehooks-ts";
 import {
@@ -18,28 +16,35 @@ import {
   PencilSquareIcon,
   PlusCircleIcon,
   PlusIcon,
+  ShareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
-  FolderAPI,
   getConfigForSessionStore,
   getParametersForSessionStore,
+  getSessionRecord,
   getSessionsFromStore,
   saveSessionToStore,
-  setConfigForSessionStore,
-  useSessionFolders,
 } from "../../state/apiSession";
+import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { v4 as uuidv4 } from "uuid";
-import { useSearchParams } from "next/navigation";
-import { RECIPE_FORKING_ID } from "../../utils/constants/main";
+
+import { COLLECTION_FORKING_ID, RECIPE_FORKING_ID } from "utils/constants";
+import { isUUID } from "utils";
+
 import { useForm } from "react-hook-form";
-import { fetchHomeRecipe } from "../../fetchers/home";
-import { getConfigFromRecipe } from "../RecipeBody/RecipeLeftPane/RecipeForkTab";
-import { SupabaseContext } from "../Providers/SupabaseProvider";
-import { useIsTauri } from "../../hooks/useIsTauri";
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
+import { PublishFolderModal } from "../../pages/editor/Builders/PublishModal";
+import { EditSessionModal } from "./EditSessionModal";
+import { CoreRecipeAPI } from "../../state/apiSession/RecipeAPI";
+import { Recipe, RecipeProject } from "types/database";
+import { clipboard } from "@tauri-apps/api";
+import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
+import { useSupabaseClient } from "../Providers/SupabaseProvider";
+import { fetchProjectById, fetchProjectPage } from "../../fetchers/project";
+import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -61,26 +66,65 @@ export function RecipeSidebar() {
   }, [loaded, sessions, setSessions]);
 
   const [recipeFork, setRecipeFork] = useSessionStorage(RECIPE_FORKING_ID, "");
+  const [collectionFork, setCollectionFork] = useSessionStorage(
+    COLLECTION_FORKING_ID,
+    ""
+  );
 
   const [curlModal, setCurlModal] = useState(false);
 
   const { initializeRecipe } = useInitializeRecipe();
+  const supabase = useSupabaseClient();
 
   useEffect(() => {
-    async function initialize() {
+    // The only place we initialize forks from APIs
+    async function initializeAPIs() {
       if (!recipeFork) return;
 
       let [forkId, recipeTitle] = recipeFork.split("::");
 
       setRecipeFork("");
-      initializeRecipe(forkId, recipeTitle);
+      initializeRecipe(forkId, { recipeTitle });
+    }
+
+    async function initializeCollection() {
+      let recipes: Recipe[] = [];
+      const localProject =
+        await RecipeUICollectionsAPI.getProjectInfoWithProjectNameOrId({
+          projectNameOrId: collectionFork,
+        });
+
+      if (localProject) {
+        recipes = localProject.recipes;
+      } else {
+        const { recipes: _recipes } = await fetchProjectPage({
+          project: collectionFork,
+          supabase,
+        });
+
+        if (_recipes) {
+          recipes = _recipes;
+        }
+      }
+
+      setCollectionFork("");
+
+      if (recipes && recipes.length > 0) {
+        for (const recipe of recipes) {
+          await initializeRecipe(recipe.id, { recipePreDefined: recipe });
+        }
+      }
     }
 
     getSessionsFromStore().then(async (sessions) => {
       setSessions(sessions || []);
       setLoaded(true);
 
-      initialize();
+      if (collectionFork) {
+        initializeCollection();
+      } else {
+        initializeAPIs();
+      }
     });
   }, [setSessions]);
 
@@ -88,6 +132,10 @@ export function RecipeSidebar() {
   const [editFolder, setEditFolder] = useState<RecipeSessionFolder | null>(
     null
   );
+  const [publishFolder, setPublishFolder] =
+    useState<RecipeSessionFolder | null>(null);
+
+  const [viewCollectionModal, setViewCollectionModal] = useState(false);
 
   const folders = useSessionFolders();
 
@@ -129,7 +177,7 @@ export function RecipeSidebar() {
   }
 
   return (
-    <div className="hidden sm:block w-60 border-r border-r-slate-200 dark:border-r-slate-600 overflow-x-clip">
+    <div className="hidden sm:block w-60 border-r border-r-slate-200 dark:border-r-slate-600 overflow-x-clip overflow-y-auto">
       <div className="dropdown cursor-pointer w-full right-0 text-start border-b border-recipe-slate mb-2">
         <label
           tabIndex={0}
@@ -159,6 +207,16 @@ export function RecipeSidebar() {
               Request
             </button>
           </li>
+          <li className="">
+            <button
+              className=""
+              onClick={() => {
+                setAddFolderModal(true);
+              }}
+            >
+              Folder
+            </button>
+          </li>
           <li>
             <button
               onClick={() => {
@@ -168,14 +226,13 @@ export function RecipeSidebar() {
               Import from cURL
             </button>
           </li>
-          <li className="">
+          <li>
             <button
-              className=""
               onClick={() => {
-                setAddFolderModal(true);
+                setViewCollectionModal(true);
               }}
             >
-              Folder
+              Import collection
             </button>
           </li>
         </ul>
@@ -189,7 +246,7 @@ export function RecipeSidebar() {
             return (
               <li key={folderId}>
                 <details className="relative group" open>
-                  <summary className="text-xs font-bold p-0 px-2 py-2 pr-4 relative">
+                  <summary className="text-xs font-bold p-0 px-2 py-2 pr-4  w-full">
                     {folder.name}
                     <div className="flex space-x-2">
                       <a
@@ -204,7 +261,7 @@ export function RecipeSidebar() {
                         <Cog6ToothIcon className="w-4 h-4" />
                       </a>
                       <a
-                        className="hidden group-hover:block hover:bg-accent w-fit"
+                        className="hidden group-hover:block hover:bg-primary w-fit"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -214,6 +271,17 @@ export function RecipeSidebar() {
                         }}
                       >
                         <PlusIcon className="w-4 h-4" />
+                      </a>
+                      <a
+                        className="hidden group-hover:block hover:bg-primary w-fit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          setPublishFolder(folder);
+                        }}
+                      >
+                        <ShareIcon className="w-4 h-4" />
                       </a>
                     </div>
                   </summary>
@@ -229,6 +297,7 @@ export function RecipeSidebar() {
                           key={session.id}
                           session={session}
                           isCurrentSession={isCurrentSession}
+                          folderId={folderId}
                         />
                       );
                     })}
@@ -274,8 +343,83 @@ export function RecipeSidebar() {
           folder={editFolder}
         />
       )}
+      {publishFolder && (
+        <PublishFolderModal
+          onClose={() => setPublishFolder(null)}
+          folder={publishFolder}
+        />
+      )}
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
+      {viewCollectionModal && (
+        <ViewCollectionModal onClose={() => setViewCollectionModal(false)} />
+      )}
     </div>
+  );
+}
+
+function ViewCollectionModal({ onClose }: { onClose: () => void }) {
+  const [collectionUrl, setCollectionUrl] = useState("");
+  const supabase = useSupabaseClient();
+  const [project, setProject] = useState<null | RecipeProject>(null);
+
+  const onPreview = async () => {
+    const collectionId = collectionUrl.split("/").pop();
+
+    if (!collectionId || !isUUID(collectionId)) {
+      alert("Invalid collection URL");
+      return;
+    }
+
+    const { project } = await fetchProjectById({
+      projectId: collectionId,
+      supabase,
+      projectOnly: true,
+    });
+
+    setProject(project);
+  };
+
+  const isTauri = useIsTauri();
+  const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
+  return (
+    <Modal header="Import Collection" onClose={onClose}>
+      <p className="text-sm">
+        Found a collection someone made online? Import it here
+      </p>
+      <div className="space-y-2">
+        <input
+          type="text"
+          className="input input-bordered input-sm mt-2 w-full"
+          value={collectionUrl}
+          onChange={(e) => setCollectionUrl(e.target.value)}
+        />
+        <button className="btn btn-sm btn-neutral" onClick={onPreview}>
+          Preview
+        </button>
+      </div>
+      {project && (
+        <div className="border rounded-md p-4 mt-4">
+          <h2 className="font-bold">{project.title}</h2>
+          <p className="text-sm">{project.description}</p>
+          <a
+            className="btn btn-accent btn-xs mt-2"
+            href={`/${project.id}`}
+            onClick={(e) => {
+              if (isTauri) {
+                e.preventDefault();
+                setDesktopPage({
+                  page: DesktopPage.Project,
+                  pageParam: project.id,
+                });
+              }
+            }}
+          >
+            View Collection
+          </a>
+        </div>
+      )}
+    </Modal>
   );
 }
 
@@ -390,16 +534,64 @@ function EditFolderModal({
           </button>
         </div>
       </div>
+      {/* {folder.sessionIds.length > 0 && (
+        <>
+          <div className="divider" />
+          <div className="mt-4">
+            <h2 className="text-xl font-bold">Export (Experimental)</h2>
+            <p className="text-sm">
+              It'd be awesome if you contribute this to our community
+              collections!
+            </p>
+            <RecipeDownloadButton folder={folder} />
+          </div>
+        </>
+      )} */}
     </Modal>
+  );
+}
+
+function RecipeDownloadButton({ folder }: { folder: RecipeSessionFolder }) {
+  const user = useRecipeSessionStore((state) => state.user);
+
+  const clipboard = useClipboard();
+
+  const onSubmit = async () => {
+    let recipes: Recipe[] = [];
+    const sessionRecord = await getSessionRecord();
+
+    for (const sessionId of folder.sessionIds) {
+      const session = sessionRecord[sessionId];
+      if (!session) continue;
+
+      const recipe = await CoreRecipeAPI.getCoreRecipe({
+        recipeId: session.recipeId,
+        userId: user?.user_id || "",
+      });
+      recipes.push(recipe as Recipe);
+    }
+
+    const recipeString = JSON.stringify(recipes);
+
+    await clipboard.writeText(recipeString);
+    alert("Copied APIs to clipboard");
+  };
+
+  return (
+    <button className="btn btn-sm mt-2" onClick={onSubmit}>
+      Export APIs
+    </button>
   );
 }
 
 function SessionTab({
   isCurrentSession,
   session,
+  folderId,
 }: {
   isCurrentSession: boolean;
   session: RecipeSession;
+  folderId?: string;
 }) {
   const hoverRef = useRef(null);
   const isHover = useHover(hoverRef);
@@ -423,7 +615,9 @@ function SessionTab({
     (state) => state.saveEditorSession
   );
 
-  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateModal, setDuplicateModal] = useState<null | {
+    folder_id?: string;
+  }>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
   return (
@@ -433,7 +627,7 @@ function SessionTab({
         key={session.id}
         className={classNames(
           "pl-4 py-2 text-xs ",
-          isCurrentSession && "bg-gray-400 dark:text-white"
+          isCurrentSession && "bg-gray-400 dark:text-black"
         )}
         onClick={async (e) => {
           e.stopPropagation();
@@ -457,13 +651,13 @@ function SessionTab({
           });
         }}
       >
-        <div className="flex text-start">
+        <div className="text-start whitespace-pre-wrap">
           {!isEditing && (
             <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
           )}
           {isEditing ? (
             <input
-              className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4"
+              className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4 inline"
               onBlur={onUpdateSessionName}
               onKeyDown={(e) => {
                 if (e.key === "Enter") onUpdateSessionName();
@@ -476,7 +670,7 @@ function SessionTab({
               }}
             />
           ) : (
-            <h4 className="ml-2">{session.name || "New Session"}</h4>
+            <h4 className="ml-2 inline">{session.name || "New Session"}</h4>
           )}
         </div>
         {isHover && !isEditing && (
@@ -498,7 +692,7 @@ function SessionTab({
             <label
               className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-primary"
               onClick={() => {
-                setShowDuplicateModal(true);
+                setDuplicateModal({ folder_id: folderId });
               }}
             >
               <DocumentDuplicateIcon className="w-3" />
@@ -539,9 +733,10 @@ function SessionTab({
           </div>
         )}
       </div>
-      {showDuplicateModal && (
+      {duplicateModal && (
         <DuplicateModal
-          onClose={() => setShowDuplicateModal(false)}
+          folderId={duplicateModal.folder_id}
+          onClose={() => setDuplicateModal(null)}
           session={session}
         />
       )}
@@ -554,6 +749,7 @@ function SessionTab({
     </li>
   );
 }
+
 
 function EditSessionModal({
   onClose,
@@ -637,14 +833,19 @@ function EditSessionModal({
   );
 }
 
+
 function DuplicateModal({
   onClose,
   session,
+  folderId,
 }: {
   onClose: () => void;
   session: RecipeSession;
+  folderId?: string;
 }) {
-  const [sessionName, setSessionName] = useState(session.name + " copy");
+  const [sessionName, setSessionName] = useState(
+    (session.name || "New Session") + " copy"
+  );
   const [isRecipeCopy, setIsRecipeCopy] = useState(false);
 
   const initializeEditorSession = useRecipeSessionStore(
@@ -656,11 +857,12 @@ function DuplicateModal({
   );
   const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!sessionName) {
       alert("Please enter a session name");
       return;
     }
+
     saveSession().then(() => {
       const newSession: RecipeSession = addEditorSession({
         ...session,
@@ -683,6 +885,10 @@ function DuplicateModal({
           ...config,
         });
 
+        if (folderId) {
+          await FolderAPI.addSessionToFolder(newSession.id, folderId);
+        }
+
         onClose();
       }, 0);
     });
@@ -691,7 +897,7 @@ function DuplicateModal({
   return (
     <Modal header="Duplicate Request" onClose={onClose}>
       <div className="mt-4 flex flex-col space-y-2">
-        <label>Session Name</label>
+        <label>New Session Name</label>
         <input
           type="text"
           className="input input-bordered input-sm"

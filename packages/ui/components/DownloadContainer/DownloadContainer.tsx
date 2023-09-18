@@ -3,16 +3,13 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { DesktopAppUpsell } from "../../../ui/pages/editor/EditorPage";
 import { useDarkMode } from "usehooks-ts";
 import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { useIsMobile } from "../../hooks";
-import { useQuery } from "@tanstack/react-query";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
-import { RecipeMethod } from "types/enums";
-import { APP_GITHUB_LATEST_RELEASE_URL } from "../../utils/constants/main";
+import { LATEST_APP_VERSION } from "../../utils/constants/main";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",
@@ -132,17 +129,6 @@ export function DownloadContainer() {
     <div className="min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5 relative">
       <div className="m-6 sm:m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative text-sm   sm:text-lg">
         <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
-          <a
-            href="https://www.producthunt.com/posts/recipeui?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-recipeui"
-            target="_blank"
-          >
-            <img
-              src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=411024&theme=light`}
-              alt="RecipeUI - Open&#0032;source&#0032;type&#0045;safe&#0032;Postman&#0032;alternative | Product Hunt"
-              width="250"
-              height="54"
-            />
-          </a>
           <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
           <p className="my-2 ">
             RecipeUI is the open source Postman alternative with{" "}
@@ -195,7 +181,6 @@ function ViewCollections() {
   );
 }
 
-const LATEST_VERSION = "0.7.2";
 function DesktopDownload() {
   const [showAll, setShowAll] = useState(true);
 
@@ -238,7 +223,7 @@ function DesktopDownload() {
     getPlatform();
   }, []);
 
-  const [latestVersion, setLatestVersion] = useState(LATEST_VERSION);
+  const [latestVersion, setLatestVersion] = useState(LATEST_APP_VERSION);
   const nativeFetch = useContext(RecipeNativeFetchContext);
   // useQuery({
   //   queryKey: ["latestVersion", nativeFetch],

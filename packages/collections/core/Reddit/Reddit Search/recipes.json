@@ -1,0 +1,11 @@
+[
+  {
+    "title": "Search for cat posts on all of reddit",
+    "decription": "Simple search query for all the cat posts on reddit",
+    "queryParams": {
+      "q": "cats",
+      "sort": "new",
+      "type": "link"
+    }
+  }
+]

@@ -1,0 +1,327 @@
+[
+  {
+    "title": "10 Trending gifs",
+    "replay": {
+      "output": {
+        "data": [
+          {
+            "id": "YfL4ieDnxgX5W7rvnJ",
+            "url": "https://giphy.com/gifs/xbox-game-xbox-series-x-s-YfL4ieDnxgX5W7rvnJ",
+            "slug": "xbox-game-xbox-series-x-s-YfL4ieDnxgX5W7rvnJ",
+            "type": "gif",
+            "user": {
+              "username": "xbox",
+              "avatar_url": "https://media1.giphy.com/avatars/xbox/rgsPy6c93KaO.png",
+              "banner_url": "https://media1.giphy.com/channel_assets/xbox/d0hcjt4RoTlW.png",
+              "description": "The official Xbox GIFs page—now with 100% more meta!",
+              "is_verified": true,
+              "profile_url": "https://giphy.com/xbox/",
+              "website_url": "http://www.xbox.com",
+              "banner_image": "https://media1.giphy.com/channel_assets/xbox/d0hcjt4RoTlW.png",
+              "display_name": "Xbox",
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "title": "Scared Oh No GIF by Xbox",
+            "images": {
+              "looping": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy-loop.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-loop.mp4&ct=g",
+                "mp4_size": "1624777"
+              },
+              "preview": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy-preview.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.mp4&ct=g",
+                "width": "312",
+                "height": "176",
+                "mp4_size": "40461"
+              },
+              "original": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.mp4&ct=g",
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
+                "hash": "c8b3cdf12031313b3128c7e47601058b",
+                "size": "4171693",
+                "webp": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.webp&ct=g",
+                "width": "533",
+                "frames": "74",
+                "height": "300",
+                "mp4_size": "385618",
+                "_recipeui_additionalProperties": [
+                  "_recipeui_additionalProperties"
+                ]
+              },
+              "downsized": {
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy-downsized.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-downsized.gif&ct=g",
+                "size": "1914438",
+                "width": "533",
+                "height": "300"
+              },
+              "480w_still": {
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/480w_s.jpg?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=480w_s.jpg&ct=g",
+                "size": "4171693",
+                "width": "480",
+                "height": "270"
+              },
+              "fixed_width": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200w.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.mp4&ct=g",
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200w.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.gif&ct=g",
+                "size": "629219",
+                "webp": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200w.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.webp&ct=g",
+                "width": "200",
+                "height": "113",
+                "mp4_size": "84545",
+                "webp_size": "173284"
+              },
+              "preview_gif": {
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy-preview.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.gif&ct=g",
+                "size": "48968",
+                "width": "98",
+                "height": "55"
+              },
+              "fixed_height": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.mp4&ct=g",
+                "url": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.gif&ct=g",
+                "size": "1638685",
+                "webp": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/200.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.webp&ct=g",
+                "width": "355",
+                "height": "200",
+                "mp4_size": "215918",
+                "webp_size": "386864"
+              },
+              "original_mp4": {
+                "mp4": "https://media2.giphy.com/media/YfL4ieDnxgX5W7rvnJ/giphy.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.mp4&ct=g",
+                "width": "480",
+                "height": "270",
+                "mp4_size": "385618"
+              },
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "rating": "g",
+            "source": "",
+            "_recipeui_additionalProperties": [
+              "_recipeui_additionalProperties"
+            ]
+          },
+          {
+            "id": "EDYuWKNkQJkZXIl6U4",
+            "url": "https://giphy.com/gifs/puppet-dawnie-sunnie-dee-EDYuWKNkQJkZXIl6U4",
+            "slug": "puppet-dawnie-sunnie-dee-EDYuWKNkQJkZXIl6U4",
+            "type": "gif",
+            "user": {
+              "username": "sunniedeeworld",
+              "avatar_url": "https://media2.giphy.com/avatars/sunniedeeworld/NE2hy4U47irM.png",
+              "banner_url": "",
+              "description": "Sunnie Dee is just a normal girl being pranked by her best friend. Join her world!",
+              "is_verified": true,
+              "profile_url": "https://giphy.com/channel/sunniedeeworld/",
+              "website_url": "",
+              "banner_image": "",
+              "display_name": "Sunnie Dee's World",
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "title": "Happy Birthday GIF",
+            "images": {
+              "hd": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy-hd.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-hd.mp4&ct=g",
+                "width": "1080",
+                "height": "1080",
+                "mp4_size": "7505362"
+              },
+              "looping": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy-loop.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-loop.mp4&ct=g",
+                "mp4_size": "6029351"
+              },
+              "preview": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy-preview.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.mp4&ct=g",
+                "width": "198",
+                "height": "198",
+                "mp4_size": "37581"
+              },
+              "original": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.mp4&ct=g",
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
+                "hash": "893c2095bea1d276ee386f02fc31ba97",
+                "size": "3766905",
+                "webp": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.webp&ct=g",
+                "width": "480",
+                "frames": "72",
+                "height": "480",
+                "mp4_size": "659548",
+                "_recipeui_additionalProperties": [
+                  "_recipeui_additionalProperties"
+                ]
+              },
+              "downsized": {
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy-downsized.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-downsized.gif&ct=g",
+                "size": "1681542",
+                "width": "384",
+                "height": "384"
+              },
+              "480w_still": {
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/480w_s.jpg?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=480w_s.jpg&ct=g",
+                "size": "3766905",
+                "width": "480",
+                "height": "480"
+              },
+              "fixed_width": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200w.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.mp4&ct=g",
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200w.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.gif&ct=g",
+                "size": "686471",
+                "webp": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200w.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.webp&ct=g",
+                "width": "200",
+                "height": "200",
+                "mp4_size": "171300",
+                "webp_size": "297780"
+              },
+              "preview_gif": {
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/giphy-preview.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.gif&ct=g",
+                "size": "49826",
+                "width": "89",
+                "height": "89"
+              },
+              "fixed_height": {
+                "mp4": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.mp4&ct=g",
+                "url": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.gif&ct=g",
+                "size": "686471",
+                "webp": "https://media0.giphy.com/media/EDYuWKNkQJkZXIl6U4/200.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.webp&ct=g",
+                "width": "200",
+                "height": "200",
+                "mp4_size": "171300",
+                "webp_size": "297780"
+              },
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "rating": "g",
+            "source": "",
+            "_recipeui_additionalProperties": [
+              "_recipeui_additionalProperties"
+            ]
+          },
+          {
+            "id": "RHPqTWantkT5ED27ni",
+            "url": "https://giphy.com/gifs/Newcastle-United-almiron-wolves-celebrate-RHPqTWantkT5ED27ni",
+            "slug": "Newcastle-United-almiron-wolves-celebrate-RHPqTWantkT5ED27ni",
+            "type": "gif",
+            "user": {
+              "username": "Newcastle_United",
+              "avatar_url": "https://media0.giphy.com/avatars/Newcastle_United/9ScCL7btzbs5.jpg",
+              "banner_url": "https://media0.giphy.com/headers/Newcastle_United/7azHYHw5YW9Z.png",
+              "description": "The official GIPHY channel of Newcastle United Football Club.",
+              "is_verified": true,
+              "profile_url": "https://giphy.com/Newcastle_United/",
+              "website_url": "https://www.nufc.co.uk",
+              "banner_image": "https://media0.giphy.com/headers/Newcastle_United/7azHYHw5YW9Z.png",
+              "display_name": "Newcastle United Football Club",
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "title": "Newcastle United Almiron GIF by Newcastle United Football Club",
+            "images": {
+              "hd": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy-hd.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-hd.mp4&ct=g",
+                "width": "1200",
+                "height": "1200",
+                "mp4_size": "4156878"
+              },
+              "looping": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy-loop.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-loop.mp4&ct=g",
+                "mp4_size": "2702804"
+              },
+              "preview": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy-preview.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.mp4&ct=g",
+                "width": "246",
+                "height": "246",
+                "mp4_size": "39324"
+              },
+              "original": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.mp4&ct=g",
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
+                "hash": "8baa46f8105cbfd4db1a919b88bb050e",
+                "size": "4717802",
+                "webp": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy.webp&ct=g",
+                "width": "480",
+                "frames": "61",
+                "height": "480",
+                "mp4_size": "807244",
+                "_recipeui_additionalProperties": [
+                  "_recipeui_additionalProperties"
+                ]
+              },
+              "downsized": {
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy-downsized.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-downsized.gif&ct=g",
+                "size": "1650842",
+                "width": "343",
+                "height": "343"
+              },
+              "480w_still": {
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/480w_s.jpg?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=480w_s.jpg&ct=g",
+                "size": "4717802",
+                "width": "480",
+                "height": "480"
+              },
+              "fixed_width": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200w.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.mp4&ct=g",
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200w.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.gif&ct=g",
+                "size": "838598",
+                "webp": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200w.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200w.webp&ct=g",
+                "width": "200",
+                "height": "200",
+                "mp4_size": "222374",
+                "webp_size": "379848"
+              },
+              "preview_gif": {
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/giphy-preview.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=giphy-preview.gif&ct=g",
+                "size": "47859",
+                "width": "71",
+                "height": "71"
+              },
+              "fixed_height": {
+                "mp4": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200.mp4?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.mp4&ct=g",
+                "url": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200.gif?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.gif&ct=g",
+                "size": "838598",
+                "webp": "https://media4.giphy.com/media/RHPqTWantkT5ED27ni/200.webp?cid=2319e169127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj&ep=v1_gifs_trending&rid=200.webp&ct=g",
+                "width": "200",
+                "height": "200",
+                "mp4_size": "222374",
+                "webp_size": "379848"
+              },
+              "_recipeui_additionalProperties": [
+                "_recipeui_additionalProperties"
+              ]
+            },
+            "rating": "g",
+            "source": "",
+            "_recipeui_additionalProperties": [
+              "_recipeui_additionalProperties"
+            ]
+          },
+          "..."
+        ],
+        "meta": {
+          "msg": "OK",
+          "status": 200,
+          "response_id": "127qrlmyjf4h3brw86q02xwlnqdbrprabth8q6lj"
+        },
+        "pagination": {
+          "count": 10,
+          "offset": 0,
+          "total_count": 6058
+        }
+      },
+      "duration": 110,
+      "streaming": false
+    },
+    "urlParams": {},
+    "description": "Returns 10 random trending gifs from Aug 13, 2023.",
+    "queryParams": {
+      "limit": 10
+    },
+    "requestBody": {}
+  }
+]

@@ -13,7 +13,7 @@ export interface Database {
         Row: {
           created_at: string | null
           description: string
-          id: number
+          id: string
           image: string | null
           owner_id: string | null
           project: string
@@ -27,7 +27,7 @@ export interface Database {
         Insert: {
           created_at?: string | null
           description: string
-          id?: number
+          id?: string
           image?: string | null
           owner_id?: string | null
           project: string
@@ -41,7 +41,7 @@ export interface Database {
         Update: {
           created_at?: string | null
           description?: string
-          id?: number
+          id?: string
           image?: string | null
           owner_id?: string | null
           project?: string
@@ -90,18 +90,6 @@ export interface Database {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "project_member_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "project_member_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
-          },
           {
             foreignKeyName: "project_member_user_id_fkey"
             columns: ["user_id"]
@@ -198,106 +186,6 @@ export interface Database {
             columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
-          }
-        ]
-      }
-      recipe_duplicate: {
-        Row: {
-          auth: string | null
-          author_id: string | null
-          created_at: string | null
-          id: string
-          method: Database["public"]["Enums"]["recipemethod"]
-          options: Json | null
-          path: string
-          project: string
-          queryParams: Json | null
-          rank: number | null
-          requestBody: Json | null
-          summary: string
-          tags: string[] | null
-          templates: Json[] | null
-          title: string
-          urlParams: Json | null
-          version: number
-          visibility: Database["public"]["Enums"]["visibility"]
-        }
-        Insert: {
-          auth?: string | null
-          author_id?: string | null
-          created_at?: string | null
-          id?: string
-          method?: Database["public"]["Enums"]["recipemethod"]
-          options?: Json | null
-          path: string
-          project: string
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary: string
-          tags?: string[] | null
-          templates?: Json[] | null
-          title: string
-          urlParams?: Json | null
-          version?: number
-          visibility?: Database["public"]["Enums"]["visibility"]
-        }
-        Update: {
-          auth?: string | null
-          author_id?: string | null
-          created_at?: string | null
-          id?: string
-          method?: Database["public"]["Enums"]["recipemethod"]
-          options?: Json | null
-          path?: string
-          project?: string
-          queryParams?: Json | null
-          rank?: number | null
-          requestBody?: Json | null
-          summary?: string
-          tags?: string[] | null
-          templates?: Json[] | null
-          title?: string
-          urlParams?: Json | null
-          version?: number
-          visibility?: Database["public"]["Enums"]["visibility"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recipe_duplicate_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "recipe_duplicate_author_id_fkey"
-            columns: ["author_id"]
-            referencedRelation: "user_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "recipe_duplicate_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "recipe_duplicate_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
           }
         ]
       }
@@ -448,6 +336,7 @@ export interface Database {
         Row: {
           company: string | null
           created_at: string
+          credits: number
           email: string
           first: string
           hear_about: string | null
@@ -463,6 +352,7 @@ export interface Database {
         Insert: {
           company?: string | null
           created_at?: string
+          credits?: number
           email: string
           first: string
           hear_about?: string | null
@@ -478,6 +368,7 @@ export interface Database {
         Update: {
           company?: string | null
           created_at?: string
+          credits?: number
           email?: string
           first?: string
           hear_about?: string | null
@@ -505,7 +396,7 @@ export interface Database {
         Row: {
           created_at: string | null
           description: string | null
-          id: number | null
+          id: string | null
           image: string | null
           owner_id: string | null
           project: string | null
@@ -519,7 +410,7 @@ export interface Database {
         Insert: {
           created_at?: string | null
           description?: string | null
-          id?: number | null
+          id?: string | null
           image?: string | null
           owner_id?: string | null
           project?: string | null
@@ -533,7 +424,7 @@ export interface Database {
         Update: {
           created_at?: string | null
           description?: string | null
-          id?: number | null
+          id?: string | null
           image?: string | null
           owner_id?: string | null
           project?: string | null
@@ -594,18 +485,6 @@ export interface Database {
             columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "project"
-            referencedColumns: ["project"]
-          },
-          {
-            foreignKeyName: "recipe_project_fkey"
-            columns: ["project"]
-            referencedRelation: "global_projects_view"
-            referencedColumns: ["project"]
           }
         ]
       }
@@ -702,7 +581,81 @@ export interface Database {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_recipe_from_unlisted_project: {
+        Args: {
+          recipe_id: string
+        }
+        Returns: {
+          auth: string | null
+          author_id: string | null
+          created_at: string | null
+          id: string
+          method: Database["public"]["Enums"]["recipemethod"]
+          options: Json | null
+          path: string
+          project: string
+          queryParams: Json | null
+          queryParamsType: string | null
+          rank: number | null
+          requestBody: Json | null
+          requestBodyType: string | null
+          summary: string
+          tags: string[] | null
+          templates: Json[] | null
+          title: string
+          urlParams: Json | null
+          urlParamsType: string | null
+          version: number
+          visibility: Database["public"]["Enums"]["visibility"]
+        }[]
+      }
+      get_recipes_from_unlisted_project: {
+        Args: {
+          project_id: string
+        }
+        Returns: {
+          auth: string | null
+          author_id: string | null
+          created_at: string | null
+          id: string
+          method: Database["public"]["Enums"]["recipemethod"]
+          options: Json | null
+          path: string
+          project: string
+          queryParams: Json | null
+          queryParamsType: string | null
+          rank: number | null
+          requestBody: Json | null
+          requestBodyType: string | null
+          summary: string
+          tags: string[] | null
+          templates: Json[] | null
+          title: string
+          urlParams: Json | null
+          urlParamsType: string | null
+          version: number
+          visibility: Database["public"]["Enums"]["visibility"]
+        }[]
+      }
+      get_unlisted_project: {
+        Args: {
+          project_id: string
+        }
+        Returns: {
+          created_at: string | null
+          description: string
+          id: string
+          image: string | null
+          owner_id: string | null
+          project: string
+          scope: Database["public"]["Enums"]["projectscope"]
+          status: Database["public"]["Enums"]["recipeprojectstatus"]
+          subheader: string | null
+          tags: string[] | null
+          title: string
+          visibility: Database["public"]["Enums"]["projectvisibility"]
+        }[]
+      }
     }
     Enums: {
       projectmemberrole: "owner" | "editor" | "viewer"

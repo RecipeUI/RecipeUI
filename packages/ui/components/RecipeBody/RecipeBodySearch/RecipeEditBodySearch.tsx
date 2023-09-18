@@ -1,17 +1,15 @@
 "use client";
 
 import classNames from "classnames";
-import { RouteTypeLabel } from "../../RouteTypeLabel";
-import {
-  RecipeContext,
-  useRecipeSessionStore,
-} from "../../../state/recipeSession";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { RecipeSearchButton } from "./RecipeSearchButton";
-import { useContext, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { RecipeMethod } from "types/enums";
-import { RecipeSaveButton } from "./RecipeSaveButton";
 import { CurlModal } from "../../../pages/editor/Builders/CurlModal";
 import { useDebounce } from "usehooks-ts";
+import { ImportBuilderModal } from "../../../pages/editor/Builders/ImportBuilderModal";
+import { pathModuleSetting as getPathModuleSetting } from "../../../modules/authConfigs";
+import { UpsellModuleContainer } from "../../../modules/components/UpsellModuleContainer";
 
 export function RecipeEditBodySearch() {
   const url = useRecipeSessionStore((state) => state.editorUrl);
@@ -25,7 +23,34 @@ export function RecipeEditBodySearch() {
   );
 
   const [curlString, setCurlString] = useState("");
+  const [importString, setImportString] = useState("");
+
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
+  const editorProject = useRecipeSessionStore((state) => state.editorProject);
+  const editorSessionOptions = useRecipeSessionStore(
+    (state) => state.editorSessionOptions
+  );
+
+  const debouncedUrl = useDebounce(url, 500);
+
+  const upsellSpecialCollection = useMemo(() => {
+    if (debouncedUrl === url) {
+      const specialModule = getPathModuleSetting(debouncedUrl);
+
+      if (specialModule && editorProject !== specialModule.module) {
+        if (
+          editorSessionOptions?.ignoreProject?.includes(specialModule.module)
+        ) {
+          return;
+        }
+
+        return specialModule;
+      }
+    }
+
+    return undefined;
+  }, [debouncedUrl, editorProject, editorSessionOptions, url]);
 
   return (
     <>
@@ -41,7 +66,9 @@ export function RecipeEditBodySearch() {
                 className={classNames("select select-sm  select-ghost", {
                   "text-green-600": method === RecipeMethod.GET,
                   "text-orange-600":
-                    method === RecipeMethod.POST || method === RecipeMethod.PUT,
+                    method === RecipeMethod.POST ||
+                    method === RecipeMethod.PUT ||
+                    method === RecipeMethod.PATCH,
                   "text-red-600": method === RecipeMethod.DELETE,
                 })}
                 onChange={(e) => {
@@ -53,6 +80,7 @@ export function RecipeEditBodySearch() {
                 <option value={RecipeMethod.GET}>{RecipeMethod.GET}</option>
                 <option value={RecipeMethod.POST}>{RecipeMethod.POST}</option>
                 <option value={RecipeMethod.PUT}>{RecipeMethod.PUT}</option>
+                <option value={RecipeMethod.PATCH}>{RecipeMethod.PATCH}</option>
                 <option value={RecipeMethod.DELETE}>
                   {RecipeMethod.DELETE}
                 </option>
@@ -61,18 +89,15 @@ export function RecipeEditBodySearch() {
               <div className="relative flex-1">
                 <input
                   id="url-input"
+                  autoComplete="off"
                   onPaste={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
                     const pasteString = e.clipboardData
                       .getData("text/plain")
                       .trim();
 
                     if (pasteString.toLowerCase().startsWith("curl")) {
+                      e.preventDefault();
                       setCurlString(pasteString);
-                    } else {
-                      setUrl(pasteString);
                     }
                   }}
                   placeholder="Enter URL here"
@@ -97,6 +122,15 @@ export function RecipeEditBodySearch() {
           onClose={() => setCurlString("")}
           currentSession={currentSession}
         />
+      )}
+      {importString && (
+        <ImportBuilderModal
+          initialUrl={importString}
+          onClose={() => setImportString("")}
+        />
+      )}
+      {upsellSpecialCollection && (
+        <UpsellModuleContainer module={upsellSpecialCollection} />
       )}
     </>
   );

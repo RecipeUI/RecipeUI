@@ -11,20 +11,21 @@ import { RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
 import { useForm } from "react-hook-form";
 import { FormLabelWrapper } from "../../../components/Navbar/FormLabelWrapper";
-import {
-  fetchJSONFromTypeScript,
-  fetchTypeScriptFromJSON,
-  superFetchTypesAndJSON,
-} from "../../../fetchers/editor";
 import { getQueryAndBodyInfo } from "./helpers";
 
-export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
-  const [curlString, setCurlString] = useState("");
+export function ImportBuilderModal({
+  onClose,
+  initialUrl,
+}: {
+  onClose: () => void;
+  initialUrl: string;
+}) {
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
+
   const initializeEditorSession = useRecipeSessionStore(
     (state) => state.initializeEditorSession
-  );
-  const addEditorSession = useRecipeSessionStore(
-    (state) => state.addEditorSession
   );
 
   const [error, setError] = useState<string | null>(null);
@@ -33,13 +34,16 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<{
     url: string;
     method: RecipeMethod;
     body?: string;
-  }>({});
+  }>({
+    defaultValues: {
+      url: initialUrl,
+    },
+  });
 
   const onSubmit = handleSubmit(async (requestInfo) => {
     setError(null);
@@ -66,10 +70,8 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
       };
 
       const newSession: RecipeSession = {
-        id: uuidv4(),
-        name: "",
+        ...currentSession,
         apiMethod: editorSlice.editorMethod || RecipeMethod.GET,
-        recipeId: uuidv4(),
       };
 
       setTimeout(() => {
@@ -80,7 +82,7 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
         onClose();
       }, 0);
     } catch (err) {
-      setError("Could not parse CURL");
+      setError("Could not parse url");
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
       <form className="mt-2 space-y-4" onSubmit={onSubmit}>
         <p>
           Enter any information about your URL below and we will try to infer
-          what we can.
+          some types for you.
         </p>
         {error && <div className="text-red-500 text-sm font-bold">{error}</div>}
 
@@ -111,11 +113,17 @@ export function ImportBuilderModal({ onClose }: { onClose: () => void }) {
             <option value={RecipeMethod.GET}>GET</option>
             <option value={RecipeMethod.POST}>POST</option>
             <option value={RecipeMethod.PUT}>PUT</option>
+            <option value={RecipeMethod.PATCH}>PATCH</option>
             <option value={RecipeMethod.DELETE}>DELETE</option>
           </select>
         </FormLabelWrapper>
 
         <FormLabelWrapper label="Request Body (Optional)">
+          <p>
+            {
+              "Use this if you want us to generate the types for your request body"
+            }
+          </p>
           <textarea
             rows={4}
             className={classNames(

@@ -1,49 +1,22 @@
-import {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   RecipeBodyRoute,
-  RecipeContext,
-  RecipeOutputTab,
-  RecipeProjectContext,
+  SessionOutput,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import {
-  RecipeTemplate,
-  RecipeTemplateFragment,
-  UserTemplatePreview,
-} from "types/database";
-import { getTemplate } from "../actions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { RecipeOutputType, RecipeTemplateFragment } from "types/database";
 import classNames from "classnames";
 
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
-import { Dialog } from "@headlessui/react";
-import {
-  DB_FUNC_ERRORS,
-  FORM_LINKS,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
-import { useHover, useInterval, useLocalStorage } from "usehooks-ts";
-import Link from "next/link";
-import { ProjectScope, QueryKey } from "types/enums";
-import { cloneTemplate, deleteTemplate } from "../RecipeBodySearch/actions";
-import { useQueryClient } from "@tanstack/react-query";
-import { useIsTauri } from "../../../hooks/useIsTauri";
-import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import {
-  EllipsisHorizontalCircleIcon,
-  EllipsisHorizontalIcon,
-} from "@heroicons/react/24/outline";
-import { useMiniRecipes, useSecret } from "../../../state/apiSession";
+import { UNIQUE_ELEMENT_IDS } from "../../../utils/constants/main";
+import { useHover, useInterval } from "usehooks-ts";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { MiniRecipeAPI, useMiniRecipes } from "../../../state/apiSession";
 import { Modal } from "../../Modal";
 import { URLHighlight } from "../../../pages/editor/EditorURL";
+import { ResponseOutput } from "../../RecipeOutput/RecipeOutputConsole";
+import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
 
 export function RecipeTemplateEdit() {
   return (
@@ -87,15 +60,10 @@ function UserMiniRecipe({
   deleteRecipe: (templateId: string) => Promise<void>;
 }) {
   const posthog = usePostHog();
-
-  const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
-  const setEditorQuery = useRecipeSessionStore((state) => state.setEditorQuery);
-  const setURLCode = useRecipeSessionStore((state) => state.setEditorURLCode);
-
   const hoverRef = useRef<HTMLButtonElement>(null);
   const isHover = useHover(hoverRef);
-
   const [action, setAction] = useState<null | "prefill" | "send">(null);
+
   return (
     <>
       <div
@@ -170,7 +138,7 @@ function UserMiniRecipe({
         </div>
       </div>
       {action && (
-        <SendModal
+        <RecipeSendModal
           onClose={() => setAction(null)}
           miniRecipe={miniRecipe}
           action={action}
@@ -180,18 +148,20 @@ function UserMiniRecipe({
   );
 }
 
-function SendModal({
+export function RecipeSendModal({
   miniRecipe,
   onClose,
+  onFinish,
   action,
+  sessionOutput,
 }: {
   miniRecipe: RecipeTemplateFragment;
   onClose: () => void;
-  action: "send" | "prefill" | "quicksend";
+  onFinish?: () => void;
+  action: "send" | "prefill" | "quicksend" | "save" | "preview";
+  sessionOutput?: SessionOutput;
 }) {
   const posthog = usePostHog();
-
-  const setCurrentTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   const editorURL = useRecipeSessionStore((state) => state.editorUrl);
   const setEditorBody = useRecipeSessionStore((state) => state.setEditorBody);
@@ -219,7 +189,10 @@ function SendModal({
     setURLCode(editorURLCode);
   };
 
+  const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
   const [count, setCount] = useState(10);
+
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
   useInterval(
     () => {
@@ -227,8 +200,9 @@ function SendModal({
       setCount(count - 1);
     },
     // Delay in milliseconds or null to stop it
-    count > 0 ? 1000 : null
+    count > 0 && ["send", "prefill"].includes(action) ? 1000 : null
   );
+
   const onSubmit = async () => {
     await setTemplate();
 
@@ -238,21 +212,45 @@ function SendModal({
       setTimeout(() => {
         document.getElementById(UNIQUE_ELEMENT_IDS.RECIPE_SEARCH)?.click();
       }, 500);
-    } else {
+    } else if (action === "prefill") {
       posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_PREVIEW);
+    } else if (action === "save") {
+      posthog?.capture(POST_HOG_CONSTANTS.HISTORY_RESTORE);
+
+      await MiniRecipeAPI.addRecipe(currentSession?.recipeId!, miniRecipe);
+
+      setBodyRoute(RecipeBodyRoute.Templates);
     }
+
+    onFinish?.();
     onClose();
   };
 
   useEffect(() => {
-    if (count === 0 || action === "quicksend") {
+    if (count <= 0 || action === "quicksend") {
       onSubmit();
     }
   }, [count]);
 
+  useEffect(() => {
+    async function onEnter(e: KeyboardEvent) {
+      e.preventDefault();
+      if (e.key === "Enter") {
+        document.getElementById("template-send")?.click();
+      }
+    }
+
+    window.addEventListener("keydown", onEnter);
+    return () => {
+      window.removeEventListener("keydown", onEnter);
+    };
+  }, []);
+
   return (
     <Modal header={miniRecipe.title} onClose={onClose}>
-      <p>This will configure the editor with the parameters below.</p>
+      {action !== "preview" && (
+        <p>This will configure the editor with the parameters below.</p>
+      )}
       <div className="space-y-6 my-6">
         {editorBody && (
           <CodeSnippet title="Request Body" codeString={editorBody} />
@@ -281,26 +279,55 @@ function SendModal({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4">
-        <button
-          className="btn btn-outline"
-          onClick={() => {
-            onClose();
-          }}
-        >
-          Cancel
-        </button>
-        <button
-          className="btn btn-accent"
-          tabIndex={1}
-          onClick={() => {
-            onSubmit();
-          }}
-        >
-          Auto {action} ({count}s)
-        </button>
-      </div>
-      <p className="mt-2 text-sm">Tip: Hit enter to quickly {action}.</p>
+      {action !== "preview" && (
+        <>
+          <div className="grid grid-cols-2 gap-x-4">
+            <button
+              className="btn btn-outline"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              id={"template-send"}
+              className="btn btn-accent"
+              tabIndex={1}
+              onClick={() => {
+                onSubmit();
+              }}
+            >
+              {action === "save"
+                ? "Save as Recipe"
+                : `Auto ${action} (${count}s)`}
+            </button>
+          </div>
+          <p className="mt-2 text-sm">Tip: Hit enter to quickly {action}.</p>{" "}
+        </>
+      )}
+
+      {(sessionOutput || miniRecipe.replay) && (
+        <>
+          <div className="divider" />
+          <div className="">
+            <h2 className="font-bold mb-2">Original Response</h2>
+            <ResponseOutput
+              sessionOutput={
+                sessionOutput
+                  ? sessionOutput
+                  : ({
+                      output: miniRecipe.replay?.output as Record<
+                        string,
+                        unknown
+                      >,
+                      type: RecipeOutputType.Response,
+                    } satisfies SessionOutput)
+              }
+            />
+          </div>
+        </>
+      )}
     </Modal>
   );
 }

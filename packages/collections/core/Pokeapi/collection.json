@@ -1,0 +1,15 @@
+{
+  "created_at": "2023-08-06T08:59:23.632874+00:00",
+  "project": "Pokéapi",
+  "title": "Pokéapi",
+  "subheader": "Pokédex, Pokémon, and Pokémon Moves",
+  "description": "Unleash the Pokémon universe! Access comprehensive Pokémon data, including abilities, moves, and stats, to create engaging applications, games, and experiences.",
+  "status": "Active",
+  "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/pokemon.png",
+  "tags": ["Free"],
+  "scope": "global",
+  "visibility": "public",
+  "owner_id": null,
+  "id": "b361080b-6abe-4161-a88f-c41938399366",
+  "rank": 1
+}

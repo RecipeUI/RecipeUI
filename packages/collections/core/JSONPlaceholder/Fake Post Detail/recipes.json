@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Comments from Post 2",
+    "urlParams": {
+      "{post_id}": "2",
+      "{resource}": "comments"
+    },
+    "description": "Data and comments from Post with id 2.",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

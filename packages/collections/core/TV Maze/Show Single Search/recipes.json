@@ -1,0 +1,9 @@
+[
+  {
+    "title": "Friends",
+    "description": "Get info about the popular TV show.",
+    "queryParams": {
+      "q": "friends"
+    }
+  }
+]

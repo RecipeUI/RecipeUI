@@ -13,7 +13,7 @@ import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import classNames from "classnames";
-import { StarterTemplates, UserTemplates } from "./RecipeTemplates";
+import { StarterTemplates } from "./RecipeTemplates";
 import { useLeftPaneInfo } from "./useLeftPaneInfo";
 import { JSONSchema6 } from "json-schema";
 

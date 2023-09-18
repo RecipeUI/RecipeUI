@@ -1,0 +1,115 @@
+[
+  {
+    "title": "3 Random Pictures",
+    "replay": {
+      "output": [
+        {
+          "url": "https://apod.nasa.gov/apod/image/2110/NGC4676_HubbleOstling_960.jpg",
+          "date": "2021-10-04",
+          "hdurl": "https://apod.nasa.gov/apod/image/2110/NGC4676_HubbleOstling_4555.jpg",
+          "title": "NGC 4676: When Mice Collide",
+          "media_type": "image",
+          "explanation": "These two mighty galaxies are pulling each other apart.  Known as the \"Mice\" because they have such long tails, each spiral galaxy has likely already passed through the other. The long tails are created by the relative difference between gravitational pulls on the near and far parts of each galaxy.  Because the distances are so large, the cosmic interaction takes place in slow motion -- over hundreds of millions of years.  NGC 4676 lies about 300 million light-years away toward the constellation of Bernice's Hair (Coma Berenices) and are  likely members of the Coma Cluster of Galaxies.  The featured picture was taken with the Hubble Space Telescope's Advanced Camera for Surveys in 2002. These galactic mice will probably collide again and again over the next billion years so that, instead of continuing to pull each other apart, they coalesce to form a single galaxy.   Follow APOD in English on: Facebook,  Instagram, or Twitter",
+          "service_version": "v1"
+        },
+        {
+          "url": "https://apod.nasa.gov/apod/image/1608/YosemiteExplosionComp-MikeShaw800.jpg",
+          "date": "2016-08-18",
+          "hdurl": "https://apod.nasa.gov/apod/image/1608/YosemiteExplosionComp-MikeShaw.jpg",
+          "title": "Perseid Night at Yosemite",
+          "copyright": "Mike Shaw",
+          "media_type": "image",
+          "explanation": "The 2016 Perseid meteor shower performed well on the night of August 11/12. The sky on that memorable evening was recorded from a perch overlooking Yosemite Valley, planet Earth, in this scene composed of 25 separate images selected from an all-night set of sequential exposures. Each image contains a single meteor and was placed in alignment using the background stars. The digital manipulation accounts for the Earth's rotation throughout the night and allows the explosion of colorful trails to be viewed in perspective toward the shower's radiant in the constellation Perseus. The fading alpenglow gently lights the west face of El Capitan just after sunset. Just before sunrise, a faint band zodiacal light, or the false dawn, shines upward from the east, left of Half Dome at the valley's far horizon. Car lights illuminate the valley road. Of course, the image is filled with other celestial sights from that Perseid night, including the Milky Way and the Pleiades star cluster.",
+          "service_version": "v1"
+        },
+        {
+          "url": "https://apod.nasa.gov/apod/image/0403/m42_cfht.jpg",
+          "date": "2004-03-15",
+          "hdurl": "https://apod.nasa.gov/apod/image/0403/m42_cfht_big.jpg",
+          "title": "The Orion Nebula from CFHT",
+          "copyright": "Canada-France-Hawaii Telescope",
+          "media_type": "image",
+          "explanation": "Few astronomical sights excite the imagination like the nearby stellar nursery known as the Orion Nebula.  The Nebula's glowing gas surrounds hot young stars at the edge of an immense interstellar molecular cloud only 1500 light-years away.  The Great Nebula in Orion can be found with the unaided eye just below and to the left of the easily identifiable  belt of three stars in the popular constellation Orion. The above image from the 3.6-meter Canada-France-Hawaii Telescope atop a dormant volcano in Hawaii brings out Orion's detail in spectacular fashion.  Buried in the complex nebulosity are the bright stars of the Trapezium in Orion's heart, the sweeping lanes of dark dust that cross the center, the pervasive red glowing hydrogen gas, and the  blue tinted dust that reflects the light of newborn stars.  The whole Orion Nebula cloud complex, which includes the Horsehead Nebula, will slowly disperse over the next 100,000 years.",
+          "service_version": "v1"
+        },
+        "..."
+      ],
+      "duration": 641,
+      "streaming": false
+    },
+    "urlParams": {},
+    "description": "Returns 3 random astronomy pictures of the day",
+    "queryParams": {
+      "count": 3
+    },
+    "requestBody": {}
+  },
+  {
+    "title": "One Week of Pictures",
+    "replay": {
+      "output": [
+        {
+          "url": "https://apod.nasa.gov/apod/image/2308/SunMonster_Wenz_960.jpg",
+          "date": "2023-08-01",
+          "hdurl": "https://apod.nasa.gov/apod/image/2308/SunMonster_Wenz_960.jpg",
+          "title": "Monster Solar Prominence",
+          "copyright": "\nMike\nWenz\n",
+          "media_type": "image",
+          "explanation": "The monsters that live on the Sun are not like us. They are larger than the Earth and made of gas hotter than in any teapot. They have no eyes, but at times, many tentacles. They float.  Usually, they slowly change shape and just fade back onto the Sun over about a month. Sometimes, though, they suddenly explode and unleash energetic particles into the Solar System that can attack the Earth.  Pictured is a huge solar prominence imaged almost two weeks ago in the light of hydrogen. Captured by a small telescope in Gilbert, Arizona, USA, the monsteresque plume of gas was held aloft by the ever-present but ever-changing magnetic field near the surface of the Sun. Our active Sun continues to show an unusually high number of prominences, filaments, sunspots, and large active regions as solar maximum approaches in 2025.",
+          "service_version": "v1"
+        },
+        {
+          "url": "https://apod.nasa.gov/apod/image/2308/M82_HubblePathak_1080.jpg",
+          "date": "2023-08-02",
+          "hdurl": "https://apod.nasa.gov/apod/image/2308/M82_HubblePathak_8150.jpg",
+          "title": "M82: Galaxy with a Supergalactic Wind",
+          "media_type": "image",
+          "explanation": "Why is the Cigar Galaxy billowing red smoke?  M82, as this starburst galaxy is also known, was stirred up by a recent pass near large spiral galaxy M81.  This doesn't fully explain the source of the red-glowing outwardly expanding gas and dust, however.  Evidence indicates that this gas and dust is being driven out by the combined emerging particle winds of many stars, together creating a galactic superwind.  The dust particles are thought to originate in M82's interstellar medium and are actually similar in size to particles in cigar smoke.  The featured photographic mosaic highlights a specific color of red light strongly emitted by ionized hydrogen gas, showing detailed filaments of this gas and dust.  The filaments extend for over 10,000 light years. The 12-million light-year distant Cigar Galaxy is the brightest galaxy in the sky in infrared light and can be seen in visible light with a small telescope towards the constellation of the Great Bear (Ursa Major).   APOD in world languages: Arabic, Bulgarian, Catalan, Chinese (Beijing), Chinese (Taiwan), Croatian, Czech, Dutch, French, German, Hebrew, Indonesian, Japanese, Montenegrin, Polish, Russian, Serbian, Slovenian,  Spanish, Taiwanese, Turkish, and  Ukrainian",
+          "service_version": "v1"
+        },
+        {
+          "url": "https://apod.nasa.gov/apod/image/2308/FalconHeavyRedstoneHaskell1024.jpeg",
+          "date": "2023-08-03",
+          "hdurl": "https://apod.nasa.gov/apod/image/2308/FalconHeavyRedstoneHaskell.jpeg",
+          "title": "The Falcon and the Redstone",
+          "copyright": "Launch Complex 5",
+          "media_type": "image",
+          "explanation": "In a photo from the early hours of July 29 (UTC), a Redstone rocket and Mercury capsule are on display at Cape Canaveral Launch Complex 5. Beyond the Redstone, the 8 minute long exposure has captured the arcing launch streak of a SpaceX Falcon Heavy rocket. The Falcon's heavy communications satellite payload, at a record setting 9 metric tons, is bound for geosynchronous orbit some 22,000 miles above planet Earth. The historic launch of a Redstone rocket carried astronaut Alan Shepard on a suborbital spaceflight in May 1961 to an altitude of about 116 miles. Near the top of the frame, this Falcon rocket's two reusable side boosters separate and execute brief entry burns. They returned to land side by side at Canaveral's Landing Zone 1 and 2 in the distance.",
+          "service_version": "v1"
+        },
+        "..."
+      ],
+      "duration": 840,
+      "streaming": false
+    },
+    "urlParams": {},
+    "description": "Space pics from August 1st to 7th 2023",
+    "queryParams": {
+      "end_date": "2023-08-07",
+      "start_date": "2023-08-01"
+    },
+    "requestBody": {}
+  },
+  {
+    "title": "A Picture in June",
+    "replay": {
+      "output": {
+        "url": "https://apod.nasa.gov/apod/image/2306/LightningCloud_JunoGill_960.jpg",
+        "date": "2023-06-25",
+        "hdurl": "https://apod.nasa.gov/apod/image/2306/LightningCloud_JunoGill_960.jpg",
+        "title": "Lightning on Jupiter",
+        "media_type": "image",
+        "explanation": "Does lightning occur only on Earth?  No.  Spacecraft in our Solar System have detected lightning on other planets, including Mars, Jupiter and Saturn, and lightning is likely on Venus, Uranus, and Neptune.  Lightning is a sudden rush of electrically charged particles from one location to another. On Earth, drafts of colliding ice and water droplets usually create lightning-generating charge separation, but what happens on Jupiter? Images and data from NASA's Jupiter-orbiting Juno spacecraft bolster previous speculation that Jovian lightning is also created in clouds containing water and ice.  In the featured Juno photograph, an optical flash was captured in a large cloud vortex near Jupiter's north pole.  During the next few months, Juno will perform several close sweeps over Jupiter's night side, likely allowing the robotic probe to capture more data and images of Jovian lightning.",
+        "service_version": "v1"
+      },
+      "duration": 448,
+      "streaming": false
+    },
+    "urlParams": {},
+    "description": "Picture of the Day on June 25th, 2023",
+    "queryParams": {
+      "date": "2023-06-25"
+    },
+    "requestBody": {}
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "created_at": "2023-08-06T09:01:01+00:00",
+  "project": "{JSON} Placeholder",
+  "title": "JSONPlaceholder",
+  "subheader": "Fake Data Generator",
+  "description": "Free fake API for testing and prototyping. Powered by JSON Server + LowDB. Tested with XV.",
+  "status": "Active",
+  "image": "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/json.png",
+  "tags": ["Free"],
+  "scope": "global",
+  "visibility": "public",
+  "owner_id": null,
+  "id": "bed8752b-6428-461d-a3d0-5bd90a8dacf0"
+}

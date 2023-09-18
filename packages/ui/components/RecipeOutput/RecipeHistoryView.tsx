@@ -1,16 +1,22 @@
 import {
   RecipeContext,
+  RecipeOutputTab,
   RecipeRequestInfo,
+  SessionOutput,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { useContext, useEffect, useState } from "react";
-import { Recipe } from "types/database";
-import { RecipeParamType } from "types/enums";
-import { useOutput } from "../../state/apiSession";
+import { Recipe, RecipeTemplateFragment, RequestHeader } from "types/database";
+import { ProjectScope, RecipeParamType } from "types/enums";
+import { OutputAPI, useOutput } from "../../state/apiSession/OutputAPI";
 import { JSONSchema6 } from "json-schema";
+import { ResponseInfo } from "./RecipeOutputConsole";
+import { formatRelative, min, subDays } from "date-fns";
 
+import { v4 as uuidv4 } from "uuid";
+import { RecipeSendModal } from "../RecipeBody/RecipeLeftPane/RecipeTemplateEdit";
 const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
   highlightActiveLine: false,
@@ -26,252 +32,191 @@ enum CodeView {
 }
 const CodeViews = Object.values(CodeView);
 
+interface MiniRecipeToRestore {
+  miniRecipe: RecipeTemplateFragment;
+  output: SessionOutput;
+  action: "save" | "preview";
+}
+
 export function RecipeHistoryView() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
-  const {
-    output: { requestInfo },
-    allOutputs,
-  } = useOutput(currentSession?.id);
+  const { allOutputs } = useOutput(currentSession?.id);
+
+  const editorURL = useRecipeSessionStore((state) => state.editorUrl);
+
+  const [miniRecipeToRestore, setMiniRecipeToRestore] =
+    useState<MiniRecipeToRestore>();
+
+  const setOutputTab = useRecipeSessionStore((state) => state.setOutputTab);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg">
-      <h1 className="text-xl font-bold mb-4 text-black dark:text-white">
-        Code
-      </h1>
-      <div className="space-y-4">
+    <div className="sm:absolute inset-0 px-4 py-8 overflow-y-auto right-pane-bg">
+      <div className="flex items-center mb-4 space-x-2">
+        <h1 className="text-xl font-bold  text-black dark:text-white">
+          History
+        </h1>
+        <button
+          className="btn btn-outline btn-xs"
+          onClick={async () => {
+            const confirm = await window.confirm(
+              "Are you sure you want to clear the history?"
+            );
+
+            if (confirm) {
+              OutputAPI.clearOutput(currentSession?.id!).then(() => {
+                setOutputTab(RecipeOutputTab.DocTwo);
+              });
+            }
+          }}
+        >
+          Clear
+        </button>
+      </div>
+      <div className="space-y-4 flex flex-col">
         {allOutputs.map((output, i) => {
+          if (!output.created_at || !output.responseInfo) return null;
+
+          const relativeDateInfo = formatRelative(
+            new Date(output.created_at),
+            new Date()
+          );
           return (
-            <pre key={i}>
-              <div>
-                {output.created_at
-                  ? new Date(output.created_at).toLocaleTimeString()
-                  : new Date().toLocaleTimeString()}
+            <div key={i} className="border rounded-md p-4 flex flex-col">
+              <div className="flex space-x-2 items-center">
+                <div className="text-sm uppercase">{relativeDateInfo}</div>
+                <ResponseInfo responseInfo={output.responseInfo} />
               </div>
-            </pre>
+              {output.requestInfo && output.id && (
+                <HistoryActions
+                  output={output}
+                  editorURL={editorURL}
+                  requestInfo={output.requestInfo}
+                  recipeId={currentSession?.recipeId || ""}
+                  createdAt={new Date(output.created_at)}
+                  setMiniRecipeToRestore={setMiniRecipeToRestore}
+                />
+              )}
+            </div>
           );
         })}
       </div>
+      {miniRecipeToRestore && (
+        <RecipeSendModal
+          action={miniRecipeToRestore.action}
+          miniRecipe={miniRecipeToRestore.miniRecipe}
+          sessionOutput={miniRecipeToRestore.output}
+          onClose={() => {
+            setMiniRecipeToRestore(undefined);
+          }}
+        />
+      )}
     </div>
   );
 }
 
-function getJavaScriptFetchCode({
-  url,
-  payload,
-  options: recipeOptions,
-}: RecipeRequestInfo) {
-  const { headers, method, body: _body } = payload;
+function HistoryActions({
+  output,
+  requestInfo,
+  editorURL,
+  setMiniRecipeToRestore,
+  createdAt,
+  recipeId,
+}: {
+  output: SessionOutput;
+  requestInfo: NonNullable<SessionOutput["requestInfo"]>;
+  editorURL: string;
+  createdAt: Date;
+  setMiniRecipeToRestore: (miniRecipe: MiniRecipeToRestore) => void;
+  recipeId: string;
+}) {
+  const onSubmit = (action: "save" | "preview") => {
+    requestInfo.payload.headers = requestInfo.payload.headers || {};
+    const url = new URL(requestInfo.url);
 
-  // TODO: Support files
-  const methodString = `\tmethod: "${method}"`;
-  const headersString = `headers: ${JSON.stringify(headers, null, 2)
-    .split("\n")
-    .join("\n\t")}`;
+    const editorQuery: Record<string, string> = {};
+    url.searchParams.forEach((value, key) => {
+      editorQuery[key] = value;
+    });
 
-  let bodyString = "";
-  if (_body) {
-    if (typeof _body === "string") {
-      bodyString = `body: "${_body}"`;
-    } else if (_body instanceof FormData) {
-      // TODO
-    } else if (Object.keys(_body).length > 0) {
-      bodyString = `body: JSON.stringify(${JSON.stringify(_body, null, 2)
-        .split("\n")
-        .join("\n\t")})`;
+    const editorBody = requestInfo.payload.body;
+
+    const editorHeaders: RequestHeader[] = [];
+    for (const [headerName, headerValue] of Object.entries(
+      requestInfo.payload.headers
+    )) {
+      editorHeaders.push({
+        name: headerName,
+        value: headerValue,
+      });
     }
-  }
 
-  const strings = [methodString, headersString, bodyString].filter(Boolean);
+    const urlParams: Record<string, string> = {};
 
-  const postJsonProcess =
-    headers["Content-Type"] === "application/json"
-      ? `\n\t.then((res) => res.json())\n\t.then((json) => console.log(json))`
-      : "";
+    let urlPaths = requestInfo.url.split("?")[0].split("/");
+    let recipeURLPaths = editorURL.split("?")[0].split("/");
 
-  const templateString = `
-const options = {
-${strings.join(",\n\t")}
-};
+    recipeURLPaths.forEach((path, i) => {
+      let match = path.match(/{(\w+)}/g);
+      if (match && match[0]) {
+        // This needs to be a more exclusive split
+        const valueMatch = urlPaths[i].match(/^[^.|]*/);
+        urlPaths[i].split(".")[0];
 
-fetch("${url.toString()}", options)${postJsonProcess};
-  `.trim();
+        urlParams[match[0]] = valueMatch ? valueMatch[0] : urlPaths[i];
+      }
+    });
 
-  return templateString;
-}
+    // This one is a bit tricker, but maybe we can infer from the URL placement
 
-function getJavaScriptAxiosCode({
-  url,
-  payload,
-  options: recipeOptions,
-}: RecipeRequestInfo) {
-  const { headers, method, body: _body } = payload;
+    const miniRecipe: RecipeTemplateFragment = {
+      title: createdAt.toLocaleString(),
+      description: `Restore a recipe from ${createdAt.toLocaleString()}`,
 
-  // TODO: Support files
-  const methodString = `method: "${method}"`;
-  const urlString = `url: "${url.toString()}"`;
-  const headersString = `headers: ${JSON.stringify(headers, null, 2)
-    .split("\n")
-    .join("\n\t")}`;
+      created_at: new Date().toISOString(),
+      id: uuidv4(),
+      replay: {
+        duration: output.duration ? output.duration : 3000,
+        output: output.output,
+        streaming: false,
+      },
+      project_scope: ProjectScope.Personal,
 
-  let bodyString = "";
-  if (_body) {
-    if (typeof _body === "string") {
-      bodyString = `body: "${_body}"`;
-    } else if (_body instanceof FormData) {
-      // TODO
-    } else if (Object.keys(_body).length > 0) {
-      bodyString = `data: ${JSON.stringify(_body, null, 2)
-        .split("\n")
-        .join("\n\t")}`;
-    }
-  }
+      queryParams: Object.keys(editorQuery).length > 0 ? editorQuery : null,
+      requestBody: (editorBody as Record<string, unknown>) || null,
+      urlParams: Object.keys(urlParams).length > 0 ? urlParams : null,
 
-  const strings = [methodString, urlString, headersString, bodyString].filter(
-    Boolean
+      recipe_id: recipeId,
+
+      headers: editorHeaders,
+
+      // Unnecessary
+      original_author_id: null,
+    };
+
+    setMiniRecipeToRestore({
+      miniRecipe,
+      output,
+      action,
+    });
+  };
+  return (
+    <div className="flex mt-2 space-x-2">
+      <button
+        className="btn w-fit btn-xs btn-neutral hover:btn-secondary hover:animate-pulse"
+        onClick={() => {
+          onSubmit("preview");
+        }}
+      >
+        View
+      </button>
+      <button
+        className="btn w-fit btn-xs btn-neutral hover:btn-secondary hover:animate-pulse"
+        onClick={() => {
+          onSubmit("save");
+        }}
+      >
+        Save as Recipe
+      </button>
+    </div>
   );
-
-  const postJsonProcess =
-    headers["Content-Type"] === "application/json"
-      ? `\n\t.then((res) => console.log(res.data))\n\t.catch((err) => console.error(err))`
-      : "";
-
-  const templateString = `
-const axios = require('axios');
-
-const options = {
-\t${strings.join(",\n\t")}
-};
-
-axios.request(options)${postJsonProcess};
-  `.trim();
-
-  return templateString;
-}
-
-function getPythonHttpClient({
-  url: _url,
-  payload,
-  options: recipeOptions,
-}: RecipeRequestInfo) {
-  const { headers, method, body: _body } = payload;
-
-  const url = new URL(_url);
-  const lines: string[] = [];
-  lines.push(`import http.client`);
-  lines.push(`import json`);
-  lines.push("\n");
-
-  lines.push(`conn = http.client.HTTPSConnection("${url.hostname}")`);
-  lines.push(`headers = ${JSON.stringify(headers, null, 2)}`);
-
-  let hasBody = false;
-  if (_body) {
-    if (typeof _body === "string") {
-      hasBody = true;
-      lines.push(`payload = "${_body}"`);
-    } else if (_body instanceof FormData) {
-      // TODO
-    } else if (Object.keys(_body).length > 0) {
-      hasBody = true;
-      lines.push(`payload = json.dumps(${JSON.stringify(_body, null, 2)})`);
-    }
-  }
-
-  lines.push("\n");
-
-  if (hasBody) {
-    lines.push(
-      `conn.request("${method}", "${url.pathname}", body=payload, headers=headers)`
-    );
-  } else {
-    lines.push(`conn.request("${method}", "${url.pathname}", headers=headers)`);
-  }
-  lines.push("\n");
-
-  lines.push(`res = conn.getresponse()`);
-  lines.push(`data = res.read()`);
-  lines.push("\n");
-
-  lines.push(`json_data = json.loads(data.decode("utf-8"))`);
-  lines.push(`print(json_data)`);
-
-  return lines.join("\n").replaceAll("\n\n", "\n");
-}
-
-function getPythonRequestLibCode({
-  url,
-  payload,
-  options: recipeOptions,
-}: RecipeRequestInfo) {
-  const { headers, method, body: _body } = payload;
-
-  const lines: string[] = [];
-  lines.push(`import requests # pip install requests`);
-  lines.push(`\n`);
-  lines.push(`url = '${url.toString()}'`);
-  lines.push(`method = '${method}'`);
-  lines.push(`headers = ${JSON.stringify(headers, null, 2)}`);
-
-  let hasBody = false;
-  if (_body) {
-    if (typeof _body === "string") {
-      hasBody = true;
-      lines.push(`payload = "${_body}"`);
-    } else if (_body instanceof FormData) {
-      // TODO
-    } else if (Object.keys(_body).length > 0) {
-      hasBody = true;
-      lines.push(`payload = ${JSON.stringify(_body, null, 2)}`);
-    }
-  }
-
-  lines.push("\n");
-  if (hasBody) {
-    lines.push(
-      `response = requests.request(method, url, json=payload, headers=headers)`
-    );
-  } else {
-    lines.push(`response = requests.request(method, url, headers=headers)`);
-  }
-  lines.push("\n");
-
-  lines.push(`if response.status_code == 200:\n\tprint(response.json())`);
-  lines.push(`else:\n\tprint('Failed to fetch data', response.text)`);
-
-  return lines.join("\n").replaceAll("\n\n", "\n");
-}
-
-function getCurlCode({
-  url,
-  payload,
-  options: recipeOptions,
-}: RecipeRequestInfo) {
-  const { headers, method, body } = payload;
-
-  const lines = [`\t--url '${url.toString()}'`];
-
-  if (headers) {
-    for (const [headerName, headerValue] of Object.entries(headers)) {
-      lines.push(`-H '${headerName}: ${headerValue}'`);
-    }
-  }
-
-  if (body) {
-    if (typeof body === "string") {
-      lines.push(`-d '${body}'`);
-    } else if (body instanceof FormData) {
-      // TODO: Support files
-    } else if (Object.keys(body).length > 0) {
-      lines.push(
-        `-d '${JSON.stringify(body, null, 2).split("\n").join("\n    ")}'`
-      );
-    }
-  }
-
-  const templateString = `
-curl -X ${method} \\
-${lines.join(" \\\n\t")}
-  `.trim();
-
-  return templateString;
 }

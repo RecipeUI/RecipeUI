@@ -25,6 +25,7 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import {
+  EditorSessionOptions,
   deleteSession,
   setConfigForSessionStore,
   setParametersForSessionStore,
@@ -73,6 +74,7 @@ export enum RecipeBodyRoute {
   URL = "URL",
   Headers = "Headers",
   Auth = "Auth",
+  Collection = "Collection",
 }
 
 export enum RecipeOutputTab {
@@ -149,6 +151,8 @@ export type EditorSliceValues = Pick<
   | "editorURLSchemaJSON"
   | "editorURLSchemaType"
   | "editorURLCode"
+  | "editorProject"
+  | "editorSessionOptions"
 >;
 
 export interface RecipeEditorSlice {
@@ -214,6 +218,14 @@ export interface RecipeEditorSlice {
     update: JSONSchema6;
     merge: boolean;
   }) => void;
+
+  editorProject: string | null | undefined;
+  setEditorProject: (editorProject: string | null) => void;
+
+  editorSessionOptions: EditorSessionOptions | undefined;
+  setEditorSessionOptions: (
+    editorSessionOptions?: EditorSessionOptions
+  ) => void;
 
   initializeEditorSession: (
     editorSession: Partial<
@@ -344,6 +356,8 @@ async function savePrevSessionPre(prevState: Slices) {
     editorURLSchemaJSON,
     editorURLSchemaType,
     editorURLCode,
+    editorProject,
+    editorSessionOptions,
   } = prevState;
 
   await setParametersForSessionStore({
@@ -370,6 +384,8 @@ async function savePrevSessionPre(prevState: Slices) {
       editorURLSchemaJSON,
       editorURLSchemaType,
       editorURLCode,
+      editorProject,
+      editorSessionOptions,
     },
   });
 }
@@ -400,6 +416,9 @@ function resetEditorSlice(): EditorSliceValues {
     editorURLSchemaType: null,
     editorURLSchemaJSON: null,
     editorURLCode: "",
+
+    editorProject: undefined,
+    editorSessionOptions: undefined,
   };
 }
 
@@ -474,6 +493,9 @@ export const createRecipeEditorSlice: StateCreator<
       });
     },
 
+    setEditorProject(editorProject) {
+      set(() => ({ editorProject }));
+    },
     setEditorMode: (editorModeOn) => set(() => ({ editorMode: editorModeOn })),
     setEditorUrl: (url) => set(() => ({ editorUrl: url })),
     setEditorMethod: (editorMethod: RecipeMethod) =>
@@ -503,6 +525,10 @@ export const createRecipeEditorSlice: StateCreator<
           source: prevState.editorQuerySchemaJSON || {},
         }),
       }));
+    },
+
+    setEditorSessionOptions(editorSessionOptions) {
+      set(() => ({ editorSessionOptions }));
     },
     updateEditorBodySchemaJSON({ path, update, merge = true }) {
       set((prevState) => {
@@ -641,7 +667,7 @@ export enum DesktopPage {
   Editor = "Editor",
 }
 
-type DesktopPageShape =
+export type DesktopPageShape =
   | {
       page: DesktopPage.Project;
       pageParam: string;
@@ -689,10 +715,6 @@ export const createDesktopSlice: StateCreator<
 };
 
 export type LocalStorageState = RecipeParameters;
-// {
-//   sessions: RecipeSession[];
-//   currentSession: RecipeSessionSlice["currentSession"];
-// }
 
 const createRecipeSessionSlice: StateCreator<
   Slices,

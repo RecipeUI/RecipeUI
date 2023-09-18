@@ -1,0 +1,55 @@
+{
+  "created_at": "2023-08-29T05:07:09.727083+00:00",
+  "title": "Search GIFs",
+  "summary": "GIPHY Search gives you instant access to our library of millions of GIFs and Stickers by entering a word or phrase. With our unparalleled search algorithm, users can easily express themselves and animate their conversations.\n",
+  "method": "GET",
+  "path": "https://api.giphy.com/v1/gifs/search",
+  "project": "GIPHY",
+  "auth": "query",
+  "tags": ["Popular", "Main", "Examples"],
+  "queryParams": {
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "required": ["q"],
+    "properties": {
+      "q": {
+        "type": "string",
+        "description": "Search query term or phrase. Adding @<username> anywhere in the q parameter effectively changes the search query to be a search for a specific user’s GIFs (user has to be public and verified user by GIPHY.) If the q parameter contains one of these words: sticker, stickers, or transparent, the search will return stickers content. Maximum length: 50 chars."
+      },
+      "limit": {
+        "type": "number",
+        "default": 25,
+        "description": "The maximum number of objects to return. (Default: 25)"
+      },
+      "rating": {
+        "enum": ["g", "pg", "pg-13", "r"],
+        "type": "string",
+        "description": "Filters results by specified rating. Acceptable values include g, pg, pg-13, r. If you do not specify a rating, you will receive results from all possible ratings."
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "query",
+        "payload": {
+          "name": "api_key"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/giphy"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "ccfc1216-f4cc-4f64-b5c7-57bae974a4c4",
+  "queryParamsType": "export interface APIQueryParams {\n  q: string;\n  limit?: number;\n  rating?: \"g\" |  \"pg\" |\"pg-13\" | \"r\";\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

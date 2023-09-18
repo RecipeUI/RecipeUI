@@ -48,18 +48,24 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
     println!("\nResponse: {:?}", response);
 
     let status = response.status().as_u16();
-    let content_type = response
+    let headers = response
         .headers()
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
+        .collect::<HashMap<String, String>>();
+
+    let content_type = headers
         .get("content-type")
-        .map(|v| v.to_str().unwrap_or(""))
-        .unwrap_or("")
-        .to_string();
+        .unwrap_or(&"text/plain".to_string())
+        .clone();
+
     let output = response.text().await.map_err(|e| e.to_string())?;
 
     Ok(FetchServerOutput {
         output,
         status,
-        contentType: content_type.to_string(),
+        contentType: content_type,
+        headers,
     })
 }
 
@@ -69,6 +75,7 @@ struct FetchServerOutput {
     status: u16,
     #[allow(non_snake_case)]
     contentType: String,
+    headers: HashMap<String, String>,
 }
 #[derive(Debug, Deserialize)]
 struct Payload {

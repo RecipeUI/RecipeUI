@@ -2,9 +2,7 @@ import { RecipeHomeContainer } from "ui/components/RecipeHome/RecipeHomeContaine
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "types/database";
-import { redirect } from "next/navigation";
 import { fetchHome } from "ui/fetchers/home";
-import { APP_COOKIE } from "ui/utils/constants/main";
 
 export const dynamic = "force-dynamic";
 
@@ -21,16 +19,12 @@ export default async function Collections({
     cookies,
   });
 
-  const { globalProjects, userProjects, recipe } = await fetchHome({
+  const { userProjects, recipe } = await fetchHome({
     searchParams,
     supabase,
   });
 
   return (
-    <RecipeHomeContainer
-      globalProjects={globalProjects}
-      projects={userProjects}
-      recipe={recipe || undefined}
-    />
+    <RecipeHomeContainer projects={userProjects} recipe={recipe || undefined} />
   );
 }

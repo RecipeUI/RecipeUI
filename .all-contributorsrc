@@ -1,0 +1,60 @@
+{
+  "projectName": "RecipeUI",
+  "projectOwner": "RecipeUI",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "dvtng",
+      "name": "Dave Tang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/617233?v=4",
+      "profile": "https://github.com/dvtng",
+      "contributions": [
+        "ideas",
+        "doc",
+        "mentoring"
+      ]
+    },
+    {
+      "login": "Julian",
+      "name": "Julian Berman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/329822?v=4",
+      "profile": "https://til.grayvines.com/",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "rrevi",
+      "name": "Rafael Revi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1561054?v=4",
+      "profile": "http://rrevi.github.io",
+      "contributions": [
+        "plugin"
+      ]
+    },
+    {
+      "login": "bennycode",
+      "name": "Benny Neugebauer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/469989?v=4",
+      "profile": "http://bennycode.com",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "0x80085",
+      "name": "0x80085",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53451414?v=4",
+      "profile": "https://github.com/0x80085",
+      "contributions": [
+        "ideas"
+      ]
+    }
+  ],
+  "repoType": "github"
+}

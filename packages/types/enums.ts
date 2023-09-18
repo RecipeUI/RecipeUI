@@ -9,6 +9,7 @@ export enum RecipeMethod {
   GET = "GET",
   POST = "POST",
   PUT = "PUT",
+  PATCH = "PATCH",
   DELETE = "DELETE",
 }
 
@@ -78,6 +79,7 @@ export enum QueryKey {
   RecipesView = "RecipesView",
   RecipesHomeView = "RecipesHomeView",
   Projects = "Projects",
+  PersonalCollections = "PersonalCollections",
 }
 
 export enum RecipeError {

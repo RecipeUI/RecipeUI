@@ -4,14 +4,16 @@ import {
   SessionOutput,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { ReactNode, useContext, useMemo, useRef } from "react";
+import { ReactNode, useContext, useMemo, useRef, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import CodeMirror from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { Recipe, RecipeOutputType } from "types/database";
-import { useOutput } from "../../state/apiSession";
+import { useOutput } from "../../state/apiSession/OutputAPI";
+import { RecipeSaveButton } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
+import { Modal } from "../Modal";
 
 const codeMirrorSetup = {
   lineNumbers: true,
@@ -22,7 +24,7 @@ export function RecipeOutputConsole() {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const sessionOutput = useOutput(currentSession?.id);
   const {
-    output: { id, output, type },
+    output: { id, output, type, contentType },
   } = sessionOutput;
 
   const { isDarkMode } = useDarkMode();
@@ -71,7 +73,7 @@ export function RecipeOutputConsole() {
   }, [output, id]);
 
   return (
-    <div className="sm:absolute inset-0 px-4 py-6 overflow-y-auto right-pane-bg space-y-6">
+    <div className="sm:absolute inset-0 px-4 py-8 overflow-y-auto right-pane-bg space-y-6">
       {imageBlocks.length > 0 && (
         <>
           <OutputModule
@@ -134,12 +136,14 @@ export function RecipeOutputConsole() {
             title="Response"
             responseInfo={sessionOutput.output.responseInfo}
             body={
-              Object.keys(output).length > 0 ? (
-                <ResponseOutput
-                  sessionOutput={sessionOutput.output}
-                  selectedRecipe={selectedRecipe}
-                />
-              ) : null
+              <>
+                {Object.keys(output).length > 0 ? (
+                  <ResponseOutput
+                    sessionOutput={sessionOutput.output}
+                    selectedRecipe={selectedRecipe}
+                  />
+                ) : null}
+              </>
             }
           />
         </>
@@ -153,7 +157,7 @@ export function RecipeOutputConsole() {
   );
 }
 
-function ResponseOutput({
+export function ResponseOutput({
   selectedRecipe,
   sessionOutput,
 }: {
@@ -195,15 +199,53 @@ function ResponseOutput({
 
   const { isDarkMode } = useDarkMode();
 
+  const { contentType } = sessionOutput;
   return (
-    <CodeMirror
-      readOnly={true}
-      value={output}
-      className="h-full !outline-none border-none max-w-sm sm:max-w-none"
-      basicSetup={codeMirrorSetup}
-      theme={isDarkMode ? "dark" : "light"}
-      extensions={extensions}
-    />
+    <>
+      <CodeMirror
+        readOnly={true}
+        value={output}
+        maxHeight="100vh"
+        className="h-full !outline-none border-none max-w-sm sm:max-w-none"
+        basicSetup={codeMirrorSetup}
+        theme={isDarkMode ? "dark" : "light"}
+        extensions={extensions}
+      />
+      {contentType?.includes("text/html") && <HTMLPreview html={output} />}
+    </>
+  );
+}
+
+function HTMLPreview({ html }: { html: string }) {
+  const [showPreview, setShowPreview] = useState(false);
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+
+  return (
+    <div>
+      {!showPreview ? (
+        <div className="border rounded-md mt-2 p-4">
+          <p className="text-sm">Do you want to render the HTML?</p>
+          <button
+            className="btn btn-neutral btn-xs mt-2"
+            onClick={() => {
+              setShowPreview(true);
+            }}
+          >
+            Preview
+          </button>
+        </div>
+      ) : (
+        <div className="mockup-browser  bg-base-300 mt-4">
+          <div className="mockup-browser-toolbar">
+            <div className="input">{editorUrl}</div>
+          </div>
+          <div
+            dangerouslySetInnerHTML={{ __html: html }}
+            className="h-full w-full bg-base-200 p-4 min-h-[100px]"
+          ></div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -229,28 +271,8 @@ function OutputModule({
           </h1>
           {responseInfo && (
             <>
-              <div
-                className={classNames("text-white !pointer-events-none", {
-                  "btn btn-xs btn-accent":
-                    responseInfo.status >= 200 && responseInfo.status < 300,
-                  "btn btn-xs btn-error":
-                    responseInfo.status >= 400 && responseInfo.status < 500,
-                  "btn btn-xs btn-warning":
-                    responseInfo.status >= 500 && responseInfo.status < 600,
-                })}
-              >
-                {responseInfo.status}{" "}
-                {responseInfo.status >= 200 && responseInfo.status < 300
-                  ? "OK"
-                  : ""}
-              </div>
-              <div
-                className={classNames(
-                  "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
-                )}
-              >
-                {responseInfo.duration.toFixed(2)} ms
-              </div>
+              <RecipeSaveButton />
+              <ResponseInfo responseInfo={responseInfo} />
             </>
           )}
         </div>
@@ -268,3 +290,121 @@ function OutputModule({
     </div>
   );
 }
+
+export function ResponseInfo({
+  responseInfo,
+}: {
+  responseInfo: NonNullable<SessionOutput["responseInfo"]>;
+}) {
+  const [showHeaders, setShowHeaders] = useState(false);
+
+  return (
+    <>
+      <button
+        className={classNames("text-white !pointer-events-none", {
+          "btn btn-xs btn-accent":
+            responseInfo.status >= 200 && responseInfo.status < 300,
+          "btn btn-xs btn-error":
+            responseInfo.status >= 400 && responseInfo.status < 500,
+          "btn btn-xs btn-warning":
+            responseInfo.status >= 500 && responseInfo.status < 600,
+        })}
+      >
+        {responseInfo.status}{" "}
+        {responseInfo.status >= 200 && responseInfo.status < 300 ? "OK" : ""}
+      </button>
+      {responseInfo.headers && Object.keys(responseInfo.headers).length > 0 && (
+        <button
+          className="btn btn-outline btn-xs tooltip"
+          data-tip="View response headers"
+          onClick={() => setShowHeaders(true)}
+        >
+          Headers
+        </button>
+      )}
+      <button
+        className={classNames(
+          "btn-outline btn btn-xs text-black dark:text-white pointer-events-none"
+        )}
+      >
+        {responseInfo.duration.toFixed(2)} ms
+      </button>
+      {showHeaders && (
+        <HeadersModal
+          headers={responseInfo.headers}
+          onClose={() => setShowHeaders(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function HeadersModal({
+  onClose,
+  headers,
+}: {
+  headers: Record<string, string>;
+  onClose: () => void;
+}) {
+  return (
+    <Modal header="" onClose={onClose}>
+      <div className="overflow-x-auto">
+        <table className="table table-zebra table-pin-rows">
+          <thead className="">
+            <tr className="grid grid-cols-2">
+              <th>Header</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(headers).map(([key, value]) => {
+              return (
+                <tr key={key} className="grid grid-cols-2 overflow-x-auto">
+                  <td>{key}</td>
+                  <td>{value}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </Modal>
+  );
+}
+
+// <div className="overflow-x-auto">
+//   <table className="table">
+//     {/* head */}
+//     <thead>
+//       <tr>
+//         <th></th>
+//         <th>Name</th>
+//         <th>Job</th>
+//         <th>Favorite Color</th>
+//       </tr>
+//     </thead>
+//     <tbody>
+//       {/* row 1 */}
+//       <tr>
+//         <th>1</th>
+//         <td>Cy Ganderton</td>
+//         <td>Quality Control Specialist</td>
+//         <td>Blue</td>
+//       </tr>
+//       {/* row 2 */}
+//       <tr>
+//         <th>2</th>
+//         <td>Hart Hagerty</td>
+//         <td>Desktop Support Technician</td>
+//         <td>Purple</td>
+//       </tr>
+//       {/* row 3 */}
+//       <tr>
+//         <th>3</th>
+//         <td>Brice Swyre</td>
+//         <td>Tax Accountant</td>
+//         <td>Red</td>
+//       </tr>
+//     </tbody>
+//   </table>
+// </div>

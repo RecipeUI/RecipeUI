@@ -1,0 +1,136 @@
+[
+  {
+    "title": "Pokeball",
+    "replay": {
+      "output": {
+        "id": 4,
+        "cost": 200,
+        "name": "poke-ball",
+        "names": [
+          {
+            "name": "モンスターボール",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            }
+          },
+          {
+            "name": "몬스터볼",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            }
+          },
+          {
+            "name": "精靈球",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/4/",
+              "name": "zh-Hant"
+            }
+          },
+          "..."
+        ],
+        "sprites": {
+          "default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+        },
+        "category": {
+          "url": "https://pokeapi.co/api/v2/item-category/34/",
+          "name": "standard-balls"
+        },
+        "machines": [],
+        "attributes": [
+          {
+            "url": "https://pokeapi.co/api/v2/item-attribute/1/",
+            "name": "countable"
+          },
+          {
+            "url": "https://pokeapi.co/api/v2/item-attribute/2/",
+            "name": "consumable"
+          },
+          {
+            "url": "https://pokeapi.co/api/v2/item-attribute/4/",
+            "name": "usable-in-battle"
+          },
+          "..."
+        ],
+        "fling_power": null,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 553,
+      "streaming": false
+    },
+    "recipe_id": 46,
+    "urlParams": {
+      "{id_or_name}": "poke-ball"
+    },
+    "description": "Info on classic pokeball",
+    "queryParams": {},
+    "requestBody": {}
+  },
+  {
+    "title": "Amulet Coin",
+    "replay": {
+      "output": {
+        "id": 200,
+        "cost": 10000,
+        "name": "amulet-coin",
+        "names": [
+          {
+            "name": "おまもりこばん",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/1/",
+              "name": "ja-Hrkt"
+            }
+          },
+          {
+            "name": "부적금화",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/3/",
+              "name": "ko"
+            }
+          },
+          {
+            "name": "護符金幣",
+            "language": {
+              "url": "https://pokeapi.co/api/v2/language/4/",
+              "name": "zh-Hant"
+            }
+          },
+          "..."
+        ],
+        "sprites": {
+          "default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/amulet-coin.png"
+        },
+        "category": {
+          "url": "https://pokeapi.co/api/v2/item-category/16/",
+          "name": "training"
+        },
+        "machines": [],
+        "attributes": [
+          {
+            "url": "https://pokeapi.co/api/v2/item-attribute/5/",
+            "name": "holdable"
+          },
+          {
+            "url": "https://pokeapi.co/api/v2/item-attribute/7/",
+            "name": "holdable-active"
+          }
+        ],
+        "fling_power": 30,
+        "_recipeui_additionalProperties": [
+          "_recipeui_additionalProperties"
+        ]
+      },
+      "duration": 741,
+      "streaming": false
+    },
+    "urlParams": {
+      "{id_or_name}": "amulet-coin"
+    },
+    "description": "Info on the amulet coin",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]

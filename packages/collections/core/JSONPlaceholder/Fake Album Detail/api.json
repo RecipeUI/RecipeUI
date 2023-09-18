@@ -1,0 +1,46 @@
+{
+  "created_at": "2023-08-06T23:04:21+00:00",
+  "title": "Fake Album Detail",
+  "summary": "Specific info about a fake album. Ability to get photos it has.",
+  "method": "GET",
+  "path": "https://jsonplaceholder.typicode.com/albums/{album_id}/{resource}",
+  "project": "{JSON} Placeholder",
+  "auth": null,
+  "tags": [
+    "Examples"
+  ],
+  "queryParams": null,
+  "urlParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "{album_id}": {
+        "type": "string",
+        "description": "Provide the album_id"
+      },
+      "{resource}": {
+        "type": "string",
+        "enum": [
+          "comments",
+          ""
+        ],
+        "description": "Add 'comments' if you want to see this posts comments. Otherwise leave blank to see general info about album."
+      }
+    },
+    "required": [
+      "{album_id}",
+      "{resource}"
+    ],
+    "additionalProperties": false
+  },
+  "requestBody": null,
+  "options": null,
+  "rank": null,
+  "author_id": null,
+  "visibility": "unlisted",
+  "version": 1,
+  "id": "5ed1b0c0-3789-4773-87bf-fc178923e02f",
+  "queryParamsType": "",
+  "urlParamsType": "export interface APIUrlParams {\n  \"{album_id}\": string;\n  \"{resource}\": \"comments\" | \"\";\n}",
+  "requestBodyType": null
+}

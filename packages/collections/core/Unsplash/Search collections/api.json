@@ -1,0 +1,67 @@
+{
+  "created_at": "2023-08-29T08:18:22.038702+00:00",
+  "title": "Search collections",
+  "summary": "Get a single page of collection results for a query.",
+  "method": "GET",
+  "path": "https://api.unsplash.com/search/collections",
+  "project": "Unsplash",
+  "auth": "header",
+  "tags": null,
+  "queryParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+      "query"
+    ],
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Limit selection to photos matching a search term."
+      },
+      "page": {
+        "type": "number",
+        "description": "Page number to retrieve.",
+        "default": 1
+      },
+      "per_page": {
+        "type": "number",
+        "description": "Number of items per page.",
+        "default": 10
+      },
+      "order_by": {
+        "type": "string",
+        "enum": [
+          "latest",
+          "oldest",
+          "popular"
+        ],
+        "description": "How to sort the photos.",
+        "default": "latest"
+      }
+    },
+    "additionalProperties": false
+  },
+  "urlParams": null,
+  "requestBody": null,
+  "options": {
+    "auth": [
+      {
+        "type": "header",
+        "payload": {
+          "name": "Authorization"
+        }
+      }
+    ],
+    "docs": {
+      "auth": "https://docs.recipeui.com/docs/Auth/unsplash"
+    }
+  },
+  "rank": null,
+  "author_id": null,
+  "visibility": "public",
+  "version": 1,
+  "id": "0076eb19-e99d-4bda-b36b-b3fa1721f151",
+  "queryParamsType": "export interface APIQueryParams {\n  query: string;\n  page?: number;\n  per_page?: number;\n  order_by?: \"latest\" | \"oldest\" | \"popular\";\n}",
+  "urlParamsType": null,
+  "requestBodyType": null
+}

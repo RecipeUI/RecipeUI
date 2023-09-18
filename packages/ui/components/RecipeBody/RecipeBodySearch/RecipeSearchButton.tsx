@@ -1,15 +1,13 @@
 import classNames from "classnames";
 import { useContext, useEffect, useRef } from "react";
-import {
-  RECIPE_PROXY,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
+import { UNIQUE_ELEMENT_IDS } from "../../../utils/constants/main";
 import {
   FetchRequest,
   FetchResponse,
   RecipeContext,
   RecipeNativeFetchContext,
   RecipeOutputTab,
+  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeOptions, RecipeOutputType } from "types/database";
@@ -23,10 +21,13 @@ import { useHover } from "usehooks-ts";
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { useIsTauri } from "../../../hooks/useIsTauri";
-import { usePathname } from "next/navigation";
-import { OutputAPI, getSecret, useOutput } from "../../../state/apiSession";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
+import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
+import { isCollectionModule } from "../../../modules";
+import { ModuleSettings } from "../../../modules/authConfigs";
+import { DISCORD_LINK } from "utils/constants";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -77,6 +78,8 @@ export function RecipeSearchButton() {
   };
 
   const nativeFetch = useContext(RecipeNativeFetchContext)!;
+
+  const editorProject = useRecipeSessionStore((state) => state.editorProject);
 
   const _onSubmit = async () => {
     if (!currentSession) return;
@@ -145,6 +148,8 @@ export function RecipeSearchButton() {
       }
 
       fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
+        if (!name || value == undefined) return acc;
+
         acc[name] = value;
         return acc;
       }, {} as Record<string, string>);
@@ -181,8 +186,46 @@ export function RecipeSearchButton() {
     let url = new URL(path);
 
     // ------ Parse Auth -------
-    if (recipe.auth) {
-      const primaryToken = await getSecret({
+    if (editorProject && isCollectionModule(editorProject)) {
+      const { hasAuthSetup, secretRecord } = await SecretAPI.getComplexSecrets({
+        collection: editorProject,
+      });
+
+      if (!hasAuthSetup) {
+        alert("Please setup authentication first.");
+        return false;
+      }
+
+      const authConfigs = ModuleSettings[editorProject]?.authConfigs || [];
+
+      for (const config of authConfigs) {
+        const secretKey = SecretAPI.getSecretKeyFromConfig(
+          config,
+          editorProject
+        );
+        let secretValue = secretRecord[secretKey];
+
+        if (!secretValue) {
+          // This really shouldn't happen because of hasAuthSetup
+          alert(
+            `Please setup authentication first for the API Key ${config.type}::${config.payload.name}`
+          );
+          return false;
+        }
+
+        if (config.payload.prefix) {
+          secretValue = `${config.payload.prefix} ${secretValue}`;
+        }
+
+        if (config.type === RecipeAuthType.Query) {
+          url.searchParams.append(config.payload.name, secretValue);
+        } else if (config.type === RecipeAuthType.Header) {
+          fetchHeaders[config.payload.name] = secretValue;
+        }
+      }
+    }
+    if (recipe.auth && !isCollectionModule(editorProject || "")) {
+      const primaryToken = await SecretAPI.getSecret({
         secretId: currentSession.recipeId,
       });
 
@@ -437,6 +480,7 @@ export function RecipeSearchButton() {
             output: {
               content,
             },
+            created_at: new Date().toISOString(),
             type: RecipeOutputType.Response,
             duration: performance.now() - startTime,
             requestInfo,
@@ -515,34 +559,37 @@ export function RecipeSearchButton() {
       const isStatusOk = status >= 200 && status < 300;
       console.debug({ output, status });
 
+      let hasParsed = false;
       if (contentType?.includes("text/")) {
         output = { text: outputStr };
-      } else if (!isStatusOk) {
-        const statusPrefix = `Error code ${status}.`;
-        if (!isStatusOk) {
-          if ([401, 403, 405, 406].includes(status)) {
-            output = {
-              error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
-            };
-          } else if (status === 400) {
-            output = {
-              error: `${statusPrefix} Something went wrong with the request, but we're unable to get more info.`,
-            };
-          } else if (status === 404) {
-            output = {
-              error: `${statusPrefix} No resource found here, double check you parameters.`,
-            };
-          } else {
-            output = {
-              error: `${statusPrefix} Unable to figure out what went wrong with this request.`,
-            };
-          }
-        }
+        hasParsed = true;
       } else {
         try {
           output = parse(outputStr);
+          hasParsed = true;
         } catch (e) {
           output = { response: "unable to parse json" };
+        }
+      }
+
+      if (!isStatusOk && !hasParsed) {
+        const statusPrefix = `Error code ${status}.`;
+        if ([401, 403, 405, 406].includes(status)) {
+          output = {
+            error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
+          };
+        } else if (status === 400) {
+          output = {
+            error: `${statusPrefix} Something went wrong with the request, but we're unable to get more info.`,
+          };
+        } else if (status === 404) {
+          output = {
+            error: `${statusPrefix} No resource found here, double check you parameters.`,
+          };
+        } else {
+          output = {
+            error: `${statusPrefix} Unable to figure out what went wrong with this request.`,
+          };
         }
       }
 
@@ -559,6 +606,7 @@ export function RecipeSearchButton() {
         sessionOutput: {
           id: outputId,
           output: output,
+          created_at: new Date().toISOString(),
           type: isStatusOk ? RecipeOutputType.Response : RecipeOutputType.Error,
           duration: performance.now() - startTime,
           requestInfo,
@@ -572,11 +620,22 @@ export function RecipeSearchButton() {
       });
     } catch (e) {
       console.error(e);
-      let output =
-        "Something went wrong. Can you report this issue to us on our discord?";
+      let output = `Is this error unexpected? Debug with inspector window or report in our discord ${DISCORD_LINK}.`;
 
       if ((e as Error)?.message === RecipeError.AbortedRequest) {
         output = "Request cancelled.";
+      }
+
+      let errorMessage: string = "";
+
+      try {
+        if (e instanceof Error) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = parse(e as any);
+        }
+      } catch (_) {
+        //
       }
 
       posthog?.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT_FAILURE, recipeInfoLog);
@@ -585,9 +644,14 @@ export function RecipeSearchButton() {
         sessionId: currentSession.id,
         sessionOutput: {
           id: outputId,
-          output: {
-            error: output,
-          },
+          output: errorMessage
+            ? {
+                error: errorMessage,
+                response: output,
+              }
+            : {
+                error: output,
+              },
           type: RecipeOutputType.Error,
           duration: performance.now() - startTime,
         },

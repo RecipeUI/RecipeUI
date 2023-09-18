@@ -1,0 +1,43 @@
+[
+  {
+    "title": "Labradoodle",
+    "replay": {
+      "output": {
+        "status": "success",
+        "message": [
+          "https://images.dog.ceo/breeds/labradoodle/Cali.jpg",
+          "https://images.dog.ceo/breeds/labradoodle/labradoodle-forrest.jpg",
+          "https://images.dog.ceo/breeds/labradoodle/lola.jpg",
+          "..."
+        ]
+      },
+      "duration": 514,
+      "streaming": false
+    },
+    "urlParams": {
+      "{is_random}": "",
+      "{breed_name}": "labradoodle"
+    },
+    "description": "Get cute labradoodle images <3",
+    "queryParams": {},
+    "requestBody": {}
+  },
+  {
+    "title": "Random Image of a Wolfhound",
+    "replay": {
+      "output": {
+        "status": "success",
+        "message": "https://images.dog.ceo/breeds/wolfhound-irish/n02090721_1981.jpg"
+      },
+      "duration": 2618,
+      "streaming": false
+    },
+    "urlParams": {
+      "{is_random}": "random",
+      "{breed_name}": "wolfhound"
+    },
+    "description": "Returns 1 random image of the Wolfhound dog breed.",
+    "queryParams": {},
+    "requestBody": {}
+  }
+]
