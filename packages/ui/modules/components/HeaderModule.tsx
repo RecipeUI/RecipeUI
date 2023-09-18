@@ -11,7 +11,7 @@ export function HeaderModule({ module }: { module: ModuleSetting }) {
   const isTauri = useIsTauri();
 
   return (
-    <div className="flex items-center border p-4 rounded-md  ">
+    <div className="flex items-center border recipe-slate p-4 rounded-md w-full justify-between">
       <div className="ml-2">
         <h2 className="text-xl font-bold">{title}</h2>
         <p className="text-sm">{description}</p>
@@ -20,10 +20,11 @@ export function HeaderModule({ module }: { module: ModuleSetting }) {
           <a
             className="btn btn-sm btn-neutral"
             href={`/${module.module}`}
-            target="_blank"
             onClick={(e) => {
               if (isTauri) {
                 e.preventDefault();
+                e.stopPropagation();
+
                 setDesktopPage({
                   page: DesktopPage.Project,
                   pageParam: module.module,

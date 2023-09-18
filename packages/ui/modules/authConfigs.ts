@@ -3,6 +3,8 @@
 import { CollectionModule, ModuleSetting } from ".";
 import NASA_MODULE from "./NASA/settings";
 import GIPHY_MODULE from "./GIPHY/settings";
+import UNSPLASH_MODULE from "./Unsplash/settings";
+import OPENAI_MODULE from "./OpenAI/settings";
 
 export const ModuleSettings: Record<
   CollectionModule,
@@ -10,6 +12,8 @@ export const ModuleSettings: Record<
 > = {
   [CollectionModule.NASA]: NASA_MODULE,
   [CollectionModule.GIPHY]: GIPHY_MODULE,
+  [CollectionModule.Unsplash]: UNSPLASH_MODULE,
+  [CollectionModule.OpenAI]: OPENAI_MODULE,
 };
 
 const settings = Object.values(ModuleSettings);

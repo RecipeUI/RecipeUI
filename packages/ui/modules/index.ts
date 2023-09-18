@@ -3,6 +3,8 @@ import { AuthConfig } from "types/database";
 export enum CollectionModule {
   NASA = "NASA",
   GIPHY = "GIPHY",
+  OpenAI = "OpenAI",
+  Unsplash = "Unsplash",
 }
 
 export enum CollectionComponentModule {

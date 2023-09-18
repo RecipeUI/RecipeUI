@@ -94,7 +94,9 @@ function AuthModule({
 
         <div className="bg-base-300 rounded-md p-4 mt-4">
           <FormFieldWrapper
-            label="API KEY"
+            label={`[${authConfig.type.toUpperCase()}] ${
+              authConfig.payload.name
+            }`}
             description={authConfig.payload.description}
           >
             <input

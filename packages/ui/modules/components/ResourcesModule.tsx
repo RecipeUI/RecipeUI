@@ -6,7 +6,7 @@ export function ResourcesModule({
   resourceSection: NonNullable<ModuleSetting["resources"]>;
 }) {
   return (
-    <div className="border p-4 rounded-md">
+    <div className="border  p-4 rounded-md">
       <h2 className="text-xl font-bold">{resourceSection.title}</h2>
       {resourceSection.description && (
         <p className="text-sm">{resourceSection.description}</p>

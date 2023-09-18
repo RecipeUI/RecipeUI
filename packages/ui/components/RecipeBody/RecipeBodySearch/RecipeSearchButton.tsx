@@ -214,7 +214,7 @@ export function RecipeSearchButton() {
         }
 
         if (config.payload.prefix) {
-          secretValue = `${config.payload.prefix}${secretValue}`;
+          secretValue = `${config.payload.prefix} ${secretValue}`;
         }
 
         if (config.type === RecipeAuthType.Query) {

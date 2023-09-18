@@ -14,13 +14,26 @@ import { minifyRecipeTemplates } from "./minify";
 const program = new Command();
 
 const getCollections = () => {
-  return JSON.parse(
+  const coreCollections = JSON.parse(
     fs.readFileSync(PATHS.CORE_COLLECTION, "utf8")
   ) as RecipeProject[];
+
+  const communityCollections = JSON.parse(
+    fs.readFileSync(PATHS.COMMUNITY_COLLECTION, "utf8")
+  ) as RecipeProject[];
+
+  return [...coreCollections, ...communityCollections];
 };
 
 const getAPIs = () => {
-  return JSON.parse(fs.readFileSync(PATHS.CORE_APIS, "utf8")) as Recipe[];
+  const coreAPIs = JSON.parse(
+    fs.readFileSync(PATHS.CORE_APIS, "utf8")
+  ) as Recipe[];
+  const communityAPIs = JSON.parse(
+    fs.readFileSync(PATHS.COMMUNITY_APIS, "utf8")
+  ) as Recipe[];
+
+  return [...coreAPIs, ...communityAPIs];
 };
 
 program.version("1.0.0").description("An example CLI for managing a directory");
