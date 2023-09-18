@@ -127,7 +127,7 @@ import { ProjectContainer } from "ui/components/Project/ProjectContainer";
 import { useSupabaseClient } from "ui/components/Providers/SupabaseProvider";
 import { initializeDB } from "ui/state/apiSession";
 import { Navbar } from "ui/components/Navbar/Navbar";
-import { useLocalProjects } from "ui/state/apiSession/RecipeUICoreAPI";
+import { useLocalProjects } from "ui/state/apiSession/RecipeUICollectionsAPI";
 
 function ProjectPage({ project: projectParam }: { project: string }) {
   const supabase = useSupabaseClient();

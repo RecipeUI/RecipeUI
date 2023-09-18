@@ -210,6 +210,24 @@ function ObjectDocContainer({
     <>
       {Object.keys(schema.properties).map((paramName) => {
         const required = schema.required && schema.required.includes(paramName);
+        const childSchema = schema.properties![paramName] as JSONSchema6;
+        if (childSchema && "$ref" in childSchema) {
+          const objectDefinition = childSchema!["$ref"];
+          if (!objectDefinition) return null;
+
+          const referenceName = objectDefinition.split("#/definitions/").pop()!;
+          const innerSchema = definitions![referenceName];
+
+          if (typeof innerSchema == "boolean") return null;
+
+          return (
+            <ObjectDocContainer
+              key={paramName}
+              schema={innerSchema}
+              path={`definitions.${referenceName}`}
+            />
+          );
+        }
 
         return (
           <DocContainer
@@ -274,6 +292,13 @@ function DocContainer({
   const [minNumber, setMinNumber] = useState(definition.minimum);
   const [maxNumber, setMaxNumber] = useState(definition.maximum);
 
+  useEffect(() => {
+    setDescription(definition.description || "");
+    setDefaultValue(definition.default as string);
+    setMinNumber(definition.minimum);
+    setMaxNumber(definition.maximum);
+  }, [paramName, definition]);
+
   const [editing, setEditing] = useState(false);
   const { updater } = useContext(DefinitionContext);
   const isPrimitive =
@@ -321,6 +346,7 @@ function DocContainer({
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              autoComplete="off"
             />
           </EditDocFieldWrapper>
           {isPrimitive && (
@@ -333,6 +359,7 @@ function DocContainer({
                     placeholder="(Optional)"
                     value={defaultValue as string}
                     onChange={(e) => setDefaultValue(e.target.value)}
+                    autoComplete="off"
                   />
                 )}
                 {(definition.type === "number" ||

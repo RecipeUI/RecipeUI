@@ -480,6 +480,9 @@ function RecipeDocParamEdit({
     paramPath
   );
   const updateParams = isQueryParam ? updateQueryParams : updateRequestBody;
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
 
   if (!paramSchema) {
     return null;
@@ -622,6 +625,16 @@ function RecipeDocParamEdit({
   //   return <RecipeFileParamEdit paramPath={paramPath} />;
   // }
 
+  // if (loadingTemplate) {
+  return (
+    <textarea
+      className="textarea textarea-bordered textarea-sm w-full text-black dark:text-white"
+      rows={3}
+      defaultValue={JSON.stringify(paramState)}
+    />
+  );
+  // }
+
   return <EditInEditor />;
 }
 
@@ -731,11 +744,25 @@ function RecipeDocObjectParam({
       paramPath
     ) || {};
 
+  const loadingTemplate = useRecipeSessionStore(
+    (state) => state.loadingTemplate
+  );
   if (
     !paramSchema.properties ||
     Object.keys(paramSchema.properties).length === 0
   ) {
-    return <EditInEditor />;
+    // if (loadingTemplate) {
+    return (
+      <textarea
+        className="textarea textarea-bordered textarea-sm w-full text-black dark:text-white"
+        defaultValue={JSON.stringify(paramState)}
+        rows={3}
+        disabled
+      />
+    );
+    // }
+
+    // return <EditInEditor />;
   }
 
   return (
