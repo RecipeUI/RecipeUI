@@ -65,7 +65,7 @@ export function buildOutput() {
         );
         recipes = JSON.parse(recipeContent.trim());
       } catch (e) {
-        console.log("No recipes found for API:", filePath);
+        // console.log("No recipes found for API:", filePath);
       }
 
       apiJsonContent.templates = recipes;

@@ -159,7 +159,24 @@ program
       return;
     }
 
-    let projectName = collectionInfo.project.title;
+    // Ask user about project name
+    const projectNameRes = await prompts({
+      type: "text",
+      name: "projectName",
+      initial: collectionInfo.project.title,
+      message:
+        "What would you like to name the project? (no spaces in name, prefer title case)",
+      validate: (value) => {
+        if (value.includes(" ")) {
+          return "Project name cannot contain spaces.";
+        }
+
+        return true;
+      },
+    });
+
+    let projectName = projectNameRes.projectName;
+    collectionInfo.project.project = projectName;
 
     // Check to see if collection folder already exists
     const folderPath = path.join(
@@ -169,25 +186,6 @@ program
     let collectionExists = fs.existsSync(`${folderPath}/collection.json`);
 
     if (!collectionExists) {
-      // Ask user about project name
-      const projectNameRes = await prompts({
-        type: "text",
-        name: "projectName",
-        initial: collectionInfo.project.title,
-        message:
-          "What would you like to name the project? (no spaces in name, prefer title case)",
-        validate: (value) => {
-          if (value.includes(" ")) {
-            return "Project name cannot contain spaces.";
-          }
-
-          return true;
-        },
-      });
-
-      projectName = projectNameRes.projectName;
-      collectionInfo.project.project = projectName;
-
       try {
         mkdirp.sync(folderPath);
 
