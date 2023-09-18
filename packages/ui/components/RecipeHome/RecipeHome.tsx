@@ -58,6 +58,7 @@ export function RecipeHome({ projects }: { projects: RecipeProject[] }) {
           id="personal"
           header="Personal Collections"
           description={<p>{`${user.username}'s personal collections.`}</p>}
+          preferId
           projects={projects}
         />
       )}
@@ -110,11 +111,13 @@ function MarketplaceSection({
   header,
   description,
   projects,
+  preferId = false,
   id,
 }: {
   header: string;
   description?: string | ReactNode;
   projects: RecipeProject[];
+  preferId?: boolean;
   id?: string;
 }) {
   return (
@@ -128,16 +131,16 @@ function MarketplaceSection({
         )
       ) : null}
       <div className="projects-home-container">
-        {projects.map((recipe) => {
+        {projects.map((project) => {
           return (
             <RecipeHomeBox
-              key={recipe.title}
-              project={recipe.project}
-              title={recipe.title}
-              subheader={recipe.subheader}
-              description={recipe.description}
-              status={recipe.status}
-              image={recipe.image}
+              key={project.title}
+              project={preferId ? project.id : project.project}
+              title={project.title}
+              subheader={project.subheader}
+              description={project.description}
+              status={project.status}
+              image={project.image}
             />
           );
         })}

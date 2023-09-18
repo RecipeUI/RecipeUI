@@ -120,21 +120,31 @@ program
   .description("Contribute APIs from a collection to RecipeUI")
   .option("--core", "add to core lib")
   .action(async (options: { core?: boolean }) => {
-    console.log("here", options);
-
     const collectionIdPrompt = await prompts({
       type: "text",
       name: "collectionId",
-      message: "Enter the collection id from your collection share URL.",
+      message: "Enter the collection id or url from your collection.",
       validate: (value) => {
-        if (!isUUID(value)) {
+        let idValue = value;
+
+        if (typeof value === "string") {
+          if (value.startsWith("https://recipeui.com/")) {
+            idValue = value.split("https://recipeui.com/").pop();
+          }
+        }
+
+        if (!isUUID(idValue)) {
           return "Invalid collection id. Must be a uuid like b8b3109d-38b0-4ea6-81a7-059cf64e3550";
         }
 
         return true;
       },
     });
-    const collection_id = collectionIdPrompt.collectionId;
+    const collection_id = collectionIdPrompt.collectionId.startsWith(
+      "https://recipeui.com/"
+    )
+      ? collectionIdPrompt.collectionId.split("https://recipeui.com/").pop()
+      : collectionIdPrompt.collectionId;
 
     let collectionInfo: {
       project: RecipeProject | null;
@@ -234,6 +244,10 @@ program
     }
 
     buildOutput();
+
+    console.log(
+      "Done! Run RecipeUI locally to test and see your changes before submitting a PR."
+    );
   });
 
 program.parse(process.argv);

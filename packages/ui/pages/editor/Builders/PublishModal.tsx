@@ -188,7 +188,7 @@ export function PublishFolderModal({
             <p>
               {`Select which APIs you'd like to be published. To edit the title and description of an API, edit them in the docs tab of the actual request.`}
             </p>
-            <div className="grid grid-cols-2 gap-x-4">
+            <div className="grid grid-cols-2 gap-4">
               {recipes.map((recipe, i) => {
                 return (
                   <button

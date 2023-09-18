@@ -3,7 +3,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { LATEST_APP_VERSION } from "../../utils/constants/main";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { isSemverLessThan } from "../../utils/main";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const VERSION_LOGS: {
   version: string;

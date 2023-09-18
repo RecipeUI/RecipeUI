@@ -5,13 +5,22 @@ You'll need the following things installed before doing anything
 - [rust](https://www.rust-lang.org/tools/install)
 - [node](https://nodejs.org/en/download)
 
-## Spinning up dev
-Make sure you are inside of `/apps/desktop`
+## Setup Repo
+
+Clone with
 
 ```
-cd /apps/desktop
+git clone https://github.com/RecipeUI/RecipeUI.git
+``` 
+
+At the root folder, make sure to run pnpm install. We need pnpm (not npm or yarn) for our monorepo structure.
+```
 pnpm i
 ```
+
+## Spinning up dev
+Make sure you are inside of `/apps/desktop` now.
+
 
 Run the command below to spin up the desktop app. The first time takes the longest, but then it's lightning quick after.
 ```
