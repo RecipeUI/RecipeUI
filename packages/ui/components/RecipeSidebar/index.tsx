@@ -122,7 +122,10 @@ export function RecipeSidebar() {
     async function refreshSidebar() {
       const sessions = await getSessionsFromStore();
       setSessions(sessions || []);
+    }
 
+    eventEmitter.on("refreshSidebar", refreshSidebar);
+    refreshSidebar().then(() => {
       if (!loaded) {
         if (collectionFork) {
           initializeCollection();
@@ -131,10 +134,7 @@ export function RecipeSidebar() {
         }
         setLoaded(true);
       }
-    }
-
-    eventEmitter.on("refreshSidebar", refreshSidebar);
-    refreshSidebar();
+    });
     return () => {
       eventEmitter.off("refreshSidebar", refreshSidebar);
     };
