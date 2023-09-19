@@ -43,7 +43,7 @@ export interface APISessionConfig {
   editorQuerySchemaType: string | null;
   editorQuerySchemaJSON: JSONSchema6 | null;
 
-  editorAuthConfig: AuthConfig[] | null;
+  editorAuthConfig: AuthConfig | null;
   editorHeader: {
     title: string;
     description: string;
@@ -296,16 +296,17 @@ export async function getConfigForSessionStore({
     | undefined = await store.get(String(recipeId));
 
   if (config?.editorAuth) {
-    config.editorAuthConfig = [
-      {
-        type: config.editorAuth.type,
-        payload: {
-          name: config.editorAuth.meta || "",
-          prefix: config.editorAuth.prefix,
-          description: config.editorAuth.docs,
-        },
+    config.editorAuthConfig = {
+      type: config.editorAuth.type as Exclude<
+        RecipeAuthType,
+        RecipeAuthType.Multiple
+      >,
+      payload: {
+        name: config.editorAuth.meta || "",
+        prefix: config.editorAuth.prefix,
+        description: config.editorAuth.docs,
       },
-    ];
+    };
   }
 
   return config;

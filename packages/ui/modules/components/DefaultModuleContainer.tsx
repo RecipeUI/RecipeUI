@@ -8,6 +8,7 @@ import { ComponentModuleContainer } from "../components/ComponentModuleContainer
 import { ModuleSettings } from "../authConfigs";
 import { DiscordLink } from "../../components/CommonLinks";
 import { FormFieldWrapper } from "./FormFieldWrapper";
+import { SingleAuthConfig, isSingleAuthConfig } from "types/database";
 
 export function DefaultModuleContainer({
   module,
@@ -29,13 +30,12 @@ export function DefaultModuleContainer({
     <ComponentModuleContainer module={ModuleSetting}>
       {ModuleSetting.authConfigs && (
         <>
-          {ModuleSetting.authConfigs.length === 1 && (
+          {isSingleAuthConfig(ModuleSetting.authConfigs) ? (
             <AuthModule
-              authConfig={ModuleSetting.authConfigs[0]}
+              authConfig={ModuleSetting.authConfigs}
               module={ModuleSetting.module}
             />
-          )}
-          {ModuleSetting.authConfigs.length > 1 && (
+          ) : (
             <div>Multiple config not supported yet</div>
           )}
         </>
@@ -48,7 +48,7 @@ function AuthModule({
   authConfig,
   module,
 }: {
-  authConfig: NonNullable<ModuleSetting["authConfigs"]>[number];
+  authConfig: SingleAuthConfig;
   module: CollectionModule;
 }) {
   const SINGLE_API_KEY = SecretAPI.getSecretKeyFromConfig(authConfig, module);

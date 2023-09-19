@@ -18,7 +18,7 @@ export default function NASAModule() {
 }
 
 const SINGLE_API_KEY = SecretAPI.getSecretKeyFromConfig(
-  ModuleSettings.authConfigs[0],
+  ModuleSettings.authConfigs,
   ModuleSettings.module
 );
 

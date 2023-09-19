@@ -7,17 +7,15 @@ export default {
   description: "The Internet's Source for Visuals.",
   image:
     "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/unsplash.png",
-  authConfigs: [
-    {
-      type: RecipeAuthType.Header,
-      payload: {
-        name: "Authorization",
-        prefix: "Client-ID",
-        description:
-          "You can get your access key by reading our [docs](https://docs.recipeui.com/docs/Auth/Unsplash) or visiting your [apps](https://unsplash.com/oauth/applications) in Unsplash.",
-      },
-    } as const,
-  ],
+  authConfigs: {
+    type: RecipeAuthType.Header,
+    payload: {
+      name: "Authorization",
+      prefix: "Client-ID",
+      description:
+        "You can get your access key by reading our [docs](https://docs.recipeui.com/docs/Auth/Unsplash) or visiting your [apps](https://unsplash.com/oauth/applications) in Unsplash.",
+    },
+  } as const,
   resources: {
     title: "Resources",
     docs: [

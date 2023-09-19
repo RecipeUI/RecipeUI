@@ -41,7 +41,7 @@ export interface ModuleSetting {
   title: string;
   description: string;
   image?: string;
-  authConfigs?: AuthConfig[] | null;
+  authConfigs?: AuthConfig | null;
   resources?: ResourceSection;
   components?: CollectionComponentModule[];
   urls: string[];

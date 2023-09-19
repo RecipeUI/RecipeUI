@@ -7,14 +7,12 @@ export default {
   description:
     "Use NASA's API to get the latest imagery and insights about Earth, Mars, and more about the Solar System.",
   image: "https://api.nasa.gov/assets/img/favicons/favicon-192.png",
-  authConfigs: [
-    {
-      type: RecipeAuthType.Query,
-      payload: {
-        name: "api_key",
-      },
-    } as const,
-  ],
+  authConfigs: {
+    type: RecipeAuthType.Query,
+    payload: {
+      name: "api_key",
+    },
+  } as const,
   resources: {
     title: "Resources",
     docs: [

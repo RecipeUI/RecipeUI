@@ -24,7 +24,7 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
       editorAuthConfig:
         selectedRecipe.authConfig ||
         // TODO: For backwards compatibility
-        (selectedRecipe.options as any)?.auth ||
+        (selectedRecipe.options as any)?.auth?.[0] ||
         null,
 
       editorUrl: selectedRecipe.path,

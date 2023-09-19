@@ -237,8 +237,8 @@ export interface RecipeEditorSlice {
     >
   ) => void;
 
-  editorAuthConfig: AuthConfig[] | null;
-  setEditorAuthConfig: (editorAuthConfig: AuthConfig[] | null) => void;
+  editorAuthConfig: AuthConfig | null;
+  setEditorAuthConfig: (editorAuthConfig: AuthConfig | null) => void;
 
   saveEditorSession: () => Promise<void>;
 }

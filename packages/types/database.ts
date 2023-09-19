@@ -35,7 +35,7 @@ export type Database = MergeDeep<
             queryParams: Nullable<JSONSchema6>;
             urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
-            authConfig: Nullable<AuthConfig[]>;
+            authConfig: Nullable<AuthConfig>;
           };
           Insert: {
             templates: Nullable<RecipeTemplate[]>;
@@ -45,7 +45,7 @@ export type Database = MergeDeep<
             queryParams: Nullable<JSONSchema6>;
             urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
-            authConfig: Nullable<AuthConfig[]>;
+            authConfig: Nullable<AuthConfig>;
           };
         };
         template: {
@@ -110,9 +110,9 @@ export type RecipeTemplateFragment = Omit<
   "alias" | "author_id" | "project" | "visibility"
 >;
 
-export type AuthConfig =
+export type SingleAuthConfig =
   | {
-      type: RecipeAuthType;
+      type: Exclude<RecipeAuthType, RecipeAuthType.Multiple>;
       payload: {
         name: string;
         prefix?: string;
@@ -123,6 +123,19 @@ export type AuthConfig =
       type: RecipeAuthType.Bearer;
       payload?: never;
     };
+
+export type AuthConfig =
+  | SingleAuthConfig
+  | {
+      type: RecipeAuthType.Multiple;
+      payload: SingleAuthConfig[];
+    };
+
+export function isSingleAuthConfig(
+  authConfig: AuthConfig
+): authConfig is SingleAuthConfig {
+  return authConfig.type !== RecipeAuthType.Multiple;
+}
 
 export type RecipeOptions = {
   deprecated?: boolean;

@@ -31,6 +31,7 @@ export enum RecipeAuthType {
   ClientID = "clientId",
   Token = "token",
   Custom = "custom",
+  Multiple = "Multiple",
   Query = "query",
   OAuth = "oauth",
   Setup = "setup",

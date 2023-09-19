@@ -10,7 +10,7 @@ import {
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { AuthConfig, RecipeOptions, RecipeOutputType } from "types/database";
+import { AuthConfig, RecipeOutputType, SingleAuthConfig } from "types/database";
 import {
   ContentType,
   RecipeAuthType,
@@ -196,7 +196,15 @@ export function RecipeSearchButton() {
         return false;
       }
 
-      const authConfigs = ModuleSettings[editorProject]?.authConfigs || [];
+      let authConfigs: SingleAuthConfig[] = [];
+      const initialConfig = ModuleSettings[editorProject]?.authConfigs;
+      if (initialConfig) {
+        if (initialConfig.type === RecipeAuthType.Multiple) {
+          authConfigs = initialConfig.payload;
+        } else {
+          authConfigs = [initialConfig];
+        }
+      }
 
       for (const config of authConfigs) {
         const secretKey = SecretAPI.getSecretKeyFromConfig(
@@ -224,34 +232,44 @@ export function RecipeSearchButton() {
         }
       }
     }
+
     if (!isCollectionModule(editorProject || "") && recipe.authConfig) {
-      for (let i = 0; i < recipe.authConfig.length; i++) {
-        const config: AuthConfig = recipe.authConfig[i];
-
-        const primaryToken = await SecretAPI.getSecret({
-          secretId:
-            recipe.authConfig.length === 1
-              ? currentSession.recipeId
-              : `${currentSession.recipeId}-${i}`,
-        });
-
-        if (!primaryToken) {
-          alert("Please setup authentication first.");
-          return false;
+      let authConfigs: SingleAuthConfig[] = [];
+      if (recipe.authConfig) {
+        if (recipe.authConfig.type === RecipeAuthType.Multiple) {
+          authConfigs = recipe.authConfig.payload;
+        } else {
+          authConfigs = [recipe.authConfig];
         }
 
-        if (config.type === RecipeAuthType.Bearer) {
-          fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
-        }
+        for (let i = 0; i < authConfigs.length; i++) {
+          const config: AuthConfig = authConfigs[i];
 
-        if (config.type === RecipeAuthType.Header) {
-          const headerName = config.payload.name;
-          fetchHeaders[headerName] = primaryToken;
-        }
+          const primaryToken = await SecretAPI.getSecret({
+            secretId:
+              authConfigs.length === 1
+                ? currentSession.recipeId
+                : `${currentSession.recipeId}-${i}`,
+          });
 
-        if (config.type === RecipeAuthType.Query) {
-          let QUERY_KEY_NAME = config.payload.name;
-          url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+          if (!primaryToken) {
+            alert("Please setup authentication first.");
+            return false;
+          }
+
+          if (config.type === RecipeAuthType.Bearer) {
+            fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
+          }
+
+          if (config.type === RecipeAuthType.Header) {
+            const headerName = config.payload.name;
+            fetchHeaders[headerName] = primaryToken;
+          }
+
+          if (config.type === RecipeAuthType.Query) {
+            let QUERY_KEY_NAME = config.payload.name;
+            url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+          }
         }
       }
     }
@@ -652,7 +670,6 @@ export function RecipeSearchButton() {
     }
     return true;
   };
-
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

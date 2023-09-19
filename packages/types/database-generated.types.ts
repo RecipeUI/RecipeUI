@@ -183,7 +183,7 @@ export interface Database {
       recipe: {
         Row: {
           auth: string | null
-          authConfig: Json[] | null
+          authConfig: Json | null
           author_id: string | null
           created_at: string | null
           id: string
@@ -207,7 +207,7 @@ export interface Database {
         }
         Insert: {
           auth?: string | null
-          authConfig?: Json[] | null
+          authConfig?: Json | null
           author_id?: string | null
           created_at?: string | null
           id?: string
@@ -231,7 +231,7 @@ export interface Database {
         }
         Update: {
           auth?: string | null
-          authConfig?: Json[] | null
+          authConfig?: Json | null
           author_id?: string | null
           created_at?: string | null
           id?: string
@@ -659,6 +659,7 @@ export interface Database {
       recipe_view: {
         Row: {
           auth: string | null
+          authConfig: Json | null
           author_id: string | null
           created_at: string | null
           id: string | null
@@ -668,14 +669,17 @@ export interface Database {
           project: string | null
           project_scope: Database["public"]["Enums"]["projectscope"] | null
           queryParams: Json | null
+          queryParamsType: string | null
           rank: number | null
           requestBody: Json | null
+          requestBodyType: string | null
           summary: string | null
           tags: string[] | null
           tags_count: number | null
           templates: Json[] | null
           title: string | null
           urlParams: Json | null
+          urlParamsType: string | null
           version: number | null
           visibility: Database["public"]["Enums"]["visibility"] | null
         }
@@ -836,7 +840,7 @@ export interface Database {
         }
         Returns: {
           auth: string | null
-          authConfig: Json[] | null
+          authConfig: Json | null
           author_id: string | null
           created_at: string | null
           id: string
@@ -865,7 +869,7 @@ export interface Database {
         }
         Returns: {
           auth: string | null
-          authConfig: Json[] | null
+          authConfig: Json | null
           author_id: string | null
           created_at: string | null
           id: string

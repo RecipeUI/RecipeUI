@@ -5,7 +5,7 @@ import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
 import { SecretAPI } from "../../state/apiSession/SecretAPI";
-import { AuthConfig } from "types/database";
+import { SingleAuthConfig, isSingleAuthConfig } from "types/database";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -16,7 +16,9 @@ export function EditorAuth() {
   );
 
   const singleConfig =
-    editorAuthConfig?.length === 1 ? editorAuthConfig[0] : null;
+    editorAuthConfig && isSingleAuthConfig(editorAuthConfig)
+      ? editorAuthConfig
+      : null;
 
   return (
     <div className="flex-1 ">
@@ -35,11 +37,9 @@ export function EditorAuth() {
           description='Very common for APIs. Uses Bearer prefix in "Authorization" header.'
           selected={singleConfig?.type === RecipeAuthType.Bearer}
           onClick={() => {
-            setEditorAuthConfig([
-              {
-                type: RecipeAuthType.Bearer,
-              },
-            ]);
+            setEditorAuthConfig({
+              type: RecipeAuthType.Bearer,
+            });
           }}
         />
         <AuthButton
@@ -47,14 +47,12 @@ export function EditorAuth() {
           description="An API key in a query parameter."
           selected={singleConfig?.type === RecipeAuthType.Query}
           onClick={() => {
-            setEditorAuthConfig([
-              {
-                type: RecipeAuthType.Query,
-                payload: {
-                  name: "api_key",
-                },
+            setEditorAuthConfig({
+              type: RecipeAuthType.Query,
+              payload: {
+                name: "api_key",
               },
-            ]);
+            });
           }}
         />
         <AuthButton
@@ -62,14 +60,12 @@ export function EditorAuth() {
           description="An API key in a header."
           selected={singleConfig?.type === RecipeAuthType.Header}
           onClick={() => {
-            setEditorAuthConfig([
-              {
-                type: RecipeAuthType.Header,
-                payload: {
-                  name: "Authorization",
-                },
+            setEditorAuthConfig({
+              type: RecipeAuthType.Header,
+              payload: {
+                name: "Authorization",
               },
-            ]);
+            });
           }}
         />
         <AuthButton
@@ -87,7 +83,7 @@ export function EditorAuth() {
 function SingleAuthConfig({
   editorAuthConfig,
 }: {
-  editorAuthConfig: AuthConfig;
+  editorAuthConfig: SingleAuthConfig;
 }) {
   const currentSession = useRecipeSessionStore(
     (state) => state.currentSession
@@ -97,7 +93,7 @@ function SingleAuthConfig({
     (state) => state.setEditorAuthConfig
   );
 
-  const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
+  const [authConfig, setAuthConfig] = useState<SingleAuthConfig | null>(null);
   useEffect(() => {
     setAuthConfig(editorAuthConfig);
   }, [editorAuthConfig]);
@@ -193,7 +189,7 @@ function SingleAuthConfig({
               secretValue: secret,
             });
 
-            setEditorAuthConfig([editorAuthConfig]);
+            setEditorAuthConfig(editorAuthConfig);
             setHasChanged(false);
           }}
         >

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { eventEmitter, getSecretStore } from ".";
-import { AuthConfig } from "types/database";
+import { AuthConfig, SingleAuthConfig } from "types/database";
 import { CollectionModule, isCollectionModule } from "../../modules";
 import { ModuleSettings } from "../../modules/authConfigs";
+import { RecipeAuthType } from "types/enums";
 
 export class SecretAPI {
   static getSecret = async ({
@@ -37,9 +38,18 @@ export class SecretAPI {
   }: {
     collection: CollectionModule;
   }) => {
-    let authConfigs = ModuleSettings[collection]?.authConfigs;
+    let authConfigs: SingleAuthConfig[] = [];
+    let initialConfig = ModuleSettings[collection]?.authConfigs;
 
-    if (!authConfigs) {
+    if (initialConfig) {
+      if (initialConfig.type === RecipeAuthType.Multiple) {
+        authConfigs = initialConfig.payload;
+      } else {
+        authConfigs = [initialConfig];
+      }
+    }
+
+    if (authConfigs.length === 0) {
       alert("No auth configs found for collection: " + collection);
       return {};
     }
@@ -60,7 +70,7 @@ export class SecretAPI {
     return { secretRecord, hasAuthSetup };
   };
 
-  static getSecretKeyFromConfig(authConfig: AuthConfig, prefix: string) {
+  static getSecretKeyFromConfig(authConfig: SingleAuthConfig, prefix: string) {
     return `${prefix}::${authConfig.type}::${authConfig.payload?.name}`;
   }
 }
