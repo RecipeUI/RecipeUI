@@ -37,25 +37,26 @@ export function EditSessionModal({
     }
   }, [folders]);
 
+  const handleUpdateSessionName = async (e: React.KeyboardEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    updateSessionName(session, name);
+
+    if (currentFolder?.id !== selectedFolder) {
+      if (folders.length > 0) {
+        await FolderAPI.deleteSessionFromFolder(session.id);
+
+        if (selectedFolder !== "NO_FOLDER_ID") {
+          await FolderAPI.addSessionToFolder(session.id, selectedFolder);
+        }
+      }
+    }
+
+    onClose();
+  };
+
   return (
     <Modal header="Edit Session" onClose={onClose}>
-      <form
-        onSubmit={async () => {
-          updateSessionName(session, name);
-
-          if (currentFolder?.id !== selectedFolder) {
-            if (folders.length > 0) {
-              await FolderAPI.deleteSessionFromFolder(session.id);
-
-              if (selectedFolder !== "NO_FOLDER_ID") {
-                await FolderAPI.addSessionToFolder(session.id, selectedFolder);
-              }
-            }
-          }
-
-          onClose();
-        }}
-      >
+      <form onSubmit={(e)=> handleUpdateSessionName(e)}>
         <div className="mt-2 form-control">
           <label>Session Name</label>
           <input
@@ -63,6 +64,11 @@ export function EditSessionModal({
             className="input input-bordered input-sm"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleUpdateSessionName(e);
+              }
+            }}
           />
         </div>
 
