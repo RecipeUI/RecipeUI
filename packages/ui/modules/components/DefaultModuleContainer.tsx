@@ -8,7 +8,8 @@ import { ComponentModuleContainer } from "../components/ComponentModuleContainer
 import { ModuleSettings } from "../authConfigs";
 import { DiscordLink } from "../../components/CommonLinks";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { SingleAuthConfig, isSingleAuthConfig } from "types/database";
+import { SingleAuthConfig } from "types/database";
+import { RecipeAuthType } from "types/enums";
 
 export function DefaultModuleContainer({
   module,
@@ -30,7 +31,7 @@ export function DefaultModuleContainer({
     <ComponentModuleContainer module={ModuleSetting}>
       {ModuleSetting.authConfigs && (
         <>
-          {isSingleAuthConfig(ModuleSetting.authConfigs) ? (
+          {ModuleSetting.authConfigs.type !== RecipeAuthType.Multiple ? (
             <AuthModule
               authConfig={ModuleSetting.authConfigs}
               module={ModuleSetting.module}

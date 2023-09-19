@@ -97,7 +97,6 @@ export function PublishFolderModal({
       loadRecipes();
     }
   }, [cloudCollection]);
-  console.log("here", cloudAPIs);
 
   const [error, setError] = useState<string | null>(null);
 

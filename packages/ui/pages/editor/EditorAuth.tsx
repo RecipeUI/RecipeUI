@@ -5,7 +5,7 @@ import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
 import { SecretAPI } from "../../state/apiSession/SecretAPI";
-import { SingleAuthConfig, isSingleAuthConfig } from "types/database";
+import { SingleAuthConfig } from "types/database";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -16,7 +16,7 @@ export function EditorAuth() {
   );
 
   const singleConfig =
-    editorAuthConfig && isSingleAuthConfig(editorAuthConfig)
+    editorAuthConfig && editorAuthConfig.type !== RecipeAuthType.Multiple
       ? editorAuthConfig
       : null;
 

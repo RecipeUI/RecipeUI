@@ -131,12 +131,6 @@ export type AuthConfig =
       payload: SingleAuthConfig[];
     };
 
-export function isSingleAuthConfig(
-  authConfig: AuthConfig
-): authConfig is SingleAuthConfig {
-  return authConfig.type !== RecipeAuthType.Multiple;
-}
-
 export type RecipeOptions = {
   deprecated?: boolean;
   streaming?: boolean;
