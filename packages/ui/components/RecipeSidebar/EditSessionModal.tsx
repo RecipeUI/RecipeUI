@@ -40,10 +40,15 @@ export function EditSessionModal({
   return (
     <Modal header="Edit Session" onClose={onClose}>
       <form
-        onSubmit={async () => {
-          updateSessionName(session, name);
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (name) {
+            updateSessionName(session, name);
+          }
 
-          if (currentFolder?.id !== selectedFolder) {
+          if (!currentFolder) {
+            await FolderAPI.addSessionToFolder(session.id, selectedFolder);
+          } else if (currentFolder.id !== selectedFolder) {
             if (folders.length > 0) {
               await FolderAPI.deleteSessionFromFolder(session.id);
 
