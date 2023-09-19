@@ -41,4 +41,4 @@ export const RECIPE_UI_BASE_URL = "https://recipeui.com";
 export const APP_GITHUB_LATEST_RELEASE_URL =
   "https://github.com/RecipeUI/RecipeUI/releases/latest/download/latest.json";
 
-export const LATEST_APP_VERSION = "0.8.3";
+export const LATEST_APP_VERSION = "0.8.4";

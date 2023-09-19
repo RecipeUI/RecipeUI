@@ -12,7 +12,7 @@ const VERSION_LOGS: {
   ignore?: boolean;
 }[] = [
   {
-    version: "0.8.3",
+    version: "0.8.4",
     update: "Bug fixes and multiple UX improvements.",
     update_type: "bug",
   },
