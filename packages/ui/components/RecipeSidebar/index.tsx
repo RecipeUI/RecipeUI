@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover, useSessionStorage } from "usehooks-ts";
 import {
+  CloudArrowUpIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
   PencilSquareIcon,
@@ -20,6 +21,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
+  eventEmitter,
   getConfigForSessionStore,
   getParametersForSessionStore,
   getSessionRecord,
@@ -45,6 +47,7 @@ import { useClipboard, useIsTauri } from "../../hooks/useIsTauri";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { fetchProjectById, fetchProjectPage } from "../../fetchers/project";
 import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
+import { useRecipeCloud } from "../../state/apiSession/CloudAPI";
 
 interface FolderToSessions {
   [folderId: string]: {
@@ -116,17 +119,26 @@ export function RecipeSidebar() {
       }
     }
 
-    getSessionsFromStore().then(async (sessions) => {
+    async function refreshSidebar() {
+      const sessions = await getSessionsFromStore();
       setSessions(sessions || []);
-      setLoaded(true);
 
-      if (collectionFork) {
-        initializeCollection();
-      } else {
-        initializeAPIs();
+      if (!loaded) {
+        if (collectionFork) {
+          initializeCollection();
+        } else {
+          initializeAPIs();
+        }
+        setLoaded(true);
       }
-    });
-  }, [setSessions]);
+    }
+
+    eventEmitter.on("refreshSidebar", refreshSidebar);
+    refreshSidebar();
+    return () => {
+      eventEmitter.off("refreshSidebar", refreshSidebar);
+    };
+  }, []);
 
   const [addFolderModal, setAddFolderModal] = useState(false);
   const [editFolder, setEditFolder] = useState<RecipeSessionFolder | null>(
@@ -171,6 +183,8 @@ export function RecipeSidebar() {
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
+
+  const recipeCloud = useRecipeCloud();
 
   if (sessions.length === 0) {
     return null;
@@ -243,11 +257,18 @@ export function RecipeSidebar() {
           {Object.keys(folderSessions).map((folderId) => {
             const { folder, sessions } = folderSessions[folderId];
 
+            const cloudCollection = recipeCloud.collectionRecord[folder.id];
+
             return (
-              <li key={folderId}>
-                <details className="relative group" open>
+              <li key={folderId} className="w-full">
+                <details className="relative group w-full" open>
                   <summary className="text-xs font-bold p-0 px-2 py-2 pr-4  w-full">
-                    {folder.name}
+                    <span className={classNames("flex items-center")}>
+                      {cloudCollection && (
+                        <CloudArrowUpIcon className="w-4 h-4 mr-2 mb-0.5 text-accent" />
+                      )}
+                      {folder.name}
+                    </span>
                     <div className="flex space-x-2">
                       <a
                         className="hidden group-hover:block hover:animate-spin w-fit"
@@ -296,6 +317,7 @@ export function RecipeSidebar() {
                         <SessionTab
                           key={session.id}
                           session={session}
+                          cloudSession={recipeCloud.apiRecord[session.id]}
                           isCurrentSession={isCurrentSession}
                           folderId={folderId}
                         />
@@ -319,7 +341,7 @@ export function RecipeSidebar() {
                 : "Sessions"}
             </h3>
           </div>
-          <ul className="menu py-0">
+          <ul className="menu py-0 w-full">
             {noFolderSessions.map((session) => {
               const isCurrentSession = currentSession?.id === session.id;
 
@@ -468,6 +490,8 @@ function EditFolderModal({
       folderName: folder.name,
     },
   });
+  const recipeCloud = useRecipeCloud();
+  const cloudCollection = recipeCloud.collectionRecord[folder.id];
 
   const [deleteAll, setDeleteAll] = useState(true);
 
@@ -476,6 +500,8 @@ function EditFolderModal({
 
     onClose();
   });
+
+  const supabase = useSupabaseClient();
 
   return (
     <Modal header="Edit Folder" onClose={onClose} size="sm">
@@ -499,23 +525,33 @@ function EditFolderModal({
       <div className="recipe-slate">
         <div className="mt-4">
           <div className="space-y-1">
-            <p>Delete folder</p>
-            <div className="flex items-center space-x-2 text-sm">
-              <input
-                className="checkbox checkbox-sm"
-                type="checkbox"
-                checked={deleteAll}
-                onChange={(e) => setDeleteAll(e.target.checked)}
-              />
-              <label>Delete all sessions inside the folder.</label>
-            </div>
+            {cloudCollection ? (
+              <>
+                <p>Delete collection</p>
+              </>
+            ) : (
+              <>
+                <p>Delete folder</p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <input
+                    className="checkbox checkbox-sm"
+                    type="checkbox"
+                    checked={deleteAll}
+                    onChange={(e) => setDeleteAll(e.target.checked)}
+                  />
+                  <label>Delete all sessions inside the folder.</label>
+                </div>
+              </>
+            )}
           </div>
 
           <button
             className="btn btn-error w-fit btn-sm mt-4"
             onClick={async () => {
               const confirm = await window.confirm(
-                "Are you sure you want to delete this folder?"
+                cloudCollection
+                  ? "Are you sure you want to delete this collection"
+                  : "Are you sure you want to delete this folder?"
               );
 
               if (confirm) {
@@ -526,6 +562,21 @@ function EditFolderModal({
                   closeSessions(sessionIds);
                 }
 
+                if (cloudCollection) {
+                  await supabase
+                    .from("recipe")
+                    .delete()
+                    .match({ project: cloudCollection.project });
+                  await supabase
+                    .from("project_member")
+                    .delete()
+                    .match({ project: cloudCollection.project });
+                  await supabase
+                    .from("project")
+                    .delete()
+                    .match({ id: cloudCollection.id });
+                }
+
                 onClose();
               }
             }}
@@ -534,53 +585,7 @@ function EditFolderModal({
           </button>
         </div>
       </div>
-      {/* {folder.sessionIds.length > 0 && (
-        <>
-          <div className="divider" />
-          <div className="mt-4">
-            <h2 className="text-xl font-bold">Export (Experimental)</h2>
-            <p className="text-sm">
-              It'd be awesome if you contribute this to our community
-              collections!
-            </p>
-            <RecipeDownloadButton folder={folder} />
-          </div>
-        </>
-      )} */}
     </Modal>
-  );
-}
-
-function RecipeDownloadButton({ folder }: { folder: RecipeSessionFolder }) {
-  const user = useRecipeSessionStore((state) => state.user);
-
-  const clipboard = useClipboard();
-
-  const onSubmit = async () => {
-    let recipes: Recipe[] = [];
-    const sessionRecord = await getSessionRecord();
-
-    for (const sessionId of folder.sessionIds) {
-      const session = sessionRecord[sessionId];
-      if (!session) continue;
-
-      const recipe = await CoreRecipeAPI.getCoreRecipe({
-        recipeId: session.recipeId,
-        userId: user?.user_id || "",
-      });
-      recipes.push(recipe as Recipe);
-    }
-
-    const recipeString = JSON.stringify(recipes);
-
-    await clipboard.writeText(recipeString);
-    alert("Copied APIs to clipboard");
-  };
-
-  return (
-    <button className="btn btn-sm mt-2" onClick={onSubmit}>
-      Export APIs
-    </button>
   );
 }
 
@@ -588,10 +593,12 @@ function SessionTab({
   isCurrentSession,
   session,
   folderId,
+  cloudSession,
 }: {
   isCurrentSession: boolean;
   session: RecipeSession;
   folderId?: string;
+  cloudSession?: Recipe;
 }) {
   const hoverRef = useRef(null);
   const isHover = useHover(hoverRef);
@@ -620,8 +627,10 @@ function SessionTab({
   }>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  const supabase = useSupabaseClient();
+
   return (
-    <li className="relative cursor-pointer">
+    <li className={classNames("relative cursor-pointer")}>
       <div
         ref={hoverRef}
         key={session.id}
@@ -651,10 +660,22 @@ function SessionTab({
           });
         }}
       >
-        <div className="text-start whitespace-pre-wrap">
+        <div className="text-start whitespace-pre-wrap relative">
+          {cloudSession && (
+            <span>
+              {" "}
+              <CloudArrowUpIcon
+                className={classNames(
+                  "inline h-[15px] mb-1 mr-2",
+                  isCurrentSession ? "text-primary" : "text-accent"
+                )}
+              />
+            </span>
+          )}
           {!isEditing && (
             <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
           )}
+
           {isEditing ? (
             <input
               className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4 inline"
@@ -673,6 +694,7 @@ function SessionTab({
             <h4 className="ml-2 inline">{session.name || "New Session"}</h4>
           )}
         </div>
+
         {isHover && !isEditing && (
           <div
             className="absolute cursor-pointer w-fit  right-0 top-0 bottom-0 bg-accent justify-center text-white flex h-fit rounded-r-md"
@@ -703,28 +725,43 @@ function SessionTab({
                 e.stopPropagation();
 
                 const confirm = await window.confirm(
-                  "Are you sure you want to delete this session?"
+                  cloudSession
+                    ? "Are you sure you want to permanently delete this API from the cloud and collection?"
+                    : "Are you sure you want to delete this session?"
                 );
                 if (!confirm) return;
+
+                if (cloudSession) {
+                  await supabase.from("recipe").delete().match({
+                    id: cloudSession.id,
+                  });
+                }
 
                 const nextSession = closeSession(session);
 
                 setTimeout(async () => {
                   await FolderAPI.deleteSessionFromFolder(session.id);
-                  if (nextSession) {
-                    const parameters = await getParametersForSessionStore({
-                      session: nextSession.id,
-                    });
-                    const config = await getConfigForSessionStore({
-                      recipeId: nextSession.recipeId,
-                    });
+                  eventEmitter.emit("refreshCloud");
 
-                    initializeEditorSession({
-                      currentSession: nextSession,
-                      ...parameters,
-                      ...config,
-                    });
-                  }
+                  setTimeout(() => {
+                    eventEmitter.emit("refreshSidebar");
+                  }, 0);
+
+                  // This a bit bugger so temporarily disable
+                  // if (nextSession) {
+                  //   const parameters = await getParametersForSessionStore({
+                  //     session: nextSession.id,
+                  //   });
+                  //   const config = await getConfigForSessionStore({
+                  //     recipeId: nextSession.recipeId,
+                  //   });
+
+                  //   initializeEditorSession({
+                  //     currentSession: nextSession,
+                  //     ...parameters,
+                  //     ...config,
+                  //   });
+                  // }
                 }, 0);
               }}
             >

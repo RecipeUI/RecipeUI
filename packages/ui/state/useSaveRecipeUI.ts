@@ -10,6 +10,8 @@ import { useSupabaseClient } from "../components/Providers/SupabaseProvider";
 import { shallow } from "zustand/shallow";
 import { useDebounce, useSessionStorage } from "usehooks-ts";
 import { useIsTauri } from "../hooks/useIsTauri";
+import { fetchUserCloud } from "../fetchers/user";
+import { CloudAPI } from "./apiSession/CloudAPI";
 
 export function useSaveRecipeUI() {
   const supabase = useSupabaseClient();
@@ -79,6 +81,10 @@ export function useSaveRecipeUI() {
         setUser(null);
       } else {
         // Is there a way to detect the same user without user_id?
+      }
+
+      if (!session?.user.id) {
+        CloudAPI.resetCloud();
       }
     });
   }, []);

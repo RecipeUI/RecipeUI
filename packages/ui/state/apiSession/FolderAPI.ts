@@ -114,6 +114,19 @@ export class FolderAPI {
     const folders = await store.get("sessionFolders");
     return (folders || []).find((folder) => folder.id === folderId);
   };
+
+  static getAllFolders = async () => {
+    const store = await getFolderStore();
+    const folders = await store.get("sessionFolders");
+    return folders || [];
+  };
+
+  static setFolders = async (folders: RecipeSessionFolder[]) => {
+    const store = await getFolderStore();
+    await store.put(folders, "sessionFolders");
+
+    eventEmitter.emit("refreshFolders");
+  };
 }
 
 export const addFolder = async (folderName: string) => {

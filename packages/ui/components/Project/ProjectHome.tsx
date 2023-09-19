@@ -63,40 +63,34 @@ export function ProjectHome({
             />
           )}
           <div className="hidden absolute top-0 lg:top-6 lg:flex-row right-6 sm:flex flex-col gap-2 ">
-            <button
-              className="tooltip tooltip-left"
-              data-tip="Fork collection"
-              onClick={async () => {
-                const confirmFork = await confirm(
-                  "Are you sure you want to fork this collection?"
-                );
-
-                if (confirmFork) {
-                  setCollectionFork(project.id);
-
-                  if (isTauri) {
-                    setDesktopPage({
-                      page: DesktopPage.Editor,
-                    });
-                  } else {
-                    router.push("/editor");
-                  }
-                }
-              }}
-            >
-              <FolderArrowDownIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
-            </button>
-            {user && user.user_id === project.owner_id && (
-              <>
+            {!user ||
+              (project.owner_id !== user.user_id && (
                 <button
                   className="tooltip tooltip-left"
-                  data-tip="Edit APIs"
-                  onClick={() => {
-                    setEditing(!editing);
+                  data-tip="Fork collection"
+                  onClick={async () => {
+                    const confirmFork = await confirm(
+                      "Are you sure you want to fork this collection?"
+                    );
+
+                    if (confirmFork) {
+                      setCollectionFork(project.id);
+
+                      if (isTauri) {
+                        setDesktopPage({
+                          page: DesktopPage.Editor,
+                        });
+                      } else {
+                        router.push("/editor");
+                      }
+                    }
                   }}
                 >
-                  <AdjustmentsHorizontalIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
+                  <FolderArrowDownIcon className="w-8 h-8 hover:text-accent cursor-pointer" />
                 </button>
+              ))}
+            {user && user.user_id === project.owner_id && (
+              <>
                 <button
                   className="tooltip tooltip-left"
                   data-tip="Edit Collection Details"
@@ -261,7 +255,7 @@ function EditModal({
 
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const [selectedImage, setSelectedImage] = useState<File | null>();
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [imgSrc, setImgSrc] = useState<string | null>(project.image);
 
   const user = useRecipeSessionStore((state) => state.user);
 

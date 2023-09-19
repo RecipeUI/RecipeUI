@@ -7,7 +7,6 @@ import {
   RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
-  UserTemplatePreview,
 } from "types/database";
 import {
   ProjectScope,
@@ -29,6 +28,7 @@ interface APISessionParameters {
   editorBody: string;
   editorQuery: string;
   editorHeaders: RequestHeader[];
+  editorURLCode: string;
 }
 
 interface APISessionConfig {
@@ -52,7 +52,6 @@ interface APISessionConfig {
     description: string;
   };
 
-  editorURLCode: string;
   editorURLSchemaType: string | null;
   editorURLSchemaJSON: JSONSchema6 | null;
   editorProject?: string | null;
@@ -74,8 +73,14 @@ enum APIStore {
   ProjectCollections = "ProjectCollections",
   RecipeUICollections = "RecipeUICollections",
   Onboarding = "Onboarding",
+  Cloud = "Cloud",
 }
 
+export interface CloudStore {
+  collections: RecipeProject[];
+  apis: Recipe[];
+  user_id: string;
+}
 export interface SessionsStore extends DBSchema {
   [APIStore.Parameters]: {
     key: string;
@@ -112,17 +117,20 @@ export interface SessionsStore extends DBSchema {
       recipes: Recipe[];
     };
   };
-
   [APIStore.Onboarding]: {
     key: OnboardingKey;
     value: boolean;
+  };
+  [APIStore.Cloud]: {
+    key: "cloud"; // Should be user_id here
+    value: CloudStore;
   };
 }
 
 const DB_CONFIG = {
   NAME: "RECIPEUI_ALPHA_0.5",
   // TODO: Need a better migration plan this is bad
-  VERSION: 5,
+  VERSION: 6,
 };
 let db: undefined | ReturnType<typeof openDB<SessionsStore>>;
 
@@ -140,6 +148,7 @@ function getDB() {
           APIStore.SessionFolders,
           APIStore.RecipeUICollections,
           APIStore.Onboarding,
+          APIStore.Cloud,
         ].forEach((store) => {
           if (!db.objectStoreNames.contains(store as any)) {
             db.createObjectStore(store as any);
@@ -185,6 +194,10 @@ export async function getRecipeUICollectionStore() {
     .store;
 }
 
+export async function getCloudStore() {
+  return (await getDB()).transaction(APIStore.Cloud, "readwrite").store;
+}
+
 export async function getSessionsFromStore() {
   return (await getDB())
     .transaction(APIStore.Sessions, "readwrite")
@@ -192,9 +205,13 @@ export async function getSessionsFromStore() {
 }
 
 export async function saveSessionToStore(sessions: RecipeSession[]) {
-  return (await getDB())
+  const response = (await getDB())
     .transaction(APIStore.Sessions, "readwrite")
     .store.put(sessions, "sessions");
+
+  eventEmitter.emit("refreshSessions");
+
+  return response;
 }
 
 export async function setParametersForSessionStore({
@@ -216,7 +233,17 @@ export async function deleteSession({
   recipeId: string;
 }) {
   await deleteParametersForSessionStore({ session: sessionId });
-  await deleteConfigForSessionStore({ recipeId: recipeId });
+
+  // Be careful here. Do not delete config if there exist other sessions with this recipeId
+  const sessions = (await getSessionsFromStore()) || [];
+  const sessionsWithRecipeId = sessions.filter(
+    (session) => session.recipeId === recipeId
+  );
+
+  if (sessionsWithRecipeId.length === 0) {
+    await deleteConfigForSessionStore({ recipeId: recipeId });
+  }
+
   await OutputAPI.clearOutput(sessionId);
 }
 
@@ -396,4 +423,28 @@ export async function getSessionRecord() {
   }
 
   return sessionRecord;
+}
+
+export function useSessions() {
+  const [sessions, setSessions] = useState<RecipeSession[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    async function refreshSessions() {
+      const sessions = (await getSessionsFromStore()) || [];
+      setSessions(sessions);
+      setLoaded(true);
+    }
+
+    eventEmitter.on("refreshSessions", refreshSessions);
+
+    return () => {
+      eventEmitter.off("refreshSessions", refreshSessions);
+    };
+  }, []);
+
+  return {
+    sessions,
+    loaded,
+  };
 }

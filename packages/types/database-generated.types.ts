@@ -62,6 +62,76 @@ export interface Database {
           {
             foreignKeyName: "project_owner_id_fkey"
             columns: ["owner_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_owner_id_fkey"
+            columns: ["owner_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
+      project_duplicate: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          image: string | null
+          owner_id: string | null
+          project: string
+          scope: Database["public"]["Enums"]["projectscope"]
+          status: Database["public"]["Enums"]["recipeprojectstatus"]
+          subheader: string | null
+          tags: string[] | null
+          title: string
+          visibility: Database["public"]["Enums"]["projectvisibility"]
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          image?: string | null
+          owner_id?: string | null
+          project: string
+          scope?: Database["public"]["Enums"]["projectscope"]
+          status?: Database["public"]["Enums"]["recipeprojectstatus"]
+          subheader?: string | null
+          tags?: string[] | null
+          title: string
+          visibility?: Database["public"]["Enums"]["projectvisibility"]
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          image?: string | null
+          owner_id?: string | null
+          project?: string
+          scope?: Database["public"]["Enums"]["projectscope"]
+          status?: Database["public"]["Enums"]["recipeprojectstatus"]
+          subheader?: string | null
+          tags?: string[] | null
+          title?: string
+          visibility?: Database["public"]["Enums"]["projectvisibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_duplicate_owner_id_fkey"
+            columns: ["owner_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_duplicate_owner_id_fkey"
+            columns: ["owner_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_duplicate_owner_id_fkey"
+            columns: ["owner_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           }
@@ -94,6 +164,12 @@ export interface Database {
             foreignKeyName: "project_member_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_member_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "user_cloud"
             referencedColumns: ["user_id"]
           },
           {
@@ -184,6 +260,103 @@ export interface Database {
           {
             foreignKeyName: "recipe_author_id_fkey"
             columns: ["author_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_view"
+            referencedColumns: ["user_id"]
+          }
+        ]
+      }
+      recipe_backup: {
+        Row: {
+          auth: string | null
+          author_id: string | null
+          created_at: string | null
+          id: string
+          method: Database["public"]["Enums"]["recipemethod"]
+          options: Json | null
+          path: string
+          project: string
+          queryParams: Json | null
+          queryParamsType: string | null
+          rank: number | null
+          requestBody: Json | null
+          requestBodyType: string | null
+          summary: string
+          tags: string[] | null
+          templates: Json[] | null
+          title: string
+          urlParams: Json | null
+          urlParamsType: string | null
+          version: number
+          visibility: Database["public"]["Enums"]["visibility"]
+        }
+        Insert: {
+          auth?: string | null
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["recipemethod"]
+          options?: Json | null
+          path: string
+          project: string
+          queryParams?: Json | null
+          queryParamsType?: string | null
+          rank?: number | null
+          requestBody?: Json | null
+          requestBodyType?: string | null
+          summary: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title: string
+          urlParams?: Json | null
+          urlParamsType?: string | null
+          version?: number
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Update: {
+          auth?: string | null
+          author_id?: string | null
+          created_at?: string | null
+          id?: string
+          method?: Database["public"]["Enums"]["recipemethod"]
+          options?: Json | null
+          path?: string
+          project?: string
+          queryParams?: Json | null
+          queryParamsType?: string | null
+          rank?: number | null
+          requestBody?: Json | null
+          requestBodyType?: string | null
+          summary?: string
+          tags?: string[] | null
+          templates?: Json[] | null
+          title?: string
+          urlParams?: Json | null
+          urlParamsType?: string | null
+          version?: number
+          visibility?: Database["public"]["Enums"]["visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_backup_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_backup_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_backup_author_id_fkey"
+            columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           }
@@ -251,6 +424,12 @@ export interface Database {
           {
             foreignKeyName: "template_author_id_fkey"
             columns: ["author_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
@@ -258,6 +437,12 @@ export interface Database {
             foreignKeyName: "template_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_cloud"
             referencedColumns: ["user_id"]
           },
           {
@@ -315,6 +500,12 @@ export interface Database {
           {
             foreignKeyName: "template_fork_new_author_id_fkey"
             columns: ["new_author_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_fork_new_author_id_fkey"
+            columns: ["new_author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
@@ -322,6 +513,12 @@ export interface Database {
             foreignKeyName: "template_fork_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_fork_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_cloud"
             referencedColumns: ["user_id"]
           },
           {
@@ -445,6 +642,12 @@ export interface Database {
           {
             foreignKeyName: "project_owner_id_fkey"
             columns: ["owner_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_owner_id_fkey"
+            columns: ["owner_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           }
@@ -478,6 +681,12 @@ export interface Database {
             foreignKeyName: "recipe_author_id_fkey"
             columns: ["author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "recipe_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "user_cloud"
             referencedColumns: ["user_id"]
           },
           {
@@ -519,6 +728,12 @@ export interface Database {
           {
             foreignKeyName: "template_author_id_fkey"
             columns: ["author_id"]
+            referencedRelation: "user_cloud"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_author_id_fkey"
+            columns: ["author_id"]
             referencedRelation: "user_view"
             referencedColumns: ["user_id"]
           },
@@ -526,6 +741,12 @@ export interface Database {
             foreignKeyName: "template_original_author_id_fkey"
             columns: ["original_author_id"]
             referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "template_original_author_id_fkey"
+            columns: ["original_author_id"]
+            referencedRelation: "user_cloud"
             referencedColumns: ["user_id"]
           },
           {
@@ -545,6 +766,31 @@ export interface Database {
             columns: ["project"]
             referencedRelation: "global_projects_view"
             referencedColumns: ["project"]
+          }
+        ]
+      }
+      user_cloud: {
+        Row: {
+          apis: Json | null
+          collections: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          apis?: never
+          collections?: never
+          user_id?: string | null
+        }
+        Update: {
+          apis?: never
+          collections?: never
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           }
         ]
       }

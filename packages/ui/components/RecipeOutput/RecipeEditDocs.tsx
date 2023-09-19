@@ -129,6 +129,12 @@ function EditorHeader() {
   const [title, setTitle] = useState(editorHeader.title);
   const [description, setDescription] = useState(editorHeader.description);
 
+  const currentSession = useRecipeSessionStore((state) => state.currentSession);
+
+  const updateSessionName = useRecipeSessionStore(
+    (state) => state.updateSessionName
+  );
+
   return (
     <div className="mb-4">
       {!editing ? (
@@ -161,6 +167,10 @@ function EditorHeader() {
           <button
             className="btn btn-accent w-fit btn-sm"
             onClick={() => {
+              if (currentSession) {
+                updateSessionName(currentSession, title);
+              }
+
               setEditorHeader({
                 title,
                 description,
@@ -336,7 +346,7 @@ function DocContainer({
       </div>
       {!editing ? (
         <ReactMarkdown className="text-xs mt-2 flex items-center cursor-pointer recipe-md">
-          {description || "Add a description"}
+          {description}
         </ReactMarkdown>
       ) : (
         <div className="space-y-2 flex flex-col py-4 text-black dark:text-gray-400">

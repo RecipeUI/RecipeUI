@@ -366,6 +366,7 @@ async function savePrevSessionPre(prevState: Slices) {
       editorBody,
       editorQuery,
       editorHeaders,
+      editorURLCode,
     },
   });
 
@@ -383,7 +384,6 @@ async function savePrevSessionPre(prevState: Slices) {
       editorHeader,
       editorURLSchemaJSON,
       editorURLSchemaType,
-      editorURLCode,
       editorProject,
       editorSessionOptions,
     },
@@ -784,11 +784,12 @@ const createRecipeSessionSlice: StateCreator<
     },
 
     addEditorSession(session?: RecipeSession) {
+      const newId = uuidv4();
       const newSession: RecipeSession = session ?? {
-        id: uuidv4(),
+        id: newId,
         name: "",
         apiMethod: RecipeMethod.GET,
-        recipeId: uuidv4(),
+        recipeId: newId,
       };
 
       set((prevState) => {

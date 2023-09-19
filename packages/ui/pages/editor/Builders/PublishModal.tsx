@@ -1,6 +1,6 @@
 "use client";
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DesktopPage,
   RecipeSessionFolder,
@@ -22,6 +22,8 @@ import {
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useRouter } from "next/navigation";
 import { DISCORD_LINK } from "utils/constants";
+import { useRecipeCloud } from "../../../state/apiSession/CloudAPI";
+import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 
 export function PublishFolderModal({
   onClose,
@@ -31,12 +33,18 @@ export function PublishFolderModal({
   folder: RecipeSessionFolder;
 }) {
   const [recipes, setRecipes] = useState<TableInserts<"recipe">[]>([]);
-  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [selectedRecipes, setSelectedRecipes] = useState<string[]>([]);
   const user = useRecipeSessionStore((state) => state.user);
-
   const supabase = useSupabaseClient();
+
+  const recipeCloud = useRecipeCloud();
+  const cloudCollection = recipeCloud.collectionRecord[folder.id];
+  const cloudAPIs = cloudCollection
+    ? recipeCloud.collectionToApis[cloudCollection.project] ?? []
+    : [];
+
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+
   const loadRecipes = async () => {
     if (!user) {
       alert("You must login to publish collections.");
@@ -46,10 +54,25 @@ export function PublishFolderModal({
     const { sessionIds, name, id } = folder;
 
     let recipes: TableInserts<"recipe">[] = [];
-
     const sessionRecord = await getSessionRecord();
-
     const seen = new Set<string>();
+
+    let defaultSelected: string[] = [];
+    for (const cloudAPI of cloudAPIs) {
+      const existingAPI = recipeCloud.apiRecord[cloudAPI];
+
+      if (existingAPI) {
+        const coreRecipe = await CoreRecipeAPI.getCoreRecipe({
+          recipeId: existingAPI.id,
+          userId: user.user_id,
+          existingRecipe: existingAPI,
+        });
+
+        recipes.push(coreRecipe);
+        seen.add(existingAPI.id);
+        defaultSelected.push(existingAPI.id);
+      }
+    }
 
     for (const sessionId of sessionIds) {
       const session = sessionRecord[sessionId];
@@ -66,9 +89,16 @@ export function PublishFolderModal({
     }
 
     setRecipes(recipes);
+    setSelectedRecipeIds(defaultSelected);
   };
 
-  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (cloudAPIs.length > 0) {
+      loadRecipes();
+    }
+  }, [cloudCollection]);
+  console.log("here", cloudAPIs);
+
   const [error, setError] = useState<string | null>(null);
 
   const isTauri = useIsTauri();
@@ -84,46 +114,57 @@ export function PublishFolderModal({
         return;
       }
 
-      const projectName = generateSlug(4);
-      const projectRes = await supabase
-        .from("project")
-        .insert({
-          project: projectName,
-          title: folder.name,
-          subheader: null,
-          description: `APIs for ${folder.name}`,
-          status: RecipeProjectStatus.Active,
-          image: null,
-          tags: [],
-          scope: ProjectScope.Personal,
-          visibility: ProjectVisibility.Unlisted, // Protected with RLS, private not supported yet
-          owner_id: user?.user_id,
-        })
-        .select("*")
-        .single();
+      let projectName = cloudCollection?.project ?? generateSlug(4);
+      let projectId = cloudCollection?.id || "";
 
-      if (projectRes.error) {
-        setError(
-          projectRes.error.message ?? "Unable to create this collection"
-        );
-        return;
+      if (!cloudCollection) {
+        const projectRes = await supabase
+          .from("project")
+          .insert({
+            id: folder.id,
+            project: projectName,
+            title: folder.name,
+            subheader: null,
+            description: `APIs for ${folder.name}`,
+            status: RecipeProjectStatus.Active,
+            image: null,
+            tags: [],
+            scope: ProjectScope.Personal,
+            visibility: ProjectVisibility.Unlisted, // Protected with RLS, private not supported yet
+            owner_id: user?.user_id,
+          })
+          .select("*")
+          .single();
+
+        if (projectRes.error) {
+          setError(
+            projectRes.error.message ?? "Unable to create this collection"
+          );
+          return;
+        }
+
+        projectId = projectRes.data.id;
       }
 
       const uploadRes: TableInserts<"recipe">[] = recipes
         .filter((recipe) => selectedRecipeIds.includes(recipe?.id!))
-        .map((recipe) => ({
-          ...recipe,
-          project: projectName,
-          author_id: user?.user_id,
-          id: uuidv4(),
-        }));
+        .map((recipe) => {
+          if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
+            return recipe;
+          }
+
+          return {
+            ...recipe,
+            project: projectName,
+            author_id: user?.user_id,
+            id: recipe.id ?? uuidv4(),
+          };
+        });
 
       const uploadRecipes = await supabase
         .from("recipe")
-        .insert(uploadRes)
+        .upsert(uploadRes, { onConflict: "id", ignoreDuplicates: false })
         .select("*");
-
-      // TODO:  Lets transform all the ids we have of the old recipes to the new ones
 
       if (uploadRecipes.error) {
         setError(uploadRecipes.error.message ?? "Unable to upload recipes");
@@ -136,7 +177,7 @@ export function PublishFolderModal({
           pageParam: projectName,
         });
       } else {
-        router.push(`/${projectRes.data.id}`);
+        router.push(`/${projectId}`);
       }
     }
 
@@ -214,6 +255,18 @@ export function PublishFolderModal({
                     <div className="flex flex-col h-full">
                       <h3 className="font-bold">{recipe.title}</h3>
                       <p className="text-sm  ">{recipe.summary}</p>
+                      {recipe.id && recipeCloud.apiRecord[recipe.id] && (
+                        <span
+                          className={classNames(
+                            "badge badge-sm mt-2",
+                            selectedRecipeIds.includes(recipe.id!)
+                              ? "badge-primary"
+                              : "badge-accent"
+                          )}
+                        >
+                          Cloud
+                        </span>
+                      )}
                     </div>
                   </button>
                 );

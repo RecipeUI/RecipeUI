@@ -9,19 +9,30 @@ export class CoreRecipeAPI {
   static getCoreRecipe = async ({
     recipeId,
     userId = "anonymous",
+    existingRecipe,
   }: {
     recipeId: string;
     userId?: string;
+    existingRecipe?: Recipe;
   }): Promise<TableInserts<"recipe">> => {
     const config = (await getConfigForSessionStore({ recipeId }))!;
     const miniRecipes = await getMiniRecipes(recipeId);
 
     let uploadRecipe: TableInserts<"recipe"> = {
-      id: recipeId,
+      ...(existingRecipe
+        ? existingRecipe
+        : {
+            project: "TBD",
+            version: 1,
+            rank: null,
+            tags: [],
+
+            id: recipeId,
+            author_id: userId,
+          }),
+
       method: config.editorMethod,
       path: config.editorUrl,
-
-      author_id: userId,
 
       queryParams: config.editorQuerySchemaJSON,
       queryParamsType: config.editorQuerySchemaType,
@@ -31,8 +42,6 @@ export class CoreRecipeAPI {
 
       urlParams: config.editorURLSchemaJSON,
       urlParamsType: config.editorURLSchemaType,
-
-      project: "TBD",
 
       title: config.editorHeader.title,
       summary: config.editorHeader.description,
@@ -75,10 +84,6 @@ export class CoreRecipeAPI {
             ]
           : undefined,
       },
-
-      version: 1,
-      rank: null,
-      tags: [],
     };
 
     return uploadRecipe;

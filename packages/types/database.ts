@@ -57,6 +57,7 @@ export type Database = MergeDeep<
           } & NullableRecipeParams;
         };
       };
+
       Enums: {
         recipeprojectstatus: RecipeProjectStatus;
         recipemethod: RecipeMethod;
@@ -86,6 +87,15 @@ export type TableInserts<T extends keyof Database["public"]["Tables"]> =
 
 export type Enums<T extends keyof Database["public"]["Enums"]> =
   Database["public"]["Enums"][T];
+
+export type Views<T extends keyof Database["public"]["Views"]> =
+  Database["public"]["Views"][T];
+
+export type UserCloud = {
+  apis: Recipe[];
+  collections: RecipeProject[];
+  user_id: string;
+};
 
 export type User = Tables<"user">;
 export type RecipeProject = Tables<"project">;

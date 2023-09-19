@@ -93,7 +93,6 @@ export function EditSessionModal({
           Submit
         </button>
       </form>
-      <div className="divider" />
     </Modal>
   );
 }

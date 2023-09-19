@@ -92,7 +92,7 @@ function AuthModule({
         )}
         <h2 className="text-xl font-bold">Auth</h2>
 
-        <div className="bg-base-300 rounded-md p-4 mt-4">
+        <div className="bg-base-300 dark:bg-neutral rounded-md p-4 mt-4">
           <FormFieldWrapper
             label={`[${authConfig.type.toUpperCase()}] ${
               authConfig.payload.name
