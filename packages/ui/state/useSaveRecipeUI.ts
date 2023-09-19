@@ -108,7 +108,7 @@ export function useSaveRecipeUI() {
       editorURLSchemaType: state.editorURLSchemaType,
       editorURLCode: state.editorURLCode,
 
-      editorAuth: state.editorAuth,
+      editorAuthConfig: state.editorAuthConfig,
       editorHeader: state.editorHeader,
       editorProject: state.editorProject,
       editorSessionOptions: state.editorSessionOptions,

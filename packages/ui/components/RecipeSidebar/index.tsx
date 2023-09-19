@@ -667,7 +667,7 @@ function SessionTab({
               <CloudArrowUpIcon
                 className={classNames(
                   "inline h-[15px] mb-1 mr-2",
-                  isCurrentSession ? "text-primary" : "text-accent"
+                  isCurrentSession ? "text-neutral" : "text-accent"
                 )}
               />
             </span>

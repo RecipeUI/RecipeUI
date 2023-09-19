@@ -95,9 +95,9 @@ function AuthModule({
         <div className="bg-base-300 dark:bg-neutral rounded-md p-4 mt-4">
           <FormFieldWrapper
             label={`[${authConfig.type.toUpperCase()}] ${
-              authConfig.payload.name
+              authConfig.payload?.name || "Authorization"
             }`}
-            description={authConfig.payload.description}
+            description={authConfig.payload?.description}
           >
             <input
               className="input input-bordered input-sm w-full"

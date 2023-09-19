@@ -10,7 +10,7 @@ import {
   RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { RecipeOptions, RecipeOutputType } from "types/database";
+import { AuthConfig, RecipeOptions, RecipeOutputType } from "types/database";
 import {
   ContentType,
   RecipeAuthType,
@@ -56,12 +56,17 @@ export function RecipeSearchButton() {
   const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
   const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
   const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
-  const editorAuth = useRecipeSessionStore((state) => state.editorAuth);
+  const editorAuthConfig = useRecipeSessionStore(
+    (state) => state.editorAuthConfig
+  );
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
   const isTauri = useIsTauri();
 
   const onSubmit = async () => {
+    if (loadingTemplate) {
+      alert("Please wait for the template to finish loading.");
+    }
     // if (currentSession) OutputAPI.clearOutput(currentSession.id);
 
     const success = await _onSubmit();
@@ -84,11 +89,6 @@ export function RecipeSearchButton() {
   const _onSubmit = async () => {
     if (!currentSession) return;
 
-    if (loadingTemplate) {
-      alert("Please wait for the template to finish loading.");
-      return;
-    }
-
     const startTime = performance.now();
     const recipe = editorMode
       ? {
@@ -97,9 +97,9 @@ export function RecipeSearchButton() {
           project: "Personal",
           method: editorMethod,
           path: editorUrl,
-          auth: editorAuth?.type,
           options: {},
           version: 1,
+          authConfig: editorAuthConfig,
         }
       : _recipe!;
 
@@ -208,12 +208,12 @@ export function RecipeSearchButton() {
         if (!secretValue) {
           // This really shouldn't happen because of hasAuthSetup
           alert(
-            `Please setup authentication first for the API Key ${config.type}::${config.payload.name}`
+            `Please setup authentication first for the API Key ${config.type}::${config.payload?.name}`
           );
           return false;
         }
 
-        if (config.payload.prefix) {
+        if (config.payload?.prefix) {
           secretValue = `${config.payload.prefix} ${secretValue}`;
         }
 
@@ -224,42 +224,35 @@ export function RecipeSearchButton() {
         }
       }
     }
-    if (recipe.auth && !isCollectionModule(editorProject || "")) {
-      const primaryToken = await SecretAPI.getSecret({
-        secretId: currentSession.recipeId,
-      });
+    if (!isCollectionModule(editorProject || "") && recipe.authConfig) {
+      for (let i = 0; i < recipe.authConfig.length; i++) {
+        const config: AuthConfig = recipe.authConfig[i];
 
-      if (!primaryToken) {
-        alert("Please setup authentication first.");
-        return false;
-      }
+        const primaryToken = await SecretAPI.getSecret({
+          secretId:
+            recipe.authConfig.length === 1
+              ? currentSession.recipeId
+              : `${currentSession.recipeId}-${i}`,
+        });
 
-      if (recipe.auth === RecipeAuthType.Bearer) {
-        fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
-      }
-
-      const relevantOption = (recipe.options as RecipeOptions)?.auth?.find(
-        (auth) => auth.type === recipe.auth
-      );
-
-      if (recipe.auth === RecipeAuthType.Header) {
-        const headerName = editorAuth?.meta || relevantOption?.payload.name;
-        if (!headerName) {
-          alert("The auth for this API is not setup correctly.");
+        if (!primaryToken) {
+          alert("Please setup authentication first.");
           return false;
         }
 
-        fetchHeaders[headerName!] = primaryToken;
-      }
-
-      if (recipe.auth === RecipeAuthType.Query) {
-        let QUERY_KEY_NAME = editorAuth?.meta || relevantOption?.payload.name;
-        if (!QUERY_KEY_NAME) {
-          alert("The auth for this API is not setup correctly.");
-          return false;
+        if (config.type === RecipeAuthType.Bearer) {
+          fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
         }
 
-        url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+        if (config.type === RecipeAuthType.Header) {
+          const headerName = config.payload.name;
+          fetchHeaders[headerName] = primaryToken;
+        }
+
+        if (config.type === RecipeAuthType.Query) {
+          let QUERY_KEY_NAME = config.payload.name;
+          url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
+        }
       }
     }
 

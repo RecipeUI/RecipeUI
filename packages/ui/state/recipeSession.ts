@@ -2,6 +2,7 @@
 import { getArrayPathIndex, isArrayPath } from "../utils/main";
 
 import {
+  AuthConfig,
   Recipe,
   RecipeOptions,
   RecipeOutputType,
@@ -146,7 +147,7 @@ export type EditorSliceValues = Pick<
   | "editorQuerySchemaType"
   | "editorBodySchemaJSON"
   | "editorQuerySchemaJSON"
-  | "editorAuth"
+  | "editorAuthConfig"
   | "editorHeader"
   | "editorURLSchemaJSON"
   | "editorURLSchemaType"
@@ -236,19 +237,8 @@ export interface RecipeEditorSlice {
     >
   ) => void;
 
-  editorAuth: {
-    prefix?: string;
-    meta?: string;
-    type: RecipeAuthType;
-    docs?: string;
-  } | null;
-  setEditorAuth: (
-    editorAuth: {
-      meta?: string;
-      type: RecipeAuthType;
-      docs?: string;
-    } | null
-  ) => void;
+  editorAuthConfig: AuthConfig[] | null;
+  setEditorAuthConfig: (editorAuthConfig: AuthConfig[] | null) => void;
 
   saveEditorSession: () => Promise<void>;
 }
@@ -351,7 +341,7 @@ async function savePrevSessionPre(prevState: Slices) {
     editorBodySchemaJSON,
     editorQuerySchemaType,
     editorQuerySchemaJSON,
-    editorAuth,
+    editorAuthConfig,
     editorHeader,
     editorURLSchemaJSON,
     editorURLSchemaType,
@@ -380,7 +370,7 @@ async function savePrevSessionPre(prevState: Slices) {
       editorBodySchemaJSON,
       editorQuerySchemaType,
       editorQuerySchemaJSON,
-      editorAuth,
+      editorAuthConfig,
       editorHeader,
       editorURLSchemaJSON,
       editorURLSchemaType,
@@ -411,7 +401,7 @@ function resetEditorSlice(): EditorSliceValues {
     editorQuerySchemaType: null,
     editorBodySchemaJSON: null,
     editorQuerySchemaJSON: null,
-    editorAuth: null,
+    editorAuthConfig: null,
 
     editorURLSchemaType: null,
     editorURLSchemaJSON: null,
@@ -628,8 +618,8 @@ export const createRecipeEditorSlice: StateCreator<
       });
     },
 
-    setEditorAuth(editorAuth) {
-      set(() => ({ editorAuth }));
+    setEditorAuthConfig(editorAuthConfig) {
+      set(() => ({ editorAuthConfig }));
     },
     setEditorURLCode(editorURLCode) {
       set(() => ({ editorURLCode }));

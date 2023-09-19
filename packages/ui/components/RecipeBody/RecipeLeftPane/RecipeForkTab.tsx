@@ -15,20 +15,17 @@ import { RECIPE_FORKING_ID } from "utils/constants";
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { Recipe, RecipeTemplate } from "types/database";
 import { Modal } from "../../Modal";
+import { APISessionConfig } from "../../../state/apiSession";
 
 export function getConfigFromRecipe(selectedRecipe: Recipe) {
   return {
     recipeId: selectedRecipe.id,
     config: {
-      editorAuth: selectedRecipe.auth
-        ? {
-            type: selectedRecipe.auth,
-            docs: selectedRecipe.options?.docs?.auth,
-            meta: selectedRecipe.options?.auth?.find(
-              (a) => a.type === selectedRecipe.auth
-            )?.payload.name,
-          }
-        : null,
+      editorAuthConfig:
+        selectedRecipe.authConfig ||
+        // TODO: For backwards compatibility
+        (selectedRecipe.options as any)?.auth ||
+        null,
 
       editorUrl: selectedRecipe.path,
       editorMethod: selectedRecipe.method,
@@ -48,9 +45,8 @@ export function getConfigFromRecipe(selectedRecipe: Recipe) {
         description: selectedRecipe.summary,
       },
 
-      editorURLCode: "",
       editorProject: selectedRecipe.project,
-    },
+    } satisfies APISessionConfig,
   };
 }
 

@@ -77,9 +77,11 @@ export function CurlModal({
         for (const header of editorSlice.editorHeaders) {
           if (header.name === "Authorization") {
             if (header.value.startsWith("Bearer")) {
-              editorSlice.editorAuth = {
-                type: RecipeAuthType.Bearer,
-              };
+              editorSlice.editorAuthConfig = [
+                {
+                  type: RecipeAuthType.Bearer,
+                },
+              ];
 
               SecretAPI.saveSecret({
                 secretId: newSession.recipeId,
@@ -91,7 +93,7 @@ export function CurlModal({
           }
         }
 
-        if (editorSlice.editorAuth) {
+        if (editorSlice.editorAuthConfig) {
           editorSlice.editorHeaders = editorSlice.editorHeaders.filter(
             (header) => header.name !== "Authorization"
           );

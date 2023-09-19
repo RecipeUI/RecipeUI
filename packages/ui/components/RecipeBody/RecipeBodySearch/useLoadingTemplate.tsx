@@ -274,7 +274,7 @@ export function useLoadingTemplate() {
     }
 
     let headers: Record<string, string> = {};
-    if (selectedRecipe.auth !== null) {
+    if (selectedRecipe.authConfig !== null) {
       headers["Authorization"] = "Configure Auth / Make Real Request";
     }
 
@@ -290,7 +290,8 @@ export function useLoadingTemplate() {
       options: {},
     };
 
-    if (selectedRecipe.auth === null) {
+    // TODO: This is old stuff, but we will no longer support this
+    if ((selectedRecipe as any)["auth"] === null) {
       t += 15;
       setTimeout(() => {
         setLoadingTemplate(null);
@@ -358,7 +359,7 @@ export function useLoadingTemplate() {
     setTimeout(() => {
       setLoadingTemplate(null);
 
-      if (!replay && selectedRecipe.auth !== null) {
+      if (!replay && (selectedRecipe as any)["auth"] !== null) {
         setIsSending(false, RecipeOutputTab.DocTwo);
       }
     }, getTime(t));

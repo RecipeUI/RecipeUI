@@ -2,7 +2,6 @@
 import classNames from "classnames";
 import { RecipeParameterTab } from "./RecipeLeftPane/RecipeParameterTab";
 import { RecipeTemplatesTab } from "./RecipeLeftPane/RecipeTemplates";
-import { RecipeConfigTab } from "./RecipeLeftPane/RecipeConfigTab";
 import { useContext, useEffect, useMemo } from "react";
 import { RecipeOutput } from "../RecipeOutput";
 import {
@@ -115,7 +114,7 @@ export function RecipeBody() {
       <div className="flex-1 border-t border-t-slate-200 dark:border-t-slate-600 sm:grid sm:grid-cols-2 flex flex-col overflow-x-auto">
         {bodyRoute === RecipeBodyRoute.Parameters && <RecipeParameterTab />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplatesTab />}
-        {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />}
+        {/* {bodyRoute === RecipeBodyRoute.Config && <RecipeConfigTab />} */}
         <RecipeOutput />
       </div>
     </>

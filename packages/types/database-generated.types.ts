@@ -183,6 +183,7 @@ export interface Database {
       recipe: {
         Row: {
           auth: string | null
+          authConfig: Json[] | null
           author_id: string | null
           created_at: string | null
           id: string
@@ -206,6 +207,7 @@ export interface Database {
         }
         Insert: {
           auth?: string | null
+          authConfig?: Json[] | null
           author_id?: string | null
           created_at?: string | null
           id?: string
@@ -229,6 +231,7 @@ export interface Database {
         }
         Update: {
           auth?: string | null
+          authConfig?: Json[] | null
           author_id?: string | null
           created_at?: string | null
           id?: string
@@ -833,6 +836,7 @@ export interface Database {
         }
         Returns: {
           auth: string | null
+          authConfig: Json[] | null
           author_id: string | null
           created_at: string | null
           id: string
@@ -861,6 +865,7 @@ export interface Database {
         }
         Returns: {
           auth: string | null
+          authConfig: Json[] | null
           author_id: string | null
           created_at: string | null
           id: string

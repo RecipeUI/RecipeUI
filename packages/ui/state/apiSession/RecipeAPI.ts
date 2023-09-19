@@ -1,6 +1,6 @@
 import { Recipe, TableInserts } from "types/database";
 import { getConfigForSessionStore, getMiniRecipes } from ".";
-import { ProjectScope, Visibility } from "types/enums";
+import { ProjectScope, RecipeAuthType, Visibility } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
 
 import { restrictObjectsAndArrays } from "utils";
@@ -66,24 +66,9 @@ export class CoreRecipeAPI {
           }))
         : [],
 
-      auth: config.editorAuth?.type || null,
-      options: {
-        docs: config.editorAuth?.docs
-          ? {
-              auth: config.editorAuth.docs,
-            }
-          : undefined,
-        auth: config.editorAuth
-          ? [
-              {
-                type: config.editorAuth.type,
-                payload: {
-                  name: config.editorAuth.meta || config.editorAuth.type,
-                },
-              },
-            ]
-          : undefined,
-      },
+      authConfig: config.editorAuthConfig,
+      auth: null,
+      options: null,
     };
 
     return uploadRecipe;

@@ -1,4 +1,5 @@
-"use client";
+"use secret";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { eventEmitter, getSecretStore } from ".";
 import { AuthConfig } from "types/database";
@@ -12,17 +13,23 @@ export class SecretAPI {
     secretId: string;
   }): Promise<string | undefined> => {
     const store = await getSecretStore();
-    return store.get(String(secretId));
+    return store.get(secretId);
   };
 
   static saveSecret = async ({ secretId, secretValue }: SaveSecret) => {
     const store = await getSecretStore();
-    store.put(secretValue, String(secretId));
+    store.put(secretValue, secretId);
   };
 
   static deleteSecret = async ({ secretId }: { secretId: string }) => {
     const store = await getSecretStore();
-    store.delete(String(secretId));
+    const keys = await store.getAllKeys();
+
+    for (const key of keys) {
+      if (key.startsWith(secretId)) {
+        await store.delete(key);
+      }
+    }
   };
 
   static getComplexSecrets = async ({
@@ -54,40 +61,13 @@ export class SecretAPI {
   };
 
   static getSecretKeyFromConfig(authConfig: AuthConfig, prefix: string) {
-    return `${prefix}::${authConfig.type}::${authConfig.payload.name}`;
+    return `${prefix}::${authConfig.type}::${authConfig.payload?.name}`;
   }
 }
 
 interface SaveSecret {
   secretId: string;
   secretValue: string;
-}
-
-export function useSecret({ secretId }: { secretId: string }) {
-  const [secret, setSecret] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    SecretAPI.getSecret({ secretId }).then((secret) => setSecret(secret));
-  }, [secretId]);
-
-  const _updateSecret = useCallback(
-    ({ secretValue }: SaveSecret) => {
-      SecretAPI.saveSecret({ secretId: secretId, secretValue });
-      setSecret(secretValue);
-    },
-    [secretId]
-  );
-
-  const _deleteSecret = useCallback(() => {
-    SecretAPI.deleteSecret({ secretId });
-    setSecret(undefined);
-  }, [secretId]);
-
-  return {
-    secret,
-    updateSecret: _updateSecret,
-    deleteSecret: _deleteSecret,
-  };
 }
 
 interface ComplexSecretProps {

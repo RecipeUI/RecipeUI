@@ -13,7 +13,7 @@ export function FormFieldWrapper({
 }) {
   return (
     <div>
-      <label className="mb-2 text-sm font-bold block">{label}</label>
+      <label className="mb-2 text-sm font-bold block capitalize">{label}</label>
       {description && (
         <ReactMarkdown
           className="text-sm mb-2"

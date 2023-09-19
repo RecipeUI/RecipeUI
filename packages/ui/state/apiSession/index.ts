@@ -2,6 +2,7 @@
 
 import { JSONSchema6 } from "json-schema";
 import {
+  AuthConfig,
   Recipe,
   RecipeProject,
   RecipeTemplate,
@@ -31,7 +32,7 @@ interface APISessionParameters {
   editorURLCode: string;
 }
 
-interface APISessionConfig {
+export interface APISessionConfig {
   editorUrl: string;
   editorMethod: RecipeMethod;
 
@@ -42,11 +43,7 @@ interface APISessionConfig {
   editorQuerySchemaType: string | null;
   editorQuerySchemaJSON: JSONSchema6 | null;
 
-  editorAuth: {
-    meta?: string;
-    type: RecipeAuthType;
-    docs?: string;
-  } | null;
+  editorAuthConfig: AuthConfig[] | null;
   editorHeader: {
     title: string;
     description: string;
@@ -276,13 +273,42 @@ export async function setConfigForSessionStore({
   return store.put(config, String(recipeId)) || {};
 }
 
+interface OldAuth {
+  prefix?: string;
+  meta?: string;
+  type: RecipeAuthType;
+  docs?: string;
+}
+
 export async function getConfigForSessionStore({
   recipeId,
 }: {
   recipeId: string | number;
 }) {
+  // TODO: We'll need to do a migration of old auth here
   const store = await getConfigStore();
-  return store.get(String(recipeId));
+
+  // TODO: this is just a migration, make sure ot delete this later
+  const config:
+    | (APISessionConfig & {
+        editorAuth?: OldAuth | null;
+      })
+    | undefined = await store.get(String(recipeId));
+
+  if (config?.editorAuth) {
+    config.editorAuthConfig = [
+      {
+        type: config.editorAuth.type,
+        payload: {
+          name: config.editorAuth.meta || "",
+          prefix: config.editorAuth.prefix,
+          description: config.editorAuth.docs,
+        },
+      },
+    ];
+  }
+
+  return config;
 }
 
 // We can also delete the miniRecipes

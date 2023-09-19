@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   DesktopPage,
   RecipeBodyRoute,
@@ -8,28 +8,18 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { RecipeTemplate, UserTemplatePreview } from "types/database";
-import { getTemplate } from "../actions";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import classNames from "classnames";
 
 import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../../utils/constants/posthog";
 import { Dialog } from "@headlessui/react";
-import {
-  DB_FUNC_ERRORS,
-  FORM_LINKS,
-  UNIQUE_ELEMENT_IDS,
-} from "../../../utils/constants/main";
 
 import { RECIPE_FORKING_ID } from "utils/constants";
 
-import { useLocalStorage, useSessionStorage } from "usehooks-ts";
-import Link from "next/link";
-import { ProjectScope, QueryKey } from "types/enums";
-import { useQueryClient } from "@tanstack/react-query";
+import { useSessionStorage } from "usehooks-ts";
+import { ProjectScope } from "types/enums";
 import { useClipboard, useIsTauri } from "../../../hooks/useIsTauri";
-import { useSupabaseClient } from "../../Providers/SupabaseProvider";
-import { useSecret } from "../../../state/apiSession/SecretAPI";
 import { RecipeTemplateEdit } from "./RecipeTemplateEdit";
 import { RecipeForkTab } from "./RecipeForkTab";
 

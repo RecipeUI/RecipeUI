@@ -35,6 +35,7 @@ export type Database = MergeDeep<
             queryParams: Nullable<JSONSchema6>;
             urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
+            authConfig: Nullable<AuthConfig[]>;
           };
           Insert: {
             templates: Nullable<RecipeTemplate[]>;
@@ -44,6 +45,7 @@ export type Database = MergeDeep<
             queryParams: Nullable<JSONSchema6>;
             urlParams: Nullable<JSONSchema6>;
             auth: Nullable<RecipeAuthType>;
+            authConfig: Nullable<AuthConfig[]>;
           };
         };
         template: {
@@ -99,7 +101,7 @@ export type UserCloud = {
 
 export type User = Tables<"user">;
 export type RecipeProject = Tables<"project">;
-export type Recipe = Tables<"recipe"> & {
+export type Recipe = Omit<Tables<"recipe">, "auth"> & {
   userTemplates?: UserTemplatePreview[];
 };
 
@@ -108,19 +110,23 @@ export type RecipeTemplateFragment = Omit<
   "alias" | "author_id" | "project" | "visibility"
 >;
 
-export interface AuthConfig {
-  type: RecipeAuthType;
-  payload: {
-    name: string;
-    prefix?: string;
-    description?: string;
-  };
-}
+export type AuthConfig =
+  | {
+      type: RecipeAuthType;
+      payload: {
+        name: string;
+        prefix?: string;
+        description?: string;
+      };
+    }
+  | {
+      type: RecipeAuthType.Bearer;
+      payload?: never;
+    };
 
 export type RecipeOptions = {
   deprecated?: boolean;
   streaming?: boolean;
-  auth?: AuthConfig[];
   docs?: {
     auth: string;
   };

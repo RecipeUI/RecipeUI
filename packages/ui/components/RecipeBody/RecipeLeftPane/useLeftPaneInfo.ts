@@ -3,7 +3,6 @@ import {
   RecipeContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { useSecret } from "../../../state/apiSession/SecretAPI";
 
 export function useLeftPaneInfo() {
   const selectedRecipe = useContext(RecipeContext)!;
@@ -11,7 +10,6 @@ export function useLeftPaneInfo() {
   const requestBody = useRecipeSessionStore((state) => state.requestBody);
   const queryParams = useRecipeSessionStore((state) => state.queryParams);
   const urlParams = useRecipeSessionStore((state) => state.urlParams);
-  const secretInfo = useSecret({ secretId: selectedRecipe.id });
 
   const {
     hasNoAuth,
@@ -22,7 +20,7 @@ export function useLeftPaneInfo() {
     hasRequiredQueryParams,
     hasUrlParams,
   } = useMemo(() => {
-    const needsAuthSetup = selectedRecipe.auth !== null && secretInfo == null;
+    const needsAuthSetup = true;
 
     let hasRequiredBodyParams = false;
     let hasRequestBody = false;
@@ -55,9 +53,9 @@ export function useLeftPaneInfo() {
       hasQueryParams,
       hasRequiredQueryParams,
       hasUrlParams,
-      hasNoAuth: selectedRecipe.auth === null,
+      hasNoAuth: false,
     };
-  }, [secretInfo, selectedRecipe]);
+  }, [selectedRecipe]);
   const hasRequestBodyPayload = Object.keys(requestBody).length > 0;
   const needsBodyParams = hasRequiredBodyParams && !hasRequestBodyPayload;
 

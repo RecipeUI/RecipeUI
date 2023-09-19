@@ -381,26 +381,6 @@ function CoreEditor() {
       // });
     }
 
-    // if (state.editorAuth && state.editorAuth.type !== RecipeAuthType.Bearer) {
-    //   console.log({
-    //     auth: [
-    //       {
-    //         type: state.editorAuth.type,
-    //         payload: {
-    //           name: state.editorAuth.meta,
-    //         },
-    //       },
-    //     ],
-    //     ...(state.editorAuth.docs
-    //       ? {
-    //           docs: {
-    //             auth: state.editorAuth.docs,
-    //           },
-    //         }
-    //       : {}),
-    //   } as RecipeOptions);
-    // }
-
     return null;
   });
 

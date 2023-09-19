@@ -11,7 +11,6 @@ import { json, jsonParseLinter } from "@codemirror/lang-json";
 import { lintGutter, linter } from "@codemirror/lint";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { RecipeNeedsAuth } from "./RecipeConfigTab";
 import classNames from "classnames";
 import { StarterTemplates } from "./RecipeTemplates";
 import { useLeftPaneInfo } from "./useLeftPaneInfo";
@@ -49,7 +48,7 @@ export function RecipeParameterTab() {
           <StarterTemplates />
         </div>
       )}
-      {showOnboarding ? (
+      {false ? (
         needsAuthSetup ? (
           <div className="space-y-4 mb-4 mx-4 mt-6">
             <div className="alert w-full flex bg-gray-300 dark:bg-base-200">
@@ -71,12 +70,6 @@ export function RecipeParameterTab() {
                     >
                       Mock with recipes
                     </button>
-                  </>
-                )}
-                {needsAuthSetup && (
-                  <>
-                    <hr />
-                    <RecipeNeedsAuth onboardingFlow />
                   </>
                 )}
               </div>
