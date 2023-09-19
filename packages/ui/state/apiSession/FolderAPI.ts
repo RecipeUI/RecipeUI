@@ -1,8 +1,12 @@
 "use client";
-import { RecipeSessionFolder } from "../recipeSession";
-import { useEffect, useState } from "react";
+import {
+  RecipeSession,
+  RecipeSessionFolder,
+  useRecipeSessionStore,
+} from "../recipeSession";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { getFolderStore, eventEmitter } from ".";
+import { getFolderStore, eventEmitter, getSessionRecord } from ".";
 
 export class FolderAPI {
   static addSessionToFolder = async (
@@ -10,25 +14,38 @@ export class FolderAPI {
     folderId: string,
     newFolderName?: string
   ) => {
+    const folders = await this.getAllFolders();
+
     const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
 
     let foundFolder = false;
-    const newFolders = (folders || []).map((folder) => {
+
+    const newFolders = folders.map((folder) => {
       if (folder.id !== folderId) return folder;
 
       foundFolder = true;
       return {
         ...folder,
-        sessionIds: [...folder.sessionIds, sessionId],
-      };
+        items: [
+          ...folder.items,
+          {
+            type: "session",
+            id: sessionId,
+          },
+        ],
+      } satisfies typeof folder;
     });
 
     if (!foundFolder) {
       newFolders.push({
         id: folderId,
         name: newFolderName ?? "New Folder",
-        sessionIds: [sessionId],
+        items: [
+          {
+            id: sessionId,
+            type: "session",
+          },
+        ],
       });
     }
 
@@ -37,15 +54,16 @@ export class FolderAPI {
   };
 
   static deleteSessionFromFolder = async (sessionId: string) => {
+    const folders = await this.getAllFolders();
     const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-
     const foldersToDelete: string[] = [];
-    let newFolders = (folders || []).map((folder) => {
+
+    let newFolders = folders.map((folder) => {
       let madeChange = false;
+
       const returnFolder = {
         ...folder,
-        sessionIds: folder.sessionIds.filter((id) => {
+        items: folder.items.filter(({ id }) => {
           if (id !== sessionId) {
             return true;
           }
@@ -55,7 +73,7 @@ export class FolderAPI {
         }),
       };
 
-      if (madeChange && returnFolder.sessionIds.length === 0) {
+      if (madeChange && returnFolder.items.length === 0) {
         foldersToDelete.push(returnFolder.id);
       }
 
@@ -70,19 +88,46 @@ export class FolderAPI {
     eventEmitter.emit("refreshFolders");
   };
 
+  // TODO: This will need to be
   static removeFolder = async (folderId: string) => {
+    const folders = await this.getAllFolders();
     const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = (folders || []).filter(
-      (folder) => folder.id !== folderId
+
+    const affectedSessionIds = new Set<string>();
+    const affectedFolderIds = new Set([folderId]);
+    const folderQueue = [folderId];
+
+    while (folderQueue.length > 0) {
+      const folderId = folderQueue.pop()!;
+      const folder = folders.find((folder) => folder.id === folderId);
+      if (!folder) {
+        continue;
+      }
+
+      for (const item of folder.items) {
+        if (item.type === "session") {
+          affectedSessionIds.add(item.id);
+        } else {
+          affectedFolderIds.add(item.id);
+          folderQueue.push(item.id);
+        }
+      }
+    }
+
+    const newFolders = folders.filter(
+      (folder) => !affectedFolderIds.has(folder.id)
     );
+
     await store.put(newFolders, "sessionFolders");
     eventEmitter.emit("refreshFolders");
+
+    return Array.from(affectedSessionIds);
   };
 
   static editFolderName = async (folderId: string, name: string) => {
+    const folders = await this.getAllFolders();
+
     const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
     const newFolders = (folders || []).map((folder) => {
       if (folder.id !== folderId) return folder;
       return {
@@ -94,31 +139,67 @@ export class FolderAPI {
     eventEmitter.emit("refreshFolders");
   };
 
-  static addFolder = async (folderName: string) => {
+  static addFolder = async (folderName: string, existingFolderId?: string) => {
+    let folders = await this.getAllFolders();
+
     const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
-    const newFolders = [
-      ...(folders || []),
-      {
-        id: uuidv4(),
-        name: folderName,
-        sessionIds: [],
-      } as RecipeSessionFolder,
-    ];
+
+    const newFolder = {
+      id: uuidv4(),
+      name: folderName,
+      items: [],
+      parentFolderId: existingFolderId,
+    } as RecipeSessionFolder;
+
+    if (existingFolderId) {
+      folders = folders.map((folder) => {
+        if (folder.id !== existingFolderId) return folder;
+
+        return {
+          ...folder,
+          items: [...folder.items, { type: "folder", id: newFolder.id }],
+        };
+      });
+    }
+
+    const newFolders = [...folders, newFolder];
     await store.put(newFolders, "sessionFolders");
+
     eventEmitter.emit("refreshFolders");
   };
 
   static getFolder = async (folderId: string) => {
-    const store = await getFolderStore();
-    const folders = await store.get("sessionFolders");
+    const folders = await this.getAllFolders();
     return (folders || []).find((folder) => folder.id === folderId);
   };
 
   static getAllFolders = async () => {
     const store = await getFolderStore();
     const folders = await store.get("sessionFolders");
-    return folders || [];
+
+    // TODO: Cleanup after a month or so. We just need to deal with deprecated folders
+
+    let hasChanged = false;
+    let migratedFolders = folders?.map((folder) => {
+      if (folder.sessionIds) {
+        hasChanged = true;
+        const sessionIds = folder.sessionIds;
+        delete folder.sessionIds;
+
+        folder.items = sessionIds.map((item) => ({
+          type: "session",
+          id: item,
+        }));
+      }
+
+      return folder;
+    });
+
+    if (hasChanged && migratedFolders) {
+      await store.put(migratedFolders, "sessionFolders");
+    }
+
+    return migratedFolders || [];
   };
 
   static setFolders = async (folders: RecipeSessionFolder[]) => {
@@ -130,27 +211,129 @@ export class FolderAPI {
 }
 
 export const addFolder = async (folderName: string) => {
+  const folders = await FolderAPI.getAllFolders();
+
   const store = await getFolderStore();
-  const folders = await store.get("sessionFolders");
   const newFolders = [
     ...(folders || []),
     {
       id: uuidv4(),
       name: folderName,
-      sessionIds: [],
+      items: [],
     } as RecipeSessionFolder,
   ];
   await store.put(newFolders, "sessionFolders");
   eventEmitter.emit("refreshFolders");
 };
 
+export type RecipeSessionFolderItemExtended =
+  | {
+      type: "session";
+      id: string;
+      session: RecipeSession;
+    }
+  | {
+      type: "folder";
+      id: string;
+      folder: RecipeSessionFolderExtended;
+    };
+
+export type RecipeSessionFolderExtended = Omit<
+  RecipeSessionFolder,
+  "items" | "sessionIds"
+> & {
+  items: RecipeSessionFolderItemExtended[];
+};
+
+interface FolderToSessions {
+  [folderId: string]: RecipeSessionFolderExtended;
+}
+
 export function useSessionFolders() {
   const [folders, setFolders] = useState<RecipeSessionFolder[]>([]);
+  const sessions = useRecipeSessionStore((state) => state.sessions);
+
+  const { folderSessions, noFolderSessions } = useMemo(() => {
+    const sessionRecord: Record<string, RecipeSession> = {};
+    for (const session of sessions) {
+      sessionRecord[session.id] = session;
+    }
+
+    const folderSessions: FolderToSessions = {};
+
+    function recursivelyProcessFolders(
+      folder: RecipeSessionFolder
+    ): RecipeSessionFolderExtended {
+      const extendedFolder: RecipeSessionFolderExtended = {
+        ...folder,
+        items: [],
+      };
+
+      // TODO: This is deprecated
+      if (folder.sessionIds) {
+        for (const sessionId of folder.sessionIds) {
+          const session = sessionRecord[sessionId];
+
+          if (!session) {
+            continue;
+          }
+
+          delete sessionRecord[sessionId];
+
+          extendedFolder.items.push({
+            type: "session",
+            id: sessionId,
+            session,
+          });
+        }
+      } else {
+        for (const item of folder.items) {
+          if (item.type === "session") {
+            const session = sessionRecord[item.id];
+            if (!session) {
+              continue;
+            }
+
+            extendedFolder.items.push({
+              type: "session",
+              id: item.id,
+              session,
+            });
+            delete sessionRecord[item.id];
+          } else {
+            const folder = folders.find((folder) => folder.id === item.id);
+            if (!folder) {
+              console.error("Folder not found", item.id);
+              continue;
+            }
+
+            extendedFolder.items.push({
+              type: "folder",
+              id: item.id,
+              folder: recursivelyProcessFolders(folder),
+            });
+          }
+        }
+      }
+
+      return extendedFolder;
+    }
+
+    for (const folder of folders) {
+      folderSessions[folder.id] = recursivelyProcessFolders(folder);
+    }
+
+    const noFolderSessions: RecipeSession[] = Object.values(sessionRecord);
+
+    return {
+      folderSessions,
+      noFolderSessions,
+    };
+  }, [folders, sessions]);
 
   useEffect(() => {
     async function refreshFolders() {
-      const store = await getFolderStore();
-      const folders = await store.get("sessionFolders");
+      const folders = await FolderAPI.getAllFolders();
       setFolders(folders || []);
     }
 
@@ -162,5 +345,9 @@ export function useSessionFolders() {
     };
   }, []);
 
-  return folders;
+  return {
+    folders,
+    folderSessions,
+    noFolderSessions,
+  };
 }

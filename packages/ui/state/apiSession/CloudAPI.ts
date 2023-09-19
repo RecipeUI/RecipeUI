@@ -1,6 +1,5 @@
 import {
   CloudStore,
-  eventEmitter,
   getCloudStore,
   getConfigForSessionStore,
   getSessionsFromStore,
@@ -20,6 +19,10 @@ import { Recipe, RecipeProject } from "types/database";
 import { useSupabaseClient } from "../../components/Providers/SupabaseProvider";
 import { fetchUserCloud } from "../../fetchers/user";
 
+import EventEmitter from "events";
+const eventEmitter = new EventEmitter();
+eventEmitter.setMaxListeners(300); // Should be infinity but account for a memory leak
+
 export class CloudAPI {
   static async getUserCloud() {
     const store = await getCloudStore();
@@ -30,108 +33,108 @@ export class CloudAPI {
   static async initializeCloud(cloud: CloudStore) {
     const store = await getCloudStore();
 
-    await store.put(cloud, "cloud");
-    const sessions = (await getSessionsFromStore()) || [];
+    // await store.put(cloud, "cloud");
+    // const sessions = (await getSessionsFromStore()) || [];
 
-    const apis = cloud.apis;
-    await Promise.all(
-      apis.map(async (api) => {
-        const existingConfig = await getConfigForSessionStore({
-          recipeId: api.id,
-        });
-        if (!existingConfig) {
-          await setConfigForSessionStore(getConfigFromRecipe(api));
-        }
+    // const apis = cloud.apis;
+    // await Promise.all(
+    //   apis.map(async (api) => {
+    //     const existingConfig = await getConfigForSessionStore({
+    //       recipeId: api.id,
+    //     });
+    //     if (!existingConfig) {
+    //       await setConfigForSessionStore(getConfigFromRecipe(api));
+    //     }
 
-        if (!sessions.some((session) => session.id == api.id)) {
-          const newSession: RecipeSession = {
-            apiMethod: api.method,
-            id: api.id,
-            name: api.title,
-            recipeId: api.id,
-          };
-          sessions.push(newSession);
+    //     if (!sessions.some((session) => session.id == api.id)) {
+    //       const newSession: RecipeSession = {
+    //         apiMethod: api.method,
+    //         id: api.id,
+    //         name: api.title,
+    //         recipeId: api.id,
+    //       };
+    //       sessions.push(newSession);
 
-          await setParametersForSessionStore({
-            parameters: {
-              editorBody: "",
-              editorHeaders: [],
-              editorQuery: "",
-              editorURLCode: "",
-            },
-            session: newSession.id,
-          });
-        }
-      })
-    );
+    //       await setParametersForSessionStore({
+    //         parameters: {
+    //           editorBody: "",
+    //           editorHeaders: [],
+    //           editorQuery: "",
+    //           editorURLCode: "",
+    //         },
+    //         session: newSession.id,
+    //       });
+    //     }
+    //   })
+    // );
 
-    const collections = cloud.collections;
-    const folders = await FolderAPI.getAllFolders();
+    // const collections = cloud.collections;
+    // const folders = await FolderAPI.getAllFolders();
 
-    await Promise.all(
-      collections.map(async (collection, i) => {
-        let sessionFolder = folders.find(
-          (folder) => folder.id === collection.id
-        );
+    // await Promise.all(
+    //   collections.map(async (collection, i) => {
+    //     let sessionFolder = folders.find(
+    //       (folder) => folder.id === collection.id
+    //     );
 
-        let apis = cloud.apis.filter((api) => {
-          if (api.project !== collection.project) {
-            return false;
-          }
+    //     let apis = cloud.apis.filter((api) => {
+    //       if (api.project !== collection.project) {
+    //         return false;
+    //       }
 
-          if (sessionFolder && sessionFolder.sessionIds.includes(api.id)) {
-            return false;
-          }
+    //       if (sessionFolder && sessionFolder.sessionIds.includes(api.id)) {
+    //         return false;
+    //       }
 
-          return true;
-        });
+    //       return true;
+    //     });
 
-        if (!sessionFolder) {
-          const newSessionFolder: RecipeSessionFolder = {
-            id: collection.id,
-            name: collection.title,
-            sessionIds: apis.map((api) => api.id),
-          };
+    //     if (!sessionFolder) {
+    //       const newSessionFolder: RecipeSessionFolder = {
+    //         id: collection.id,
+    //         name: collection.title,
+    //         sessionIds: apis.map((api) => api.id),
+    //       };
 
-          folders.push(newSessionFolder);
-          sessionFolder = newSessionFolder;
-        } else {
-          sessionFolder.sessionIds.push(...apis.map((api) => api.id));
-        }
+    //       folders.push(newSessionFolder);
+    //       sessionFolder = newSessionFolder;
+    //     } else {
+    //       sessionFolder.sessionIds.push(...apis.map((api) => api.id));
+    //     }
 
-        for (const api of apis) {
-          const existingSession = sessions.find(
-            (session) => session.recipeId === api.id && session.id === api.id
-          );
+    //     for (const api of apis) {
+    //       const existingSession = sessions.find(
+    //         (session) => session.recipeId === api.id && session.id === api.id
+    //       );
 
-          if (existingSession) continue;
-          const newSession = {
-            apiMethod: api.method,
-            id: api.id,
-            name: api.title,
-            recipeId: api.id,
-            folderId: sessionFolder.id,
-          };
-          sessions.push(newSession);
+    //       if (existingSession) continue;
+    //       const newSession = {
+    //         apiMethod: api.method,
+    //         id: api.id,
+    //         name: api.title,
+    //         recipeId: api.id,
+    //         folderId: sessionFolder.id,
+    //       };
+    //       sessions.push(newSession);
 
-          await setParametersForSessionStore({
-            parameters: {
-              editorBody: "",
-              editorHeaders: [],
-              editorQuery: "",
-              editorURLCode: "",
-            },
-            session: newSession.id,
-          });
-        }
-      })
-    );
+    //       await setParametersForSessionStore({
+    //         parameters: {
+    //           editorBody: "",
+    //           editorHeaders: [],
+    //           editorQuery: "",
+    //           editorURLCode: "",
+    //         },
+    //         session: newSession.id,
+    //       });
+    //     }
+    //   })
+    // );
 
-    await saveSessionToStore(sessions);
-    await FolderAPI.setFolders(folders);
+    // await saveSessionToStore(sessions);
+    // await FolderAPI.setFolders(folders);
 
-    eventEmitter.emit("refreshSidebar");
-    eventEmitter.emit("refreshCloud");
+    // eventEmitter.emit("refreshSidebar");
+    // eventEmitter.emit("refreshCloud");
   }
 
   static async resetCloud() {

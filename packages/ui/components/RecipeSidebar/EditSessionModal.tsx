@@ -17,7 +17,7 @@ export function EditSessionModal({
   session: RecipeSession;
 }) {
   const [name, setName] = useState(session.name);
-  const folders = useSessionFolders();
+  const { folders } = useSessionFolders();
   const updateSessionName = useRecipeSessionStore(
     (state) => state.updateSessionName
   );
@@ -28,14 +28,14 @@ export function EditSessionModal({
 
   useEffect(() => {
     const currentFolder = folders.find((folder) => {
-      return folder.sessionIds.includes(session.id);
+      return folder.items.some((item) => item.id === session.id);
     });
 
     if (currentFolder) {
       setSelectedFolder(currentFolder.id);
       setCurrentFolder(currentFolder);
     }
-  }, [folders]);
+  }, [folders, session.id]);
 
   return (
     <Modal header="Edit Session" onClose={onClose}>

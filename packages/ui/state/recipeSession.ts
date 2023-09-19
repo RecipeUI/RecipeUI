@@ -40,10 +40,20 @@ export interface RecipeSession {
   folderId?: string;
 }
 
+export interface RecipeSessionFolderItem {
+  type: "session" | "folder";
+  id: string;
+}
 export interface RecipeSessionFolder {
   id: string;
   name: string;
-  sessionIds: string[];
+  /**
+   * @deprecated use 'sessionIds' instead
+   */
+  sessionIds?: string[];
+  items: RecipeSessionFolderItem[];
+
+  parentFolderId?: string;
 }
 
 interface RecipeSessionSlice {

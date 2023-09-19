@@ -341,6 +341,7 @@ import { OutputAPI } from "./OutputAPI";
 import { SecretAPI } from "./SecretAPI";
 import { CollectionType, OnboardingKey } from "utils/constants";
 export const eventEmitter = new EventEmitter();
+eventEmitter.setMaxListeners(100);
 
 async function getMiniRecipeStore() {
   return (await getDB()).transaction(APIStore.MiniRecipes, "readwrite").store;

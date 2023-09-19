@@ -405,12 +405,6 @@ function CoreEditor() {
   const selectedProject = useContext(RecipeProjectContext);
 
   useEffect(() => {
-    // console.log(
-    //   "Change of sessionId",
-    //   session?.id,
-    //   editorURLSchemaType,
-    //   editorQuerySchemaType
-    // );
     if (!editorBody || editorBody === "{}") {
       if (editorURLSchemaType) {
         setBodyRoute(RecipeBodyRoute.URL);
