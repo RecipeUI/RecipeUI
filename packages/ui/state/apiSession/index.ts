@@ -308,12 +308,12 @@ export async function getConfigForSessionStore({
       })
     | undefined = await store.get(String(recipeId));
 
-  if (config?.editorAuth) {
+  if (
+    config?.editorAuth &&
+    config.editorAuth.type !== RecipeAuthType.Multiple
+  ) {
     config.editorAuthConfig = {
-      type: config.editorAuth.type as Exclude<
-        RecipeAuthType,
-        RecipeAuthType.Multiple
-      >,
+      type: config.editorAuth.type,
       payload: {
         name: config.editorAuth.meta || "",
         prefix: config.editorAuth.prefix,

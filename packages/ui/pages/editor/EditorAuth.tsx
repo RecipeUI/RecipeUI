@@ -5,7 +5,7 @@ import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
 import { SecretAPI } from "../../state/apiSession/SecretAPI";
-import { SingleAuthConfig } from "types/database";
+import { SingleAuthConfig, TraditionalSingleAuth } from "types/database";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -23,7 +23,7 @@ export function EditorAuth() {
   return (
     <div className="flex-1 ">
       {singleConfig && <SingleAuthConfig editorAuthConfig={singleConfig} />}
-      <div className="grid grid-cols-2 gap-4 px-4 py-4 border-t">
+      <div className="grid grid-cols-2 gap-4 px-4 py-4 border-t border-recipe-slate">
         <AuthButton
           label="None"
           description="This API request no authentication."
@@ -71,7 +71,7 @@ export function EditorAuth() {
         <AuthButton
           label="OAuth (Soon)"
           description="Join our Discord or email us to use this feature now."
-          selected={singleConfig?.type === RecipeAuthType.OAuth}
+          // selected={singleConfig?.type === RecipeAuthType.OAuth}
           className="opacity-50 pointer-events-none"
           onClick={() => {}}
         />
@@ -85,6 +85,22 @@ function SingleAuthConfig({
 }: {
   editorAuthConfig: SingleAuthConfig;
 }) {
+  if (
+    editorAuthConfig.type === RecipeAuthType.Bearer ||
+    editorAuthConfig.type === RecipeAuthType.Query ||
+    editorAuthConfig.type === RecipeAuthType.Header
+  ) {
+    return <TraditionalSingleAuthConfig editorAuthConfig={editorAuthConfig} />;
+  }
+
+  return null;
+}
+
+function TraditionalSingleAuthConfig({
+  editorAuthConfig,
+}: {
+  editorAuthConfig: TraditionalSingleAuth;
+}) {
   const currentSession = useRecipeSessionStore(
     (state) => state.currentSession
   )!;
@@ -93,7 +109,9 @@ function SingleAuthConfig({
     (state) => state.setEditorAuthConfig
   );
 
-  const [authConfig, setAuthConfig] = useState<SingleAuthConfig | null>(null);
+  const [authConfig, setAuthConfig] = useState<TraditionalSingleAuth | null>(
+    null
+  );
   useEffect(() => {
     setAuthConfig(editorAuthConfig);
   }, [editorAuthConfig]);
@@ -110,24 +128,12 @@ function SingleAuthConfig({
   }, [currentSession?.recipeId]);
 
   return (
-    <div
-      className={classNames(
-        "py-2 p-4 pb-4"
-        // showAuth && "border-b"
-      )}
-    >
-      {[RecipeAuthType.Query, RecipeAuthType.Header].includes(
-        editorAuthConfig.type
-      ) && (
-        <AuthFormWrapper
-          label={
-            editorAuthConfig.type === RecipeAuthType.Header
-              ? "Header Name"
-              : `${editorAuthConfig.type} Param Name`
-          }
-        >
+    <div className={classNames("py-2 p-4 pb-4")}>
+      {editorAuthConfig.type !== RecipeAuthType.Bearer && (
+        <AuthFormWrapper label={`${editorAuthConfig.type} Param Name`}>
           <input
             type="text"
+            autoCorrect="off"
             className={classNames(
               "input input-bordered w-full input-sm",
               !authConfig?.payload?.name && "input-error"
@@ -189,7 +195,7 @@ function SingleAuthConfig({
               secretValue: secret,
             });
 
-            setEditorAuthConfig(editorAuthConfig);
+            setEditorAuthConfig(authConfig);
             setHasChanged(false);
           }}
         >
@@ -233,7 +239,7 @@ function AuthButton({
   return (
     <button
       className={classNames(
-        "border rounded-md p-4 text-start space-y-2 h-[130px] flex flex-col justify-start",
+        "border border-recipe-slate shadow-md rounded-md p-4 text-start space-y-2 h-[130px] flex flex-col justify-start",
         selected && "bg-slate-600  text-white",
         className
       )}

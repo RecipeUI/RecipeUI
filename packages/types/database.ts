@@ -122,18 +122,33 @@ export type RecipeTemplateFragment = Omit<
   "alias" | "author_id" | "project" | "visibility"
 >;
 
-export type SingleAuthConfig =
+interface SimpleAuthPayload {
+  name: string;
+  prefix?: string;
+  description?: string;
+}
+
+export type TraditionalSingleAuth =
   | {
-      type: Exclude<RecipeAuthType, RecipeAuthType.Multiple>;
-      payload: {
-        name: string;
-        prefix?: string;
-        description?: string;
-      };
+      type: RecipeAuthType.Header | RecipeAuthType.Query;
+      payload: SimpleAuthPayload;
     }
   | {
       type: RecipeAuthType.Bearer;
-      payload?: never;
+      payload?: SimpleAuthPayload & { name?: string };
+    };
+
+export type SingleAuthConfig =
+  | TraditionalSingleAuth
+  | {
+      type: Exclude<
+        RecipeAuthType,
+        | RecipeAuthType.Header
+        | RecipeAuthType.Query
+        | RecipeAuthType.Bearer
+        | RecipeAuthType.Multiple
+      >;
+      payload?: SimpleAuthPayload;
     };
 
 export type AuthConfig =

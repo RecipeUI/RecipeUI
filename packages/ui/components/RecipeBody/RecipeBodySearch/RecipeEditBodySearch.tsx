@@ -90,6 +90,8 @@ export function RecipeEditBodySearch() {
                 <input
                   id="url-input"
                   autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
                   onPaste={(e) => {
                     const pasteString = e.clipboardData
                       .getData("text/plain")
