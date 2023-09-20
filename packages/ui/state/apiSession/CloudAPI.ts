@@ -126,14 +126,22 @@ export class CloudAPI {
         );
 
         if (!existingFolder) {
+          let items = collection.folder
+            ? collection.folder?.items.map((item) => ({
+                id: item.id,
+                type: item.type,
+              }))
+            : apis
+                .filter((api) => api.project === collection.project)
+                .map((api) => ({
+                  id: api.id,
+                  type: "session" as const,
+                }));
+
           folders.push({
             id: collection.id,
             name: collection.title,
-            items:
-              collection.folder?.items.map((item) => ({
-                id: item.id,
-                type: item.type,
-              })) || [],
+            items: items || [],
           });
         }
 
