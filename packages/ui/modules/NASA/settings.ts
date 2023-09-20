@@ -32,7 +32,7 @@ export default {
     ],
   },
   components: [
-    CollectionComponentModule.Custom,
+    CollectionComponentModule.Auth,
     CollectionComponentModule.Header,
     CollectionComponentModule.Resources,
   ],

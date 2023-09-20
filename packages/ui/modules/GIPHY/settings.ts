@@ -13,7 +13,8 @@ export default {
     type: RecipeAuthType.Query,
     payload: {
       name: "api_key",
-      description: "Your GIPHY API key obtained from your developer dashboard.",
+      description:
+        "Your GIPHY API key obtained from your [developer dashboard](https://developers.giphy.com/dashboard/). You can read our [guide](https://docs.recipeui.com/docs/Auth/GIPHY) on how to get it.",
     },
   } as const,
   resources: {
