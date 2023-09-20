@@ -95,6 +95,19 @@ export class OutputAPI {
     const store = await getOutputStore();
     return store.get(sessionId);
   };
+
+  static _migrateOutput = async (
+    oldSessionId: string,
+    newSessionId: string
+  ) => {
+    const store = await getOutputStore();
+    const output = await store.get(oldSessionId);
+
+    if (output) {
+      await store.put(output, newSessionId);
+      await store.delete(oldSessionId);
+    }
+  };
 }
 
 const DEFAULT_OUTPUT: SessionOutput = {

@@ -52,7 +52,10 @@ export class FolderAPI {
     eventEmitter.emit("refreshFolders");
   };
 
-  static deleteSessionFromFolder = async (sessionId: string) => {
+  static deleteSessionFromFolder = async (
+    sessionId: string,
+    ignoreEmit?: boolean
+  ) => {
     const folders = await this.getAllFolders();
     const store = await getFolderStore();
     const foldersToDelete: string[] = [];
@@ -84,7 +87,10 @@ export class FolderAPI {
     );
 
     await store.put(newFolders, "sessionFolders");
-    eventEmitter.emit("refreshFolders");
+
+    if (!ignoreEmit) {
+      eventEmitter.emit("refreshFolders");
+    }
   };
 
   static removeFolder = async (folderId: string) => {
@@ -207,6 +213,43 @@ export class FolderAPI {
     const store = await getFolderStore();
     await store.put(folders, "sessionFolders");
 
+    eventEmitter.emit("refreshFolders");
+  };
+
+  static duplicateSession = async ({
+    oldSessionId,
+    oldFolderId,
+    newSessionId,
+  }: {
+    oldSessionId: string;
+    oldFolderId: string;
+    newSessionId: string;
+  }) => {
+    const allFolders = await this.getAllFolders();
+    const store = await getFolderStore();
+
+    const newFolders = allFolders.map((folder) => {
+      if (folder.id !== oldFolderId) return folder;
+
+      return {
+        ...folder,
+        items: folder.items.map((item) => {
+          if (item.type === "session" && item.id === oldSessionId) {
+            return {
+              type: "session",
+              id: newSessionId,
+            };
+          }
+
+          return item;
+        }),
+      } satisfies RecipeSessionFolder;
+    });
+
+    await store.put(newFolders, "sessionFolders");
+  };
+
+  static finalize = async () => {
     eventEmitter.emit("refreshFolders");
   };
 }

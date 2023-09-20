@@ -31,7 +31,8 @@ import { useDarkMode } from "usehooks-ts";
 import { EditorUpdates } from "./EditorUpdates";
 import { DISCORD_LINK } from "utils/constants";
 import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
-import { CollectionModule, isCollectionModule } from "../../modules";
+import { CollectionModule } from "types/modules";
+import { getCollectionModule } from "types/modules/helpers";
 import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
 import { useComplexSecrets } from "../../state/apiSession/SecretAPI";
 
@@ -401,8 +402,14 @@ function CoreEditor() {
   );
 
   const { recipes } = useMiniRecipes(session?.recipeId);
-
-  const selectedProject = useContext(RecipeProjectContext);
+  const editorProject = useRecipeSessionStore((state) => state.editorProject);
+  const editorSessionOptions = useRecipeSessionStore(
+    (state) => state.editorSessionOptions
+  );
+  const collectionModule = getCollectionModule({
+    project: editorProject,
+    options: editorSessionOptions,
+  });
 
   useEffect(() => {
     if (!editorBody || editorBody === "{}") {
@@ -434,17 +441,17 @@ function CoreEditor() {
       mainRoutes.push(RecipeBodyRoute.Templates);
     }
 
-    if (selectedProject && isCollectionModule(selectedProject.project)) {
+    if (collectionModule) {
       mainRoutes.push(RecipeBodyRoute.Collection);
       mainRoutes = mainRoutes.filter((route) => route !== RecipeBodyRoute.Auth);
     }
 
     // Lets also do cleanup if the person removes urlParams
     return mainRoutes;
-  }, [editorUrl, recipes.length, selectedProject]);
+  }, [editorUrl, recipes.length, editorProject, editorSessionOptions]);
 
   const { hasAuthSetup } = useComplexSecrets({
-    collection: selectedProject?.project,
+    collection: collectionModule,
   });
 
   return (
@@ -454,11 +461,8 @@ function CoreEditor() {
         {BODY_ROUTES.map((route) => {
           let label: string = route;
 
-          if (
-            route === RecipeBodyRoute.Collection &&
-            isCollectionModule(selectedProject?.project)
-          ) {
-            label = selectedProject!.project;
+          if (route === RecipeBodyRoute.Collection && collectionModule) {
+            label = collectionModule;
           }
 
           return (
@@ -468,7 +472,7 @@ function CoreEditor() {
                 "font-bold text-sm",
                 bodyRoute === route && "underline underline-offset-4",
                 "cursor-pointer",
-                isCollectionModule(selectedProject?.project) &&
+                collectionModule &&
                   !hasAuthSetup &&
                   route === RecipeBodyRoute.Collection &&
                   bodyRoute !== RecipeBodyRoute.Collection &&
@@ -489,10 +493,8 @@ function CoreEditor() {
         {bodyRoute === RecipeBodyRoute.Headers && <EditHeaders />}
         {bodyRoute === RecipeBodyRoute.Auth && <EditorAuth />}
         {bodyRoute === RecipeBodyRoute.Templates && <RecipeTemplateEdit />}
-        {bodyRoute === RecipeBodyRoute.Collection && (
-          <RecipeCustomModule
-            module={selectedProject?.project! as CollectionModule}
-          />
+        {bodyRoute === RecipeBodyRoute.Collection && collectionModule && (
+          <RecipeCustomModule module={collectionModule} />
         )}
         <RecipeOutput />
       </div>

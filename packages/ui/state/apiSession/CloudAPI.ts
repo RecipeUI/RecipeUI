@@ -1,5 +1,6 @@
 import {
   CloudStore,
+  eventEmitter,
   getCloudStore,
   getConfigForSessionStore,
   getSessionsFromStore,
@@ -14,6 +15,7 @@ import { createContext, useEffect, useState } from "react";
 import {
   Recipe,
   RecipeProject,
+  RecipeSessionFolder,
   RecipeSessionFolderExtended,
 } from "types/database";
 import { useSupabaseClient } from "../../components/Providers/SupabaseProvider";
@@ -32,6 +34,7 @@ export class CloudAPI {
   }
 
   static async initializeCloud(cloud: CloudStore) {
+    console.debug("initializeCloud", cloud);
     const store = await getCloudStore();
     await store.put(cloud, "cloud");
 
@@ -70,25 +73,41 @@ export class CloudAPI {
 
     const collections = cloud.collections;
     let folders = await FolderAPI.getAllFolders();
+    const localFolderRecord: { [key: string]: RecipeSessionFolder } = {};
+    folders.forEach((folder) => {
+      localFolderRecord[folder.id] = folder;
+    });
 
     await Promise.all(
       collections.map(async (collection, i) => {
         function recursivelyInitializeFolders(
-          folder: RecipeSessionFolderExtended
+          folder: RecipeSessionFolderExtended,
+          parentFolderId?: string
         ) {
           const items = folder.items;
+          const localFolder: RecipeSessionFolder | undefined =
+            localFolderRecord[folder.id];
 
           for (const item of items) {
             if (item.type === "session") {
-              if (sessions.some((session) => session.id == item.id)) {
-                continue;
-              } else {
+              const folderHasItem =
+                localFolder &&
+                !localFolder.items.some((localItem) => localItem.id == item.id);
+
+              if (folderHasItem) {
+                localFolder.items.push({
+                  id: item.id,
+                  type: item.type,
+                });
+              }
+
+              if (!sessions.some((session) => session.id == item.id)) {
                 sessions.push(item.session);
               }
             } else {
-              if (folders.some((folder) => folder.id == item.id)) continue;
+              recursivelyInitializeFolders(item.folder, folder.id);
 
-              recursivelyInitializeFolders(item.folder);
+              if (folders.some((folder) => folder.id == item.id)) continue;
 
               folders.push({
                 ...item.folder,
@@ -96,13 +115,30 @@ export class CloudAPI {
                   id: item.id,
                   type: item.type,
                 })),
+                parentFolderId,
               });
             }
           }
         }
 
+        const existingFolder = folders.find(
+          (folder) => folder.id == collection.id
+        );
+
+        if (!existingFolder) {
+          folders.push({
+            id: collection.id,
+            name: collection.title,
+            items:
+              collection.folder?.items.map((item) => ({
+                id: item.id,
+                type: item.type,
+              })) || [],
+          });
+        }
+
         if (collection.folder) {
-          recursivelyInitializeFolders(collection.folder);
+          recursivelyInitializeFolders(collection.folder, collection.id);
         }
       })
     );
@@ -110,7 +146,7 @@ export class CloudAPI {
     await saveSessionToStore(sessions);
     await FolderAPI.setFolders(folders);
 
-    cloudEventEmitter.emit("refreshSidebar");
+    eventEmitter.emit("refreshSidebar");
     cloudEventEmitter.emit("refreshCloud");
   }
 

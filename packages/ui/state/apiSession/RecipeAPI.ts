@@ -68,7 +68,7 @@ export class CoreRecipeAPI {
 
       authConfig: config.editorAuthConfig,
       auth: null,
-      options: null,
+      options: config.editorSessionOptions || null,
     };
 
     return uploadRecipe;

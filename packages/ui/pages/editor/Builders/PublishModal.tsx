@@ -1,14 +1,19 @@
 "use client";
 import classNames from "classnames";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   DesktopPage,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { Modal } from "../../../components/Modal";
 
-import { getSessionRecord } from "../../../state/apiSession";
-import { RecipeSessionFolderExtended, TableInserts } from "types/database";
+import { SessionAPI, getSessionRecord } from "../../../state/apiSession";
+import {
+  AuthConfig,
+  RecipeSession,
+  RecipeSessionFolderExtended,
+  TableInserts,
+} from "types/database";
 import { CoreRecipeAPI } from "../../../state/apiSession/RecipeAPI";
 import { useSupabaseClient } from "../../../components/Providers/SupabaseProvider";
 import { v4 as uuidv4 } from "uuid";
@@ -24,13 +29,15 @@ import { DISCORD_LINK } from "utils/constants";
 import {
   RecipeCloudContext,
   cloudEventEmitter,
-  useRecipeCloud,
 } from "../../../state/apiSession/CloudAPI";
 import { FolderIcon } from "@heroicons/react/24/outline";
-import { useSessionFolders } from "../../../state/apiSession/FolderAPI";
+import { produce } from "immer";
+import { FolderAPI } from "../../../state/apiSession/FolderAPI";
+import { OutputAPI } from "../../../state/apiSession/OutputAPI";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 
 interface FolderPathToRecipes {
-  [folderPath: string]: TableInserts<"recipe">[];
+  [folderPath: string]: (TableInserts<"recipe"> & { folderId: string })[];
 }
 
 export function PublishFolderModal({
@@ -48,7 +55,9 @@ export function PublishFolderModal({
   const [foldersToRecipes, setFoldersToRecipes] = useState<
     {
       folderPath: string;
-      recipes: TableInserts<"recipe">[];
+      recipes: (TableInserts<"recipe"> & {
+        folderId: string;
+      })[];
     }[]
   >([]);
 
@@ -85,7 +94,10 @@ export function PublishFolderModal({
                 existingRecipe: recipeCloud.apiRecord[session.recipeId],
               });
 
-              folderPathToRecipes[folderPath].push(recipe);
+              folderPathToRecipes[folderPath].push({
+                ...recipe,
+                folderId: currFolder.id,
+              });
             } catch (e) {
               console.error(e);
             }
@@ -101,13 +113,14 @@ export function PublishFolderModal({
           delete folderPathToRecipes[folderPath];
         }
       }
-
       await recursivelyGetFolders(folder, "");
       setFoldersToRecipes(
-        Object.entries(folderPathToRecipes).map(([folderPath, recipes]) => ({
-          folderPath,
-          recipes,
-        }))
+        Object.entries(folderPathToRecipes).map(([folderPath, recipes]) => {
+          return {
+            folderPath,
+            recipes: recipes,
+          };
+        })
       );
     }
 
@@ -120,13 +133,67 @@ export function PublishFolderModal({
 
   const setDestkopPage = useRecipeSessionStore((state) => state.setDesktopPage);
   const router = useRouter();
+  const closeSession = useRecipeSessionStore((state) => state.closeSession);
 
   const onSubmit = async () => {
     async function _submit() {
       setError(null);
 
+      const sessionRecord = await getSessionRecord();
       let projectName = cloudCollection?.project ?? generateSlug(4);
       let projectId = cloudCollection?.id || "";
+
+      const recipesToFix: {
+        [oldId: string]: {
+          oldSession: RecipeSession;
+          newId: string;
+          folderId: string;
+          authConfig?: AuthConfig;
+        };
+      } = {};
+
+      let recipes = foldersToRecipes.map((folder) => folder.recipes).flat();
+      recipes = recipes.map((recipe) => {
+        if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
+          return recipe;
+        }
+
+        let recipeId = recipe.id || "";
+        if (!cloudCollection) {
+          recipeId = uuidv4();
+
+          const oldSession = sessionRecord[recipe.id || ""];
+          if (recipe.id && oldSession) {
+            recipesToFix[recipe.id] = {
+              oldSession: oldSession,
+              newId: recipeId,
+              folderId: recipe.folderId,
+              authConfig: recipe.authConfig,
+            };
+          }
+        }
+
+        return {
+          ...recipe,
+          author_id: user?.user_id,
+          id: recipeId,
+        };
+      });
+
+      let newFolder = produce(folder, (draft) => {
+        function travel(_folder: RecipeSessionFolderExtended) {
+          for (const item of _folder.items) {
+            if (item.type === "session" && recipesToFix[item.id]) {
+              item.session.id = recipesToFix[item.id].newId;
+              item.id = recipesToFix[item.id].newId;
+            } else if (item.type === "folder") {
+              travel(item.folder);
+            }
+          }
+        }
+
+        travel(draft);
+      });
 
       if (!cloudCollection) {
         const projectRes = await supabase
@@ -143,7 +210,7 @@ export function PublishFolderModal({
             scope: ProjectScope.Personal,
             visibility: ProjectVisibility.Unlisted, // Protected with RLS, private not supported yet
             owner_id: user?.user_id,
-            folder: folder,
+            folder: newFolder,
           })
           .select("*")
           .single();
@@ -160,25 +227,20 @@ export function PublishFolderModal({
         await supabase
           .from("project")
           .update({
-            folder: folder,
+            folder: newFolder,
           })
           .eq("id", projectId);
       }
 
-      const recipes = foldersToRecipes.map((folder) => folder.recipes).flat();
-
-      const uploadRes: TableInserts<"recipe">[] = recipes.map((recipe) => {
-        if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
-          return recipe;
+      // Add project name to recipeUpsert
+      const uploadRes: TableInserts<"recipe">[] = recipes.map(
+        ({ folderId, ...recipe }) => {
+          return {
+            ...recipe,
+            project: projectName,
+          };
         }
-
-        return {
-          ...recipe,
-          project: projectName,
-          author_id: user?.user_id,
-          id: recipe.id ?? uuidv4(),
-        };
-      });
+      );
 
       const uploadRecipes = await supabase
         .from("recipe")
@@ -188,6 +250,36 @@ export function PublishFolderModal({
       if (uploadRecipes.error) {
         setError(uploadRecipes.error.message ?? "Unable to upload recipes");
         return;
+      }
+
+      const valuesToFix = Object.values(recipesToFix);
+
+      // recipe of uploadRecipes.data
+      for (let i = 0; i < uploadRecipes.data.length; i++) {
+        const recipe = uploadRecipes.data[i];
+        const valueToFix = valuesToFix.find((v) => v.newId === recipe.id);
+        const oldSession = valueToFix?.oldSession;
+
+        if (oldSession && valueToFix) {
+          // We can probably migrate parameters and output
+
+          if (valueToFix.authConfig) {
+            await SecretAPI._migrateSecrets({
+              authConfig: valueToFix.authConfig,
+              newId: recipe.id,
+              oldId: oldSession.recipeId,
+            });
+          }
+          await OutputAPI._migrateOutput(oldSession.recipeId, recipe.id);
+          await SessionAPI._migrateParameters(oldSession.recipeId, recipe.id);
+
+          closeSession(oldSession);
+
+          await FolderAPI.deleteSessionFromFolder(
+            oldSession.id,
+            i === uploadRecipes.data.length - 1 ? false : true
+          );
+        }
       }
 
       cloudEventEmitter.emit("syncCloud");
@@ -293,7 +385,7 @@ export function PublishFolderModal({
         <button
           className={"btn btn-sm btn-neutral"}
           onClick={onSubmit}
-          disabled={loading}
+          disabled={loading || !user}
         >
           Upload {loading && <span className="loading loading-bars" />}
         </button>

@@ -7,7 +7,6 @@ import {
   RecipeContext,
   RecipeNativeFetchContext,
   RecipeOutputTab,
-  RecipeProjectContext,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { AuthConfig, RecipeOutputType, SingleAuthConfig } from "types/database";
@@ -25,9 +24,9 @@ import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { parse } from "json5";
 import { v4 as uuidv4 } from "uuid";
-import { isCollectionModule } from "../../../modules";
 import { ModuleSettings } from "../../../modules/authConfigs";
 import { DISCORD_LINK } from "utils/constants";
+import { getCollectionModule } from "types/modules/helpers";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -61,6 +60,10 @@ export function RecipeSearchButton() {
   );
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
+  const editorSessionOptions = useRecipeSessionStore(
+    (state) => state.editorSessionOptions
+  );
+
   const isTauri = useIsTauri();
 
   const onSubmit = async () => {
@@ -69,17 +72,23 @@ export function RecipeSearchButton() {
     }
     // if (currentSession) OutputAPI.clearOutput(currentSession.id);
 
-    const success = await _onSubmit();
-    setTimeout(() => {
-      setIsSending(
-        false,
-        success === undefined
-          ? editorMode
-            ? undefined
-            : RecipeOutputTab.Docs
-          : RecipeOutputTab.Output
-      );
-    }, 0);
+    try {
+      const success = await _onSubmit();
+      setTimeout(() => {
+        setIsSending(
+          false,
+          success === undefined
+            ? editorMode
+              ? undefined
+              : RecipeOutputTab.Docs
+            : RecipeOutputTab.Output
+        );
+      }, 0);
+    } catch (e) {
+      alert((e as Error).message);
+
+      console.error(e);
+    }
   };
 
   const nativeFetch = useContext(RecipeNativeFetchContext)!;
@@ -97,7 +106,7 @@ export function RecipeSearchButton() {
           project: "Personal",
           method: editorMethod,
           path: editorUrl,
-          options: {},
+          options: editorSessionOptions,
           version: 1,
           authConfig: editorAuthConfig,
         }
@@ -186,9 +195,15 @@ export function RecipeSearchButton() {
     let url = new URL(path);
 
     // ------ Parse Auth -------
-    if (editorProject && isCollectionModule(editorProject)) {
+
+    const collectionModule = getCollectionModule({
+      project: editorProject,
+      options: recipe.options,
+    });
+
+    if (collectionModule) {
       const { hasAuthSetup, secretRecord } = await SecretAPI.getComplexSecrets({
-        collection: editorProject,
+        collection: collectionModule,
       });
 
       if (!hasAuthSetup) {
@@ -197,7 +212,7 @@ export function RecipeSearchButton() {
       }
 
       let authConfigs: SingleAuthConfig[] = [];
-      const initialConfig = ModuleSettings[editorProject]?.authConfigs;
+      const initialConfig = ModuleSettings[collectionModule]?.authConfigs;
       if (initialConfig) {
         if (initialConfig.type === RecipeAuthType.Multiple) {
           authConfigs = initialConfig.payload;
@@ -209,7 +224,7 @@ export function RecipeSearchButton() {
       for (const config of authConfigs) {
         const secretKey = SecretAPI.getSecretKeyFromConfig(
           config,
-          editorProject
+          collectionModule
         );
         let secretValue = secretRecord[secretKey];
 
@@ -233,7 +248,7 @@ export function RecipeSearchButton() {
       }
     }
 
-    if (!isCollectionModule(editorProject || "") && recipe.authConfig) {
+    if (!collectionModule && recipe.authConfig) {
       let authConfigs: SingleAuthConfig[] = [];
       if (recipe.authConfig) {
         if (recipe.authConfig.type === RecipeAuthType.Multiple) {

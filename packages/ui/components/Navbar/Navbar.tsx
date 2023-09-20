@@ -289,23 +289,22 @@ function TauriUpdateExtension() {
         return version;
       }
 
-      const latestRes = await nativeFetch({
-        url: APP_GITHUB_LATEST_RELEASE_URL,
-        payload: {
-          headers: {},
-          method: RecipeMethod.GET,
-          body: undefined,
-        },
-      });
-
-      if (latestRes.status === 200) {
-        try {
+      try {
+        const latestRes = await nativeFetch({
+          url: APP_GITHUB_LATEST_RELEASE_URL,
+          payload: {
+            headers: {},
+            method: RecipeMethod.GET,
+            body: undefined,
+          },
+        });
+        if (latestRes.status === 200) {
           const latestJson = JSON.parse(latestRes.output);
 
           return latestJson.version as string;
-        } catch (e) {
-          console.error(e);
         }
+      } catch (e) {
+        console.error(e);
       }
 
       return version;

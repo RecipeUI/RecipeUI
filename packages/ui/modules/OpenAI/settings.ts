@@ -1,5 +1,5 @@
 import { RecipeAuthType } from "types/enums";
-import { CollectionModule, ModuleSetting } from "..";
+import { CollectionModule, ModuleSetting } from "types/modules";
 
 export default {
   module: CollectionModule.OpenAI,

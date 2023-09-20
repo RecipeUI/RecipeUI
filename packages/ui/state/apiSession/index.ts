@@ -4,6 +4,7 @@ import { JSONSchema6 } from "json-schema";
 import {
   AuthConfig,
   Recipe,
+  RecipeOptions,
   RecipeProject,
   RecipeSessionFolder,
   RecipeTemplate,
@@ -48,11 +49,7 @@ export interface APISessionConfig {
   editorURLSchemaType: string | null;
   editorURLSchemaJSON: JSONSchema6 | null;
   editorProject?: string | null;
-  editorSessionOptions?: EditorSessionOptions;
-}
-
-export interface EditorSessionOptions {
-  ignoreProject?: string;
+  editorSessionOptions?: RecipeOptions;
 }
 
 enum APIStore {
@@ -267,6 +264,26 @@ export async function setConfigForSessionStore({
 }) {
   const store = await getConfigStore();
   return store.put(config, String(recipeId)) || {};
+}
+
+export class SessionAPI {
+  static _migrateParameters = async (
+    oldSessionId: string,
+    newSessionId: string
+  ) => {
+    const parameters = await getParametersForSessionStore({
+      session: oldSessionId,
+    });
+
+    if (parameters) {
+      await setParametersForSessionStore({
+        session: newSessionId,
+        parameters,
+      });
+
+      await deleteParametersForSessionStore({ session: oldSessionId });
+    }
+  };
 }
 
 interface OldAuth {

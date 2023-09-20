@@ -1,6 +1,6 @@
 // We need to make sure usages of this file are LAZY LOADED
 
-import { CollectionModule, ModuleSetting } from ".";
+import { CollectionModule, ModuleSetting } from "types/modules";
 import NASA_MODULE from "./NASA/settings";
 import GIPHY_MODULE from "./GIPHY/settings";
 import UNSPLASH_MODULE from "./Unsplash/settings";

@@ -36,7 +36,6 @@ export function EditFolderModal({
 
   const supabase = useSupabaseClient();
 
-  console.log("her", recipeCloud.collectionRecord);
   return (
     <Modal header="Edit Folder" onClose={onClose} size="sm">
       <form className="mt-1 flex flex-col" onSubmit={onSubmit}>
@@ -143,8 +142,6 @@ export function EditFolderModal({
                       })
                       .eq("id", parentCollection.id)
                       .select("*");
-
-                    console.log("output", project);
                   }
                 }
 

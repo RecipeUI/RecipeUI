@@ -4,22 +4,20 @@ import {
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { Modal } from "../../components/Modal";
-import { ModuleSetting } from "..";
+import { ModuleSetting } from "types/database";
 import { ComponentModuleContainer } from "./ComponentModuleContainer";
 
 export function UpsellModuleContainer({ module }: { module: ModuleSetting }) {
   const setEditorProject = useRecipeSessionStore(
     (state) => state.setEditorProject
   );
-
   const setBodyRoute = useRecipeSessionStore((state) => state.setBodyRoute);
-
-  const setEditorSessionOptions = useRecipeSessionStore(
-    (state) => state.setEditorSessionOptions
+  const updateEditorSessionOptions = useRecipeSessionStore(
+    (state) => state.updateEditorSessionOptions
   );
 
   return (
-    <Modal header={`Import ${module.title} module?`}>
+    <Modal header={`Import ${module.title} API module?`}>
       <div className="">
         <div className="border m-4 mb-0 p-4 rounded-md">
           <button
@@ -27,6 +25,10 @@ export function UpsellModuleContainer({ module }: { module: ModuleSetting }) {
             onClick={() => {
               setEditorProject(module.module);
               setBodyRoute(RecipeBodyRoute.Collection);
+              updateEditorSessionOptions({
+                module: module.module,
+                ignoreProject: undefined,
+              });
             }}
           >
             Import
@@ -34,7 +36,7 @@ export function UpsellModuleContainer({ module }: { module: ModuleSetting }) {
           <button
             className="btn btn-ghost btn-sm"
             onClick={() => {
-              setEditorSessionOptions({
+              updateEditorSessionOptions({
                 ignoreProject: module.module,
               });
             }}

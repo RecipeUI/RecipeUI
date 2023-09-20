@@ -29,7 +29,6 @@ import { Session } from "@supabase/auth-helpers-nextjs";
 import { v4 as uuidv4 } from "uuid";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import {
-  EditorSessionOptions,
   deleteSession,
   setConfigForSessionStore,
   setParametersForSessionStore,
@@ -212,10 +211,8 @@ export interface RecipeEditorSlice {
   editorProject: string | null | undefined;
   setEditorProject: (editorProject: string | null) => void;
 
-  editorSessionOptions: EditorSessionOptions | undefined;
-  setEditorSessionOptions: (
-    editorSessionOptions?: EditorSessionOptions
-  ) => void;
+  editorSessionOptions: RecipeOptions | undefined;
+  updateEditorSessionOptions: (editorSessionOptions?: RecipeOptions) => void;
 
   initializeEditorSession: (
     editorSession: Partial<
@@ -506,8 +503,15 @@ export const createRecipeEditorSlice: StateCreator<
       }));
     },
 
-    setEditorSessionOptions(editorSessionOptions) {
-      set(() => ({ editorSessionOptions }));
+    updateEditorSessionOptions(editorSessionOptions) {
+      set((prevState) => {
+        return {
+          editorSessionOptions: {
+            ...prevState.editorSessionOptions,
+            ...editorSessionOptions,
+          },
+        };
+      });
     },
     updateEditorBodySchemaJSON({ path, update, merge = true }) {
       set((prevState) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { SecretAPI, useComplexSecrets } from "../../state/apiSession/SecretAPI";
-import { CollectionModule } from "..";
+import { CollectionModule } from "types/modules";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import classNames from "classnames";

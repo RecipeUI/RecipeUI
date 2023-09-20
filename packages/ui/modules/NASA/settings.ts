@@ -1,5 +1,9 @@
 import { RecipeAuthType } from "types/enums";
-import { CollectionComponentModule, CollectionModule, ModuleSetting } from "..";
+import {
+  CollectionComponentModule,
+  CollectionModule,
+  ModuleSetting,
+} from "types/modules";
 
 export default {
   module: CollectionModule.NASA,

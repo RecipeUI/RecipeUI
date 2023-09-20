@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { eventEmitter, getSecretStore } from ".";
 import { AuthConfig, SingleAuthConfig } from "types/database";
-import { CollectionModule, isCollectionModule } from "../../modules";
+import { CollectionModule } from "types/modules";
 import { ModuleSettings } from "../../modules/authConfigs";
 import { RecipeAuthType } from "types/enums";
+import { isCollectionModule } from "types/modules/helpers";
 
 export class SecretAPI {
   static getSecret = async ({
@@ -73,6 +74,50 @@ export class SecretAPI {
   static getSecretKeyFromConfig(authConfig: SingleAuthConfig, prefix: string) {
     return `${prefix}::${authConfig.type}::${authConfig.payload?.name}`;
   }
+
+  static _migrateSecrets = async ({
+    authConfig,
+    newId,
+    oldId,
+    singleConfig = true,
+  }: {
+    authConfig: AuthConfig;
+    oldId: string;
+    newId: string;
+    singleConfig?: boolean;
+  }) => {
+    if (authConfig.type === RecipeAuthType.Multiple) {
+      for (const config of authConfig.payload) {
+        await this._migrateSecrets({
+          authConfig: config,
+          oldId,
+          newId,
+          singleConfig: false,
+        });
+      }
+    } else {
+      const secretKey = singleConfig
+        ? oldId
+        : this.getSecretKeyFromConfig(authConfig, oldId);
+
+      const currentSecret = await this.getSecret({
+        secretId: secretKey,
+      });
+
+      if (currentSecret) {
+        await this.saveSecret({
+          secretId: singleConfig
+            ? newId
+            : this.getSecretKeyFromConfig(authConfig, newId),
+          secretValue: currentSecret,
+        });
+
+        await this.deleteSecret({
+          secretId: secretKey,
+        });
+      }
+    }
+  };
 }
 
 interface SaveSecret {

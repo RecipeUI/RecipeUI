@@ -13,6 +13,11 @@ import {
   Visibility,
 } from "./enums";
 import { JSONSchema6 } from "json-schema";
+import {
+  CollectionComponentModule,
+  CollectionModule,
+  ResourceSection,
+} from "./modules";
 
 type Nullable<T> = T | null;
 
@@ -144,6 +149,8 @@ export type RecipeOptions = {
   docs?: {
     auth: string;
   };
+  ignoreProject?: string;
+  module?: CollectionModule;
 };
 
 export type RecipeReplay = RecipeParameters & RecipeTemplateOutput;
@@ -333,3 +340,14 @@ export type RecipeSessionFolderExtended = Omit<
 > & {
   items: RecipeSessionFolderItemExtended[];
 };
+
+export interface ModuleSetting {
+  module: CollectionModule;
+  title: string;
+  description: string;
+  image?: string;
+  authConfigs?: AuthConfig | null;
+  resources?: ResourceSection;
+  components?: CollectionComponentModule[];
+  urls: string[];
+}

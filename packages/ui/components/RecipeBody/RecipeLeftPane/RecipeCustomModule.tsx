@@ -1,7 +1,7 @@
 import { Suspense, lazy, useMemo } from "react";
-import { CollectionModule } from "../../../modules";
 import { Loading } from "../../Loading";
 import { DefaultModuleContainer } from "../../../modules/components/DefaultModuleContainer";
+import { CollectionModule } from "types/modules";
 
 const NASA = lazy(() => import("../../../modules/NASA"));
 

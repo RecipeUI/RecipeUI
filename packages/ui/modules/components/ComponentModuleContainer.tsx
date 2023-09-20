@@ -4,7 +4,7 @@ import {
   CollectionComponentModule,
   DEFAULT_COMPONENT_MODULES,
   ModuleSetting,
-} from "..";
+} from "types/modules";
 import { ResourcesModule } from "./ResourcesModule";
 import { HeaderModule } from "./HeaderModule";
 import { Fragment, ReactNode } from "react";
