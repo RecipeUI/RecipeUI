@@ -148,8 +148,13 @@ export type SingleAuthConfig =
         | RecipeAuthType.Query
         | RecipeAuthType.Bearer
         | RecipeAuthType.Multiple
+        | RecipeAuthType.Basic
       >;
       payload?: SimpleAuthPayload;
+    }
+  | {
+      type: RecipeAuthType.Basic;
+      payload?: SimpleAuthPayload & { name: "base64" };
     };
 
 export type AuthConfig =

@@ -6,6 +6,7 @@ import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
 import { SecretAPI } from "../../state/apiSession/SecretAPI";
 import { SingleAuthConfig, TraditionalSingleAuth } from "types/database";
+import { useForm } from "react-hook-form";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -69,6 +70,19 @@ export function EditorAuth() {
           }}
         />
         <AuthButton
+          label="Basic"
+          description="Basic auth with username and password."
+          selected={singleConfig?.type === RecipeAuthType.Basic}
+          onClick={() => {
+            setEditorAuthConfig({
+              type: RecipeAuthType.Basic,
+              payload: {
+                name: "base64",
+              },
+            });
+          }}
+        />
+        <AuthButton
           label="OAuth (Soon)"
           description="Join our Discord or email us to use this feature now."
           // selected={singleConfig?.type === RecipeAuthType.OAuth}
@@ -91,6 +105,10 @@ function SingleAuthConfig({
     editorAuthConfig.type === RecipeAuthType.Header
   ) {
     return <TraditionalSingleAuthConfig editorAuthConfig={editorAuthConfig} />;
+  }
+
+  if (editorAuthConfig.type === RecipeAuthType.Basic) {
+    return <BasicAuth editorAuthConfig={editorAuthConfig} />;
   }
 
   return null;
@@ -226,6 +244,119 @@ function TraditionalSingleAuthConfig({
         </button>
       </div>
     </div>
+  );
+}
+
+function BasicAuth({
+  editorAuthConfig,
+}: {
+  editorAuthConfig: Extract<SingleAuthConfig, { type: RecipeAuthType.Basic }>;
+}) {
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
+  const { secret, setSecret, authConfig } =
+    useSingleAuthSecret(editorAuthConfig);
+
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { isDirty, errors },
+  } = useForm<{
+    username: string;
+    password: string;
+  }>();
+  useEffect(() => {
+    if (!secret) {
+      setValue("username", "");
+      setValue("password", "");
+      return;
+    }
+
+    const [username, password] = atob(secret).split(":");
+    setValue("username", username);
+    setValue("password", password);
+  }, [secret, setValue]);
+
+  const onSubmit = handleSubmit(async (data) => {
+    // We can encrypt it earlier but it's a bit unclear to me?
+
+    const encryptedSecret = btoa(`${data.username}:${data.password}`);
+    await SecretAPI.saveSecret({
+      secretId: currentSession!.recipeId,
+      secretValue: encryptedSecret,
+    });
+    setSecret(encryptedSecret);
+
+    reset(undefined, { keepValues: true });
+  });
+
+  return (
+    <form className={classNames("py-2 p-4 pb-4")} onSubmit={onSubmit}>
+      <AuthFormWrapper label={`Username`}>
+        <input
+          type="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          placeholder="test@domain.com"
+          className={classNames("input input-bordered w-full input-sm")}
+          {...register("username", {
+            required: true,
+          })}
+        />
+      </AuthFormWrapper>
+      {errors.username && (
+        <p className="text-xs text-red-600">Username is required</p>
+      )}
+
+      <AuthFormWrapper label={`Password`}>
+        <input
+          type="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          placeholder="password"
+          className={classNames(
+            "input input-bordered w-full input-sm",
+            !authConfig?.payload?.name && "input-error"
+          )}
+          {...register("password", {
+            required: true,
+          })}
+        />
+      </AuthFormWrapper>
+      {errors.password && (
+        <p className="text-xs text-red-600">Password is required</p>
+      )}
+
+      <div className="space-x-2">
+        <button
+          type="submit"
+          className={classNames(
+            "btn btn-sm btn-accent mt-2",
+            !isDirty && "btn-disabled"
+          )}
+        >
+          Save changes
+        </button>
+        <button
+          className={classNames(
+            "btn btn-sm btn-neutral mt-2",
+            !secret && "btn-disabled"
+          )}
+          onClick={() => {
+            SecretAPI.deleteSecret({
+              secretId: currentSession!.recipeId,
+            });
+            setSecret("");
+            alert("Deleted secret");
+          }}
+        >
+          Delete secret
+        </button>
+      </div>
+    </form>
   );
 }
 

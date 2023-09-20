@@ -310,7 +310,8 @@ export async function getConfigForSessionStore({
 
   if (
     config?.editorAuth &&
-    config.editorAuth.type !== RecipeAuthType.Multiple
+    config.editorAuth.type !== RecipeAuthType.Multiple &&
+    config.editorAuth.type !== RecipeAuthType.Basic
   ) {
     config.editorAuthConfig = {
       type: config.editorAuth.type,
