@@ -96,27 +96,15 @@ function SingleAuthConfig({
   return null;
 }
 
-function TraditionalSingleAuthConfig({
-  editorAuthConfig,
-}: {
-  editorAuthConfig: TraditionalSingleAuth;
-}) {
-  const currentSession = useRecipeSessionStore(
-    (state) => state.currentSession
-  )!;
-
-  const setEditorAuthConfig = useRecipeSessionStore(
-    (state) => state.setEditorAuthConfig
-  );
-
-  const [authConfig, setAuthConfig] = useState<TraditionalSingleAuth | null>(
-    null
-  );
+function useSingleAuthSecret<T>(editorAuthConfig: T) {
+  const [authConfig, setAuthConfig] = useState<T | null>(null);
   useEffect(() => {
     setAuthConfig(editorAuthConfig);
   }, [editorAuthConfig]);
 
-  const [hasChanged, setHasChanged] = useState(false);
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
 
   const [secret, setSecret] = useState("");
   useEffect(() => {
@@ -126,6 +114,24 @@ function TraditionalSingleAuthConfig({
       }
     );
   }, [currentSession?.recipeId]);
+
+  return { secret, setSecret, setAuthConfig, authConfig };
+}
+
+function TraditionalSingleAuthConfig({
+  editorAuthConfig,
+}: {
+  editorAuthConfig: TraditionalSingleAuth;
+}) {
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
+  const setEditorAuthConfig = useRecipeSessionStore(
+    (state) => state.setEditorAuthConfig
+  );
+  const [hasChanged, setHasChanged] = useState(false);
+  const { secret, setSecret, authConfig, setAuthConfig } =
+    useSingleAuthSecret(editorAuthConfig);
 
   return (
     <div className={classNames("py-2 p-4 pb-4")}>
