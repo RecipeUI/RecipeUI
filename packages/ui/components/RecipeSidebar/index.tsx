@@ -285,14 +285,14 @@ function SessionFolder({
             <span
               className={classNames(
                 "flex items-center w-full",
-                isCloudFolder && "text-primary dark:text-accent"
+                isCloudFolder && "text-blue-500 dark:text-accent"
               )}
             >
               {isCloudFolder ? (
                 <FolderIcon
                   className={classNames(
                     "w-4 h-4 mr-2 mb-0.5",
-                    isCloudFolder && "text-primary dark:text-accent"
+                    isCloudFolder && "text-blue-500 dark:text-accent"
                   )}
                 />
               ) : (
@@ -314,7 +314,7 @@ function SessionFolder({
                 <Cog6ToothIcon className="w-4 h-4" />
               </a>
               <a
-                className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
+                className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -326,7 +326,7 @@ function SessionFolder({
                 <PlusCircleIcon className="w-4 h-4" />
               </a>
               <a
-                className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
+                className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -338,7 +338,7 @@ function SessionFolder({
               </a>
               {isRootFolder && (
                 <a
-                  className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
+                  className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -468,11 +468,11 @@ function SessionTab({
       >
         <div
           className={classNames(
-            "text-start whitespace-pre-wrap relative group min-w-full",
+            "text-start whitespace-pre-wrap relative group min-w-full ",
             cloudSession &&
               (isCurrentSession
-                ? "text-primary dark:text-neutral"
-                : "text-primary dark:text-accent")
+                ? "text-blue-500 dark:text-neutral"
+                : "text-blue-500  dark:text-accent")
           )}
         >
           <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
@@ -494,7 +494,7 @@ function SessionTab({
             }}
           >
             <label
-              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-primary"
+              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-accent"
               onClick={() => {
                 setShowEditModal(true);
               }}
@@ -502,7 +502,7 @@ function SessionTab({
               <PencilSquareIcon className="w-3" />
             </label>
             <label
-              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-primary"
+              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-accent"
               onClick={() => {
                 setDuplicateModal({ folder_id: parentFolderId });
               }}
@@ -510,7 +510,7 @@ function SessionTab({
               <DocumentDuplicateIcon className="w-3" />
             </label>
             <label
-              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-primary rounded-r-md"
+              className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-accent rounded-r-md"
               onClick={async (e) => {
                 e.stopPropagation();
 

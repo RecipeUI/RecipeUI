@@ -36,10 +36,10 @@ export function StreamingTip() {
       </h2>
       <p className="text-sm">
         When using the Chat Completion endpoint, you can use the "stream"
-        property to stream messages on RecipeUI.
+        property to stream the output on RecipeUI.
       </p>
       <img
-        className="mt-2"
+        className="mt-2 rounded-md shadow-lg"
         src="https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/recipeui/tutorial/aistream.gif"
         alt="streaming-tip-gif"
       />
