@@ -1,5 +1,4 @@
 import { produce } from "immer";
-
 export function restrictObjectsAndArrays<T>(
   obj: Record<string, unknown> | Array<Record<string, unknown>>,
   options?: {

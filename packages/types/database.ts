@@ -126,6 +126,7 @@ interface SimpleAuthPayload {
   name: string;
   prefix?: string;
   description?: string;
+  default?: string;
 }
 
 export type TraditionalSingleAuth =

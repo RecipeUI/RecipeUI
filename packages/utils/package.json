@@ -4,11 +4,15 @@
   "private": true,
   "main": "index.ts",
   "types": "index.ts",
-  "scripts": {},
+  "scripts": {
+    "test": "jest ./"
+  },
   "dependencies": {
-    "immer": "^10.0.2"
+    "immer": "^10.0.2",
+    "json5": "^2.2.3"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.5",
     "@types/js-cookie": "^3.0.3",
     "@types/js-yaml": "^4.0.5",
     "@types/json-schema": "^7.0.12",
@@ -17,6 +21,8 @@
     "@types/react-dom": "18.2.7",
     "@types/uuid": "^9.0.2",
     "eslint-config-custom": "workspace:*",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
     "types": "workspace:*",
     "typescript": "^5.0.2"
   }

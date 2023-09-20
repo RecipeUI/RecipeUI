@@ -7,7 +7,7 @@ import {
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { Modal } from "../../../components/Modal";
-import { parseCurl } from "../curlParser";
+import { parseCurl } from "utils/curlParser";
 import { RecipeAuthType, RecipeMethod } from "types/enums";
 import { v4 as uuidv4 } from "uuid";
 
@@ -48,6 +48,7 @@ export function CurlModal({
           value: requestInfo.headers[key],
         })),
         editorMethod: requestInfo.method.toUpperCase() as RecipeMethod,
+        editorAuthConfig: requestInfo.authConfig,
       };
 
       const { queryInfo, bodyInfo } = await getQueryAndBodyInfo({
@@ -74,20 +75,15 @@ export function CurlModal({
           };
 
       if (editorSlice.editorHeaders) {
-        for (const header of editorSlice.editorHeaders) {
-          if (header.name === "Authorization") {
-            if (header.value.startsWith("Bearer")) {
-              (editorSlice.editorAuthConfig = {
-                type: RecipeAuthType.Bearer,
-              }),
-                SecretAPI.saveSecret({
-                  secretId: newSession.recipeId,
-                  secretValue: header.value.replace("Bearer ", ""),
-                });
-
-              break;
-            }
-          }
+        if (
+          editorSlice.editorAuthConfig &&
+          (editorSlice.editorAuthConfig.type === RecipeAuthType.Bearer ||
+            editorSlice.editorAuthConfig.type === RecipeAuthType.Header)
+        ) {
+          SecretAPI.saveSecret({
+            secretId: newSession.recipeId,
+            secretValue: editorSlice.editorAuthConfig.payload?.default || "",
+          });
         }
 
         if (editorSlice.editorAuthConfig) {

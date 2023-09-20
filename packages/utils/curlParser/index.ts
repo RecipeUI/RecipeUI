@@ -1,4 +1,6 @@
 import { parse } from "json5";
+import { AuthConfig } from "types/database";
+import { RecipeAuthType, RecipeMethod } from "types/enums";
 
 const QUOTE_CHARS = ["'", '"'];
 function splitStringManual(_str: string) {
@@ -62,15 +64,16 @@ function splitStringManual(_str: string) {
 }
 
 export interface CurlRequestInfo {
-  method: string;
+  method: RecipeMethod;
   url: string;
   headers: Record<string, string>;
   body: Record<string, unknown> | null;
+  authConfig?: AuthConfig | null;
 }
 
 function parsePartsToCurl(parts: string[]) {
   let result: CurlRequestInfo = {
-    method: "GET", // Default method
+    method: RecipeMethod.GET, // Default method
     url: "",
     headers: {},
     body: null,
@@ -83,12 +86,12 @@ function parsePartsToCurl(parts: string[]) {
         break;
       case "-x":
       case "--request":
-        result.method = parts[i + 1];
+        result.method = parts[i + 1] as RecipeMethod;
         i++; // Skip the next item which is the actual method.
         break;
       case "-g":
       case "--get":
-        result.method = "GET";
+        result.method = RecipeMethod.GET;
         break;
       case "-h":
       case "--header":
@@ -103,12 +106,34 @@ function parsePartsToCurl(parts: string[]) {
         const [header, key] = headerParts;
         result.headers[header] = key;
         i++; // Skip the next item which is the actual header.
+
+        if (header === "Authorization") {
+          if (key.startsWith("Bearer ")) {
+            result.authConfig = {
+              type: RecipeAuthType.Bearer,
+              payload: {
+                name: "Authorization",
+                default: key.split("Bearer ")[1],
+              },
+            };
+          } else {
+            // TODO: Migrate this to multiple. There are cases where APIs use two headers
+            result.authConfig = {
+              type: RecipeAuthType.Header,
+              payload: {
+                name: "Authorization",
+                default: key,
+              },
+            };
+          }
+        }
+
         break;
       case "-d":
       case "--data":
         try {
           result.body = parse(parts[i + 1]);
-          result.method = "POST";
+          result.method = RecipeMethod.POST;
         } catch (e) {
           console.error("Unable to parse body", parts[i + 1]);
         }
