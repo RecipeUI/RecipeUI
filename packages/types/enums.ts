@@ -28,13 +28,10 @@ export enum RecipeParamType {
 
 export enum RecipeAuthType {
   Bearer = "bearer",
-  ClientID = "clientId",
-  Token = "token",
   Custom = "custom",
   Multiple = "Multiple",
   Query = "query",
   OAuth = "oauth",
-  Setup = "setup",
   Header = "header",
 }
 

@@ -86,7 +86,11 @@ export function Navbar() {
     >
       <div className={classNames("flex text-sm items-center")}>
         <button
-          className="cursor-pointer flex items-center"
+          className={classNames(
+            "cursor-pointer flex items-center",
+            process.env.NEXT_PUBLIC_ENV === "dev" &&
+              "bg-accent rounded-md p-1 pl-2"
+          )}
           onClick={() => {
             if (isTauri) {
               goEditor();
@@ -114,6 +118,9 @@ export function Navbar() {
               </clipPath>
             </defs>
           </svg>
+          {process.env.NEXT_PUBLIC_ENV === "dev" && (
+            <span className="mx-1 text-xs">Dev</span>
+          )}
         </button>
         {isTauri && <TauriUpdateExtension />}
         <div
