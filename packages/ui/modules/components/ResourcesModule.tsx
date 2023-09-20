@@ -1,4 +1,4 @@
-import { ModuleSetting } from "types/modules";
+import { ModuleSetting } from "types/database";
 
 export function ResourcesModule({
   resourceSection,

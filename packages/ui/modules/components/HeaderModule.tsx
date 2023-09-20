@@ -1,6 +1,6 @@
 "use client";
 
-import { ModuleSetting } from "types/modules";
+import { ModuleSetting } from "types/database";
 import { useIsTauri } from "../../hooks/useIsTauri";
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
 

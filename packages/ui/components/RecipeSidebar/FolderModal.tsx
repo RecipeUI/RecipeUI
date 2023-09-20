@@ -1,8 +1,6 @@
 "use client";
-import {
-  FolderAPI,
-  RecipeSessionFolderExtended,
-} from "../../state/apiSession/FolderAPI";
+import { RecipeSessionFolderExtended } from "types/database";
+import { FolderAPI } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { useForm } from "react-hook-form";
 

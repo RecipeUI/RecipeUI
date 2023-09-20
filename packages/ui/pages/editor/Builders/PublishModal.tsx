@@ -168,7 +168,7 @@ export function PublishFolderModal({
               oldSession: oldSession,
               newId: recipeId,
               folderId: recipe.folderId,
-              authConfig: recipe.authConfig,
+              authConfig: recipe.authConfig || undefined,
             };
           }
         }

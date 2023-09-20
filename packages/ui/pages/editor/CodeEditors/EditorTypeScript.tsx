@@ -123,7 +123,14 @@ export const EditorTypeScript = ({
     });
 
   useEffect(() => {
-    refresh();
+    // This is a hack to make sure refreshing one tab, won't accidentally refresh another tab after switching quickly.
+    let timer = setTimeout(() => {
+      refresh();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   if (schemaType == undefined) {

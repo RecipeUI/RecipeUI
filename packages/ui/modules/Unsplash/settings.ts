@@ -1,5 +1,6 @@
+import { ModuleSetting } from "types/database";
 import { RecipeAuthType } from "types/enums";
-import { CollectionModule, ModuleSetting } from "types/modules";
+import { CollectionModule } from "types/modules";
 
 export default {
   module: CollectionModule.Unsplash,

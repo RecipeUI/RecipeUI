@@ -3,11 +3,11 @@
 import {
   CollectionComponentModule,
   DEFAULT_COMPONENT_MODULES,
-  ModuleSetting,
 } from "types/modules";
 import { ResourcesModule } from "./ResourcesModule";
 import { HeaderModule } from "./HeaderModule";
 import { Fragment, ReactNode } from "react";
+import { ModuleSetting } from "types/database";
 
 export function ComponentModuleContainer({
   module,

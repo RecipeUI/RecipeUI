@@ -1,10 +1,11 @@
 // We need to make sure usages of this file are LAZY LOADED
 
-import { CollectionModule, ModuleSetting } from "types/modules";
+import { CollectionModule } from "types/modules";
 import NASA_MODULE from "./NASA/settings";
 import GIPHY_MODULE from "./GIPHY/settings";
 import UNSPLASH_MODULE from "./Unsplash/settings";
 import OPENAI_MODULE from "./OpenAI/settings";
+import { ModuleSetting } from "types/database";
 
 export const ModuleSettings: Record<
   CollectionModule,

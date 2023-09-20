@@ -6,9 +6,7 @@
   "path": "https://pokeapi.co/api/v2/ability/{id_or_name}",
   "project": "Pokéapi",
   "auth": null,
-  "tags": [
-    "Examples"
-  ],
+  "tags": ["Examples"],
   "queryParams": null,
   "urlParams": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20,9 +18,7 @@
         "default": "static"
       }
     },
-    "required": [
-      "{id_or_name}"
-    ],
+    "required": ["{id_or_name}"],
     "additionalProperties": false
   },
   "requestBody": null,
@@ -32,7 +28,7 @@
   "visibility": "public",
   "version": 1,
   "id": "1e2474ad-00de-4f22-878f-db660647ce91",
-  "queryParamsType": "export interface APIUrlParams {\n  \"{id_or_name}\":string;\n}",
-  "urlParamsType": null,
+  "urlParamsType": "export interface APIUrlParams {\n  \"{id_or_name}\":string;\n}",
+  "queryParamsType": null,
   "requestBodyType": null
 }

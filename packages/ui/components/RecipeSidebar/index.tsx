@@ -105,8 +105,12 @@ export function RecipeSidebar() {
       setCollectionFork("");
 
       if (recipes && recipes.length > 0) {
-        for (const recipe of recipes) {
-          await initializeRecipe(recipe.id, { recipePreDefined: recipe });
+        for (let i = 0; i < recipes.length; i++) {
+          const recipe = recipes[i];
+          await initializeRecipe(recipe.id, {
+            recipePreDefined: recipe,
+            noCurrentSession: i !== recipes.length - 1,
+          });
         }
       }
     }
