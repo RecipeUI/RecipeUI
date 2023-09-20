@@ -12,6 +12,11 @@ const VERSION_LOGS: {
   ignore?: boolean;
 }[] = [
   {
+    version: "0.8.6",
+    update: "Nested folders. Improved cloud syncing.",
+    update_type: "feature",
+  },
+  {
     version: "0.8.5",
     update: "Bug fixes and multiple UX improvements. Auth flow improved.",
     update_type: "bug",
