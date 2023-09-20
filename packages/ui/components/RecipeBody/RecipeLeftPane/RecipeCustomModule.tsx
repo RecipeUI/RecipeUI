@@ -4,13 +4,14 @@ import { DefaultModuleContainer } from "../../../modules/components/DefaultModul
 import { CollectionModule } from "types/modules";
 
 const NASA = lazy(() => import("../../../modules/NASA"));
+const OpenAI = lazy(() => import("../../../modules/OpenAI"));
 
 export function RecipeCustomModule({ module }: { module: CollectionModule }) {
   const ModuleComponent = useMemo(() => {
     if (module === CollectionModule.NASA) {
       return NASA;
-    } else if (module === CollectionModule.GIPHY) {
-      // return GIPHY;
+    } else if (module === CollectionModule.OpenAI) {
+      return OpenAI;
     }
 
     return null;

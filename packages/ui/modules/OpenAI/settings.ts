@@ -1,6 +1,6 @@
 import { ModuleSetting } from "types/database";
 import { RecipeAuthType } from "types/enums";
-import { CollectionModule } from "types/modules";
+import { CollectionComponentModule, CollectionModule } from "types/modules";
 
 export default {
   module: CollectionModule.OpenAI,
@@ -32,4 +32,10 @@ export default {
     ],
   },
   urls: ["https://api.openai.com/v1"],
+  components: [
+    CollectionComponentModule.Auth,
+    CollectionComponentModule.Header,
+    CollectionComponentModule.Resources,
+    CollectionComponentModule.Custom2,
+  ],
 } satisfies ModuleSetting;

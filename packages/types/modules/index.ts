@@ -7,14 +7,16 @@ export enum CollectionModule {
 
 export enum CollectionComponentModule {
   Header = "Header",
+  Auth = "Auth",
   Custom = "Custom",
+  Custom2 = "Custom2",
   Resources = "Resources",
 }
 
 export const modules = Object.values(CollectionModule);
 
 export const DEFAULT_COMPONENT_MODULES = [
-  CollectionComponentModule.Custom,
+  CollectionComponentModule.Auth,
   CollectionComponentModule.Header,
   CollectionComponentModule.Resources,
 ];

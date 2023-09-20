@@ -8,20 +8,28 @@ import { ResourcesModule } from "./ResourcesModule";
 import { HeaderModule } from "./HeaderModule";
 import { Fragment, ReactNode } from "react";
 import { ModuleSetting } from "types/database";
+import { RecipeAuthType } from "types/enums";
+import { SingleAuthModule } from "./AuthModule";
 
 export function ComponentModuleContainer({
   module,
-  children,
+  moduleComponentMapping = {},
 }: {
   module: ModuleSetting;
-  children?: ReactNode;
+  moduleComponentMapping?: {
+    [key in CollectionComponentModule]?: ReactNode;
+  };
 }) {
   const components = module.components || DEFAULT_COMPONENT_MODULES;
 
   return (
     <div className="space-y-4 p-4 ">
       {components.map((component, i) => {
-        if (component === CollectionComponentModule.Header) {
+        const Component = moduleComponentMapping[component];
+
+        if (Component) {
+          return <Fragment key={i}>{Component}</Fragment>;
+        } else if (component === CollectionComponentModule.Header) {
           return <HeaderModule module={module} key={i} />;
         } else if (component === CollectionComponentModule.Resources) {
           if (!module.resources) {
@@ -29,9 +37,23 @@ export function ComponentModuleContainer({
           }
 
           return <ResourcesModule resourceSection={module.resources} key={i} />;
-        } else if (component === CollectionComponentModule.Custom) {
-          return <Fragment key={i}>{children}</Fragment>;
+        } else if (component === CollectionComponentModule.Auth) {
+          if (!module.authConfigs) return null;
+          return module.authConfigs ? (
+            <Fragment key={i}>
+              {module.authConfigs.type !== RecipeAuthType.Multiple ? (
+                <SingleAuthModule
+                  authConfig={module.authConfigs}
+                  module={module.module}
+                />
+              ) : (
+                <div>Multiple config not supported yet</div>
+              )}
+            </Fragment>
+          ) : null;
         }
+
+        return null;
       })}
     </div>
   );
