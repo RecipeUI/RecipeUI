@@ -285,14 +285,14 @@ function SessionFolder({
             <span
               className={classNames(
                 "flex items-center w-full",
-                isCloudFolder && "text-accent"
+                isCloudFolder && "text-primary dark:text-accent"
               )}
             >
               {isCloudFolder ? (
                 <FolderIcon
                   className={classNames(
                     "w-4 h-4 mr-2 mb-0.5",
-                    isCloudFolder && "text-accent"
+                    isCloudFolder && "text-primary dark:text-accent"
                   )}
                 />
               ) : (
@@ -416,11 +416,9 @@ function SessionTab({
   );
   const closeSession = useRecipeSessionStore((state) => state.closeSession);
 
-  const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(session.name);
 
   const onUpdateSessionName = () => {
-    setIsEditing(false);
     updateSessionName(session, name);
   };
   const initializeEditorSession = useRecipeSessionStore(
@@ -443,7 +441,7 @@ function SessionTab({
         ref={hoverRef}
         key={session.id}
         className={classNames(
-          "pl-4 py-2 text-xs ",
+          "pl-4 py-2 text-xs",
           isCurrentSession && "bg-gray-400 dark:text-black"
         )}
         onClick={async (e) => {
@@ -470,34 +468,24 @@ function SessionTab({
       >
         <div
           className={classNames(
-            "text-start whitespace-pre-wrap relative",
-            cloudSession && (isCurrentSession ? "text-primary" : "text-accent")
+            "text-start whitespace-pre-wrap relative group min-w-full",
+            cloudSession &&
+              (isCurrentSession
+                ? "text-primary dark:text-neutral"
+                : "text-primary dark:text-accent")
           )}
         >
-          {!isEditing && (
-            <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
-          )}
-
-          {isEditing ? (
-            <input
-              className="text-black outline-none ml-2 dark:text-white dark:bg-neutral-900 flex-1 mr-4 inline"
-              onBlur={onUpdateSessionName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") onUpdateSessionName();
-              }}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-            />
-          ) : (
-            <h4 className="ml-2 inline">{session.name || "New Session"}</h4>
-          )}
+          <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
+          <h4
+            className={classNames(
+              "ml-2 inline",
+              isCurrentSession && "text-neutral group-hover:text-accent"
+            )}
+          >
+            {session.name || "New Session"}
+          </h4>
         </div>
-
-        {isHover && !isEditing && (
+        {isHover && (
           <div
             className="absolute cursor-pointer w-fit right-0 top-0 h-8 px-2 bg-base-100 border justify-center  flex  rounded-md"
             onClick={(e) => {
