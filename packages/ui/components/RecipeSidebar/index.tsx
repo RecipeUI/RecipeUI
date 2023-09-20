@@ -4,7 +4,7 @@ import {
   RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover, useSessionStorage } from "usehooks-ts";
@@ -12,6 +12,8 @@ import {
   CloudArrowUpIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
+  FolderArrowDownIcon,
+  FolderIcon,
   FolderPlusIcon,
   PencilSquareIcon,
   PlusCircleIcon,
@@ -37,7 +39,11 @@ import { Recipe, RecipeSessionFolderExtended } from "types/database";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { fetchProjectPage } from "../../fetchers/project";
 import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
-import { useRecipeCloud } from "../../state/apiSession/CloudAPI";
+import {
+  RecipeCloudContext,
+  cloudEventEmitter,
+  useRecipeCloud,
+} from "../../state/apiSession/CloudAPI";
 import { ViewCollectionModal } from "./ViewCollectionModal";
 import { FolderModal } from "./FolderModal";
 import { DuplicateModal } from "./DuplicateModal";
@@ -134,6 +140,7 @@ export function RecipeSidebar() {
   );
 
   const [addFolderModal, setAddFolderModal] = useState(false);
+  const recipeCloud = useRecipeCloud();
 
   if (sessions.length === 0) {
     return null;
@@ -200,22 +207,22 @@ export function RecipeSidebar() {
           </li>
         </ul>
       </div>
+      <RecipeCloudContext.Provider value={recipeCloud}>
+        {Object.keys(folderSessions).length > 0 && (
+          <ul className="menu py-0">
+            {Object.keys(folderSessions).map((folderId) => {
+              const folder = folderSessions[folderId];
+              if (folder.parentFolderId) {
+                return null;
+              }
 
-      {Object.keys(folderSessions).length > 0 && (
-        <ul className="menu py-0">
-          {Object.keys(folderSessions).map((folderId) => {
-            const folder = folderSessions[folderId];
-            if (folder.parentFolderId) {
-              return null;
-            }
-
-            return (
-              <SessionFolder key={folderId} folder={folder} isRootFolder />
-            );
-          })}
-        </ul>
-      )}
-
+              return (
+                <SessionFolder key={folderId} folder={folder} isRootFolder />
+              );
+            })}
+          </ul>
+        )}
+      </RecipeCloudContext.Provider>
       {/* This is the base folder. It has no names. No indentation */}
       {noFolderSessions.length > 0 && (
         <div>
@@ -252,8 +259,11 @@ function SessionFolder({
   folder: RecipeSessionFolderExtended;
   isRootFolder?: boolean;
 }) {
-  const recipeCloud = useRecipeCloud();
-  const cloudCollection = recipeCloud.collectionRecord[folder.id];
+  const recipeCloud = useContext(RecipeCloudContext);
+  const isCloudFolder =
+    recipeCloud.collectionRecord[folder.id] ??
+    !!recipeCloud.folderToCollection[folder.id];
+
   const [editFolder, setEditFolder] =
     useState<RecipeSessionFolderExtended | null>(null);
   const [publishFolder, setPublishFolder] =
@@ -268,13 +278,26 @@ function SessionFolder({
       <li className="w-full">
         <details className="relative w-full" open>
           <summary className="text-xs font-bold p-0 px-2 py-2 pr-4  w-full group">
-            <span className={classNames("flex items-center w-full")}>
-              {cloudCollection && (
-                <CloudArrowUpIcon className="w-4 h-4 mr-2 mb-0.5 text-accent" />
+            <span
+              className={classNames(
+                "flex items-center w-full",
+                isCloudFolder && "text-accent"
               )}
+            >
+              {isCloudFolder ? (
+                <FolderIcon
+                  className={classNames(
+                    "w-4 h-4 mr-2 mb-0.5",
+                    isCloudFolder && "text-accent"
+                  )}
+                />
+              ) : (
+                <FolderIcon className="w-4 h-4 mr-2 mb-0.5" />
+              )}
+
               {folder.name}
             </span>
-            <div className="hidden absolute right-0 group-hover:flex  z-10 bg-base-100 top-0 h-8 px-2 items-center group-hover:border rounded-md">
+            <div className="hidden absolute right-0 group-hover:flex z-10 bg-base-100 top-0 h-8 px-2 items-center group-hover:border rounded-md">
               <a
                 className="hidden group-hover:block hover:animate-spin w-fit py-2 px-1"
                 onClick={(e) => {
@@ -441,18 +464,12 @@ function SessionTab({
           });
         }}
       >
-        <div className="text-start whitespace-pre-wrap relative">
-          {cloudSession && (
-            <span>
-              {" "}
-              <CloudArrowUpIcon
-                className={classNames(
-                  "inline h-[15px] mb-1 mr-2",
-                  isCurrentSession ? "text-neutral" : "text-accent"
-                )}
-              />
-            </span>
+        <div
+          className={classNames(
+            "text-start whitespace-pre-wrap relative",
+            cloudSession && (isCurrentSession ? "text-primary" : "text-accent")
           )}
+        >
           {!isEditing && (
             <RouteTypeLabel size="small" recipeMethod={session.apiMethod} />
           )}
@@ -478,7 +495,7 @@ function SessionTab({
 
         {isHover && !isEditing && (
           <div
-            className="absolute cursor-pointer w-fit right-0 top-0 h-8 px-2 bg-base-100 border justify-center text-white flex  rounded-md"
+            className="absolute cursor-pointer w-fit right-0 top-0 h-8 px-2 bg-base-100 border justify-center  flex  rounded-md"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -522,7 +539,7 @@ function SessionTab({
 
                 setTimeout(async () => {
                   await FolderAPI.deleteSessionFromFolder(session.id);
-                  eventEmitter.emit("refreshCloud");
+                  cloudEventEmitter.emit("refreshCloud");
 
                   setTimeout(() => {
                     eventEmitter.emit("refreshSidebar");

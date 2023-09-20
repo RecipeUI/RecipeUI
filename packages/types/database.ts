@@ -29,6 +29,9 @@ export type Database = MergeDeep<
           Insert: {
             folder: RecipeSessionFolderExtended | null;
           };
+          Update: {
+            folder?: RecipeSessionFolderExtended;
+          };
         };
         recipe: {
           Row: {

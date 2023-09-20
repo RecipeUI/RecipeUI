@@ -66,6 +66,12 @@ export function useSaveRecipeUI() {
 
               setUser(userInfo);
 
+              fetchUserCloud({ supabase, user_id: userInfo.user_id }).then(
+                (cloudInfo) => {
+                  CloudAPI.initializeCloud(cloudInfo);
+                }
+              );
+
               if (!isTauri) {
                 router.refresh();
 

@@ -1,13 +1,13 @@
 "use client";
 import { useRecipeSessionStore } from "../../state/recipeSession";
-import {
-  FolderAPI,
-  RecipeSessionFolderExtended,
-} from "../../state/apiSession/FolderAPI";
+import { FolderAPI } from "../../state/apiSession/FolderAPI";
 import { Modal } from "../Modal";
 import { useForm } from "react-hook-form";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
-import { useRecipeCloud } from "../../state/apiSession/CloudAPI";
+import { RecipeCloudContext } from "../../state/apiSession/CloudAPI";
+import { RecipeSessionFolderExtended } from "types/database";
+import { useContext, useEffect } from "react";
+import { produce } from "immer";
 
 export function EditFolderModal({
   onClose,
@@ -24,8 +24,9 @@ export function EditFolderModal({
       folderName: folder.name,
     },
   });
-  const recipeCloud = useRecipeCloud();
+  const recipeCloud = useContext(RecipeCloudContext);
   const cloudCollection = recipeCloud.collectionRecord[folder.id];
+  const cloudFolder = !!recipeCloud.folderToCollection[folder.id];
 
   const onSubmit = handleSubmit(async (data) => {
     await FolderAPI.editFolderName(folder.id, data.folderName);
@@ -35,6 +36,7 @@ export function EditFolderModal({
 
   const supabase = useSupabaseClient();
 
+  console.log("her", recipeCloud.collectionRecord);
   return (
     <Modal header="Edit Folder" onClose={onClose} size="sm">
       <form className="mt-1 flex flex-col" onSubmit={onSubmit}>
@@ -81,8 +83,10 @@ export function EditFolderModal({
               );
 
               if (confirm) {
-                const sessionIds = await FolderAPI.removeFolder(folder.id);
-                closeSessions(sessionIds);
+                const { affectedSessionIds } = await FolderAPI.removeFolder(
+                  folder.id
+                );
+                closeSessions(affectedSessionIds);
 
                 if (cloudCollection) {
                   await supabase
@@ -97,6 +101,51 @@ export function EditFolderModal({
                     .from("project")
                     .delete()
                     .match({ id: cloudCollection.id });
+                } else if (cloudFolder) {
+                  await supabase
+                    .from("recipe")
+                    .delete()
+                    .in("id", affectedSessionIds);
+
+                  const parentCollection =
+                    recipeCloud.collectionRecord[
+                      recipeCloud.folderToCollection[folder.id] || ""
+                    ];
+
+                  if (parentCollection) {
+                    const newFolder = produce(
+                      parentCollection.folder as RecipeSessionFolderExtended,
+                      (draft) => {
+                        function travel(
+                          innerFolder: RecipeSessionFolderExtended
+                        ) {
+                          innerFolder.items = innerFolder.items.filter(
+                            (item) => {
+                              if (item.id === folder.id) return false;
+
+                              if (item.type === "folder") {
+                                travel(item.folder);
+                              }
+
+                              return true;
+                            }
+                          );
+                        }
+
+                        travel(draft);
+                      }
+                    );
+
+                    const project = await supabase
+                      .from("project")
+                      .update({
+                        folder: newFolder,
+                      })
+                      .eq("id", parentCollection.id)
+                      .select("*");
+
+                    console.log("output", project);
+                  }
                 }
 
                 onClose();

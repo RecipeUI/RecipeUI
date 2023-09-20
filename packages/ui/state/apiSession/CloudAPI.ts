@@ -8,20 +8,21 @@ import {
   setParametersForSessionStore,
 } from ".";
 import { FolderAPI } from "./FolderAPI";
-import {
-  RecipeSession,
-  RecipeSessionFolder,
-  useRecipeSessionStore,
-} from "../recipeSession";
+import { RecipeSession, useRecipeSessionStore } from "../recipeSession";
 import { getConfigFromRecipe } from "../../components/RecipeBody/RecipeLeftPane/RecipeForkTab";
-import { useEffect, useState } from "react";
-import { Recipe, RecipeProject } from "types/database";
+import { createContext, useEffect, useState } from "react";
+import {
+  Recipe,
+  RecipeProject,
+  RecipeSessionFolderExtended,
+} from "types/database";
 import { useSupabaseClient } from "../../components/Providers/SupabaseProvider";
-import { fetchUserCloud } from "../../fetchers/user";
 
 import EventEmitter from "events";
-const eventEmitter = new EventEmitter();
-eventEmitter.setMaxListeners(300); // Should be infinity but account for a memory leak
+import { fetchUserCloud } from "../../fetchers/user";
+
+export const cloudEventEmitter = new EventEmitter();
+cloudEventEmitter.setMaxListeners(300); // Should be infinity but account for a memory leak
 
 export class CloudAPI {
   static async getUserCloud() {
@@ -32,116 +33,92 @@ export class CloudAPI {
 
   static async initializeCloud(cloud: CloudStore) {
     const store = await getCloudStore();
+    await store.put(cloud, "cloud");
 
-    // await store.put(cloud, "cloud");
-    // const sessions = (await getSessionsFromStore()) || [];
+    let sessions = (await getSessionsFromStore()) || [];
+    const apis = cloud.apis;
+    await Promise.all(
+      apis.map(async (api) => {
+        const existingConfig = await getConfigForSessionStore({
+          recipeId: api.id,
+        });
+        if (!existingConfig) {
+          await setConfigForSessionStore(getConfigFromRecipe(api));
+        }
 
-    // const apis = cloud.apis;
-    // await Promise.all(
-    //   apis.map(async (api) => {
-    //     const existingConfig = await getConfigForSessionStore({
-    //       recipeId: api.id,
-    //     });
-    //     if (!existingConfig) {
-    //       await setConfigForSessionStore(getConfigFromRecipe(api));
-    //     }
+        if (!sessions.some((session) => session.id == api.id)) {
+          const newSession: RecipeSession = {
+            apiMethod: api.method,
+            id: api.id,
+            name: api.title,
+            recipeId: api.id,
+          };
+          sessions.push(newSession);
 
-    //     if (!sessions.some((session) => session.id == api.id)) {
-    //       const newSession: RecipeSession = {
-    //         apiMethod: api.method,
-    //         id: api.id,
-    //         name: api.title,
-    //         recipeId: api.id,
-    //       };
-    //       sessions.push(newSession);
+          await setParametersForSessionStore({
+            parameters: {
+              editorBody: "",
+              editorHeaders: [],
+              editorQuery: "",
+              editorURLCode: "",
+            },
+            session: newSession.id,
+          });
+        }
+      })
+    );
 
-    //       await setParametersForSessionStore({
-    //         parameters: {
-    //           editorBody: "",
-    //           editorHeaders: [],
-    //           editorQuery: "",
-    //           editorURLCode: "",
-    //         },
-    //         session: newSession.id,
-    //       });
-    //     }
-    //   })
-    // );
+    const collections = cloud.collections;
+    let folders = await FolderAPI.getAllFolders();
 
-    // const collections = cloud.collections;
-    // const folders = await FolderAPI.getAllFolders();
+    await Promise.all(
+      collections.map(async (collection, i) => {
+        function recursivelyInitializeFolders(
+          folder: RecipeSessionFolderExtended
+        ) {
+          const items = folder.items;
 
-    // await Promise.all(
-    //   collections.map(async (collection, i) => {
-    //     let sessionFolder = folders.find(
-    //       (folder) => folder.id === collection.id
-    //     );
+          for (const item of items) {
+            if (item.type === "session") {
+              if (sessions.some((session) => session.id == item.id)) {
+                continue;
+              } else {
+                sessions.push(item.session);
+              }
+            } else {
+              if (folders.some((folder) => folder.id == item.id)) continue;
 
-    //     let apis = cloud.apis.filter((api) => {
-    //       if (api.project !== collection.project) {
-    //         return false;
-    //       }
+              recursivelyInitializeFolders(item.folder);
 
-    //       if (sessionFolder && sessionFolder.sessionIds.includes(api.id)) {
-    //         return false;
-    //       }
+              folders.push({
+                ...item.folder,
+                items: item.folder.items.map((item) => ({
+                  id: item.id,
+                  type: item.type,
+                })),
+              });
+            }
+          }
+        }
 
-    //       return true;
-    //     });
+        if (collection.folder) {
+          recursivelyInitializeFolders(collection.folder);
+        }
+      })
+    );
 
-    //     if (!sessionFolder) {
-    //       const newSessionFolder: RecipeSessionFolder = {
-    //         id: collection.id,
-    //         name: collection.title,
-    //         sessionIds: apis.map((api) => api.id),
-    //       };
+    await saveSessionToStore(sessions);
+    await FolderAPI.setFolders(folders);
 
-    //       folders.push(newSessionFolder);
-    //       sessionFolder = newSessionFolder;
-    //     } else {
-    //       sessionFolder.sessionIds.push(...apis.map((api) => api.id));
-    //     }
-
-    //     for (const api of apis) {
-    //       const existingSession = sessions.find(
-    //         (session) => session.recipeId === api.id && session.id === api.id
-    //       );
-
-    //       if (existingSession) continue;
-    //       const newSession = {
-    //         apiMethod: api.method,
-    //         id: api.id,
-    //         name: api.title,
-    //         recipeId: api.id,
-    //         folderId: sessionFolder.id,
-    //       };
-    //       sessions.push(newSession);
-
-    //       await setParametersForSessionStore({
-    //         parameters: {
-    //           editorBody: "",
-    //           editorHeaders: [],
-    //           editorQuery: "",
-    //           editorURLCode: "",
-    //         },
-    //         session: newSession.id,
-    //       });
-    //     }
-    //   })
-    // );
-
-    // await saveSessionToStore(sessions);
-    // await FolderAPI.setFolders(folders);
-
-    // eventEmitter.emit("refreshSidebar");
-    // eventEmitter.emit("refreshCloud");
+    cloudEventEmitter.emit("refreshSidebar");
+    cloudEventEmitter.emit("refreshCloud");
   }
 
   static async resetCloud() {
     const store = await getCloudStore();
 
     await store.delete("cloud");
-    eventEmitter.emit("refreshCloud");
+    cloudEventEmitter.emit("refreshCloud");
   }
 }
 
@@ -149,6 +126,9 @@ export function useRecipeCloud() {
   const [cloud, setCloud] = useState<CloudStore>();
   const [collectionRecord, setCollectionRecord] = useState<{
     [key: string]: RecipeProject | undefined;
+  }>({});
+  const [folderToCollection, setFolderToCollection] = useState<{
+    [key: string]: string;
   }>({});
   const [apiRecord, setAPIRecord] = useState<{
     [key: string]: Recipe | undefined;
@@ -162,23 +142,32 @@ export function useRecipeCloud() {
   const user = useRecipeSessionStore((state) => state.user);
 
   useEffect(() => {
-    if (user?.user_id) {
-      fetchUserCloud({ supabase, user_id: user?.user_id }).then((cloudInfo) => {
-        CloudAPI.initializeCloud(cloudInfo);
-      });
-    }
-  }, [supabase, user]);
-
-  useEffect(() => {
     async function refreshCloud() {
       const cloud = await CloudAPI.getUserCloud();
 
       const collectionRecord: { [key: string]: RecipeProject } = {};
       const apiRecord: { [key: string]: Recipe } = {};
       const collectionToApis: { [key: string]: string[] } = {};
+      const folderToCollection: { [key: string]: string } = {};
 
       cloud?.collections.forEach((collection) => {
         collectionRecord[collection.id] = collection;
+
+        function recursivelyCheckFolders(folder: RecipeSessionFolderExtended) {
+          const items = folder.items;
+          for (const item of items) {
+            if (item.type === "session") {
+              continue;
+            } else {
+              folderToCollection[item.id] = collection.id;
+              recursivelyCheckFolders(item.folder);
+            }
+          }
+        }
+
+        if (collection.folder) {
+          recursivelyCheckFolders(collection.folder);
+        }
       });
 
       cloud?.apis.forEach((api) => {
@@ -195,20 +184,41 @@ export function useRecipeCloud() {
       setAPIRecord(apiRecord);
       setCollectionToApis(collectionToApis);
       setCloud(cloud);
+      setFolderToCollection(folderToCollection);
     }
 
-    eventEmitter.on("refreshCloud", refreshCloud);
+    cloudEventEmitter.on("refreshCloud", refreshCloud);
     refreshCloud();
 
     return () => {
-      eventEmitter.off("refreshCloud", refreshCloud);
+      cloudEventEmitter.off("refreshCloud", refreshCloud);
     };
   }, []);
+
+  useEffect(() => {
+    async function syncCloud() {
+      if (!user) return;
+      fetchUserCloud({ supabase, user_id: user.user_id }).then((cloudInfo) => {
+        CloudAPI.initializeCloud(cloudInfo);
+      });
+    }
+
+    cloudEventEmitter.on("syncCloud", syncCloud);
+
+    return () => {
+      cloudEventEmitter.off("syncCloud", syncCloud);
+    };
+  }, [supabase, user]);
 
   return {
     cloud,
     apiRecord,
     collectionRecord,
     collectionToApis,
+    folderToCollection,
   };
 }
+
+export const RecipeCloudContext = createContext<
+  ReturnType<typeof useRecipeCloud>
+>(undefined as any);

@@ -119,7 +119,10 @@ export class FolderAPI {
     await store.put(newFolders, "sessionFolders");
     eventEmitter.emit("refreshFolders");
 
-    return Array.from(affectedSessionIds);
+    return {
+      affectedSessionIds: Array.from(affectedSessionIds),
+      affectedFolderIds: Array.from(affectedFolderIds),
+    };
   };
 
   static editFolderName = async (folderId: string, name: string) => {
@@ -266,7 +269,10 @@ export function useSessionFolders() {
                   session,
                 };
               } else {
-                const folder = folders.find((f) => f.id === item.id)!;
+                const folder = folders.find((f) => f.id === item.id);
+                if (!folder) {
+                  return undefined as any;
+                }
 
                 return {
                   type: "folder",
@@ -274,7 +280,8 @@ export function useSessionFolders() {
                   folder: recursivelyProcessFolders(folder),
                 };
               }
-            }) || [],
+            })
+            .filter(Boolean) || [],
       };
 
       // TODO: This is deprecated. We can delete this in a few weeks.

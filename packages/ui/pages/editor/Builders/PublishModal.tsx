@@ -1,6 +1,6 @@
 "use client";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import {
   DesktopPage,
   useRecipeSessionStore,
@@ -21,9 +21,17 @@ import {
 import { useIsTauri } from "../../../hooks/useIsTauri";
 import { useRouter } from "next/navigation";
 import { DISCORD_LINK } from "utils/constants";
-import { useRecipeCloud } from "../../../state/apiSession/CloudAPI";
+import {
+  RecipeCloudContext,
+  cloudEventEmitter,
+  useRecipeCloud,
+} from "../../../state/apiSession/CloudAPI";
 import { FolderIcon } from "@heroicons/react/24/outline";
 import { useSessionFolders } from "../../../state/apiSession/FolderAPI";
+
+interface FolderPathToRecipes {
+  [folderPath: string]: TableInserts<"recipe">[];
+}
 
 export function PublishFolderModal({
   onClose,
@@ -32,17 +40,17 @@ export function PublishFolderModal({
   onClose: () => void;
   folder: RecipeSessionFolderExtended;
 }) {
-  const [recipes, setRecipes] = useState<
-    (TableInserts<"recipe"> & {
-      folderPath: string;
-    })[]
-  >([]);
   const [loading, setLoading] = useState(false);
   const user = useRecipeSessionStore((state) => state.user);
   const supabase = useSupabaseClient();
-  const recipeCloud = useRecipeCloud();
+  const recipeCloud = useContext(RecipeCloudContext);
   const cloudCollection = recipeCloud.collectionRecord[folder.id];
-  const { folders } = useSessionFolders();
+  const [foldersToRecipes, setFoldersToRecipes] = useState<
+    {
+      folderPath: string;
+      recipes: TableInserts<"recipe">[];
+    }[]
+  >([]);
 
   useEffect(() => {
     async function loadRecipes() {
@@ -51,16 +59,18 @@ export function PublishFolderModal({
         return;
       }
 
-      let recipes: (TableInserts<"recipe"> & {
-        folderPath: string;
-      })[] = [];
       const sessionRecord = await getSessionRecord();
       const seen = new Set<string>();
+      const folderPathToRecipes: FolderPathToRecipes = {};
 
       async function recursivelyGetFolders(
         currFolder: RecipeSessionFolderExtended,
         folderPath: string
       ) {
+        if (!folderPathToRecipes[folderPath]) {
+          folderPathToRecipes[folderPath] = [];
+        }
+
         for (const item of currFolder.items) {
           if (item.type === "session") {
             const session = sessionRecord[item.id];
@@ -68,12 +78,17 @@ export function PublishFolderModal({
             if (seen.has(session.recipeId)) continue;
             seen.add(session.recipeId);
 
-            const recipe = await CoreRecipeAPI.getCoreRecipe({
-              recipeId: session.recipeId,
-              userId: user?.user_id,
-            });
+            try {
+              const recipe = await CoreRecipeAPI.getCoreRecipe({
+                recipeId: session.recipeId,
+                userId: user?.user_id,
+                existingRecipe: recipeCloud.apiRecord[session.recipeId],
+              });
 
-            recipes.push({ ...recipe, folderPath });
+              folderPathToRecipes[folderPath].push(recipe);
+            } catch (e) {
+              console.error(e);
+            }
           } else if (item.type === "folder") {
             await recursivelyGetFolders(
               item.folder,
@@ -81,10 +96,19 @@ export function PublishFolderModal({
             );
           }
         }
+
+        if (folderPathToRecipes[folderPath].length === 0) {
+          delete folderPathToRecipes[folderPath];
+        }
       }
 
       await recursivelyGetFolders(folder, "");
-      setRecipes(recipes);
+      setFoldersToRecipes(
+        Object.entries(folderPathToRecipes).map(([folderPath, recipes]) => ({
+          folderPath,
+          recipes,
+        }))
+      );
     }
 
     loadRecipes();
@@ -132,23 +156,29 @@ export function PublishFolderModal({
         }
 
         projectId = projectRes.data.id;
+      } else {
+        await supabase
+          .from("project")
+          .update({
+            folder: folder,
+          })
+          .eq("id", projectId);
       }
 
-      const uploadRes: TableInserts<"recipe">[] = recipes.map(
-        ({ folderPath, ...recipe }) => {
-          if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
-            return recipe;
-          }
+      const recipes = foldersToRecipes.map((folder) => folder.recipes).flat();
 
-          // TODO: We need a better binding for API/recipes. Oh let's attach special modules to options
-          return {
-            ...recipe,
-            project: projectName,
-            author_id: user?.user_id,
-            id: recipe.id ?? uuidv4(),
-          };
+      const uploadRes: TableInserts<"recipe">[] = recipes.map((recipe) => {
+        if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
+          return recipe;
         }
-      );
+
+        return {
+          ...recipe,
+          project: projectName,
+          author_id: user?.user_id,
+          id: recipe.id ?? uuidv4(),
+        };
+      });
 
       const uploadRecipes = await supabase
         .from("recipe")
@@ -159,6 +189,8 @@ export function PublishFolderModal({
         setError(uploadRecipes.error.message ?? "Unable to upload recipes");
         return;
       }
+
+      cloudEventEmitter.emit("syncCloud");
 
       if (isTauri) {
         setDestkopPage({
@@ -209,37 +241,54 @@ export function PublishFolderModal({
         <p>
           {`All the APIs below will be published. To edit the docs of an API, go back to the request builder and click the "Docs" button.`}
         </p>
-        <div className="grid grid-cols-2 gap-4">
-          {recipes.map((recipe, i) => {
-            return (
-              <div
-                key={recipe.id}
-                className={classNames(
-                  "flex items-center border p-4 rounded-md text-start"
-                )}
-              >
-                <div className="flex flex-col h-full">
-                  <h3 className="font-bold">{recipe.title}</h3>
-                  <p className="text-sm  ">{recipe.summary}</p>
-                  {recipe.folderPath && (
-                    <span
+        <div className="space-y-8">
+          {foldersToRecipes.map((folderInfo) => (
+            <div key={folderInfo.folderPath}>
+              {foldersToRecipes.length > 1 && (
+                <h2 className="mb-2 font-bold inline-flex items-center">
+                  <FolderIcon className="w-6 h-6 mb-0.5 mr-2" />{" "}
+                  {folderInfo.folderPath || "/"}
+                </h2>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                {folderInfo.recipes.map((recipe, i) => {
+                  return (
+                    <div
+                      key={recipe.id}
                       className={classNames(
-                        "badge badge-accent mt-2 rounded-md inline-flex items-center"
+                        "flex items-center border p-4 rounded-md text-start"
                       )}
                     >
-                      <FolderIcon className="w-4 h-4 mr-1" />{" "}
-                      {recipe.folderPath}
-                    </span>
-                  )}
-                  {recipe.id && recipeCloud.apiRecord[recipe.id] && (
-                    <span className={classNames("badge badge-sm mt-2")}>
-                      Cloud
-                    </span>
-                  )}
-                </div>
+                      <div className="flex flex-col h-full">
+                        {recipe.id && recipeCloud.apiRecord[recipe.id] ? (
+                          <span
+                            className={classNames(
+                              "badge mb-2 badge-neutral rounded-md"
+                            )}
+                          >
+                            Cloud
+                          </span>
+                        ) : (
+                          <span
+                            className={classNames(
+                              "badge mb-2 badge-accent rounded-md font-bold"
+                            )}
+                          >
+                            New
+                          </span>
+                        )}
+
+                        <h3 className="font-bold">{recipe.title}</h3>
+                        <p className="text-sm  ">{recipe.summary}</p>
+
+                        <div className="flex-1" />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
         <button
           className={"btn btn-sm btn-neutral"}
