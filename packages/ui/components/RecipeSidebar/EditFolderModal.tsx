@@ -61,7 +61,7 @@ export function EditFolderModal({
               <>
                 <p>Delete collection</p>
               </>
-            ) : (folder.items || []).length > 0 ? (
+            ) : folder.items.length > 0 ? (
               <>
                 <p>Delete folder</p>
                 <p className="text-sm">

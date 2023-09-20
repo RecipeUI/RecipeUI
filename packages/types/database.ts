@@ -24,6 +24,10 @@ export type Database = MergeDeep<
         project: {
           Row: {
             status: RecipeProjectStatus;
+            folder: RecipeSessionFolderExtended | null;
+          };
+          Insert: {
+            folder: RecipeSessionFolderExtended | null;
           };
         };
         recipe: {
@@ -282,3 +286,47 @@ export interface RequestHeader {
   value: string;
   sensitive?: boolean;
 }
+
+export type RecipeSessionFolderItem = {
+  type: "session" | "folder";
+  id: string;
+};
+
+export interface RecipeSessionFolder {
+  id: string;
+  name: string;
+  /**
+   * @deprecated use 'sessionIds' instead
+   */
+  sessionIds?: string[];
+  items: RecipeSessionFolderItem[];
+
+  parentFolderId?: string;
+}
+
+export interface RecipeSession {
+  id: string;
+  name: string;
+  recipeId: string;
+  apiMethod: RecipeMethod;
+  folderId?: string;
+}
+
+export type RecipeSessionFolderItemExtended =
+  | {
+      type: "session";
+      id: string;
+      session: RecipeSession;
+    }
+  | {
+      type: "folder";
+      id: string;
+      folder: RecipeSessionFolderExtended;
+    };
+
+export type RecipeSessionFolderExtended = Omit<
+  RecipeSessionFolder,
+  "items" | "sessionIds"
+> & {
+  items: RecipeSessionFolderItemExtended[];
+};

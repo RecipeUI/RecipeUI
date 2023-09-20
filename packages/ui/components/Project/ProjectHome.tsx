@@ -1,7 +1,11 @@
 "use client";
 
 import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
-import { Recipe, RecipeProject } from "types/database";
+import {
+  Recipe,
+  RecipeProject,
+  RecipeSessionFolderExtended,
+} from "types/database";
 import { QueryKey, RecipeProjectStatus } from "types/enums";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
@@ -11,11 +15,12 @@ import {
   RECIPE_UI_BASE_URL,
 } from "../../utils/constants/main";
 import Link from "next/link";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, Fragment, useEffect, useMemo, useState } from "react";
 import {
   AdjustmentsHorizontalIcon,
   Cog6ToothIcon,
   FolderArrowDownIcon,
+  FolderIcon,
   ShareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -50,6 +55,47 @@ export function ProjectHome({
     null
   );
   const setDesktopPage = useRecipeSessionStore((state) => state.setDesktopPage);
+
+  const folders = useMemo(() => {
+    const folderToSessions: Record<string, Recipe[]> = {};
+    if (!project.folder)
+      return [
+        {
+          path: "",
+          recipes: recipes,
+        },
+      ];
+
+    function travel(folder: RecipeSessionFolderExtended, path: string) {
+      if (!folderToSessions[path]) {
+        folderToSessions[path] = [];
+      }
+
+      for (const item of folder.items) {
+        if (item.type === "session") {
+          const recipe = recipes.find((r) => r.id === item.id);
+          if (recipe) {
+            folderToSessions[path].push(recipe);
+          }
+        } else {
+          travel(item.folder, `${path}/${item.folder.name}`);
+        }
+      }
+
+      if (folderToSessions[path].length === 0) {
+        delete folderToSessions[path];
+      }
+    }
+
+    travel(project.folder, "");
+
+    return Object.entries(folderToSessions).map(([path, sessions]) => ({
+      path,
+      recipes: sessions,
+    }));
+  }, [project.folder, recipes]);
+
+  const hasMultipleFolders = folders.length > 1;
 
   return (
     <div className="flex-1 px-4 pt-4">
@@ -121,41 +167,59 @@ export function ProjectHome({
         </div>
       </div>
       {recipes.length > 0 ? (
-        <div className="projects-home-container">
-          {recipes.map((recipe) => {
+        <div
+          className={classNames("space-y-12 ", hasMultipleFolders && "mt-12")}
+        >
+          {folders.map((folder) => {
             return (
-              <div className="relative h-full" key={recipe.id}>
-                <ProjectHomeBox
-                  recipe={recipe}
-                  project={project}
-                  editMode={editing}
-                />
-                {editing && (
-                  <div className="absolute top-4 right-4 flex space-x-2">
-                    <button
-                      className="hover:btn-primary btn btn-accent btn-sm text-white  rounded-md"
-                      onClick={async () => {
-                        const okToDelete = await confirm(
-                          "Are you sure you want to delete this recipe? This cannot be undone."
-                        );
-                        if (okToDelete) {
-                          await supabase
-                            .from("recipe")
-                            .delete()
-                            .match({ id: recipe.id });
-
-                          if (isTauri) {
-                            queryClient.invalidateQueries([QueryKey.Projects]);
-                          } else {
-                            router.refresh();
-                          }
-                        }
-                      }}
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
+              <div key={folder.path}>
+                {hasMultipleFolders && (
+                  <div className="flex items-center">
+                    <FolderIcon className="h-6 mr-2" />
+                    <h2 className="text-lg font-bold">{folder.path || "/"}</h2>
                   </div>
                 )}
+                <div className="projects-home-container">
+                  {folder.recipes.map((recipe) => {
+                    return (
+                      <div className="relative h-full" key={recipe.id}>
+                        <ProjectHomeBox
+                          recipe={recipe}
+                          project={project}
+                          editMode={editing}
+                        />
+                        {editing && (
+                          <div className="absolute top-4 right-4 flex space-x-2">
+                            <button
+                              className="hover:btn-primary btn btn-accent btn-sm text-white  rounded-md"
+                              onClick={async () => {
+                                const okToDelete = await confirm(
+                                  "Are you sure you want to delete this recipe? This cannot be undone."
+                                );
+                                if (okToDelete) {
+                                  await supabase
+                                    .from("recipe")
+                                    .delete()
+                                    .match({ id: recipe.id });
+
+                                  if (isTauri) {
+                                    queryClient.invalidateQueries([
+                                      QueryKey.Projects,
+                                    ]);
+                                  } else {
+                                    router.refresh();
+                                  }
+                                }
+                              }}
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
@@ -165,7 +229,6 @@ export function ProjectHome({
           <span className="text-3xl font-bold">No recipes yet.</span>
         </div>
       )}
-
       {editProject && (
         <EditModal project={project} onClose={() => setEditProject(false)} />
       )}

@@ -13,6 +13,7 @@ export interface Database {
         Row: {
           created_at: string | null
           description: string
+          folder: Json | null
           id: string
           image: string | null
           owner_id: string | null
@@ -27,6 +28,7 @@ export interface Database {
         Insert: {
           created_at?: string | null
           description: string
+          folder?: Json | null
           id?: string
           image?: string | null
           owner_id?: string | null
@@ -41,6 +43,7 @@ export interface Database {
         Update: {
           created_at?: string | null
           description?: string
+          folder?: Json | null
           id?: string
           image?: string | null
           owner_id?: string | null
@@ -899,6 +902,7 @@ export interface Database {
         Returns: {
           created_at: string | null
           description: string
+          folder: Json | null
           id: string
           image: string | null
           owner_id: string | null

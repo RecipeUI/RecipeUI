@@ -2,7 +2,6 @@
 
 import {
   RecipeSession,
-  RecipeSessionFolder,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
 import { useEffect, useRef, useState } from "react";
@@ -26,11 +25,7 @@ import {
   getSessionsFromStore,
   saveSessionToStore,
 } from "../../state/apiSession";
-import {
-  FolderAPI,
-  RecipeSessionFolderExtended,
-  useSessionFolders,
-} from "../../state/apiSession/FolderAPI";
+import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
 
 import { COLLECTION_FORKING_ID, RECIPE_FORKING_ID } from "utils/constants";
 
@@ -38,7 +33,7 @@ import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
 import { PublishFolderModal } from "../../pages/editor/Builders/PublishModal";
 import { EditSessionModal } from "./EditSessionModal";
-import { Recipe } from "types/database";
+import { Recipe, RecipeSessionFolderExtended } from "types/database";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { fetchProjectPage } from "../../fetchers/project";
 import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
@@ -134,7 +129,6 @@ export function RecipeSidebar() {
   const [viewCollectionModal, setViewCollectionModal] = useState(false);
 
   const { folderSessions, noFolderSessions } = useSessionFolders();
-
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
@@ -215,7 +209,9 @@ export function RecipeSidebar() {
               return null;
             }
 
-            return <SessionFolder key={folderId} folder={folder} />;
+            return (
+              <SessionFolder key={folderId} folder={folder} isRootFolder />
+            );
           })}
         </ul>
       )}
@@ -249,13 +245,19 @@ export function RecipeSidebar() {
   );
 }
 
-function SessionFolder({ folder }: { folder: RecipeSessionFolderExtended }) {
+function SessionFolder({
+  folder,
+  isRootFolder,
+}: {
+  folder: RecipeSessionFolderExtended;
+  isRootFolder?: boolean;
+}) {
   const recipeCloud = useRecipeCloud();
   const cloudCollection = recipeCloud.collectionRecord[folder.id];
   const [editFolder, setEditFolder] =
     useState<RecipeSessionFolderExtended | null>(null);
   const [publishFolder, setPublishFolder] =
-    useState<RecipeSessionFolder | null>(null);
+    useState<RecipeSessionFolderExtended | null>(null);
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
@@ -266,15 +268,15 @@ function SessionFolder({ folder }: { folder: RecipeSessionFolderExtended }) {
       <li className="w-full">
         <details className="relative w-full" open>
           <summary className="text-xs font-bold p-0 px-2 py-2 pr-4  w-full group">
-            <span className={classNames("flex items-center")}>
+            <span className={classNames("flex items-center w-full")}>
               {cloudCollection && (
                 <CloudArrowUpIcon className="w-4 h-4 mr-2 mb-0.5 text-accent" />
               )}
               {folder.name}
             </span>
-            <div className="flex space-x-2">
+            <div className="hidden absolute right-0 group-hover:flex  z-10 bg-base-100 top-0 h-8 px-2 items-center group-hover:border rounded-md">
               <a
-                className="hidden group-hover:block hover:animate-spin w-fit"
+                className="hidden group-hover:block hover:animate-spin w-fit py-2 px-1"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -285,7 +287,7 @@ function SessionFolder({ folder }: { folder: RecipeSessionFolderExtended }) {
                 <Cog6ToothIcon className="w-4 h-4" />
               </a>
               <a
-                className="hidden group-hover:block hover:bg-primary w-fit"
+                className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -297,7 +299,7 @@ function SessionFolder({ folder }: { folder: RecipeSessionFolderExtended }) {
                 <PlusCircleIcon className="w-4 h-4" />
               </a>
               <a
-                className="hidden group-hover:block hover:bg-primary w-fit"
+                className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -307,23 +309,24 @@ function SessionFolder({ folder }: { folder: RecipeSessionFolderExtended }) {
               >
                 <FolderPlusIcon className="w-4 h-4" />
               </a>
-              <a
-                className="hidden group-hover:block hover:bg-primary w-fit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+              {isRootFolder && (
+                <a
+                  className="hidden group-hover:block hover:bg-primary w-fit py-2 px-1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                  // setPublishFolder(folder);
-                }}
-              >
-                <ShareIcon className="w-4 h-4" />
-              </a>
+                    setPublishFolder(folder);
+                  }}
+                >
+                  <ShareIcon className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </summary>
           <ul>
             {folder.items.map((item) => {
               if (!item) return null;
-
               if (item.type === "session") {
                 const session = item.session;
 
@@ -475,7 +478,7 @@ function SessionTab({
 
         {isHover && !isEditing && (
           <div
-            className="absolute cursor-pointer w-fit  right-0 top-0 bottom-0 bg-accent justify-center text-white flex h-fit rounded-r-md"
+            className="absolute cursor-pointer w-fit right-0 top-0 h-8 px-2 bg-base-100 border justify-center text-white flex  rounded-md"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();

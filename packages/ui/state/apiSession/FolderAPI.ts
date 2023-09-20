@@ -1,12 +1,12 @@
 "use client";
-import {
-  RecipeSession,
-  RecipeSessionFolder,
-  useRecipeSessionStore,
-} from "../recipeSession";
+import { RecipeSession, useRecipeSessionStore } from "../recipeSession";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getFolderStore, eventEmitter, getSessionRecord } from ".";
+import {
+  RecipeSessionFolder,
+  RecipeSessionFolderExtended,
+} from "types/database";
 
 export class FolderAPI {
   static addSessionToFolder = async (
@@ -15,7 +15,6 @@ export class FolderAPI {
     newFolderName?: string
   ) => {
     const folders = await this.getAllFolders();
-
     const store = await getFolderStore();
 
     let foundFolder = false;
@@ -88,7 +87,6 @@ export class FolderAPI {
     eventEmitter.emit("refreshFolders");
   };
 
-  // TODO: This will need to be
   static removeFolder = async (folderId: string) => {
     const folders = await this.getAllFolders();
     const store = await getFolderStore();
@@ -149,6 +147,7 @@ export class FolderAPI {
       name: folderName,
       items: [],
       parentFolderId: existingFolderId,
+      type: "folder",
     } as RecipeSessionFolder;
 
     if (existingFolderId) {
@@ -178,7 +177,6 @@ export class FolderAPI {
     const folders = await store.get("sessionFolders");
 
     // TODO: Cleanup after a month or so. We just need to deal with deprecated folders
-
     let hasChanged = false;
     let migratedFolders = folders?.map((folder) => {
       if (folder.sessionIds) {
@@ -226,25 +224,6 @@ export const addFolder = async (folderName: string) => {
   eventEmitter.emit("refreshFolders");
 };
 
-export type RecipeSessionFolderItemExtended =
-  | {
-      type: "session";
-      id: string;
-      session: RecipeSession;
-    }
-  | {
-      type: "folder";
-      id: string;
-      folder: RecipeSessionFolderExtended;
-    };
-
-export type RecipeSessionFolderExtended = Omit<
-  RecipeSessionFolder,
-  "items" | "sessionIds"
-> & {
-  items: RecipeSessionFolderItemExtended[];
-};
-
 interface FolderToSessions {
   [folderId: string]: RecipeSessionFolderExtended;
 }
@@ -266,14 +245,42 @@ export function useSessionFolders() {
     ): RecipeSessionFolderExtended {
       const extendedFolder: RecipeSessionFolderExtended = {
         ...folder,
-        items: [],
+        items:
+          folder.items
+            .filter((item) => {
+              // TODO: This is to deal with backwards compat
+              if (item.type === "session") {
+                return sessionRecord[item.id] != undefined;
+              } else {
+                return true;
+              }
+            })
+            .map((item) => {
+              if (item.type === "session") {
+                const session = sessionRecord[item.id];
+                delete sessionRecord[item.id];
+
+                return {
+                  type: "session",
+                  id: item.id,
+                  session,
+                };
+              } else {
+                const folder = folders.find((f) => f.id === item.id)!;
+
+                return {
+                  type: "folder",
+                  id: item.id,
+                  folder: recursivelyProcessFolders(folder),
+                };
+              }
+            }) || [],
       };
 
-      // TODO: This is deprecated
+      // TODO: This is deprecated. We can delete this in a few weeks.
       if (folder.sessionIds) {
         for (const sessionId of folder.sessionIds) {
           const session = sessionRecord[sessionId];
-
           if (!session) {
             continue;
           }
@@ -285,34 +292,6 @@ export function useSessionFolders() {
             id: sessionId,
             session,
           });
-        }
-      } else {
-        for (const item of folder.items) {
-          if (item.type === "session") {
-            const session = sessionRecord[item.id];
-            if (!session) {
-              continue;
-            }
-
-            extendedFolder.items.push({
-              type: "session",
-              id: item.id,
-              session,
-            });
-            delete sessionRecord[item.id];
-          } else {
-            const folder = folders.find((folder) => folder.id === item.id);
-            if (!folder) {
-              console.error("Folder not found", item.id);
-              continue;
-            }
-
-            extendedFolder.items.push({
-              type: "folder",
-              id: item.id,
-              folder: recursivelyProcessFolders(folder),
-            });
-          }
         }
       }
 
@@ -334,6 +313,7 @@ export function useSessionFolders() {
   useEffect(() => {
     async function refreshFolders() {
       const folders = await FolderAPI.getAllFolders();
+
       setFolders(folders || []);
     }
 

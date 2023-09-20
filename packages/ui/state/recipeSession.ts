@@ -8,11 +8,14 @@ import {
   RecipeOutputType,
   RecipeParameters,
   RecipeProject,
+  RecipeSession,
   RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
   User,
 } from "types/database";
+export type { RecipeSession }; // Fix this in a later refactor
+
 import { StateCreator, create } from "zustand";
 import { createContext } from "react";
 import { produce } from "immer";
@@ -31,30 +34,6 @@ import {
   setConfigForSessionStore,
   setParametersForSessionStore,
 } from "./apiSession";
-
-export interface RecipeSession {
-  id: string;
-  name: string;
-  recipeId: string;
-  apiMethod: RecipeMethod;
-  folderId?: string;
-}
-
-export interface RecipeSessionFolderItem {
-  type: "session" | "folder";
-  id: string;
-}
-export interface RecipeSessionFolder {
-  id: string;
-  name: string;
-  /**
-   * @deprecated use 'sessionIds' instead
-   */
-  sessionIds?: string[];
-  items: RecipeSessionFolderItem[];
-
-  parentFolderId?: string;
-}
 
 interface RecipeSessionSlice {
   currentSession: RecipeSession | null;

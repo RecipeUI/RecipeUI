@@ -5,6 +5,7 @@ import {
   AuthConfig,
   Recipe,
   RecipeProject,
+  RecipeSessionFolder,
   RecipeTemplate,
   RecipeTemplateFragment,
   RequestHeader,
@@ -16,12 +17,7 @@ import {
   RecipeMutationContentType,
 } from "types/enums";
 import { openDB, DBSchema } from "idb";
-import {
-  FetchResponse,
-  RecipeSession,
-  RecipeSessionFolder,
-  SessionOutput,
-} from "../recipeSession";
+import { FetchResponse, RecipeSession, SessionOutput } from "../recipeSession";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
