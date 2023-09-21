@@ -48,6 +48,7 @@ We are open sourced because we use so much open source technology and we want to
       <td align="center" valign="top" width="14.28%"><a href="http://bennycode.com"><img src="https://avatars.githubusercontent.com/u/469989?v=4?s=100" width="100px;" alt="Benny Neugebauer"/><br /><sub><b>Benny Neugebauer</b></sub></a><br /><a href="https://github.com/RecipeUI/RecipeUI/issues?q=author%3Abennycode" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/0x80085"><img src="https://avatars.githubusercontent.com/u/53451414?v=4?s=100" width="100px;" alt="0x80085"/><br /><sub><b>0x80085</b></sub></a><br /><a href="#ideas-0x80085" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Niwilai"><img src="https://avatars.githubusercontent.com/u/9334296?v=4?s=100" width="100px;" alt="Niwilai"/><br /><sub><b>Niwilai</b></sub></a><br /><a href="#ideas-Niwilai" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://alrek.no"><img src="https://avatars.githubusercontent.com/u/14291825?v=4?s=100" width="100px;" alt="Thomas Alrek"/><br /><sub><b>Thomas Alrek</b></sub></a><br /><a href="#ideas-thomas-alrek" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
