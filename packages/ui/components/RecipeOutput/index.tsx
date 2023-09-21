@@ -69,7 +69,7 @@ export function RecipeOutput() {
   }, [output, currentTab, editorMode]);
 
   return (
-    <div className="flex-1 relative border-t sm:border-l border-slate-200 dark:border-slate-600 sm:border-t-0 overflow-x-auto sm:max-w-none max-w-sm">
+    <div className="flex-1 relative border-t sm:border-l border-slate-200 dark:border-slate-600 sm:border-t-0   w-full overflow-x-clip">
       {currentTab === RecipeOutputTab.Docs && <RecipeDocs />}
       {currentTab === RecipeOutputTab.DocTwo && <RecipeEditDocs />}
       {currentTab === RecipeOutputTab.Output && <RecipeOutputConsole />}

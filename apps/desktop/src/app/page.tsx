@@ -136,7 +136,7 @@ function ProjectPage({ project: projectParam }: { project: string }) {
     queryKey: [QueryKey.Projects, projectParam, supabase],
     queryFn: async () =>
       (supabase as any)["fake"]
-        ? null
+        ? "local"
         : fetchProjectPage({
             project: projectParam,
             supabase,
@@ -159,6 +159,16 @@ function ProjectPage({ project: projectParam }: { project: string }) {
     }
 
     return <div>App 404</div>;
+  }
+
+  if (projectData === "local") {
+    return (
+      <ProjectContainer
+        projectName={projectParam}
+        project={null}
+        recipes={null}
+      />
+    );
   }
 
   const { project, projectName, recipes } = projectData;

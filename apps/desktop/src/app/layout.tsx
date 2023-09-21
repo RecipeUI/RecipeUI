@@ -20,8 +20,8 @@ export default function RootLayout({
       </Suspense>
       <body className={sora.className}>
         <Providers>
-          <div className="w-full h-screen flex overflow-y-auto border-t border-recipe-slate">
-            <div className="flex flex-1 flex-col overflow-y-scroll">
+          <div className="w-full h-screen flex border-t border-recipe-slate">
+            <div className="flex flex-1 flex-col overflow-y-clip">
               {children}
             </div>
           </div>
