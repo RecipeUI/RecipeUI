@@ -10,6 +10,7 @@ import { useDebounce } from "usehooks-ts";
 import { ImportBuilderModal } from "../../../pages/editor/Builders/ImportBuilderModal";
 import { pathModuleSetting as getPathModuleSetting } from "../../../modules/authConfigs";
 import { UpsellModuleContainer } from "../../../modules/components/UpsellModuleContainer";
+import { UNIQUE_ELEMENT_IDS } from "../../../utils/constants/main";
 
 export function RecipeEditBodySearch() {
   const url = useRecipeSessionStore((state) => state.editorUrl);
@@ -85,7 +86,6 @@ export function RecipeEditBodySearch() {
                   {RecipeMethod.DELETE}
                 </option>
               </select>
-
               <div className="relative flex-1">
                 <input
                   id="url-input"
@@ -108,6 +108,17 @@ export function RecipeEditBodySearch() {
                   )}
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+
+                      const element = document.getElementById(
+                        UNIQUE_ELEMENT_IDS.RECIPE_SEARCH
+                      );
+
+                      element?.click();
+                    }
+                  }}
                 />
               </div>
             </div>
