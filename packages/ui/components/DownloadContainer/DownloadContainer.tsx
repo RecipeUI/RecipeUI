@@ -126,9 +126,19 @@ export function DownloadContainer() {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className="min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5 relative">
-      <div className="m-6 sm:m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative text-sm   sm:text-lg">
-        <div className="rounded-md mb-4 dark:text-white h-fit space-y-4">
+    <div
+      className={classNames(
+        "min-h-screen sm:flex sm:flex-col lg:grid grid-cols-5",
+        "2xl:flex 2xl:flex-row 2xl:justify-center"
+      )}
+    >
+      <div
+        className={classNames(
+          "m-6 sm:m-8 lg:text-base lg:m-12 col-span-2 flex flex-col justify-center items-center relative text-sm sm:text-lg",
+          "2xl:flex-1 2xl:items-end"
+        )}
+      >
+        <div className="rounded-md mb-4 dark:text-white h-fit space-y-4 2xl:max-w-2xl">
           <h1 className="font-bold text-xl lg:text-3xl">RecipeUI</h1>
           <p className="my-2 ">
             RecipeUI is the open source Postman alternative with{" "}
@@ -147,7 +157,12 @@ export function DownloadContainer() {
           {/* <ViewCollections /> */}
         </div>
       </div>
-      <div className="col-span-3 relative overflow-hidden">
+      <div
+        className={classNames(
+          "col-span-3 relative overflow-hidden",
+          "2xl:flex-[3]"
+        )}
+      >
         <div className="lg:absolute inset-0 flex justify-center items-center lg:m-4 lg:mr-0 ">
           <img
             className="!h-full object-cover object-left bg-none"

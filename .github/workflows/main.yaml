@@ -66,6 +66,19 @@ jobs:
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: pnpm install # Change this to npm, pnpm or pnpm.
+    
+      - name: Build Portable Binaries (Windows)
+        if: ${{ matrix.settings.platform == 'windows-latest' }}
+        run: |
+          cargo build --target ${{ matrix.settings.args.target }}
+          cargo build --release --target ${{ matrix.settings.args.target }}
+          mv ./target/${{ matrix.settings.args.target }}/debug/RecipeUI.exe ./target/${{ matrix.settings.args.target }}/debug/RecipeUI_${{ github.ref_name }}_x64-portable.exe
+          mv ./target/${{ matrix.settings.args.target }}/release/RecipeUI.exe ./target/${{ matrix.settings.args.target }}/release/RecipeUI_${{ github.ref_name }}_x64-portable.exe
+
+      - name: Upload Portable Binaries (Windows)
+        if: ${{ matrix.runner == 'windows-latest' }}
+        run: bash -c 'gh release upload ${{ github.ref_name }} ./target/${{ matrix.settings.args.target }}/{debug/RecipeUI_${{ github.ref_name }}_x64-portable.exe,release/RecipeUI_${{ github.ref_name }}_x64-portable.exe} --clobber'
+
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
