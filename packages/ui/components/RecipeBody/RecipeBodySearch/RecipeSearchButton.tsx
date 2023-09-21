@@ -201,6 +201,24 @@ export function RecipeSearchButton() {
       options: recipe.options,
     });
 
+    function processConfig(config: SingleAuthConfig, _secretValue: string) {
+      let secretValue = _secretValue;
+
+      if (config.payload?.prefix) {
+        secretValue = `${config.payload.prefix} ${secretValue}`;
+      }
+
+      if (config.type === RecipeAuthType.Query) {
+        url.searchParams.append(config.payload.name, secretValue);
+      } else if (config.type === RecipeAuthType.Header) {
+        fetchHeaders[config.payload.name] = secretValue;
+      } else if (config.type === RecipeAuthType.Bearer) {
+        fetchHeaders["Authorization"] = `Bearer ${secretValue}`;
+      } else if (config.type === RecipeAuthType.Basic) {
+        fetchHeaders["Authorization"] = `Basic ${secretValue}`;
+      }
+    }
+
     if (collectionModule) {
       const { hasAuthSetup, secretRecord } = await SecretAPI.getComplexSecrets({
         collection: collectionModule,
@@ -236,15 +254,7 @@ export function RecipeSearchButton() {
           return false;
         }
 
-        if (config.payload?.prefix) {
-          secretValue = `${config.payload.prefix} ${secretValue}`;
-        }
-
-        if (config.type === RecipeAuthType.Query) {
-          url.searchParams.append(config.payload.name, secretValue);
-        } else if (config.type === RecipeAuthType.Header) {
-          fetchHeaders[config.payload.name] = secretValue;
-        }
+        processConfig(config, secretValue);
       }
     }
 
@@ -272,19 +282,7 @@ export function RecipeSearchButton() {
             return false;
           }
 
-          if (config.type === RecipeAuthType.Bearer) {
-            fetchHeaders["Authorization"] = `Bearer ${primaryToken}`;
-          }
-
-          if (config.type === RecipeAuthType.Header) {
-            const headerName = config.payload.name;
-            fetchHeaders[headerName] = primaryToken;
-          }
-
-          if (config.type === RecipeAuthType.Query) {
-            let QUERY_KEY_NAME = config.payload.name;
-            url.searchParams.append(QUERY_KEY_NAME, primaryToken!);
-          }
+          processConfig(config, primaryToken);
         }
       }
     }

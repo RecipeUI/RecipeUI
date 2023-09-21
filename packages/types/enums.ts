@@ -33,6 +33,7 @@ export enum RecipeAuthType {
   Query = "query",
   OAuth = "oauth",
   Header = "header",
+  Basic = "basic",
 }
 
 export enum RecipeMutationContentType {

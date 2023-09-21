@@ -116,6 +116,14 @@ function parsePartsToCurl(parts: string[]) {
                 default: key.split("Bearer ")[1],
               },
             };
+          } else if (key.startsWith("Basic ")) {
+            result.authConfig = {
+              type: RecipeAuthType.Basic,
+              payload: {
+                name: "base64",
+                default: key.split("Basic ")[1],
+              },
+            };
           } else {
             // TODO: Migrate this to multiple. There are cases where APIs use two headers
             result.authConfig = {
@@ -145,6 +153,20 @@ function parsePartsToCurl(parts: string[]) {
       case "--location":
         result.url = parts[i + 1];
         i++; // Skip the next item which is the actual url.
+        break;
+      case "-d-":
+        break;
+      case "-u":
+      case "--user":
+        const [username, password] = parts[i + 1].split(":");
+        result.authConfig = {
+          type: RecipeAuthType.Basic,
+          payload: {
+            name: "base64",
+            default: btoa(`${username}:${password}`),
+          },
+        };
+        i++; // Skip the next item which is the actual body.
         break;
       default:
         // Assume this is the URL if it's not recognized as a flag or flag value.
