@@ -50,6 +50,9 @@ We are open sourced because we use so much open source technology and we want to
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Niwilai"><img src="https://avatars.githubusercontent.com/u/9334296?v=4?s=100" width="100px;" alt="Niwilai"/><br /><sub><b>Niwilai</b></sub></a><br /><a href="#ideas-Niwilai" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://alrek.no"><img src="https://avatars.githubusercontent.com/u/14291825?v=4?s=100" width="100px;" alt="Thomas Alrek"/><br /><sub><b>Thomas Alrek</b></sub></a><br /><a href="#ideas-thomas-alrek" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jinyus"><img src="https://avatars.githubusercontent.com/u/30532952?v=4?s=100" width="100px;" alt="jinyus"/><br /><sub><b>jinyus</b></sub></a><br /><a href="#ideas-jinyus" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
   </tbody>
 </table>
 
