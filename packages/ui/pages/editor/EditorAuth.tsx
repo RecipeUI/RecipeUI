@@ -22,7 +22,7 @@ export function EditorAuth() {
       : null;
 
   return (
-    <div className="flex-1 ">
+    <div className="flex-1 overflow-y-auto">
       {singleConfig && <SingleAuthConfig editorAuthConfig={singleConfig} />}
       <div className="grid grid-cols-2 gap-4 px-4 py-4 border-t border-recipe-slate">
         <AuthButton
