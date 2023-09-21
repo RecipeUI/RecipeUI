@@ -143,10 +143,10 @@ describe("More Use Cases", () => {
         query: "query { ping }",
       },
       authConfig: {
-        type: RecipeAuthType.Header,
+        type: RecipeAuthType.Basic,
         payload: {
-          name: "Authorization",
-          default: "Basic BASE64_ENCODED(PUBLIC_KEY:PRIVATE_KEY)",
+          name: "base64",
+          default: "BASE64_ENCODED(PUBLIC_KEY:PRIVATE_KEY)",
         },
       },
     });
@@ -186,6 +186,32 @@ describe("More Use Cases", () => {
       method: "GET",
       url: "https://api.crunchbase.com/api/v4/entities/organizations/tesla-motors?card_ids=founders,raised_funding_rounds&field_ids=categories,short_description,rank_org_company,founded_on,website,facebook,created_at&user_key=INSERT_KEY_HERE",
       headers: {},
+      body: null,
+    });
+  });
+
+  test("Jira", () => {
+    const JIRA_REQ = `
+    curl -D- \
+   -u fred@example.com:freds_api_token \
+   -X GET \
+   -H "Content-Type: application/json" \
+   https://your-domain.atlassian.net/rest/api/2/issue/createmeta
+    `;
+
+    expectResultToEqual(parseCurl(JIRA_REQ), {
+      url: "https://your-domain.atlassian.net/rest/api/2/issue/createmeta",
+      method: RecipeMethod.GET,
+      authConfig: {
+        type: RecipeAuthType.Basic,
+        payload: {
+          name: "base64",
+          default: btoa("fred@example.com:freds_api_token"),
+        },
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: null,
     });
   });
