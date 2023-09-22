@@ -9,7 +9,7 @@ import { usePostHog } from "posthog-js/react";
 import { POST_HOG_CONSTANTS } from "../../utils/constants/posthog";
 import { useIsMobile } from "../../hooks";
 import { RecipeNativeFetchContext } from "../../state/recipeSession";
-import { LATEST_APP_VERSION } from "../../utils/constants/main";
+import { LATEST_APP_VERSION } from "utils/constants/updates";
 
 enum DesktopPlatform {
   MacUniversal = "MacUniversal",

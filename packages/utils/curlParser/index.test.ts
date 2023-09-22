@@ -217,6 +217,28 @@ describe("More Use Cases", () => {
   });
 });
 
+describe("Google", () => {
+  test("General", () => {
+    const curlString = `curl -H "X-Goog-User-Project: your-project" -H "Authorization: Bearer $(gcloud auth print-access-token)" foo.googleapis.com`;
+    expectResultToEqual(parseCurl(curlString), {
+      body: null,
+      headers: {
+        Authorization: "Bearer $(gcloud auth print-access-token)",
+        "X-Goog-User-Project": "your-project",
+      },
+      method: RecipeMethod.GET,
+      url: "foo.googleapis.com",
+      authConfig: {
+        type: RecipeAuthType.Bearer,
+        payload: {
+          name: "Authorization",
+          default: "$(gcloud auth print-access-token)",
+        },
+      },
+    });
+  });
+});
+
 describe.skip("Not supported yet", () => {
   // test.skip("Lever API", () => {
   //   const LEVER_REQ = `
