@@ -74,34 +74,36 @@ export function EditorUpdates() {
             );
           })}
         </ul>
-        {!showMore && (
-          <button
-            className="underline underline-offset-2 mt-2"
-            onClick={() => {
-              setShowMore(true);
-            }}
-          >
-            View past updates
-          </button>
-        )}
       </div>
       <p className="pt-4">
         Expect <span className="font-bold">daily updates</span> for the next few
         weeks until v1.0. We're rapidly trying to fix bugs, improve the UX, and
-        add new features. Please report bugs on <DiscordLink />, <GitHubLink />,
-        or <GoogleFormLink /> so we can respond to them quickly.
+        add new features. Please report bugs on <GitHubLink /> or{" "}
+        <GoogleFormLink /> so we can respond to them quickly.
       </p>
 
-      <button
-        className="btn btn-outline btn-sm w-fit !mt-4 "
-        onClick={() => {
-          setToLatestVersion();
-        }}
-      >
-        <SparklesIcon className="hidden  w-4 h-4 mr-2" />
-        Dismiss
-        <SparklesIcon className="hidden  w-4 h-4 mr-2" />
-      </button>
+      <div className="!mt-4">
+        <button
+          className="btn btn-outline btn-sm w-fit mr-2 "
+          onClick={() => {
+            setToLatestVersion();
+          }}
+        >
+          <SparklesIcon className="hidden  w-4 h-4 mr-2" />
+          Dismiss
+          <SparklesIcon className="hidden  w-4 h-4 mr-2" />
+        </button>
+        {!showMore && (
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => {
+              setShowMore(true);
+            }}
+          >
+            More
+          </button>
+        )}
+      </div>
     </section>
   );
 }
