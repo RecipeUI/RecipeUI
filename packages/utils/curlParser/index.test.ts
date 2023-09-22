@@ -215,26 +215,217 @@ describe("More Use Cases", () => {
       body: null,
     });
   });
+
+  describe("Google", () => {
+    test("General", () => {
+      const curlString = `curl -H "X-Goog-User-Project: your-project" -H "Authorization: Bearer $(gcloud auth print-access-token)" foo.googleapis.com`;
+      expectResultToEqual(parseCurl(curlString), {
+        body: null,
+        headers: {
+          Authorization: "Bearer $(gcloud auth print-access-token)",
+          "X-Goog-User-Project": "your-project",
+        },
+        method: RecipeMethod.GET,
+        url: "foo.googleapis.com",
+        authConfig: {
+          type: RecipeAuthType.Bearer,
+          payload: {
+            name: "Authorization",
+            default: "$(gcloud auth print-access-token)",
+          },
+        },
+      });
+    });
+
+    test("File inputted", () => {
+      const curlString = `curl -X POST \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "x-goog-user-project: PROJECT_NUMBER_OR_ID" \
+    -H "Content-Type: application/json; charset=utf-8" \
+    -d @request.json \
+    "https://translation.googleapis.com/language/translate/v2"`;
+
+      expectResultToEqual(parseCurl(curlString), {
+        body: {
+          "@request.json": null,
+        },
+        method: RecipeMethod.POST,
+        url: "https://translation.googleapis.com/language/translate/v2",
+
+        headers: {
+          Authorization: "Bearer $(gcloud auth print-access-token)",
+          "x-goog-user-project": "PROJECT_NUMBER_OR_ID",
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        authConfig: {
+          type: RecipeAuthType.Bearer,
+          payload: {
+            name: "Authorization",
+            default: "$(gcloud auth print-access-token)",
+          },
+        },
+      });
+    });
+
+    test("Maps", () => {
+      const curlString = `
+      curl -X POST -d '{
+          "origins": [
+            {
+              "waypoint": {
+                "location": {
+                  "latLng": {
+                    "latitude": 37.420761,
+                    "longitude": -122.081356
+                  }
+                }
+              },
+              "routeModifiers": { "avoid_ferries": true}
+            },
+            {
+              "waypoint": {
+                "location": {
+                  "latLng": {
+                    "latitude": 37.403184,
+                    "longitude": -122.097371
+                  }
+                }
+              },
+              "routeModifiers": { "avoid_ferries": true}
+            }
+          ],
+          "destinations": [
+            {
+              "waypoint": {
+                "location": {
+                  "latLng": {
+                    "latitude": 37.420999,
+                    "longitude": -122.086894
+                  }
+                }
+              }
+            },
+            {
+              "waypoint": {
+                "location": {
+                  "latLng": {
+                    "latitude": 37.383047,
+                    "longitude": -122.044651
+                  }
+                }
+              }
+            }
+          ],
+          "travelMode": "DRIVE",
+          "routingPreference": "TRAFFIC_AWARE"
+        }' \
+        -H 'Content-Type: application/json' -H 'X-Goog-Api-Key: YOUR_API_KEY' \
+        -H 'X-Goog-FieldMask: originIndex,destinationIndex,duration,distanceMeters,status,condition' \
+        'https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix'
+      `;
+
+      expectResultToEqual(parseCurl(curlString), {
+        body: {
+          origins: [
+            {
+              waypoint: {
+                location: {
+                  latLng: {
+                    latitude: 37.420761,
+                    longitude: -122.081356,
+                  },
+                },
+              },
+              routeModifiers: { avoid_ferries: true },
+            },
+            {
+              waypoint: {
+                location: {
+                  latLng: {
+                    latitude: 37.403184,
+                    longitude: -122.097371,
+                  },
+                },
+              },
+              routeModifiers: { avoid_ferries: true },
+            },
+          ],
+          destinations: [
+            {
+              waypoint: {
+                location: {
+                  latLng: {
+                    latitude: 37.420999,
+                    longitude: -122.086894,
+                  },
+                },
+              },
+            },
+            {
+              waypoint: {
+                location: {
+                  latLng: {
+                    latitude: 37.383047,
+                    longitude: -122.044651,
+                  },
+                },
+              },
+            },
+          ],
+          travelMode: "DRIVE",
+          routingPreference: "TRAFFIC_AWARE",
+        },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": "YOUR_API_KEY",
+          "X-Goog-FieldMask":
+            "originIndex,destinationIndex,duration,distanceMeters,status,condition",
+        },
+        method: RecipeMethod.POST,
+        url: "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
+      });
+    });
+  });
 });
 
-describe("Google", () => {
-  test("General", () => {
-    const curlString = `curl -H "X-Goog-User-Project: your-project" -H "Authorization: Bearer $(gcloud auth print-access-token)" foo.googleapis.com`;
+describe("JSON is not valid", () => {
+  test("Bad values because the docs wanted to describe the type of the key", () => {
+    /*
+    The traditional parsing function can't handle this because they values are not wrapped in quotes
+    e.g "client_id": String -> "client_id": "String"
+
+    Ideas for fixes:
+      - Write our own parsing function (by forking and extending json5 library)
+      - Some smart replace() regex that finds all values that are not wrapped in quotes and wraps them in quotes
+    */
+
+    const curlString = `
+    curl -X POST https://sandbox.plaid.com/item/get \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "client_id": String,
+      "secret": String,
+      "access_token": String,
+        "help": {
+          "client_id": String,
+        }
+      }'
+    `;
+
     expectResultToEqual(parseCurl(curlString), {
-      body: null,
-      headers: {
-        Authorization: "Bearer $(gcloud auth print-access-token)",
-        "X-Goog-User-Project": "your-project",
-      },
-      method: RecipeMethod.GET,
-      url: "foo.googleapis.com",
-      authConfig: {
-        type: RecipeAuthType.Bearer,
-        payload: {
-          name: "Authorization",
-          default: "$(gcloud auth print-access-token)",
+      method: RecipeMethod.POST,
+      body: {
+        client_id: "String",
+        secret: "String",
+        access_token: "String",
+        help: {
+          client_id: "String",
         },
       },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: "https://sandbox.plaid.com/item/get",
     });
   });
 });

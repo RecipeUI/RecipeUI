@@ -15,7 +15,7 @@ function splitStringManual(_str: string) {
     if (buildingString) {
       buildingString = false;
 
-      words.push(builder.slice(1, -1).trim());
+      words.push(builder.trim().slice(1, -1));
       builder = "";
     } else {
       words.push(builder.trim());
@@ -139,11 +139,25 @@ function parsePartsToCurl(parts: string[]) {
         break;
       case "-d":
       case "--data":
+        result.method = RecipeMethod.POST;
         try {
           result.body = parse(parts[i + 1]);
-          result.method = RecipeMethod.POST;
         } catch (e) {
           console.error("Unable to parse body", parts[i + 1]);
+          result.body = { [parts[i + 1]]: null };
+
+          try {
+            const regex = /"([^"]+)":\s*([^"{}\[\],\s]+)(?=[,\n}])/g;
+            const correctedString = parts[i + 1].replace(
+              regex,
+              (match, p1, p2) => {
+                return `"${p1}": "${p2}"`;
+              }
+            );
+            result.body = parse(correctedString);
+          } catch (e) {
+            console.error("Unable to parse body again");
+          }
         }
         i++; // Skip the next item which is the actual body.
         break;

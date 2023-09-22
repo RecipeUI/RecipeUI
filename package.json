@@ -5,7 +5,8 @@
   "scripts": {
     "web:dev": "turbo run dev --filter=web",
     "collections": "pnpm -C packages/collections cli",
-    "cleanup_node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+    "cleanup_node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "utils:test": "pnpm -C packages/utils test"
   },
   "keywords": [],
   "devDependencies": {

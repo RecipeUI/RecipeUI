@@ -11,30 +11,36 @@ export async function getQueryAndBodyInfo({
   url: string;
   body?: string | null | undefined | Record<string, unknown>;
 }) {
-  const urlParam = new URL(url);
   let queryInfo: Pick<
     EditorSliceValues,
     "editorQuerySchemaType" | "editorQuerySchemaJSON" | "editorQuery"
   > | null = null;
 
-  if (urlParam.search.length > 1) {
-    const queryRecord: Record<string, string> = {};
-    const searchParts = urlParam.search.substring(1).split("&");
-    searchParts.forEach((part) => {
-      const [key, value] = part.split("=");
-      queryRecord[key] = value;
-    });
+  try {
+    const urlParam = new URL(url);
 
-    const _queryInfo = await superFetchTypesAndJSON({
-      record: queryRecord,
-      typeName: API_TYPE_NAMES.APIQueryParams,
-    });
+    if (urlParam.search.length > 1) {
+      const queryRecord: Record<string, string> = {};
+      const searchParts = urlParam.search.substring(1).split("&");
+      searchParts.forEach((part) => {
+        const [key, value] = part.split("=");
+        queryRecord[key] = value;
+      });
 
-    queryInfo = {
-      editorQuerySchemaType: _queryInfo.ts,
-      editorQuerySchemaJSON: _queryInfo.json,
-      editorQuery: JSON.stringify(queryRecord, null, 2),
-    };
+      const _queryInfo = await superFetchTypesAndJSON({
+        record: queryRecord,
+        typeName: API_TYPE_NAMES.APIQueryParams,
+      });
+
+      queryInfo = {
+        editorQuerySchemaType: _queryInfo.ts,
+        editorQuerySchemaJSON: _queryInfo.json,
+        editorQuery: JSON.stringify(queryRecord, null, 2),
+      };
+    }
+  } catch (e) {
+    console.error("Type error");
+    throw e;
   }
 
   let bodyInfo: Pick<

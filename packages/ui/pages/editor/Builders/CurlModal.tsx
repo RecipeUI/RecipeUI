@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { getQueryAndBodyInfo } from "./helpers";
 import { SecretAPI } from "../../../state/apiSession/SecretAPI";
+import { ErrorBase } from "types/common";
 
 export function CurlModal({
   onClose,
@@ -28,7 +29,7 @@ export function CurlModal({
     (state) => state.initializeEditorSession
   );
 
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<"FAIL" | null>(null);
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
@@ -102,7 +103,7 @@ export function CurlModal({
       }, 0);
     } catch (err) {
       console.error(err);
-      setError("Could not parse CURL");
+      setError("FAIL");
     } finally {
       setLoading(false);
     }
@@ -112,7 +113,11 @@ export function CurlModal({
     <Modal onClose={onClose} header="Import from CURL">
       <div className="mt-2 space-y-4">
         <p>{"Enter your cURL code snippet below and we'll try to parse it."}</p>
-        {error && <div className="text-red-500 text-sm font-bold">{error}</div>}
+        {error === "FAIL" && (
+          <div className="text-red-500 text-sm font-bold">
+            {"We couldn't parse your cURL snippet. Please try again."}
+          </div>
+        )}
         <textarea
           rows={8}
           className={classNames(
