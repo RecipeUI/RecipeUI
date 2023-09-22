@@ -2,14 +2,14 @@
 import {
   RecipeSession,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "../../../state/recipeSession";
 import { useState } from "react";
 import {
   getConfigForSessionStore,
   getParametersForSessionStore,
-} from "../../state/apiSession";
-import { FolderAPI } from "../../state/apiSession/FolderAPI";
-import { Modal } from "../Modal";
+} from "../../../state/apiSession";
+import { FolderAPI } from "../../../state/apiSession/FolderAPI";
+import { Modal } from "../../Modal";
 import { v4 as uuidv4 } from "uuid";
 import classNames from "classnames";
 

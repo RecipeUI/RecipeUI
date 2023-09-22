@@ -2,11 +2,14 @@
 import {
   RecipeSession,
   useRecipeSessionStore,
-} from "../../state/recipeSession";
+} from "../../../state/recipeSession";
 import { useEffect, useState } from "react";
-import { FolderAPI, useSessionFolders } from "../../state/apiSession/FolderAPI";
-import { Modal } from "../Modal";
-import { CoreRecipeAPI } from "../../state/apiSession/RecipeAPI";
+import {
+  FolderAPI,
+  useSessionFolders,
+} from "../../../state/apiSession/FolderAPI";
+import { Modal } from "../../Modal";
+import { CoreRecipeAPI } from "../../../state/apiSession/RecipeAPI";
 import { RecipeSessionFolder } from "types/database";
 
 export function EditSessionModal({

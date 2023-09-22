@@ -1,10 +1,10 @@
 "use client";
-import { useRecipeSessionStore } from "../../state/recipeSession";
-import { FolderAPI } from "../../state/apiSession/FolderAPI";
-import { Modal } from "../Modal";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
+import { FolderAPI } from "../../../state/apiSession/FolderAPI";
+import { Modal } from "../../Modal";
 import { useForm } from "react-hook-form";
-import { useSupabaseClient } from "../Providers/SupabaseProvider";
-import { RecipeCloudContext } from "../../state/apiSession/CloudAPI";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
+import { RecipeCloudContext } from "../../../state/apiSession/CloudAPI";
 import { RecipeSessionFolderExtended } from "types/database";
 import { useContext, useEffect } from "react";
 import { produce } from "immer";

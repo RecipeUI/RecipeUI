@@ -1,12 +1,15 @@
 "use client";
-import { DesktopPage, useRecipeSessionStore } from "../../state/recipeSession";
+import {
+  DesktopPage,
+  useRecipeSessionStore,
+} from "../../../state/recipeSession";
 import { useState } from "react";
-import { Modal } from "../Modal";
+import { Modal } from "../../Modal";
 import { isUUID } from "utils";
 import { RecipeProject } from "types/database";
-import { useIsTauri } from "../../hooks/useIsTauri";
-import { useSupabaseClient } from "../Providers/SupabaseProvider";
-import { fetchProjectById } from "../../fetchers/project";
+import { useIsTauri } from "../../../hooks/useIsTauri";
+import { useSupabaseClient } from "../../Providers/SupabaseProvider";
+import { fetchProjectById } from "../../../fetchers/project";
 
 export function ViewCollectionModal({ onClose }: { onClose: () => void }) {
   const [collectionUrl, setCollectionUrl] = useState("");
