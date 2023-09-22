@@ -48,7 +48,11 @@ export function ProjectContainer({
   }, [isTauri, loading]);
 
   return (
-    <div className={classNames("flex-1 flex flex-col sm:px-6 sm:pb-6 sm:pt-4")}>
+    <div
+      className={classNames(
+        "flex-1 flex flex-col sm:px-6 sm:pb-6 sm:pt-4 w-screen"
+      )}
+    >
       {hasNoProject ? (
         <div className="flex items-center space-x-4 px-4 pt-4">
           {!loading && (
