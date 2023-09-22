@@ -1,53 +1,14 @@
 "use client";
 import { useLocalStorage } from "usehooks-ts";
-import { LATEST_APP_VERSION } from "../../utils/constants/main";
 import { SparklesIcon } from "@heroicons/react/24/outline";
 import { isSemverLessThan } from "../../utils/main";
-import { useMemo, useState } from "react";
-
-const VERSION_LOGS: {
-  version: string;
-  update: string;
-  update_type?: "bug" | "feature";
-  ignore?: boolean;
-}[] = [
-  {
-    version: "0.8.6",
-    update: "Nested folders. Improved cloud syncing.",
-    update_type: "feature",
-  },
-  {
-    version: "0.8.5",
-    update: "Bug fixes and multiple UX improvements. Auth flow improved.",
-    update_type: "bug",
-  },
-  {
-    version: "0.8.2",
-    update: "Bug fixes. Migrate to API storybook (more details soon).",
-    update_type: "bug",
-    ignore: true,
-  },
-  {
-    version: "0.8.0",
-    update: "Ability to share and publish folders as collections!",
-    update_type: "feature",
-  },
-  {
-    version: "0.8.0",
-    update: "Add headers to output response.",
-    update_type: "feature",
-  },
-  {
-    version: "0.7.7",
-    update: "Request history. Preview, replay, and save past request runs!",
-    update_type: "feature",
-  },
-  {
-    version: "0.7.6",
-    update: "Save requests as recipes that you can replay quickly.",
-    update_type: "feature",
-  },
-];
+import { useEffect, useMemo, useState } from "react";
+import {
+  DiscordLink,
+  GitHubLink,
+  GoogleFormLink,
+} from "../../components/CommonLinks";
+import { LATEST_APP_VERSION, VERSION_LOGS } from "utils/constants/updates";
 
 export function EditorUpdates() {
   const { latestVersionDismiss, isLatest, setToLatestVersion } =
@@ -124,6 +85,13 @@ export function EditorUpdates() {
           </button>
         )}
       </div>
+      <p className="pt-4">
+        Expect <span className="font-bold">daily updates</span> for the next few
+        weeks until v1.0. We're rapidly trying to fix bugs, improve the UX, and
+        add new features. Please report bugs on <DiscordLink />, <GitHubLink />,
+        or <GoogleFormLink /> so we can respond to them quickly.
+      </p>
+
       <button
         className="btn btn-outline btn-sm w-fit !mt-4 "
         onClick={() => {
@@ -144,16 +112,18 @@ export function useLatestVersionDetails() {
     "0.8.0"
   );
 
-  // useEffect(() => {
-  //   localStorage.removeItem("latestVersion");
-  // }, []);
+  useEffect(() => {
+    localStorage.removeItem("latestVersion");
+  }, []);
+
+  const isLatest = !isSemverLessThan({
+    oldVer: latestVersionDismiss,
+    newVer: LATEST_APP_VERSION,
+  });
 
   return {
     latestVersionDismiss,
-    isLatest: !isSemverLessThan({
-      oldVer: latestVersionDismiss,
-      newVer: LATEST_APP_VERSION,
-    }),
+    isLatest: isLatest,
     setToLatestVersion: () => {
       setLatestVersionDismissed(LATEST_APP_VERSION);
     },

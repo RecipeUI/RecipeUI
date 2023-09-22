@@ -9,7 +9,7 @@ export default {
     "Harness the power of cutting-edge AI models. Integrate world-class natural language processing into your applications and transform the way you interact with data.",
   image:
     "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/openai.png",
-  authConfigs: {
+  authConfig: {
     type: RecipeAuthType.Header,
     payload: {
       name: "Authorization",

@@ -1,12 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { RecipeAuthType } from "types/enums";
 import classNames from "classnames";
-import { SecretAPI } from "../../state/apiSession/SecretAPI";
-import { SingleAuthConfig, TraditionalSingleAuth } from "types/database";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
+import {
+  MultipleAuthConfig,
+  SingleAuthConfig,
+  TraditionalSingleAuth,
+} from "types/database";
 import { useForm } from "react-hook-form";
+import { produce } from "immer";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -24,6 +35,9 @@ export function EditorAuth() {
   return (
     <div className="flex-1 overflow-y-auto">
       {singleConfig && <SingleAuthConfig editorAuthConfig={singleConfig} />}
+      {editorAuthConfig?.type === RecipeAuthType.Multiple && (
+        <MultipleAuthConfig editorAuthConfig={editorAuthConfig} />
+      )}
       <div className="grid grid-cols-2 gap-4 px-4 py-4 border-t border-recipe-slate">
         <AuthButton
           label="None"
@@ -83,6 +97,24 @@ export function EditorAuth() {
           }}
         />
         <AuthButton
+          label="Multiple"
+          description="Multiple headers or query keys,"
+          selected={editorAuthConfig?.type === RecipeAuthType.Multiple}
+          onClick={() => {
+            setEditorAuthConfig({
+              type: RecipeAuthType.Multiple,
+              payload: [
+                {
+                  type: RecipeAuthType.Header,
+                  payload: {
+                    name: "Authorization",
+                  },
+                },
+              ],
+            });
+          }}
+        />
+        <AuthButton
           label="OAuth (Soon)"
           description="Join our Discord or email us to use this feature now."
           // selected={singleConfig?.type === RecipeAuthType.OAuth}
@@ -114,8 +146,9 @@ function SingleAuthConfig({
   return null;
 }
 
-function useSingleAuthSecret<T>(editorAuthConfig: T) {
+function useAuthSecret<T>(editorAuthConfig: T) {
   const [authConfig, setAuthConfig] = useState<T | null>(null);
+
   useEffect(() => {
     setAuthConfig(editorAuthConfig);
   }, [editorAuthConfig]);
@@ -133,7 +166,12 @@ function useSingleAuthSecret<T>(editorAuthConfig: T) {
     );
   }, [currentSession?.recipeId]);
 
-  return { secret, setSecret, setAuthConfig, authConfig };
+  return {
+    secret,
+    setSecret,
+    setAuthConfig: setAuthConfig as Dispatch<SetStateAction<T | null>>,
+    authConfig: authConfig as T | null,
+  };
 }
 
 function TraditionalSingleAuthConfig({
@@ -149,7 +187,7 @@ function TraditionalSingleAuthConfig({
   );
   const [hasChanged, setHasChanged] = useState(false);
   const { secret, setSecret, authConfig, setAuthConfig } =
-    useSingleAuthSecret(editorAuthConfig);
+    useAuthSecret(editorAuthConfig);
 
   return (
     <div className={classNames("py-2 p-4 pb-4")}>
@@ -182,7 +220,6 @@ function TraditionalSingleAuthConfig({
           />
         </AuthFormWrapper>
       )}
-
       <AuthFormWrapper
         label={`${editorAuthConfig.type} Secret Value`}
         description={
@@ -255,8 +292,7 @@ function BasicAuth({
   const currentSession = useRecipeSessionStore(
     (state) => state.currentSession
   )!;
-  const { secret, setSecret, authConfig } =
-    useSingleAuthSecret(editorAuthConfig);
+  const { secret, setSecret, authConfig } = useAuthSecret(editorAuthConfig);
 
   const {
     register,
@@ -404,6 +440,207 @@ function AuthFormWrapper({
         <p className="text-xs text-gray-500 mb-2">{description}</p>
       )}
       {children}
+    </div>
+  );
+}
+
+function MultipleAuthConfig({
+  editorAuthConfig,
+}: {
+  editorAuthConfig: MultipleAuthConfig;
+}) {
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
+  const setEditorAuthConfig = useRecipeSessionStore(
+    (state) => state.setEditorAuthConfig
+  );
+
+  const [hasChanged, setHasChanged] = useState(false);
+
+  const [authConfigs, setAuthConfigs] = useState(editorAuthConfig.payload);
+  useEffect(() => {
+    setAuthConfigs(editorAuthConfig.payload);
+  }, [editorAuthConfig]);
+
+  const [authSecrets, setAuthSecrets] = useState<string[]>([]);
+  const refreshSecret = useCallback(async () => {
+    const newSecrets = await SecretAPI.getSecretArray({
+      secretId: currentSession.recipeId,
+    });
+    setAuthSecrets(newSecrets);
+  }, [currentSession.recipeId]);
+
+  useEffect(() => {
+    refreshSecret();
+  }, [refreshSecret]);
+
+  const onSave = async () => {
+    setEditorAuthConfig({
+      type: RecipeAuthType.Multiple,
+      payload: authConfigs,
+    });
+
+    await SecretAPI.saveSecret({
+      secretId: currentSession.recipeId,
+      secretValue: JSON.stringify(authSecrets),
+    });
+    refreshSecret();
+    setHasChanged(false);
+  };
+
+  return (
+    <div className={classNames("p-4")}>
+      <div className="space-y-4">
+        {(authConfigs || []).map((authConfig, i) => {
+          const secret = authSecrets[i];
+
+          return (
+            <div
+              key={i}
+              className="border rounded-md border-recipe-slate p-4 bg-base-200"
+            >
+              <AuthFormWrapper label={`Auth Type`}>
+                <div className="space-x-2 mt-2">
+                  <select
+                    className="select select-bordered select-sm "
+                    onChange={(e) => {
+                      setAuthConfigs(
+                        produce(authConfigs!, (draft) => {
+                          draft[i].type = e.target.value as
+                            | RecipeAuthType.Header
+                            | RecipeAuthType.Query;
+                        })
+                      );
+                    }}
+                    value={authConfig.type}
+                  >
+                    <option value={RecipeAuthType.Header}>Header</option>
+                    <option value={RecipeAuthType.Query}>Query</option>
+                  </select>
+                </div>
+              </AuthFormWrapper>
+              <AuthFormWrapper label={`${authConfig.type} Param Name`}>
+                <input
+                  type="text"
+                  autoCorrect="off"
+                  className={classNames(
+                    "input input-bordered w-full input-sm",
+                    !authConfig?.payload?.name && "input-error"
+                  )}
+                  placeholder={
+                    authConfig.type === RecipeAuthType.Header
+                      ? "e.g Authorization"
+                      : "e.g api_key"
+                  }
+                  value={authConfig?.payload?.name}
+                  onChange={(e) => {
+                    if (!hasChanged) setHasChanged(true);
+
+                    setAuthConfigs(
+                      produce(authConfigs!, (draft) => {
+                        draft[i].payload.name = e.target.value;
+                      })
+                    );
+                  }}
+                />
+              </AuthFormWrapper>
+              <AuthFormWrapper label={`${authConfig.type} Secret Value`}>
+                <input
+                  type="text"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  className={classNames(
+                    "input input-bordered w-full input-sm",
+
+                    !secret && "input-error"
+                  )}
+                  value={secret}
+                  onChange={(e) => {
+                    if (!hasChanged) setHasChanged(true);
+
+                    setAuthSecrets(
+                      produce(authSecrets, (draft) => {
+                        draft[i] = e.target.value;
+                      })
+                    );
+                  }}
+                />
+              </AuthFormWrapper>
+              <button
+                className="btn btn-outline btn-sm mt-2"
+                onClick={() => {
+                  setHasChanged(true);
+                  setAuthConfigs(
+                    produce(authConfigs!, (draft) => {
+                      draft.splice(i, 1);
+                    })
+                  );
+
+                  setAuthSecrets(
+                    produce(authSecrets, (draft) => {
+                      draft.splice(i, 1);
+                    })
+                  );
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="space-x-2">
+        <button
+          className={classNames(
+            "btn btn-sm btn-accent mt-2",
+            !hasChanged && "btn-disabled"
+          )}
+          onClick={onSave}
+        >
+          Save changes
+        </button>
+        <button
+          className={classNames("btn btn-sm btn-primary mt-2")}
+          onClick={() => {
+            setHasChanged(true);
+            setAuthConfigs(
+              produce(authConfigs!, (draft) => {
+                draft.push({
+                  type: RecipeAuthType.Header,
+                  payload: {
+                    name: "",
+                  },
+                });
+              })
+            );
+          }}
+        >
+          Add Secret
+        </button>
+        <button
+          className={classNames("btn btn-sm btn-neutral mt-2")}
+          onClick={async () => {
+            setHasChanged(false);
+            await SecretAPI.deleteSecret({
+              secretId: currentSession!.recipeId,
+            });
+            setAuthSecrets([]);
+            setAuthConfigs([]);
+
+            setEditorAuthConfig({
+              type: RecipeAuthType.Multiple,
+              payload: [],
+            });
+            refreshSecret();
+
+            alert("Deleted secret");
+          }}
+        >
+          Delete all
+        </button>
+      </div>
     </div>
   );
 }

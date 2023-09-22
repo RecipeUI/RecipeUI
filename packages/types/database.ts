@@ -157,12 +157,11 @@ export type SingleAuthConfig =
       payload?: SimpleAuthPayload & { name: "base64" };
     };
 
-export type AuthConfig =
-  | SingleAuthConfig
-  | {
-      type: RecipeAuthType.Multiple;
-      payload: SingleAuthConfig[];
-    };
+export interface MultipleAuthConfig {
+  type: RecipeAuthType.Multiple;
+  payload: Exclude<TraditionalSingleAuth, { type: RecipeAuthType.Bearer }>[];
+}
+export type AuthConfig = SingleAuthConfig | MultipleAuthConfig;
 
 export type RecipeOptions = {
   deprecated?: boolean;
@@ -367,7 +366,7 @@ export interface ModuleSetting {
   title: string;
   description: string;
   image?: string;
-  authConfigs?: AuthConfig | null;
+  authConfig?: AuthConfig | null;
   resources?: ResourceSection;
   components?: CollectionComponentModule[];
   urls: string[];

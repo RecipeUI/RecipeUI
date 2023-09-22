@@ -21,7 +21,7 @@ export default function Module() {
 }
 
 const SINGLE_API_KEY = SecretAPI.getSecretKeyFromConfig(
-  ModuleSettings.authConfigs,
+  ModuleSettings.authConfig,
   ModuleSettings.module
 );
 

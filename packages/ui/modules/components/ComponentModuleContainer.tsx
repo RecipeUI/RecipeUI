@@ -38,12 +38,12 @@ export function ComponentModuleContainer({
 
           return <ResourcesModule resourceSection={module.resources} key={i} />;
         } else if (component === CollectionComponentModule.Auth) {
-          if (!module.authConfigs) return null;
-          return module.authConfigs ? (
+          if (!module.authConfig) return null;
+          return module.authConfig ? (
             <Fragment key={i}>
-              {module.authConfigs.type !== RecipeAuthType.Multiple ? (
+              {module.authConfig.type !== RecipeAuthType.Multiple ? (
                 <SingleAuthModule
-                  authConfig={module.authConfigs}
+                  authConfig={module.authConfig}
                   module={module.module}
                 />
               ) : (

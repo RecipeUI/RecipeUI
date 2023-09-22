@@ -1,13 +1,21 @@
-import { DISCORD_LINK } from "utils/constants";
+import { DISCORD_LINK, GITHUB_LINK, GOOGLE_FORMS_LINK } from "utils/constants";
 
-export function DiscordLink() {
+function SimpleLink({ href, label }: { href: string; label: string }) {
   return (
-    <a
-      href={DISCORD_LINK}
-      className="underline underline-offset-2"
-      target="_blank"
-    >
-      Discord
+    <a href={href} className="underline underline-offset-2" target="_blank">
+      {label}
     </a>
   );
+}
+
+export function DiscordLink() {
+  return <SimpleLink href={DISCORD_LINK} label="Discord" />;
+}
+
+export function GoogleFormLink() {
+  return <SimpleLink href={GOOGLE_FORMS_LINK} label="Google Form" />;
+}
+
+export function GitHubLink() {
+  return <SimpleLink href={GITHUB_LINK} label="GitHub" />;
 }

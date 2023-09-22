@@ -11,11 +11,34 @@ import { isCollectionModule } from "types/modules/helpers";
 export class SecretAPI {
   static getSecret = async ({
     secretId,
+    index,
   }: {
     secretId: string;
+    index?: number;
   }): Promise<string | undefined> => {
+    if (typeof index === "number") {
+      return (await this.getSecretArray({ secretId }))[index];
+    }
+
     const store = await getSecretStore();
     return store.get(secretId);
+  };
+
+  static getSecretArray = async ({
+    secretId,
+  }: {
+    secretId: string;
+  }): Promise<string[]> => {
+    const store = await getSecretStore();
+    const secret = await store.get(secretId);
+    try {
+      const parsedSecret = JSON.parse(secret || "[]");
+      return parsedSecret;
+    } catch (e) {
+      //
+    }
+
+    return [];
   };
 
   static saveSecret = async ({ secretId, secretValue }: SaveSecret) => {
@@ -40,7 +63,7 @@ export class SecretAPI {
     collection: CollectionModule;
   }) => {
     let authConfigs: SingleAuthConfig[] = [];
-    let initialConfig = ModuleSettings[collection]?.authConfigs;
+    let initialConfig = ModuleSettings[collection]?.authConfig;
 
     if (initialConfig) {
       if (initialConfig.type === RecipeAuthType.Multiple) {

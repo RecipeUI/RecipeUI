@@ -273,6 +273,7 @@ import { RecipeMethod } from "types/enums";
 
 import { emit } from "@tauri-apps/api/event";
 import { useLatestVersionDetails } from "../../pages/editor/EditorUpdates";
+import { hasMajorUpdate } from "utils/constants/updates";
 
 function TauriUpdateExtension() {
   const [version, setVersion] = useState("");
@@ -328,7 +329,10 @@ function TauriUpdateExtension() {
 
   return (
     <button
-      className="ml-2 btn btn-accent btn-xs animate-bounce -mr-2"
+      className={classNames(
+        "ml-2 btn btn-accent btn-xs  -mr-2",
+        hasMajorUpdate && "animate-bounce"
+      )}
       onClick={() => {
         emit("tauri://update");
       }}

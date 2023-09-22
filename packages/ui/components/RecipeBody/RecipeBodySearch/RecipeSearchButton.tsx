@@ -230,7 +230,8 @@ export function RecipeSearchButton() {
       }
 
       let authConfigs: SingleAuthConfig[] = [];
-      const initialConfig = ModuleSettings[collectionModule]?.authConfigs;
+      const initialConfig = ModuleSettings[collectionModule]?.authConfig;
+
       if (initialConfig) {
         if (initialConfig.type === RecipeAuthType.Multiple) {
           authConfigs = initialConfig.payload;
@@ -259,22 +260,21 @@ export function RecipeSearchButton() {
     }
 
     if (!collectionModule && recipe.authConfig) {
-      let authConfigs: SingleAuthConfig[] = [];
-      if (recipe.authConfig) {
-        if (recipe.authConfig.type === RecipeAuthType.Multiple) {
-          authConfigs = recipe.authConfig.payload;
-        } else {
-          authConfigs = [recipe.authConfig];
-        }
+      let authConfigs: SingleAuthConfig[] =
+        recipe.authConfig.type === RecipeAuthType.Multiple
+          ? recipe.authConfig.payload
+          : [recipe.authConfig];
 
+      if (authConfigs.length > 0) {
         for (let i = 0; i < authConfigs.length; i++) {
           const config: AuthConfig = authConfigs[i];
 
           const primaryToken = await SecretAPI.getSecret({
-            secretId:
-              authConfigs.length === 1
-                ? currentSession.recipeId
-                : `${currentSession.recipeId}-${i}`,
+            secretId: recipe.id,
+            index:
+              recipe.authConfig.type === RecipeAuthType.Multiple
+                ? i
+                : undefined,
           });
 
           if (!primaryToken) {

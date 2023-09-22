@@ -8,7 +8,7 @@ export default {
   description: "The Internet's Source for Visuals.",
   image:
     "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/unsplash.png",
-  authConfigs: {
+  authConfig: {
     type: RecipeAuthType.Header,
     payload: {
       name: "Authorization",

@@ -9,7 +9,7 @@ export default {
     "Bring your platform to life! Embed GIPHY's vast library of animated GIFs to add fun, expression, and creativity to any digital experience.",
   image:
     "https://nqtmsoehkjdrhcmzfjar.supabase.co/storage/v1/object/public/assets/projects/giphy.png",
-  authConfigs: {
+  authConfig: {
     type: RecipeAuthType.Query,
     payload: {
       name: "api_key",
