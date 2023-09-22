@@ -155,7 +155,6 @@ export class FolderAPI {
       id: uuidv4(),
       name: folderName,
       items: [],
-      parentFolderId: existingFolderId,
       type: "folder",
     } as RecipeSessionFolder;
 
@@ -278,13 +277,18 @@ export function useSessionFolders() {
   const [folders, setFolders] = useState<RecipeSessionFolder[]>([]);
   const sessions = useRecipeSessionStore((state) => state.sessions);
 
-  const { folderSessions, noFolderSessions } = useMemo(() => {
+  const {
+    folderSessionsExtended,
+    noFolderSessions,
+    rootFolderSessionsExtended,
+  } = useMemo(() => {
     const sessionRecord: Record<string, RecipeSession> = {};
     for (const session of sessions) {
       sessionRecord[session.id] = session;
     }
 
     const folderSessions: FolderToSessions = {};
+    const subFolders = new Set<string>();
 
     function recursivelyProcessFolders(
       folder: RecipeSessionFolder
@@ -312,6 +316,7 @@ export function useSessionFolders() {
                   session,
                 };
               } else {
+                subFolders.add(item.id);
                 const folder = folders.find((f) => f.id === item.id);
                 if (!folder) {
                   return undefined as any;
@@ -353,9 +358,14 @@ export function useSessionFolders() {
     }
 
     const noFolderSessions: RecipeSession[] = Object.values(sessionRecord);
+    const folderSessionsExtended = Object.values(folderSessions);
+    const rootFolderSessionsExtended = folderSessionsExtended.filter(
+      (folder) => !subFolders.has(folder.id)
+    );
 
     return {
-      folderSessions,
+      folderSessionsExtended,
+      rootFolderSessionsExtended,
       noFolderSessions,
     };
   }, [folders, sessions]);
@@ -377,7 +387,8 @@ export function useSessionFolders() {
 
   return {
     folders,
-    folderSessions,
+    folderSessionsExtended,
     noFolderSessions,
+    rootFolderSessionsExtended,
   };
 }

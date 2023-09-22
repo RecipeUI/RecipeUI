@@ -115,7 +115,6 @@ export class CloudAPI {
                   id: item.id,
                   type: item.type,
                 })),
-                parentFolderId,
               });
             }
           }

@@ -325,13 +325,13 @@ export type RecipeSessionFolderItem = {
 export interface RecipeSessionFolder {
   id: string;
   name: string;
+
+  items: RecipeSessionFolderItem[];
+
   /**
    * @deprecated use 'sessionIds' instead
    */
   sessionIds?: string[];
-  items: RecipeSessionFolderItem[];
-
-  parentFolderId?: string;
 }
 
 export interface RecipeSession {
@@ -339,7 +339,6 @@ export interface RecipeSession {
   name: string;
   recipeId: string;
   apiMethod: RecipeMethod;
-  folderId?: string;
 }
 
 export type RecipeSessionFolderItemExtended =

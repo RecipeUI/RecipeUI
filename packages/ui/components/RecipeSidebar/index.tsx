@@ -19,7 +19,7 @@ import { COLLECTION_FORKING_ID, RECIPE_FORKING_ID } from "utils/constants";
 
 import { CurlModal } from "../../pages/editor/Builders/CurlModal";
 import { useInitializeRecipe } from "../../hooks/useInitializeRecipe";
-import { Recipe } from "types/database";
+import { Recipe, RecipeSession } from "types/database";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { fetchProjectPage } from "../../fetchers/project";
 import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
@@ -121,7 +121,7 @@ export function RecipeSidebar() {
 
   const [viewCollectionModal, setViewCollectionModal] = useState(false);
 
-  const { folderSessions, noFolderSessions } = useSessionFolders();
+  const { rootFolderSessionsExtended, noFolderSessions } = useSessionFolders();
   const addEditorSession = useRecipeSessionStore(
     (state) => state.addEditorSession
   );
@@ -195,27 +195,20 @@ export function RecipeSidebar() {
         </ul>
       </div>
       <RecipeCloudContext.Provider value={recipeCloud}>
-        {Object.keys(folderSessions).length > 0 && (
-          <ul className="menu py-0">
-            {Object.keys(folderSessions).map((folderId) => {
-              const folder = folderSessions[folderId];
-              if (folder.parentFolderId) {
-                return null;
-              }
-
-              return (
-                <SessionFolder key={folderId} folder={folder} isRootFolder />
-              );
-            })}
-          </ul>
-        )}
+        <ul className="menu py-0">
+          {rootFolderSessionsExtended.map((folder) => {
+            return (
+              <SessionFolder key={folder.id} folder={folder} isRootFolder />
+            );
+          })}
+        </ul>
       </RecipeCloudContext.Provider>
       {/* This is the base folder. It has no names. No indentation */}
       {noFolderSessions.length > 0 && (
         <div>
           <div className="text-start py-2 w-full">
             <h3 className="font-bold text-xs ml-4">
-              {Object.keys(folderSessions).length !== 0
+              {rootFolderSessionsExtended.length !== 0
                 ? "No Folder"
                 : "Sessions"}
             </h3>
