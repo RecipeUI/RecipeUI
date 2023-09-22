@@ -235,14 +235,11 @@ function HTMLPreview({ html }: { html: string }) {
           </button>
         </div>
       ) : (
-        <div className="mockup-browser  bg-base-300 mt-4">
+        <div className="mockup-browser  bg-base-300 mt-4 overflow-x-scroll ">
           <div className="mockup-browser-toolbar">
             <div className="input">{editorUrl}</div>
           </div>
-          <div
-            dangerouslySetInnerHTML={{ __html: html }}
-            className="h-full w-full bg-base-200 p-4 min-h-[100px]"
-          ></div>
+          <iframe srcDoc={html} className="w-full h-full  min-h-[200px]" />
         </div>
       )}
     </div>

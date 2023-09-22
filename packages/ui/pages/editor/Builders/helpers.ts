@@ -5,7 +5,7 @@ import { API_LOCAL_PROCESSING_URLS } from "../../../utils/constants/main";
 import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
 
 export async function getQueryAndBodyInfo({
-  url,
+  url: _url,
   body,
 }: {
   url: string;
@@ -17,6 +17,11 @@ export async function getQueryAndBodyInfo({
   > | null = null;
 
   try {
+    let url = _url;
+    if (!url.startsWith("http")) {
+      url = "https://" + url;
+    }
+
     const urlParam = new URL(url);
 
     if (urlParam.search.length > 1) {
@@ -40,7 +45,6 @@ export async function getQueryAndBodyInfo({
     }
   } catch (e) {
     console.error("Type error");
-    throw e;
   }
 
   let bodyInfo: Pick<

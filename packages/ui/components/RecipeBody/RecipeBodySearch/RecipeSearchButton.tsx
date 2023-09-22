@@ -192,7 +192,13 @@ export function RecipeSearchButton() {
       }
     }
 
-    let url = new URL(path);
+    let url: URL;
+    try {
+      url = new URL(path);
+    } catch (e) {
+      alert("Invalid URL. You might need to add http:// or https://");
+      return;
+    }
 
     // ------ Parse Auth -------
 
