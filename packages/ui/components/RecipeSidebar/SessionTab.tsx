@@ -3,7 +3,7 @@ import {
   RecipeSession,
   useRecipeSessionStore,
 } from "../../state/recipeSession";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import classNames from "classnames";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
@@ -28,10 +28,12 @@ export function SessionTab({
   session,
   cloudSession,
   parentFolderId,
+  draggable,
 }: {
   session: RecipeSession;
   cloudSession?: Recipe;
   parentFolderId?: string;
+  draggable?: boolean;
 }) {
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const isCurrentSession = currentSession?.id === session.id;
@@ -63,8 +65,10 @@ export function SessionTab({
 
   const supabase = useSupabaseClient();
 
+  const Container = draggable ? Fragment : "li";
+
   return (
-    <li className={classNames("relative cursor-pointer")}>
+    <li>
       <div
         ref={hoverRef}
         key={session.id}

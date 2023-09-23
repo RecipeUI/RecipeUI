@@ -391,6 +391,9 @@ importers:
       '@dnd-kit/sortable':
         specifier: ^7.0.2
         version: 7.0.2(@dnd-kit/core@6.0.8)(react@18.2.0)
+      '@dnd-kit/utilities':
+        specifier: ^3.2.1
+        version: 3.2.1(react@18.2.0)
       '@headlessui/react':
         specifier: ^1.7.16
         version: 1.7.16(react-dom@18.2.0)(react@18.2.0)

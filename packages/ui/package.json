@@ -11,6 +11,7 @@
     "@codemirror/lint": "^6.4.0",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
+    "@dnd-kit/utilities": "^3.2.1",
     "@headlessui/react": "^1.7.16",
     "@heroicons/react": "^2.0.18",
     "@monaco-editor/react": "^4.5.2",
