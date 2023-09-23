@@ -18,7 +18,7 @@ import { FolderModal } from "./Modal/FolderModal";
 import { EditFolderModal } from "./Modal/EditFolderModal";
 
 import { RecipeSession } from "../../state/recipeSession";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
 import {
@@ -32,18 +32,16 @@ import {
   getParametersForSessionStore,
 } from "../../state/apiSession";
 import { EditSessionModal } from "./Modal/EditSessionModal";
-import { Recipe } from "types/database";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { cloudEventEmitter } from "../../state/apiSession/CloudAPI";
 import { DuplicateModal } from "./Modal/DuplicateModal";
 
-export function SessionFolder({
-  folder,
-  isRootFolder,
-}: {
+interface SessionFolderProps {
   folder: RecipeSessionFolderExtended;
   isRootFolder?: boolean;
-}) {
+}
+
+export function SessionFolder({ folder, isRootFolder }: SessionFolderProps) {
   const recipeCloud = useContext(RecipeCloudContext);
   const isCloudFolder =
     recipeCloud.collectionRecord[folder.id] ??
@@ -152,14 +150,7 @@ export function SessionFolder({
               if (item.type === "session") {
                 const session = item.session;
 
-                return (
-                  <SessionTab
-                    key={session.id}
-                    session={session}
-                    cloudSession={recipeCloud.apiRecord[session.id]}
-                    parentFolderId={folder.id}
-                  />
-                );
+                return <SessionTab key={session.id} session={session} />;
               } else {
                 const folder = item.folder;
 
@@ -191,33 +182,22 @@ export function SessionFolder({
   );
 }
 
-export function SessionTab({
-  session,
-  cloudSession,
-  parentFolderId,
-  draggable,
-}: {
+interface SessionTabProps {
   session: RecipeSession;
-  cloudSession?: Recipe;
-  parentFolderId?: string;
-  draggable?: boolean;
-}) {
+}
+
+export function SessionTab({ session }: SessionTabProps) {
+  const recipeCloud = useContext(RecipeCloudContext);
+  const cloudSession = recipeCloud.apiRecord[session.id];
+
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
   const isCurrentSession = currentSession?.id === session.id;
 
   const hoverRef = useRef(null);
   const isHover = useHover(hoverRef);
 
-  const updateSessionName = useRecipeSessionStore(
-    (state) => state.updateSessionName
-  );
   const closeSession = useRecipeSessionStore((state) => state.closeSession);
 
-  const [name, setName] = useState(session.name);
-
-  const onUpdateSessionName = () => {
-    updateSessionName(session, name);
-  };
   const initializeEditorSession = useRecipeSessionStore(
     (state) => state.initializeEditorSession
   );
@@ -225,14 +205,10 @@ export function SessionTab({
     (state) => state.saveEditorSession
   );
 
-  const [duplicateModal, setDuplicateModal] = useState<null | {
-    folder_id?: string;
-  }>(null);
+  const [duplicateModal, setDuplicateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
   const supabase = useSupabaseClient();
-
-  const Container = draggable ? Fragment : "li";
 
   return (
     <li>
@@ -303,7 +279,7 @@ export function SessionTab({
             <label
               className="cursor-pointer flex justify-center items-center  h-full px-1 py-2.5 w-fit hover:bg-accent"
               onClick={() => {
-                setDuplicateModal({ folder_id: parentFolderId });
+                setDuplicateModal(true);
               }}
             >
               <DocumentDuplicateIcon className="w-3" />
@@ -360,8 +336,7 @@ export function SessionTab({
       </div>
       {duplicateModal && (
         <DuplicateModal
-          folderId={duplicateModal.folder_id}
-          onClose={() => setDuplicateModal(null)}
+          onClose={() => setDuplicateModal(false)}
           session={session}
         />
       )}

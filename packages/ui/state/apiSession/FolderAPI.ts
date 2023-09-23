@@ -251,6 +251,16 @@ export class FolderAPI {
   static finalize = async () => {
     eventEmitter.emit("refreshFolders");
   };
+
+  static getParentFolder = async (fileOrItem: string) => {
+    const folders = await this.getAllFolders();
+
+    const folder = folders.find((folder) => {
+      return folder.items.some((item) => item.id === fileOrItem);
+    });
+
+    return folder;
+  };
 }
 
 export const addFolder = async (folderName: string) => {

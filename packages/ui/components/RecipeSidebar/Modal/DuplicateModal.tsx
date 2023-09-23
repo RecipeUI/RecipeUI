@@ -16,11 +16,9 @@ import classNames from "classnames";
 export function DuplicateModal({
   onClose,
   session,
-  folderId,
 }: {
   onClose: () => void;
   session: RecipeSession;
-  folderId?: string;
 }) {
   const [sessionName, setSessionName] = useState(
     (session.name || "New Session") + " copy"
@@ -42,7 +40,7 @@ export function DuplicateModal({
       return;
     }
 
-    saveSession().then(() => {
+    saveSession().then(async () => {
       const newSession: RecipeSession = addEditorSession({
         ...session,
         id: uuidv4(),
@@ -64,8 +62,9 @@ export function DuplicateModal({
           ...config,
         });
 
-        if (folderId) {
-          await FolderAPI.addSessionToFolder(newSession.id, folderId);
+        const parentFolder = await FolderAPI.getParentFolder(session.id);
+        if (parentFolder?.id) {
+          await FolderAPI.addSessionToFolder(newSession.id, parentFolder.id);
         }
 
         onClose();
