@@ -16,21 +16,25 @@ export default async function APIPage({
 }) {
   const api_id = decodeURIComponent(params.api_id);
 
-  const supabase = createServerComponentClient<Database>({
-    cookies,
-  });
+  try {
+    const supabase = createServerComponentClient<Database>({
+      cookies,
+    });
 
-  const recipe = await fetchHomeRecipe({
-    recipeId: api_id,
-    supabase,
-  });
+    const recipe = await fetchHomeRecipe({
+      recipeId: api_id,
+      supabase,
+    });
 
-  const project = recipe
-    ? await fetchProject({
-        project: recipe.project,
-        supabase,
-      })
-    : null;
+    const project = recipe
+      ? await fetchProject({
+          project: recipe.project,
+          supabase,
+        })
+      : null;
 
-  return <RecipeAPI project={project} recipe={recipe} apiId={api_id} />;
+    return <RecipeAPI project={project} recipe={recipe} apiId={api_id} />;
+  } catch (e) {
+    return <RecipeAPI project={null} recipe={null} apiId={api_id} />;
+  }
 }

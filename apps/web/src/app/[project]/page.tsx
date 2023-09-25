@@ -12,20 +12,30 @@ export default async function ProjectPage({
     project: string;
   };
 }) {
-  const supabase = createServerComponentClient<Database>({
-    cookies,
-  });
+  try {
+    const supabase = createServerComponentClient<Database>({
+      cookies,
+    });
 
-  const { project, recipes, projectName } = await fetchProjectPage({
-    project: params.project,
-    supabase,
-  });
+    const { project, recipes, projectName } = await fetchProjectPage({
+      project: params.project,
+      supabase,
+    });
 
-  return (
-    <ProjectContainer
-      projectName={projectName}
-      project={project}
-      recipes={recipes}
-    />
-  );
+    return (
+      <ProjectContainer
+        projectName={projectName}
+        project={project}
+        recipes={recipes}
+      />
+    );
+  } catch (e) {
+    return (
+      <ProjectContainer
+        projectName={params.project}
+        project={null}
+        recipes={[]}
+      />
+    );
+  }
 }

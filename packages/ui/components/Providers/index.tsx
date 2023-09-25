@@ -58,7 +58,10 @@ export function Providers({ children }: { children: ReactNode }) {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
 
   useEffect(() => {
-    if (typeof window !== undefined && "__TAURI__" in window) {
+    if (
+      (typeof window !== undefined && "__TAURI__" in window) ||
+      !process.env.NEXT_PUBLIC_SUPABASE_URL
+    ) {
       if (
         process.env.NEXT_PUBLIC_SUPABASE_URL &&
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

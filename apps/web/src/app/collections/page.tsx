@@ -15,16 +15,23 @@ export default async function Collections({
     test?: string;
   };
 }) {
-  const supabase = createServerComponentClient<Database>({
-    cookies,
-  });
+  try {
+    const supabase = createServerComponentClient<Database>({
+      cookies,
+    });
 
-  const { userProjects, recipe } = await fetchHome({
-    searchParams,
-    supabase,
-  });
+    const { userProjects, recipe } = await fetchHome({
+      searchParams,
+      supabase,
+    });
 
-  return (
-    <RecipeHomeContainer projects={userProjects} recipe={recipe || undefined} />
-  );
+    return (
+      <RecipeHomeContainer
+        projects={userProjects}
+        recipe={recipe || undefined}
+      />
+    );
+  } catch (e) {
+    return <RecipeHomeContainer projects={[]} recipe={undefined} />;
+  }
 }

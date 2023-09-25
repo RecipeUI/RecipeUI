@@ -28,7 +28,8 @@ export function ProjectContainer({
 
   const project = _project || projectInfo?.project;
   const hasNoProject = project == null;
-  const recipes = _recipes || projectInfo?.recipes;
+  const recipes =
+    _recipes && _recipes.length > 0 ? _recipes : projectInfo?.recipes;
 
   useEffect(() => {
     if (hasNoProject) {
