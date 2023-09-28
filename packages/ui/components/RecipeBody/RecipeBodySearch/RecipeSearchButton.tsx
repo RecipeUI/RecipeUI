@@ -27,6 +27,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ModuleSettings } from "../../../modules/authConfigs";
 import { DISCORD_LINK } from "utils/constants";
 import { getCollectionModule } from "types/modules/helpers";
+import { convertObjectToFormData } from "../../../utils/main";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -143,10 +144,8 @@ export function RecipeSearchButton() {
     let fetchRequestBody: Record<string, unknown> | FormData | undefined =
       undefined;
     let fetchHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
+      "content-type": "application/json",
     };
-
-    let SCHEMA_CONTENT_TYPE = RecipeMutationContentType.JSON;
 
     let fetchMethod = recipe.method;
     let path = recipe.path;
@@ -159,13 +158,9 @@ export function RecipeSearchButton() {
       fetchHeaders = editorHeaders.reduce((acc, { name, value }) => {
         if (!name || value == undefined) return acc;
 
-        acc[name] = value;
+        acc[name.toLowerCase()] = value;
         return acc;
       }, {} as Record<string, string>);
-
-      if (editorBodyType) {
-        SCHEMA_CONTENT_TYPE = editorBodyType;
-      }
     } else {
       fetchRequestBody = requestBody;
     }
@@ -302,8 +297,6 @@ export function RecipeSearchButton() {
         alert("Please fill in all required fields.");
         return;
       }
-
-      // TODO: Support form fields
     }
 
     // TODO: We can have very strict validation eventually
@@ -419,7 +412,7 @@ export function RecipeSearchButton() {
         ...(fetchRequestBody
           ? {
               body:
-                SCHEMA_CONTENT_TYPE === "application/json"
+                typeof fetchRequestBody === "object"
                   ? JSON.stringify(fetchRequestBody)
                   : (fetchRequestBody as FormData | undefined),
             }
@@ -542,7 +535,20 @@ export function RecipeSearchButton() {
 
         // Prefer browser fetch if we can.
         function simpleFetch() {
-          fetch(url.toString(), payload)
+          const simplePayload = {
+            ...payload,
+          };
+
+          if (
+            payload.headers["content-type"].includes("form") &&
+            simplePayload.body
+          ) {
+            simplePayload.body = convertObjectToFormData(
+              fetchRequestBody as Record<string, unknown>
+            );
+          }
+
+          fetch(url.toString(), simplePayload)
             .then(async (res) => {
               const headers: Record<string, string> = {};
               res.headers.forEach((value, key) => {
@@ -560,7 +566,6 @@ export function RecipeSearchButton() {
         }
 
         if (
-          payload.body instanceof FormData ||
           !nativeFetch ||
           (!isTauri && url.origin.startsWith("http://localhost"))
         ) {

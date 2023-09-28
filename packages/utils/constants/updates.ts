@@ -9,7 +9,7 @@ export const VERSION_LOGS: {
 }[] = [
   {
     version: "0.8.8",
-    update: "Drag n drop requests/folders.",
+    update: "Drag folders/files in sidebar. Partial support for multi-form.",
     update_type: "feature",
     type: "major",
   },

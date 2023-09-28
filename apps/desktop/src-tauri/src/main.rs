@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
 fn main() {
     tauri::Builder::default()
@@ -29,15 +29,43 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
         _ => return Err("Invalid method".to_string().into()),
     };
 
-    for (key, value) in payload.headers {
-        request_builder = request_builder.header(key, value);
+    let mut is_form_data = false;
+
+    for (key, value) in &payload.headers {
+        if key.to_lowercase() == "content-type" && value.contains("form") {
+            is_form_data = true;
+        } else {
+            request_builder = request_builder.header(key, value);
+        }
     }
+
     request_builder = request_builder.header("User-Agent", "RecipeUI/1");
 
     if payload.body.is_some() {
-        request_builder = request_builder.header("Content-Type", "application/json");
+        let unwrapped_body = payload.body.unwrap();
 
-        request_builder = request_builder.body(payload.body.unwrap());
+        if is_form_data {
+            let mut form = reqwest::multipart::Form::new();
+
+            // Parse the unwrapped_body as JSON.
+            if let Ok(json_body) = serde_json::Value::from_str(&unwrapped_body) {
+                if let Some(body_map) = json_body.as_object() {
+                    for (key, value) in body_map {
+                        // Assuming all values are simple strings for simplicity.
+                        if let Some(value_str) = value.as_str() {
+                            form = form.text(key.to_string(), value_str.to_string());
+                        }
+                    }
+                }
+            } else {
+                // Handle JSON parsing error if necessary.
+            }
+
+            println!("Form: {:?}", form);
+            request_builder = request_builder.multipart(form);
+        } else {
+            request_builder = request_builder.body(unwrapped_body);
+        }
     }
 
     println!("\nSending request to {}", url);
@@ -60,6 +88,7 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
         .clone();
 
     let output = response.text().await.map_err(|e| e.to_string())?;
+    println!("Output: {:?}", output);
 
     Ok(FetchServerOutput {
         output,

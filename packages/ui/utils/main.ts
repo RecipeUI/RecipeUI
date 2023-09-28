@@ -163,3 +163,17 @@ export function isSemverLessThan({
   // If minor versions are equal, compare patch versions
   return patch1 < patch2;
 }
+
+export function convertObjectToFormData(
+  obj: Record<string, unknown>
+): FormData {
+  const formData = new FormData();
+  Object.entries(obj).forEach(([key, value]) => {
+    formData.append(
+      key,
+      typeof value === "object" ? JSON.stringify(value) : String(value)
+    );
+  });
+
+  return formData;
+}

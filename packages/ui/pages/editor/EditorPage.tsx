@@ -35,6 +35,7 @@ import { CollectionModule } from "types/modules";
 import { getCollectionModule } from "types/modules/helpers";
 import { RecipeCustomModule } from "../../components/RecipeBody/RecipeLeftPane/RecipeCustomModule";
 import { useComplexSecrets } from "../../state/apiSession/SecretAPI";
+import { RecipeMethod } from "types/enums";
 
 const EDITOR_ROUTES = [RecipeBodyRoute.Body, RecipeBodyRoute.Query];
 
@@ -401,6 +402,8 @@ function CoreEditor() {
     (state) => state.setEditorURLSchemaType
   );
 
+  const editorMethod = useRecipeSessionStore((state) => state.editorMethod);
+
   const { recipes } = useMiniRecipes(session?.recipeId);
   const editorProject = useRecipeSessionStore((state) => state.editorProject);
   const editorSessionOptions = useRecipeSessionStore(
@@ -415,7 +418,7 @@ function CoreEditor() {
     if (!editorBody || editorBody === "{}") {
       if (editorURLSchemaType) {
         setBodyRoute(RecipeBodyRoute.URL);
-      } else if (editorQuerySchemaType) {
+      } else {
         setBodyRoute(RecipeBodyRoute.Query);
       }
     }
@@ -424,6 +427,10 @@ function CoreEditor() {
   const BODY_ROUTES = useMemo(() => {
     const hasURLParams = editorUrl.match(/{(\w+)}/g);
     let mainRoutes = [...EDITOR_ROUTES];
+
+    if (editorMethod === RecipeMethod.GET) {
+      mainRoutes.reverse();
+    }
 
     if (!hasURLParams && editorURLCode) {
       setEditorURLCode("");

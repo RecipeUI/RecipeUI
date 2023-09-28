@@ -40,9 +40,7 @@ export function EditorBody() {
         <InitializeSchema type={EditorParamView.Body} />
       )}
 
-      {editorBodyType === RecipeMutationContentType.JSON && (
-        <JSONEditorContainer />
-      )}
+      {editorBodyType != null && <JSONEditorContainer />}
     </div>
   );
 }
