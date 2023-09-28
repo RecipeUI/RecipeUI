@@ -348,6 +348,7 @@ export function useSessionFolders() {
       sessionRecord[session.id] = session;
     }
 
+    const seenSessions = new Set<string>();
     const folderSessions: FolderToSessions = {};
     const subFolders = new Set<string>();
 
@@ -369,7 +370,7 @@ export function useSessionFolders() {
             .map((item) => {
               if (item.type === "session") {
                 const session = sessionRecord[item.id];
-                delete sessionRecord[item.id];
+                seenSessions.add(item.id);
 
                 return {
                   type: "session",
@@ -379,6 +380,7 @@ export function useSessionFolders() {
               } else {
                 subFolders.add(item.id);
                 const folder = folders.find((f) => f.id === item.id);
+
                 if (!folder) {
                   return undefined as any;
                 }
@@ -418,7 +420,11 @@ export function useSessionFolders() {
       folderSessions[folder.id] = recursivelyProcessFolders(folder);
     }
 
-    const noFolderSessions: RecipeSession[] = Object.values(sessionRecord);
+    const noFolderSessions: RecipeSession[] = Object.values(
+      sessionRecord
+    ).filter((session) => {
+      return !seenSessions.has(session.id);
+    });
     const folderSessionsExtended = Object.values(folderSessions);
     const rootFolderSessionsExtended = folderSessionsExtended.filter(
       (folder) => !subFolders.has(folder.id)
