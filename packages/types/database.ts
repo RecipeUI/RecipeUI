@@ -327,9 +327,10 @@ export interface RecipeSessionFolder {
   name: string;
 
   items: RecipeSessionFolderItem[];
+  collapsed?: boolean;
 
   /**
-   * @deprecated use 'sessionIds' instead
+   * @deprecated use 'items' instead
    */
   sessionIds?: string[];
 }

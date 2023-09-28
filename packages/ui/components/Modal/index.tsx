@@ -27,6 +27,7 @@ export function Modal({
       }}
       className="relative z-50"
       autoFocus={false}
+      data-no-dnd="true"
     >
       <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
 

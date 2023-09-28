@@ -17,7 +17,6 @@ import { RecipeCloudContext } from "../../state/apiSession/CloudAPI";
 import { FolderModal } from "./Modal/FolderModal";
 import { EditFolderModal } from "./Modal/EditFolderModal";
 
-import { RecipeSession } from "../../state/recipeSession";
 import { useRef } from "react";
 import { RouteTypeLabel } from "../RouteTypeLabel";
 import { useHover } from "usehooks-ts";
@@ -35,13 +34,16 @@ import { EditSessionModal } from "./Modal/EditSessionModal";
 import { useSupabaseClient } from "../Providers/SupabaseProvider";
 import { cloudEventEmitter } from "../../state/apiSession/CloudAPI";
 import { DuplicateModal } from "./Modal/DuplicateModal";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { FlattenedItem, SessionFolderProps, SessionTabProps } from "./common";
 
-interface SessionFolderProps {
-  folder: RecipeSessionFolderExtended;
-  isRootFolder?: boolean;
-}
-
-export function SessionFolder({ folder, isRootFolder }: SessionFolderProps) {
+export function SessionFolder({
+  folder,
+  isRootFolder,
+  shouldClose,
+  hideOptions,
+}: SessionFolderProps) {
   const recipeCloud = useContext(RecipeCloudContext);
   const isCloudFolder =
     recipeCloud.collectionRecord[folder.id] ??
@@ -56,110 +58,91 @@ export function SessionFolder({ folder, isRootFolder }: SessionFolderProps) {
   );
   const [addFolderModal, setAddFolderModal] = useState(false);
 
-  const [open, setOpen] = useState(true);
+  const open = !folder.collapsed;
 
   const Icon = open ? FolderOpenIcon : FolderIcon;
 
   return (
     <>
-      <li className="w-full">
+      <span
+        className={classNames(
+          " relative w-full text-xs font-bold p-0 px-2 py-2 pr-4 group",
+          open && "menu-dropdown-show"
+        )}
+        onClick={async (e) => {
+          e.stopPropagation();
+
+          await FolderAPI.toggleFolderCollapse(folder.id);
+        }}
+      >
         <span
           className={classNames(
-            " relative w-full text-xs font-bold p-0 px-2 py-2 pr-4 group",
-            open && "menu-dropdown-show"
+            "flex items-center w-full",
+            isCloudFolder && "text-blue-500 dark:text-accent"
           )}
-          onClick={(e) => {
-            e.stopPropagation();
-
-            setOpen(!open);
-          }}
         >
-          <span
-            className={classNames(
-              "flex items-center w-full",
-              isCloudFolder && "text-blue-500 dark:text-accent"
-            )}
-          >
-            {isCloudFolder ? (
-              <Icon
-                className={classNames(
-                  "w-4 h-4 mr-2 mb-0.5",
-                  isCloudFolder && "text-blue-500 dark:text-accent"
-                )}
-              />
-            ) : (
-              <Icon className="w-4 h-4 mr-2 mb-0.5" />
-            )}
+          {isCloudFolder ? (
+            <Icon
+              className={classNames(
+                "w-4 h-4 mr-2 mb-0.5",
+                isCloudFolder && "text-blue-500 dark:text-accent"
+              )}
+            />
+          ) : (
+            <Icon className="w-4 h-4 mr-2 mb-0.5" />
+          )}
 
-            {folder.name}
-          </span>
-          <div className="hidden absolute right-0 group-hover:flex z-10 bg-base-100 top-0 h-8 px-2 items-center group-hover:border rounded-md">
-            <a
-              className="hidden group-hover:block hover:animate-spin w-fit py-2 px-1"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                setEditFolder(folder);
-              }}
-            >
-              <Cog6ToothIcon className="w-4 h-4" />
-            </a>
-            <a
-              className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const session = addEditorSession();
-                FolderAPI.addSessionToFolder(session.id, folder.id);
-              }}
-            >
-              <PlusCircleIcon className="w-4 h-4" />
-            </a>
-            <a
-              className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                setAddFolderModal(true);
-              }}
-            >
-              <FolderPlusIcon className="w-4 h-4" />
-            </a>
-            {isRootFolder && (
-              <a
-                className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  setPublishFolder(folder);
-                }}
-              >
-                <ShareIcon className="w-4 h-4" />
-              </a>
-            )}
-          </div>
+          {folder.name}
         </span>
-        {open && (
-          <ul className="">
-            {folder.items.map((item) => {
-              if (!item) return null;
-              if (item.type === "session") {
-                const session = item.session;
+        <div className="hidden absolute right-0 group-hover:flex z-10 bg-base-100 top-0 h-8 px-2 items-center group-hover:border rounded-md">
+          <a
+            className="hidden group-hover:block hover:animate-spin w-fit py-2 px-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setEditFolder(folder);
+            }}
+          >
+            <Cog6ToothIcon className="w-4 h-4" />
+          </a>
+          <a
+            className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
 
-                return <SessionTab key={session.id} session={session} />;
-              } else {
-                const folder = item.folder;
+              const session = addEditorSession();
+              FolderAPI.addSessionToFolder(session.id, folder.id);
+            }}
+          >
+            <PlusCircleIcon className="w-4 h-4" />
+          </a>
+          <a
+            className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
 
-                return <SessionFolder key={folder.id} folder={folder} />;
-              }
-            })}
-          </ul>
-        )}
-      </li>
+              setAddFolderModal(true);
+            }}
+          >
+            <FolderPlusIcon className="w-4 h-4" />
+          </a>
+          {isRootFolder && (
+            <a
+              className="hidden group-hover:block hover:bg-accent w-fit py-2 px-1"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                setPublishFolder(folder);
+              }}
+            >
+              <ShareIcon className="w-4 h-4" />
+            </a>
+          )}
+        </div>
+      </span>
       {addFolderModal && (
         <FolderModal
           onClose={() => setAddFolderModal(false)}
@@ -182,11 +165,11 @@ export function SessionFolder({ folder, isRootFolder }: SessionFolderProps) {
   );
 }
 
-interface SessionTabProps {
-  session: RecipeSession;
-}
-
-export function SessionTab({ session }: SessionTabProps) {
+export function SessionTab({
+  session,
+  hideOptions,
+  ...props
+}: SessionTabProps) {
   const recipeCloud = useContext(RecipeCloudContext);
   const cloudSession = recipeCloud.apiRecord[session.id];
 
@@ -211,7 +194,7 @@ export function SessionTab({ session }: SessionTabProps) {
   const supabase = useSupabaseClient();
 
   return (
-    <li>
+    <>
       <div
         ref={hoverRef}
         key={session.id}
@@ -260,7 +243,7 @@ export function SessionTab({ session }: SessionTabProps) {
             {session.name || "New Session"}
           </h4>
         </div>
-        {isHover && (
+        {isHover && !hideOptions && (
           <div
             className="absolute cursor-pointer w-fit right-0 top-0 h-8 px-2 bg-base-100 border justify-center  flex  rounded-md"
             onClick={(e) => {
@@ -312,7 +295,7 @@ export function SessionTab({ session }: SessionTabProps) {
                     eventEmitter.emit("refreshSidebar");
                   }, 0);
 
-                  // This a bit bugger so temporarily disable
+                  // This a bit buggy so temporarily disable
                   // if (nextSession) {
                   //   const parameters = await getParametersForSessionStore({
                   //     session: nextSession.id,
@@ -346,6 +329,52 @@ export function SessionTab({ session }: SessionTabProps) {
           session={session}
         />
       )}
+    </>
+  );
+}
+
+export function SortableItem({ clone, childCount, ...props }: FlattenedItem) {
+  const { attributes, listeners, setNodeRef, transform, transition, active } =
+    useSortable({
+      id: "session" in props ? props.session.id : props.folder.id,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginLeft: props.depth * 20,
+  };
+
+  const element = (
+    <li
+      className={classNames(
+        clone &&
+          "active select-none  rounded-lg w-52  border border-accent border-dotted flex relative text-xs p-0 bg-base-200"
+      )}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
+      {"session" in props ? (
+        <SessionTab {...props} />
+      ) : (
+        <SessionFolder
+          {...props}
+          shouldClose={active?.id === props.folder.id}
+        />
+      )}
+      {clone && childCount !== undefined && childCount > 1 ? (
+        <span className="absolute -right-2 -top-2 bottom-0 badge-xs badge-accent m-0 p-0 h-6 w-6 flex justify-center items-center">
+          {childCount}
+        </span>
+      ) : null}
     </li>
   );
+
+  if (clone) {
+    return <ul className="menu z-20">{element}</ul>;
+  }
+
+  return element;
 }

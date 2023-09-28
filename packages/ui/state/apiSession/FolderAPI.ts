@@ -2,7 +2,7 @@
 import { RecipeSession, useRecipeSessionStore } from "../recipeSession";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { getFolderStore, eventEmitter, getSessionRecord } from ".";
+import { getFolderStore, eventEmitter } from ".";
 import {
   RecipeSessionFolder,
   RecipeSessionFolderExtended,
@@ -10,10 +10,16 @@ import {
 
 export class FolderAPI {
   static addSessionToFolder = async (
-    sessionId: string,
+    itemId: string,
     folderId: string,
-    newFolderName?: string
+    newFolderName?: string,
+    options?: {
+      putNearId?: string;
+      putAfter?: boolean;
+      type: "session" | "folder";
+    }
   ) => {
+    const type = options?.type ?? "session";
     const folders = await this.getAllFolders();
     const store = await getFolderStore();
 
@@ -23,15 +29,26 @@ export class FolderAPI {
       if (folder.id !== folderId) return folder;
 
       foundFolder = true;
+
+      let items = [...folder.items];
+
+      const { putNearId, putAfter } = options || {};
+      const putNearIndex = items.findIndex((item) => item.id === putNearId);
+      if (putNearIndex !== -1) {
+        items.splice(putAfter ? putNearIndex + 1 : putNearIndex, 0, {
+          type,
+          id: itemId,
+        });
+      } else {
+        items.push({
+          type,
+          id: itemId,
+        });
+      }
+
       return {
         ...folder,
-        items: [
-          ...folder.items,
-          {
-            type: "session",
-            id: sessionId,
-          },
-        ],
+        items,
       } satisfies typeof folder;
     });
 
@@ -41,8 +58,8 @@ export class FolderAPI {
         name: newFolderName ?? "New Folder",
         items: [
           {
-            id: sessionId,
-            type: "session",
+            id: itemId,
+            type,
           },
         ],
       });
@@ -180,6 +197,17 @@ export class FolderAPI {
     return (folders || []).find((folder) => folder.id === folderId);
   };
 
+  static setFolder = async (folder: RecipeSessionFolder) => {
+    const folders = await this.getAllFolders();
+    const store = await getFolderStore();
+    const newFolders = folders.map((f) => {
+      if (f.id !== folder.id) return f;
+      return folder;
+    });
+    await store.put(newFolders, "sessionFolders");
+    eventEmitter.emit("refreshFolders");
+  };
+
   static getAllFolders = async () => {
     const store = await getFolderStore();
     const folders = await store.get("sessionFolders");
@@ -255,11 +283,33 @@ export class FolderAPI {
   static getParentFolder = async (fileOrItem: string) => {
     const folders = await this.getAllFolders();
 
-    const folder = folders.find((folder) => {
+    for (const folder of folders) {
+      if (folder.id === fileOrItem) {
+        return folder;
+      }
+    }
+
+    return folders.find((folder) => {
       return folder.items.some((item) => item.id === fileOrItem);
     });
+  };
 
-    return folder;
+  static toggleFolderCollapse = async (folderId: string) => {
+    const folders = await this.getAllFolders();
+    const store = await getFolderStore();
+
+    const newFolders = folders.map((folder) => {
+      if (folder.id !== folderId) return folder;
+
+      return {
+        ...folder,
+        collapsed: !(folder.collapsed ?? false),
+      } satisfies RecipeSessionFolder;
+    });
+
+    await store.put(newFolders, "sessionFolders");
+
+    await this.finalize();
   };
 }
 
