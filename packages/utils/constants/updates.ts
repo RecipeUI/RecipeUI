@@ -1,4 +1,4 @@
-export const LATEST_APP_VERSION = "0.8.7";
+export const LATEST_APP_VERSION = "0.8.8";
 
 export const VERSION_LOGS: {
   version: string;
@@ -7,6 +7,12 @@ export const VERSION_LOGS: {
   ignore?: boolean;
   type?: "minor" | "major" | "patch";
 }[] = [
+  {
+    version: "0.8.8",
+    update: "Drag n drop requests/folders.",
+    update_type: "feature",
+    type: "major",
+  },
   {
     version: "0.8.7",
     update: "Support for Basic Auth and Multiple query/header auth.",
@@ -17,6 +23,7 @@ export const VERSION_LOGS: {
     version: "0.8.6",
     update: "Nested folders. Improved cloud syncing.",
     update_type: "feature",
+    ignore: true,
   },
   {
     version: "0.8.5",
