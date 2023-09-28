@@ -29,6 +29,7 @@ export class FolderAPI {
       if (folder.id !== folderId) return folder;
 
       foundFolder = true;
+      folder.collapsed = false;
 
       let items = [...folder.items];
 
