@@ -181,7 +181,7 @@ export class FolderAPI {
 
         return {
           ...folder,
-          items: [...folder.items, { type: "folder", id: newFolder.id }],
+          items: [{ type: "folder", id: newFolder.id }, ...folder.items],
         };
       });
     }
