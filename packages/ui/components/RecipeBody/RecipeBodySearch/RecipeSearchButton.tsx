@@ -102,7 +102,7 @@ export function RecipeSearchButton() {
     const startTime = performance.now();
     const recipe = editorMode
       ? {
-          id: currentSession.id,
+          id: currentSession.recipeId,
           title: "API",
           project: "Personal",
           method: editorMethod,

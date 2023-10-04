@@ -301,7 +301,7 @@ export async function getConfigForSessionStore({
   // TODO: We'll need to do a migration of old auth here
   const store = await getConfigStore();
 
-  // TODO: this is just a migration, make sure ot delete this later
+  // TODO: this is just a migration, make sure to delete this later
   const config:
     | (APISessionConfig & {
         editorAuth?: OldAuth | null;
