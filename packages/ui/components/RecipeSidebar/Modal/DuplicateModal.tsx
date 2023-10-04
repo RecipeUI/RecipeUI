@@ -12,6 +12,9 @@ import { FolderAPI } from "../../../state/apiSession/FolderAPI";
 import { Modal } from "../../Modal";
 import { v4 as uuidv4 } from "uuid";
 import classNames from "classnames";
+import { SecretAPI } from "../../../state/apiSession/SecretAPI";
+import { RecipeAuthType } from "types/enums";
+import { AuthConfig, SingleAuthConfig } from "types/database";
 
 export function DuplicateModal({
   onClose,
@@ -41,20 +44,46 @@ export function DuplicateModal({
     }
 
     saveSession().then(async () => {
+      const newSessionId = uuidv4();
+
       const newSession: RecipeSession = addEditorSession({
         ...session,
-        id: uuidv4(),
+        id: newSessionId,
         name: sessionName,
-        recipeId: isRecipeCopy ? session.recipeId : uuidv4(),
+        recipeId: isRecipeCopy ? session.recipeId : newSessionId,
       });
 
       setTimeout(async () => {
         const parameters = await getParametersForSessionStore({
           session: session.id,
         });
+
         const config = await getConfigForSessionStore({
           recipeId: session.recipeId,
         });
+
+        // Clone auth API key
+        if (config && config.editorAuthConfig) {
+          if (config.editorAuthConfig.type !== RecipeAuthType.Multiple) {
+            const primaryToken = await SecretAPI.getSecret({
+              secretId: session.recipeId,
+              index: undefined, // will modify once multiple is implemented
+            });
+
+            if (primaryToken) {
+              await SecretAPI.saveSecret({
+                secretId: newSession.recipeId,
+                secretValue: primaryToken,
+              });
+            }
+          } else {
+            // TODO: Clone multiple API Keys
+            // let authConfigs: SingleAuthConfig[] =
+            //   config.editorAuthConfig.type === RecipeAuthType.Multiple
+            //     ? config.editorAuthConfig.payload
+            //     : [config.editorAuthConfig];
+          }
+        }
 
         initializeEditorSession({
           currentSession: newSession,
