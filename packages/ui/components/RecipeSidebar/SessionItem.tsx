@@ -199,7 +199,7 @@ export function SessionTab({
         ref={hoverRef}
         key={session.id}
         className={classNames(
-          "pl-4 py-2 text-xs",
+          "pl-2 py-2 text-xs ",
           isCurrentSession && "bg-gray-400 dark:text-black"
         )}
         onClick={async (e) => {
@@ -361,6 +361,7 @@ export function SortableItem({ clone, childCount, ...props }: FlattenedItem) {
       ) : (
         <SessionFolder
           {...props}
+          isRootFolder={props.depth === 0}
           shouldClose={active?.id === props.folder.id}
         />
       )}

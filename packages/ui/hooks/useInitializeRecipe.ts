@@ -36,6 +36,8 @@ export function useInitializeRecipe() {
         recipeTitle?: string;
         recipePreDefined?: Recipe;
         noCurrentSession?: boolean;
+        projectId?: string;
+        sessionId?: string;
       }
     ) => {
       const { recipeTitle, recipePreDefined } = options || {};
@@ -75,7 +77,7 @@ export function useInitializeRecipe() {
         }
 
         const newSession: RecipeSession = {
-          id: uuidv4(),
+          id: options?.sessionId ?? uuidv4(),
           name: recipe.title,
           apiMethod: sessionConfig.editorMethod,
           recipeId: recipe.id,
@@ -114,7 +116,7 @@ export function useInitializeRecipe() {
 
         await FolderAPI.addSessionToFolder(
           newSession.id,
-          recipe.project,
+          options?.projectId ?? recipe.project,
           recipe.project
         );
       } catch (e) {

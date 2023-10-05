@@ -33,7 +33,7 @@ export class CloudAPI {
     return store.get("cloud");
   }
 
-  static async initializeCloud(cloud: CloudStore) {
+  static async initializeCloud(cloud: CloudStore, force?: boolean) {
     console.debug("initializeCloud", cloud);
     const store = await getCloudStore();
     await store.put(cloud, "cloud");
@@ -81,8 +81,7 @@ export class CloudAPI {
     await Promise.all(
       collections.map(async (collection, i) => {
         function recursivelyInitializeFolders(
-          folder: RecipeSessionFolderExtended,
-          parentFolderId?: string
+          folder: RecipeSessionFolderExtended
         ) {
           const items = folder.items;
           const localFolder: RecipeSessionFolder | undefined =
@@ -90,11 +89,11 @@ export class CloudAPI {
 
           for (const item of items) {
             if (item.type === "session") {
-              const folderHasItem =
+              const noItemInFolder =
                 localFolder &&
                 !localFolder.items.some((localItem) => localItem.id == item.id);
 
-              if (folderHasItem) {
+              if (noItemInFolder) {
                 localFolder.items.push({
                   id: item.id,
                   type: item.type,
@@ -105,7 +104,7 @@ export class CloudAPI {
                 sessions.push(item.session);
               }
             } else {
-              recursivelyInitializeFolders(item.folder, folder.id);
+              recursivelyInitializeFolders(item.folder);
 
               if (folders.some((folder) => folder.id == item.id)) continue;
 
@@ -124,31 +123,35 @@ export class CloudAPI {
           (folder) => folder.id == collection.id
         );
 
-        if (!existingFolder) {
-          let items = collection.folder
-            ? collection.folder?.items.map((item) => ({
-                id: item.id,
-                type: item.type,
-              }))
-            : apis
-                .filter((api) => api.project === collection.project)
-                .map((api) => ({
-                  id: api.id,
-                  type: "session" as const,
-                }));
+        let items = collection.folder
+          ? collection.folder?.items.map((item) => ({
+              id: item.id,
+              type: item.type,
+            }))
+          : apis
+              .filter((api) => api.project === collection.project)
+              .map((api) => ({
+                id: api.id,
+                type: "session" as const,
+              }));
 
+        if (!existingFolder) {
           folders.push({
             id: collection.id,
             name: collection.title,
             items: items || [],
           });
+        } else if (force) {
+          existingFolder.items = items || [];
         }
 
-        if (collection.folder) {
-          recursivelyInitializeFolders(collection.folder, collection.id);
+        if ((!existingFolder || force) && collection.folder) {
+          recursivelyInitializeFolders(collection.folder);
         }
       })
     );
+
+    // TODO: We need to do a cleanup here eventually of APIs that were not processed into collections.
 
     await saveSessionToStore(sessions);
     await FolderAPI.setFolders(folders);
@@ -239,17 +242,22 @@ export function useRecipeCloud() {
   }, []);
 
   useEffect(() => {
-    async function syncCloud() {
+    async function syncCloud(force?: boolean) {
       if (!user) return;
       fetchUserCloud({ supabase, user_id: user.user_id }).then((cloudInfo) => {
-        CloudAPI.initializeCloud(cloudInfo);
+        CloudAPI.initializeCloud(cloudInfo, force);
       });
+    }
+    async function syncCloudForce() {
+      syncCloud(true);
     }
 
     cloudEventEmitter.on("syncCloud", syncCloud);
+    cloudEventEmitter.on("syncCloudForce", syncCloudForce);
 
     return () => {
       cloudEventEmitter.off("syncCloud", syncCloud);
+      cloudEventEmitter.off("syncCloudForce", syncCloudForce);
     };
   }, [supabase, user]);
 
@@ -261,7 +269,8 @@ export function useRecipeCloud() {
     folderToCollection,
   };
 }
+export type RecipeCloudContextType = ReturnType<typeof useRecipeCloud>;
 
-export const RecipeCloudContext = createContext<
-  ReturnType<typeof useRecipeCloud>
->(undefined as any);
+export const RecipeCloudContext = createContext<RecipeCloudContextType>(
+  undefined as any
+);

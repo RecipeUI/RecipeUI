@@ -18,7 +18,8 @@ import { fetchProjectPage } from "../../fetchers/project";
 import { RecipeUICollectionsAPI } from "../../state/apiSession/RecipeUICollectionsAPI";
 import { SidebarHeader } from "./SidebarHeader";
 import { SidebarSessions } from "./SidebarSessions";
-
+import { v4 as uuidv4 } from "uuid";
+import { produce } from "immer";
 export function RecipeSidebar() {
   const sessions = useRecipeSessionStore((state) => state.sessions);
   const setSessions = useRecipeSessionStore((state) => state.setSessions);
@@ -72,12 +73,22 @@ export function RecipeSidebar() {
 
       setCollectionFork("");
 
+      const uniqueProjectId = uuidv4();
+
       if (recipes && recipes.length > 0) {
-        for (let i = 0; i < recipes.length; i++) {
-          const recipe = recipes[i];
+        const modifiedRecipes = produce(recipes, (draft) => {
+          draft.forEach((recipe) => {
+            recipe.id = uuidv4();
+          });
+        });
+
+        for (let i = 0; i < modifiedRecipes.length; i++) {
+          const recipe = modifiedRecipes[i];
           await initializeRecipe(recipe.id, {
             recipePreDefined: recipe,
             noCurrentSession: i !== recipes.length - 1,
+            projectId: uniqueProjectId,
+            sessionId: recipe.id,
           });
         }
       }

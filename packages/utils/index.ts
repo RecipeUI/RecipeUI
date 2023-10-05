@@ -77,3 +77,7 @@ export function isUUID(id: string) {
 
   return regexExp.test(id);
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
