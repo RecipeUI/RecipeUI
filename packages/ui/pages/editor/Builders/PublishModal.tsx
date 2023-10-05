@@ -1,6 +1,6 @@
 "use client";
 import classNames from "classnames";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   DesktopPage,
   useRecipeSessionStore,
@@ -10,6 +10,7 @@ import { Modal } from "../../../components/Modal";
 import { SessionAPI, getSessionRecord } from "../../../state/apiSession";
 import {
   AuthConfig,
+  Recipe,
   RecipeSession,
   RecipeSessionFolderExtended,
   TableInserts,
@@ -32,12 +33,22 @@ import {
   RecipeCloudContextType,
   cloudEventEmitter,
 } from "../../../state/apiSession/CloudAPI";
-import { FolderIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  FolderIcon,
+  LinkIcon,
+  SparklesIcon,
+  TrashIcon,
+  CloudIcon,
+} from "@heroicons/react/24/outline";
+
 import { produce } from "immer";
 import { FolderAPI } from "../../../state/apiSession/FolderAPI";
 import { OutputAPI } from "../../../state/apiSession/OutputAPI";
 import { SecretAPI } from "../../../state/apiSession/SecretAPI";
-import { isUUID } from "utils";
+import { isUUID, sleep } from "utils";
+import { RECIPE_UI_BASE_URL } from "../../../utils/constants/main";
+import { revalidatePath } from "next/cache";
 
 export function PublishFolderModal({
   onClose,
@@ -75,6 +86,22 @@ export function PublishFolderModal({
     setLoading(false);
   };
 
+  const cloudCollection = recipeCloud.collectionRecord[folder.id];
+
+  const apisToDelete = useMemo(() => {
+    const cloudApis =
+      recipeCloud.collectionToApis[cloudCollection?.project ?? ""] || [];
+
+    const apiCloudIds = new Set(
+      foldersToRecipes.map((f) => f.recipes.map((r) => r.id)).flat()
+    );
+
+    return cloudApis
+      .filter((api) => !apiCloudIds.has(api))
+      .map((api) => recipeCloud.apiRecord[api])
+      .filter(Boolean) as Recipe[];
+  }, [foldersToRecipes, recipeCloud]);
+
   if (!isUUID(folder.id)) {
     return (
       <Modal onClose={onClose} header="Publish collection" size="lg">
@@ -89,7 +116,11 @@ export function PublishFolderModal({
   }
 
   return (
-    <Modal onClose={onClose} header="Publish collection" size="lg">
+    <Modal
+      onClose={onClose}
+      header={cloudCollection ? "Sync Collection" : "Publish collection"}
+      size="lg"
+    >
       <div className="mt-2 space-y-4">
         {!user && (
           <div className="alert alert-error text-sm font-bold">
@@ -97,28 +128,47 @@ export function PublishFolderModal({
             under your account.
           </div>
         )}
-        <p className="text-sm">
-          This will publish all APIs in your folder as a collection so you can
-          share them.
-        </p>
-        <ul className="text-sm list-disc pl-8 !mt-2">
-          <li>
-            Visibility of collections is defaulted to{" "}
-            <span
-              className="underline underline-offset-2 tooltip tooltip-right"
-              data-tip="Users can only
+        {
+          <>
+            {!cloudCollection ? (
+              <p className="text-sm">
+                This will publish all APIs in your folder as a collection so you
+                can share them.
+              </p>
+            ) : (
+              <p className="text-sm">
+                This will sync your{" "}
+                <a
+                  href={`${RECIPE_UI_BASE_URL}/${cloudCollection?.id}`}
+                  className="badge badge-sm badge-accent py-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  online collection <LinkIcon className="inline w-3 h-3 ml-2" />
+                </a>{" "}
+                with the latest APIs and file tree.
+              </p>
+            )}
+            <ul className="text-sm list-disc pl-8 !mt-2">
+              <li>
+                Visibility of collections is defaulted to{" "}
+                <span
+                  className="underline underline-offset-2 tooltip tooltip-right"
+                  data-tip="Users can only
           access through a URL you share with them."
-            >
-              unlisted
-            </span>
-            .
-          </li>
+                >
+                  unlisted
+                </span>
+                .
+              </li>
 
-          <li>
-            To update a collection later, you will need to redo the publish
-            flow.
-          </li>
-        </ul>
+              <li>
+                To update a collection later, you will need to redo the publish
+                flow.
+              </li>
+            </ul>
+          </>
+        }
         <div className="text-sm"></div>
         <div className="divider" />
         {error && (
@@ -140,43 +190,36 @@ export function PublishFolderModal({
               )}
               <div className="grid grid-cols-2 gap-4">
                 {folderInfo.recipes.map((recipe, i) => {
+                  let type: "Cloud" | "New" = "New";
+
+                  if (recipe.id && recipeCloud.apiRecord[recipe.id]) {
+                    type = "Cloud";
+                  }
+
                   return (
-                    <div
+                    <PublishPreviewCard
                       key={recipe.id}
-                      className={classNames(
-                        "flex items-center border p-4 rounded-md text-start"
-                      )}
-                    >
-                      <div className="flex flex-col h-full">
-                        {recipe.id && recipeCloud.apiRecord[recipe.id] ? (
-                          <span
-                            className={classNames(
-                              "badge mb-2 badge-neutral rounded-md"
-                            )}
-                          >
-                            Cloud
-                          </span>
-                        ) : (
-                          <span
-                            className={classNames(
-                              "badge mb-2 badge-accent rounded-md font-bold"
-                            )}
-                          >
-                            New
-                          </span>
-                        )}
-
-                        <h3 className="font-bold">{recipe.title}</h3>
-                        <p className="text-sm  ">{recipe.summary}</p>
-
-                        <div className="flex-1" />
-                      </div>
-                    </div>
+                      title={recipe.title}
+                      summary={recipe.summary}
+                      type={type}
+                    />
                   );
                 })}
               </div>
             </div>
           ))}
+          <div className="grid grid-cols-2 gap-4">
+            {apisToDelete.map((recipe) => {
+              return (
+                <PublishPreviewCard
+                  key={recipe.id}
+                  title={recipe.title}
+                  summary={recipe.summary}
+                  type="Desync"
+                />
+              );
+            })}
+          </div>
         </div>
         <button
           className={"btn btn-sm btn-neutral"}
@@ -187,6 +230,47 @@ export function PublishFolderModal({
         </button>
       </div>
     </Modal>
+  );
+}
+
+function PublishPreviewCard({
+  title,
+  summary,
+  type,
+}: {
+  title: string;
+  summary: string;
+  type: "Cloud" | "New" | "Desync";
+}) {
+  return (
+    <div
+      className={classNames(
+        "flex items-center border p-4 rounded-md text-start"
+      )}
+    >
+      <div className="flex flex-col h-full">
+        <span
+          className={classNames(
+            "badge badge-lg mb-2 rounded-md",
+            type === "Cloud" && "badge-accent",
+            type === "New" && "badge-info font-old",
+            type === "Desync" && "badge-error"
+          )}
+        >
+          {type}
+          {type === "New" && <SparklesIcon className="inline w-3 h-3 ml-1" />}
+          {(type === "Desync" || type === "Cloud") && (
+            <ArrowPathIcon className="inline w-3 h-3 ml-1" />
+          )}
+          {/* {type === "Cloud" && <CloudIcon className="inline w-3 h-3 ml-1" />} */}
+        </span>
+
+        <h3 className="font-bold">{title}</h3>
+        <p className="text-sm  ">{summary}</p>
+
+        <div className="flex-1" />
+      </div>
+    </div>
   );
 }
 
@@ -287,7 +371,7 @@ function usePublishFolder(folder: RecipeSessionFolderExtended) {
 
     if (cloudCollection) {
       await desyncRecipesNotInProject({
-        collectionId: cloudCollection.id,
+        collectionProject: projectName,
         recipeCloud,
         supabase,
         uploadRecipes: uploadRecipes.data,
@@ -296,7 +380,7 @@ function usePublishFolder(folder: RecipeSessionFolderExtended) {
 
     await migrateOldSessions(uploadRecipes.data, valuesToFix, closeSession);
 
-    cloudEventEmitter.emit("syncCloud");
+    cloudEventEmitter.emit("syncCloudForce");
 
     if (isTauri) {
       setDesktopPage({
@@ -305,6 +389,7 @@ function usePublishFolder(folder: RecipeSessionFolderExtended) {
       });
     } else {
       router.push(`/${projectId}`);
+      router.refresh();
     }
   }, [
     folder,
@@ -411,6 +496,8 @@ async function migrateOldSessions(
       await OutputAPI._migrateOutput(oldSession.recipeId, recipe.id);
       await SessionAPI._migrateParameters(oldSession.recipeId, recipe.id);
 
+      console.debug("Deleting old session", oldSession);
+
       closeSession(oldSession);
 
       await FolderAPI.deleteSessionFromFolder(
@@ -422,18 +509,22 @@ async function migrateOldSessions(
 }
 
 async function desyncRecipesNotInProject({
-  collectionId,
+  collectionProject,
   recipeCloud,
   uploadRecipes,
   supabase,
 }: {
-  collectionId: string;
+  collectionProject: string;
   uploadRecipes: Tables<"recipe">[];
   recipeCloud: RecipeCloudContextType;
   supabase: ReturnType<typeof useSupabaseClient>;
 }) {
   const recipesInOriginalCollection =
-    recipeCloud.collectionToApis[collectionId];
+    recipeCloud.collectionToApis[collectionProject];
+
+  if (!recipesInOriginalCollection) {
+    return;
+  }
 
   const uploadedRecipeIds = new Set(uploadRecipes.map((r) => r.id));
   const recipesToDesync = recipesInOriginalCollection.filter(
@@ -441,6 +532,7 @@ async function desyncRecipesNotInProject({
   );
 
   try {
+    console.debug("Desyncing recipes", recipesToDesync);
     await supabase.from("recipe").delete().in("id", recipesToDesync);
   } catch (e) {
     console.error(e);

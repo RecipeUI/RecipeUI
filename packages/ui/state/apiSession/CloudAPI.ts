@@ -33,7 +33,7 @@ export class CloudAPI {
     return store.get("cloud");
   }
 
-  static async initializeCloud(cloud: CloudStore) {
+  static async initializeCloud(cloud: CloudStore, force?: boolean) {
     console.debug("initializeCloud", cloud);
     const store = await getCloudStore();
     await store.put(cloud, "cloud");
@@ -123,28 +123,30 @@ export class CloudAPI {
           (folder) => folder.id == collection.id
         );
 
-        if (!existingFolder) {
-          let items = collection.folder
-            ? collection.folder?.items.map((item) => ({
-                id: item.id,
-                type: item.type,
-              }))
-            : apis
-                .filter((api) => api.project === collection.project)
-                .map((api) => ({
-                  id: api.id,
-                  type: "session" as const,
-                }));
+        let items = collection.folder
+          ? collection.folder?.items.map((item) => ({
+              id: item.id,
+              type: item.type,
+            }))
+          : apis
+              .filter((api) => api.project === collection.project)
+              .map((api) => ({
+                id: api.id,
+                type: "session" as const,
+              }));
 
+        if (!existingFolder) {
           folders.push({
             id: collection.id,
             name: collection.title,
             items: items || [],
           });
+        } else if (force) {
+          existingFolder.items = items || [];
+        }
 
-          if (collection.folder) {
-            recursivelyInitializeFolders(collection.folder);
-          }
+        if ((!existingFolder || force) && collection.folder) {
+          recursivelyInitializeFolders(collection.folder);
         }
       })
     );
@@ -240,17 +242,22 @@ export function useRecipeCloud() {
   }, []);
 
   useEffect(() => {
-    async function syncCloud() {
+    async function syncCloud(force?: boolean) {
       if (!user) return;
       fetchUserCloud({ supabase, user_id: user.user_id }).then((cloudInfo) => {
-        CloudAPI.initializeCloud(cloudInfo);
+        CloudAPI.initializeCloud(cloudInfo, force);
       });
+    }
+    async function syncCloudForce() {
+      syncCloud(true);
     }
 
     cloudEventEmitter.on("syncCloud", syncCloud);
+    cloudEventEmitter.on("syncCloudForce", syncCloudForce);
 
     return () => {
       cloudEventEmitter.off("syncCloud", syncCloud);
+      cloudEventEmitter.off("syncCloudForce", syncCloudForce);
     };
   }, [supabase, user]);
 
