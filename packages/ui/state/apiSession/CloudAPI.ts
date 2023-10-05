@@ -81,8 +81,7 @@ export class CloudAPI {
     await Promise.all(
       collections.map(async (collection, i) => {
         function recursivelyInitializeFolders(
-          folder: RecipeSessionFolderExtended,
-          parentFolderId?: string
+          folder: RecipeSessionFolderExtended
         ) {
           const items = folder.items;
           const localFolder: RecipeSessionFolder | undefined =
@@ -90,11 +89,11 @@ export class CloudAPI {
 
           for (const item of items) {
             if (item.type === "session") {
-              const folderHasItem =
+              const noItemInFolder =
                 localFolder &&
                 !localFolder.items.some((localItem) => localItem.id == item.id);
 
-              if (folderHasItem) {
+              if (noItemInFolder) {
                 localFolder.items.push({
                   id: item.id,
                   type: item.type,
@@ -105,7 +104,7 @@ export class CloudAPI {
                 sessions.push(item.session);
               }
             } else {
-              recursivelyInitializeFolders(item.folder, folder.id);
+              recursivelyInitializeFolders(item.folder);
 
               if (folders.some((folder) => folder.id == item.id)) continue;
 
@@ -142,13 +141,15 @@ export class CloudAPI {
             name: collection.title,
             items: items || [],
           });
-        }
 
-        if (collection.folder) {
-          recursivelyInitializeFolders(collection.folder, collection.id);
+          if (collection.folder) {
+            recursivelyInitializeFolders(collection.folder);
+          }
         }
       })
     );
+
+    // TODO: We need to do a cleanup here eventually of APIs that were not processed into collections.
 
     await saveSessionToStore(sessions);
     await FolderAPI.setFolders(folders);
@@ -261,7 +262,8 @@ export function useRecipeCloud() {
     folderToCollection,
   };
 }
+export type RecipeCloudContextType = ReturnType<typeof useRecipeCloud>;
 
-export const RecipeCloudContext = createContext<
-  ReturnType<typeof useRecipeCloud>
->(undefined as any);
+export const RecipeCloudContext = createContext<RecipeCloudContextType>(
+  undefined as any
+);

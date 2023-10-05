@@ -361,6 +361,7 @@ export function SortableItem({ clone, childCount, ...props }: FlattenedItem) {
       ) : (
         <SessionFolder
           {...props}
+          isRootFolder={props.depth === 0}
           shouldClose={active?.id === props.folder.id}
         />
       )}
