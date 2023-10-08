@@ -383,14 +383,23 @@ function DocContainer({
                   />
                 )}
                 {definition.type === "boolean" && (
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-sm  mt-1"
-                    placeholder="(Optional)"
-                    checked={!!defaultValue}
-                    value={defaultValue as string}
-                    onChange={(e) => setDefaultValue(e.target.checked)}
-                  />
+                  <select
+                    className="select select-bordered w-full max-w-xs"
+                    value={String(defaultValue)}
+                    onChange={(e) => {
+                      if (e.target.value === "true") {
+                        setDefaultValue(true);
+                      } else if (e.target.value === "false") {
+                        setDefaultValue(false);
+                      } else {
+                        setDefaultValue("");
+                      }
+                    }}
+                  >
+                    <option value=""></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                  </select>
                 )}
               </EditDocFieldWrapper>
               {(definition.type === "number" ||
@@ -448,7 +457,8 @@ function DocContainer({
                 path: path,
                 update: {
                   description: description || undefined,
-                  default: defaultValueParsed || undefined,
+                  default:
+                    defaultValueParsed !== "" ? defaultValueParsed : undefined,
                   minimum: minNumber !== undefined ? minNumber : undefined,
                   maximum: maxNumber !== undefined ? maxNumber : undefined,
                 },
@@ -462,7 +472,7 @@ function DocContainer({
       )}
 
       <div className="mt-2">
-        {definition.default && (
+        {typeof definition.default !== "undefined" && (
           <p className="text-xs">Default: {String(definition.default)}</p>
         )}
         {/* <p className="text-xs">Min: 5</p> */}
@@ -500,7 +510,6 @@ function DocContainer({
           />
         </div>
       ) : null}
-
       {definition.type === "object" &&
         definition.properties &&
         Object.keys(definition.properties).length > 0 && (
