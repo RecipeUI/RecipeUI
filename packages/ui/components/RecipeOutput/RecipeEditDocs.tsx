@@ -345,7 +345,7 @@ function DocContainer({
         )}
       </div>
       {!editing ? (
-        <ReactMarkdown className="text-xs mt-2 flex items-center cursor-pointer recipe-md">
+        <ReactMarkdown className="text-xs mt-2 cursor-pointer recipe-md space-y-2">
           {description}
         </ReactMarkdown>
       ) : (
@@ -471,7 +471,7 @@ function DocContainer({
         </div>
       )}
 
-      <div className="mt-2">
+      <div className="mt-2 italic">
         {typeof definition.default !== "undefined" && (
           <p className="text-xs">Default: {String(definition.default)}</p>
         )}

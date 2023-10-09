@@ -3,7 +3,7 @@ import {
   RecipeSession,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
-import { useState } from "react";
+import { FormEventHandler, useState } from "react";
 import {
   getConfigForSessionStore,
   getParametersForSessionStore,
@@ -37,7 +37,7 @@ export function DuplicateModal({
   );
   const saveSession = useRecipeSessionStore((state) => state.saveEditorSession);
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     if (!sessionName) {
       alert("Please enter a session name");
       return;
@@ -103,35 +103,42 @@ export function DuplicateModal({
 
   return (
     <Modal header="Duplicate Request" onClose={onClose}>
-      <div className="mt-4 flex flex-col space-y-2">
-        <label>New Session Name</label>
-        <input
-          type="text"
-          className="input input-bordered input-sm"
-          value={sessionName}
-          onChange={(e) => setSessionName(e.target.value)}
-        />
-      </div>
-      <div className="mt-4">
-        <label>Duplication Type</label>
-        <div className="grid grid-cols-2 gap-x-4 mt-2">
-          <DuplicateCopyButton
-            title="Simple Copy"
-            description="The way copy normally works."
-            selected={!isRecipeCopy}
-            onClick={() => setIsRecipeCopy(false)}
-          />
-          <DuplicateCopyButton
-            title="Linked Copy"
-            description="Useful if you want to share the same TypeScript and Auth between two requests."
-            selected={isRecipeCopy}
-            onClick={() => setIsRecipeCopy(true)}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+      >
+        <div className="mt-4 flex flex-col space-y-2">
+          <label>New Session Name</label>
+          <input
+            type="text"
+            className="input input-bordered input-sm"
+            value={sessionName}
+            onChange={(e) => setSessionName(e.target.value)}
           />
         </div>
-      </div>
-      <button className="mt-4 btn btn-neutral" onClick={onSubmit}>
-        Duplicate
-      </button>
+        <div className="mt-4">
+          <label>Duplication Type</label>
+          <div className="grid grid-cols-2 gap-x-4 mt-2">
+            <DuplicateCopyButton
+              title="Simple Copy"
+              description="The way copy normally works."
+              selected={!isRecipeCopy}
+              onClick={() => setIsRecipeCopy(false)}
+            />
+            <DuplicateCopyButton
+              title="Linked Copy"
+              description="Useful if you want to share the same TypeScript and Auth between two requests."
+              selected={isRecipeCopy}
+              onClick={() => setIsRecipeCopy(true)}
+            />
+          </div>
+        </div>
+        <button type="submit" className="mt-4 btn btn-neutral">
+          Duplicate
+        </button>
+      </form>
     </Modal>
   );
 }

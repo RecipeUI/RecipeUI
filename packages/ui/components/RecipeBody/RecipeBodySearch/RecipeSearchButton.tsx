@@ -28,6 +28,7 @@ import { ModuleSettings } from "../../../modules/authConfigs";
 import { DISCORD_LINK } from "utils/constants";
 import { getCollectionModule } from "types/modules/helpers";
 import { convertObjectToFormData } from "../../../utils/main";
+import { imageRegex } from "utils/constants/regex";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -565,6 +566,23 @@ export function RecipeSearchButton() {
             .catch(reject);
         }
 
+        const urlString = url.toString();
+
+        if (urlString.match(imageRegex)) {
+          const contentType = urlString.split(".").pop() || "image/png";
+          resolve({
+            contentType,
+            status: 200,
+            output: JSON.stringify({
+              recipeui_text: "This endpoint returns an image file.",
+              url: urlString,
+            }),
+            headers: {
+              "content-type": contentType,
+            },
+          });
+        }
+
         if (
           !nativeFetch ||
           (!isTauri && url.origin.startsWith("http://localhost"))
@@ -607,11 +625,11 @@ export function RecipeSearchButton() {
         }
       }
 
-      if (!isStatusOk && !hasParsed) {
+      if (!isStatusOk && (!hasParsed || (hasParsed && !outputStr))) {
         const statusPrefix = `Error code ${status}.`;
         if ([401, 403, 405, 406].includes(status)) {
           output = {
-            error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
+            error: `${statusPrefix} Your authentication might no longer be valid for this endpoint or your parameters are wrong.`,
           };
         } else if (status === 400) {
           output = {

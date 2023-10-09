@@ -14,7 +14,7 @@ import { Recipe, RecipeOutputType } from "types/database";
 import { useOutput } from "../../state/apiSession/OutputAPI";
 import { RecipeSaveButton } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { Modal } from "../Modal";
-
+import { imageRegex } from "utils/constants/regex";
 const codeMirrorSetup = {
   lineNumbers: true,
   highlightActiveLine: false,
@@ -37,8 +37,6 @@ export function RecipeOutputConsole() {
   const { imageBlocks, codeBlocks } = useMemo(() => {
     // Even though we can match on this, it's not good because stringify removes some whitespace
     const codeBlockRegex = /```(.*?)```/gs;
-    const imageRegex =
-      /(https?:\/\/[^\s'"]+\.(png|jpg|jpeg|gif|bmp|webp)(\?[^\s'"]*)?)/gi;
 
     const codeBlocks: string[] = [];
     const imageBlocks: string[] = [];
@@ -184,7 +182,10 @@ export function ResponseOutput({
       } else {
         _output = JSON.stringify(_output, null, 2);
       }
-    } else if (sessionOutput.contentType?.includes("text")) {
+    } else if (
+      sessionOutput.contentType?.includes("text") &&
+      sessionOutput.output["text"]
+    ) {
       _output = sessionOutput.output["text"] as string;
     } else {
       _output = JSON.stringify(sessionOutput.output, null, 2);
@@ -312,7 +313,7 @@ export function ResponseInfo({
       </button>
       {responseInfo.headers && Object.keys(responseInfo.headers).length > 0 && (
         <button
-          className="btn btn-outline btn-xs tooltip"
+          className="btn btn-outline btn-xs tooltip text-black dark:text-white pointer-events-none"
           data-tip="View response headers"
           onClick={() => setShowHeaders(true)}
         >

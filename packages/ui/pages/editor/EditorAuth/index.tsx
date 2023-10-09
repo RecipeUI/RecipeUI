@@ -190,7 +190,20 @@ function TraditionalSingleAuthConfig({
     useAuthSecret(editorAuthConfig);
 
   return (
-    <div className={classNames("py-2 p-4 pb-4")}>
+    <form
+      className={classNames("py-2 p-4 pb-4")}
+      onSubmit={async (e) => {
+        e.preventDefault();
+
+        await SecretAPI.saveSecret({
+          secretId: currentSession!.recipeId,
+          secretValue: secret,
+        });
+
+        setEditorAuthConfig(authConfig);
+        setHasChanged(false);
+      }}
+    >
       {editorAuthConfig.type !== RecipeAuthType.Bearer && (
         <AuthFormWrapper label={`${editorAuthConfig.type} Param Name`}>
           <input
@@ -250,15 +263,7 @@ function TraditionalSingleAuthConfig({
             "btn btn-sm btn-accent mt-2",
             !hasChanged && "btn-disabled"
           )}
-          onClick={async () => {
-            await SecretAPI.saveSecret({
-              secretId: currentSession!.recipeId,
-              secretValue: secret,
-            });
-
-            setEditorAuthConfig(authConfig);
-            setHasChanged(false);
-          }}
+          type="submit"
         >
           Save changes
         </button>
@@ -280,7 +285,7 @@ function TraditionalSingleAuthConfig({
           Delete secret
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 
