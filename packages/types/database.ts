@@ -139,6 +139,15 @@ export type TraditionalSingleAuth =
       payload?: SimpleAuthPayload & { name?: string };
     };
 
+export type OAuth2AuthConfig = {
+  type: RecipeAuthType.OAuth2;
+  payload: {
+    grant_type: "client_credentials";
+    client_id: string;
+    access_token_url: string;
+  };
+};
+
 export type SingleAuthConfig =
   | TraditionalSingleAuth
   | {
@@ -149,13 +158,15 @@ export type SingleAuthConfig =
         | RecipeAuthType.Bearer
         | RecipeAuthType.Multiple
         | RecipeAuthType.Basic
+        | RecipeAuthType.OAuth2
       >;
       payload?: SimpleAuthPayload;
     }
   | {
       type: RecipeAuthType.Basic;
       payload?: SimpleAuthPayload & { name: "base64" };
-    };
+    }
+  | OAuth2AuthConfig;
 
 export interface MultipleAuthConfig {
   type: RecipeAuthType.Multiple;

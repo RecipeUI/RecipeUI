@@ -8,20 +8,27 @@ import { ModuleSettings } from "../../modules/authConfigs";
 import { RecipeAuthType } from "types/enums";
 import { isCollectionModule } from "types/modules/helpers";
 
+type SpecialKey = "client_secret";
 export class SecretAPI {
   static getSecret = async ({
     secretId,
     index,
+    specialKey,
   }: {
     secretId: string;
     index?: number;
+    specialKey?: SpecialKey;
   }): Promise<string | undefined> => {
     if (typeof index === "number") {
       return (await this.getSecretArray({ secretId }))[index];
     }
 
     const store = await getSecretStore();
-    return store.get(secretId);
+    return store.get(this.getKeyId(secretId, specialKey));
+  };
+
+  static getKeyId = (key: string, specialKey?: SpecialKey) => {
+    return !specialKey ? key : `${key}::${specialKey}`;
   };
 
   static getSecretArray = async ({
@@ -41,9 +48,13 @@ export class SecretAPI {
     return [];
   };
 
-  static saveSecret = async ({ secretId, secretValue }: SaveSecret) => {
+  static saveSecret = async ({
+    secretId,
+    secretValue,
+    specialKey,
+  }: SaveSecret) => {
     const store = await getSecretStore();
-    store.put(secretValue, secretId);
+    store.put(secretValue, this.getKeyId(secretId, specialKey));
   };
 
   static deleteSecret = async ({ secretId }: { secretId: string }) => {
@@ -146,6 +157,7 @@ export class SecretAPI {
 interface SaveSecret {
   secretId: string;
   secretValue: string;
+  specialKey?: SpecialKey;
 }
 
 interface ComplexSecretProps {

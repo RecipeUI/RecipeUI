@@ -8,7 +8,7 @@ export async function fetchServer({
   payload,
 }: FetchRequest): Promise<FetchResponse> {
   const modifiedPayload = { ...payload };
-  if (payload.headers["content-type"].includes("form") && payload.body) {
+  if (payload.headers["content-type"]?.includes("form") && payload.body) {
     modifiedPayload.body = JSON.stringify(
       convertObjectToFormData(JSON.parse(payload.body))
     );

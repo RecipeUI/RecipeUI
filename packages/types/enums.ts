@@ -31,7 +31,7 @@ export enum RecipeAuthType {
   Custom = "custom",
   Multiple = "Multiple",
   Query = "query",
-  OAuth = "oauth",
+  OAuth2 = "oauth2",
   Header = "header",
   Basic = "basic",
 }
