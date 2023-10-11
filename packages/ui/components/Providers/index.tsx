@@ -21,7 +21,7 @@ export function initPosthog() {
       api_host:
         "__TAURI__" in window
           ? process.env.NEXT_PUBLIC_POSTHOG_HOST
-          : window.origin + "/ingest",
+          : (window as any).origin + "/ingest",
       autocapture: false,
       capture_pageleave: false,
       capture_pageview: false,
