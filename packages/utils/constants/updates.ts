@@ -1,4 +1,5 @@
 export const LATEST_APP_VERSION = "0.8.8";
+export const LATEST_WEB_VERSION = "0.8.9";
 
 export const VERSION_LOGS: {
   version: string;
@@ -7,6 +8,13 @@ export const VERSION_LOGS: {
   ignore?: boolean;
   type?: "minor" | "major" | "patch";
 }[] = [
+  {
+    version: "0.8.9",
+    update:
+      "Minor bug fixes and improvements. OAuth2 Client Credentials support.",
+    update_type: "feature",
+    type: "major",
+  },
   {
     version: "0.8.8",
     update: "Drag folders/files in sidebar. Partial support for multi-form.",
