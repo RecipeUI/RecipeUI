@@ -41,6 +41,11 @@ export enum RecipeMutationContentType {
   FormData = "multipart/form-data",
 }
 
+export const ContentTypeLabel = {
+  [RecipeMutationContentType.JSON]: "JSON",
+  [RecipeMutationContentType.FormData]: "Form",
+};
+
 export enum AuthFormType {
   None,
   Bearer,
@@ -92,4 +97,9 @@ export enum ContentType {
   HTML = "text/html",
   XML = "application/xml",
   PDF = "application/pdf",
+}
+
+export enum OAuth2Grant {
+  ClientCredentials = "client_credentials",
+  AuthorizationCode = "authorization_code",
 }

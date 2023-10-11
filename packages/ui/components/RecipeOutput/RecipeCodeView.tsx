@@ -304,10 +304,21 @@ function getCurlCode({
   }
 
   if (body) {
+    let headerContentType = headers["Content-Type"] || headers["content-type"];
+
     if (typeof body === "string") {
       lines.push(`-d '${body}'`);
-    } else if (body instanceof FormData) {
-      // TODO: Support files
+    } else if (
+      headerContentType.includes("form") &&
+      !(body instanceof FormData)
+    ) {
+      const formFields = Object.keys(body);
+
+      for (let i = 0; i < formFields.length; i++) {
+        const fieldName = formFields[i];
+        const fieldValue = body[fieldName];
+        lines.push(`-F ${fieldName}=${fieldValue}`);
+      }
     } else if (Object.keys(body).length > 0) {
       lines.push(
         `-d '${JSON.stringify(body, null, 2).split("\n").join("\n    ")}'`

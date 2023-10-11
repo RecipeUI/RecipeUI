@@ -5,6 +5,7 @@ import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
+  EditorViewWithSchemaBody,
   InitializeSchema,
 } from "./CodeEditors/EditorJSON";
 
@@ -68,7 +69,7 @@ export const JSONEditorContainer = () => {
   return (
     <div className="grid grid-rows-2 flex-1 h-full z-20 overflow-x-auto">
       {editorBodySchemaJSON || editorBody ? (
-        <EditorViewWithSchema
+        <EditorViewWithSchemaBody
           value={editorBody}
           setValue={setEditorBody}
           key={`${currentSession?.id || "default"}-json-body`}

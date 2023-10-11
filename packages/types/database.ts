@@ -2,6 +2,7 @@ import { MergeDeep } from "type-fest";
 import { Database as DatabaseGenerated } from "./database-generated.types";
 export type { Json } from "./database-generated.types";
 import {
+  OAuth2Grant,
   ProjectMemberRole,
   ProjectScope,
   ProjectVisibility,
@@ -142,9 +143,14 @@ export type TraditionalSingleAuth =
 export type OAuth2AuthConfig = {
   type: RecipeAuthType.OAuth2;
   payload: {
-    grant_type: "client_credentials";
+    grant_type: OAuth2Grant;
     client_id: string;
     access_token_url: string;
+    expires_at?: string;
+    token_type?: string;
+
+    name?: never;
+    description?: never;
   };
 };
 
