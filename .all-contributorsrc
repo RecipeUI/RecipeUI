@@ -81,6 +81,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "tim-goto",
+      "name": "Tim Häring",
+      "avatar_url": "https://avatars.githubusercontent.com/u/116002362?v=4",
+      "profile": "https://github.com/tim-goto",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "repoType": "github"

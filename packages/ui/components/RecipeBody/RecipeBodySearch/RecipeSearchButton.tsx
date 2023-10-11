@@ -218,7 +218,6 @@ export function RecipeSearchButton() {
       if (config.payload && "prefix" in config.payload) {
         secretValue = `${config.payload.prefix} ${secretValue}`;
       }
-      console.log("in here processing", config.type, config);
 
       if (config.type === RecipeAuthType.Query) {
         url.searchParams.append(config.payload.name, secretValue);

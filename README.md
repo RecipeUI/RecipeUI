@@ -52,6 +52,7 @@ We are open sourced because we use so much open source technology and we want to
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jinyus"><img src="https://avatars.githubusercontent.com/u/30532952?v=4?s=100" width="100px;" alt="jinyus"/><br /><sub><b>jinyus</b></sub></a><br /><a href="#ideas-jinyus" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tim-goto"><img src="https://avatars.githubusercontent.com/u/116002362?v=4?s=100" width="100px;" alt="Tim Häring"/><br /><sub><b>Tim Häring</b></sub></a><br /><a href="https://github.com/RecipeUI/RecipeUI/commits?author=tim-goto" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
