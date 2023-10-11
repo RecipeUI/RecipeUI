@@ -102,4 +102,5 @@ export enum ContentType {
 export enum OAuth2Grant {
   ClientCredentials = "client_credentials",
   AuthorizationCode = "authorization_code",
+  Password = "password",
 }

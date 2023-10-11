@@ -8,7 +8,7 @@ import { ModuleSettings } from "../../modules/authConfigs";
 import { RecipeAuthType } from "types/enums";
 import { isCollectionModule } from "types/modules/helpers";
 
-type SpecialKey = "client_secret";
+type SpecialKey = "client_secret" | "password";
 export class SecretAPI {
   static getSecret = async ({
     secretId,

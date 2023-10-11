@@ -698,23 +698,35 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
   useEffect(() => {
     setValue("client_id", editorAuthConfig.payload.client_id);
     setValue("access_token_url", editorAuthConfig.payload.access_token_url);
+    setValue("grant_type", editorAuthConfig.payload.grant_type);
+    setValue("username", editorAuthConfig.payload.username);
 
     setAuthConfig(editorAuthConfig);
   }, [editorAuthConfig]);
 
   const [accessToken, setAccessToken] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+
   useEffect(() => {
+    const secretId = currentSession.recipeId;
     SecretAPI.getSecret({
-      secretId: `${currentSession.recipeId}`,
+      secretId,
       specialKey: "client_secret",
     }).then((secret) => {
       setClientSecret(secret || "");
     });
 
     SecretAPI.getSecret({
-      secretId: `${currentSession.recipeId}`,
+      secretId,
     }).then((secret) => {
       setAccessToken(secret || "");
+    });
+
+    SecretAPI.getSecret({
+      secretId,
+      specialKey: "password",
+    }).then((secret) => {
+      setUserPassword(secret || "");
     });
   }, [currentSession.recipeId, setValue]);
 
@@ -729,15 +741,40 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
       secretValue: client_secret,
     });
 
-    setEditorAuthConfig({
-      type: RecipeAuthType.OAuth2,
-      payload: {
-        grant_type: OAuth2Grant.ClientCredentials,
-        access_token_url: data.access_token_url,
-        client_id: data.client_id,
-      },
-    });
+    if (data.grant_type === OAuth2Grant.Password) {
+      await SecretAPI.saveSecret({
+        secretId: currentSession!.recipeId,
+        specialKey: "password",
+        secretValue: userPassword,
+      });
+    }
 
+    const baseConfig = {
+      access_token_url: data.access_token_url,
+      client_id: data.client_id,
+    };
+
+    let authConfigPayload: OAuth2AuthConfig["payload"] | null = null;
+
+    if (data.grant_type === OAuth2Grant.ClientCredentials) {
+      authConfigPayload = {
+        ...baseConfig,
+        grant_type: OAuth2Grant.ClientCredentials,
+      };
+    } else if (data.grant_type === OAuth2Grant.Password) {
+      authConfigPayload = {
+        ...baseConfig,
+        grant_type: OAuth2Grant.Password,
+        username: data.username,
+      };
+    }
+
+    if (authConfigPayload) {
+      setEditorAuthConfig({
+        type: RecipeAuthType.OAuth2,
+        payload: authConfigPayload,
+      });
+    }
     reset(undefined, { keepValues: true });
 
     // We need to actually generate auth token
@@ -745,6 +782,8 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
 
   const client_id = watch("client_id");
   const access_token_url = watch("access_token_url");
+  const grant_type = watch("grant_type");
+  const username = watch("username");
 
   const onDelete = async () => {
     // Delete all the secrets
@@ -771,6 +810,7 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
           <option value={OAuth2Grant.ClientCredentials}>
             Client Credentials
           </option>
+          <option value={OAuth2Grant.Password}>Password</option>
           <option value={OAuth2Grant.AuthorizationCode} disabled>
             (Soon) Authorization Code
           </option>
@@ -790,6 +830,39 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
           })}
         />
       </AuthFormWrapper>
+      {grant_type === OAuth2Grant.Password && (
+        <>
+          <AuthFormWrapper
+            label={`Username`}
+            requiredError={errors.username !== undefined}
+          >
+            <input
+              type="text"
+              autoCorrect="off"
+              autoCapitalize="off"
+              className={classNames("input input-bordered w-full input-sm")}
+              {...register("username", {
+                required: true,
+              })}
+            />
+          </AuthFormWrapper>
+          <AuthFormWrapper label={`Password`} requiredError={!userPassword}>
+            <input
+              type="text"
+              autoCorrect="off"
+              autoCapitalize="off"
+              className={classNames("input input-bordered w-full input-sm")}
+              value={userPassword}
+              onChange={(e) => {
+                setValue("username", username, {
+                  shouldDirty: true,
+                });
+                setUserPassword(e.target.value);
+              }}
+            />
+          </AuthFormWrapper>
+        </>
+      )}
       <AuthFormWrapper
         label={`Client ID`}
         requiredError={errors.client_id !== undefined}
@@ -841,13 +914,19 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
             className="btn btn-outline btn-sm"
             onClick={async () => {
               try {
+                let payload: Record<string, unknown> = {
+                  grant_type,
+                };
+                if (grant_type === OAuth2Grant.Password) {
+                  payload["username"] = username;
+                  payload["password"] = userPassword;
+                }
+
                 const response = await nativeFetch({
                   url: access_token_url,
                   payload: {
                     method: RecipeMethod.POST,
-                    body: JSON.stringify({
-                      grant_type: "client_credentials",
-                    }),
+                    body: JSON.stringify(payload),
                     headers: {
                       Authorization: `Basic ${btoa(
                         `${client_id}:${client_secret}`
@@ -859,6 +938,20 @@ function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
 
                 if (response.output) {
                   const outputObject = parse(response.output);
+                  console.debug("Response Output", outputObject);
+
+                  if (outputObject["error"]) {
+                    console.error(response.output);
+                    alert(
+                      "Failed to fetch token. Check dev tools (Right click -> Inspect) for more details."
+                    );
+                    setAccessToken("");
+                    await SecretAPI.saveSecret({
+                      secretId: currentSession.recipeId,
+                      secretValue: "",
+                    });
+                  }
+
                   if (outputObject["access_token"]) {
                     await SecretAPI.saveSecret({
                       secretId: currentSession.recipeId,

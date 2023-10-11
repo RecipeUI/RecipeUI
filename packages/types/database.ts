@@ -143,7 +143,6 @@ export type TraditionalSingleAuth =
 export type OAuth2AuthConfig = {
   type: RecipeAuthType.OAuth2;
   payload: {
-    grant_type: OAuth2Grant;
     client_id: string;
     access_token_url: string;
     expires_at?: string;
@@ -151,7 +150,13 @@ export type OAuth2AuthConfig = {
 
     name?: never;
     description?: never;
-  };
+  } & (
+    | {
+        grant_type: OAuth2Grant.ClientCredentials;
+        username?: never;
+      }
+    | { grant_type: OAuth2Grant.Password; username: string }
+  );
 };
 
 export type SingleAuthConfig =
