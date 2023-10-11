@@ -17,13 +17,13 @@ jobs:
       matrix:
         settings:
           - platform: macos-latest
-            args: '--target universal-apple-darwin'
+            args: '--target universal-apple-darwin --verbose'
           - platform: macos-latest
-            args: '--target aarch64-apple-darwin'
+            args: '--target aarch64-apple-darwin --verbose'
           - platform: windows-latest
-            args: '--target x86_64-pc-windows-msvc'
+            args: '--target x86_64-pc-windows-msvc --verbose'
           - platform: ubuntu-20.04
-            args: ''
+            args: '--verbose'
 
     runs-on: ${{ matrix.settings.platform }}
 
