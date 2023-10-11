@@ -8,7 +8,12 @@ import {
   GitHubLink,
   GoogleFormLink,
 } from "../../components/CommonLinks";
-import { LATEST_APP_VERSION, VERSION_LOGS } from "utils/constants/updates";
+import {
+  LATEST_APP_VERSION,
+  LATEST_WEB_VERSION,
+  VERSION_LOGS,
+} from "utils/constants/updates";
+import { useIsTauri } from "../../hooks/useIsTauri";
 
 export function EditorUpdates() {
   const { latestVersionDismiss, isLatest, setToLatestVersion } =
@@ -75,12 +80,6 @@ export function EditorUpdates() {
           })}
         </ul>
       </div>
-      <p className="pt-4">
-        Expect <span className="font-bold">daily updates</span> for the next few
-        weeks until v1.0. We're rapidly trying to fix bugs, improve the UX, and
-        add new features. Please report bugs on <GitHubLink /> or{" "}
-        <GoogleFormLink /> so we can respond to them quickly.
-      </p>
 
       <div className="!mt-4">
         <button
@@ -111,23 +110,23 @@ export function EditorUpdates() {
 export function useLatestVersionDetails() {
   const [latestVersionDismiss, setLatestVersionDismissed] = useLocalStorage(
     "latestVersion",
-    "0.8.0"
+    "0.8.5"
   );
 
-  useEffect(() => {
-    localStorage.removeItem("latestVersion");
-  }, []);
+  const isTauri = useIsTauri();
+
+  const newestVersion = isTauri ? LATEST_APP_VERSION : LATEST_WEB_VERSION;
 
   const isLatest = !isSemverLessThan({
     oldVer: latestVersionDismiss,
-    newVer: LATEST_APP_VERSION,
+    newVer: newestVersion,
   });
 
   return {
     latestVersionDismiss,
     isLatest: isLatest,
     setToLatestVersion: () => {
-      setLatestVersionDismissed(LATEST_APP_VERSION);
+      setLatestVersionDismissed(newestVersion);
     },
   };
 }

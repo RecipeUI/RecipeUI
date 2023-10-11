@@ -7,6 +7,7 @@ import {
   RecipeContext,
   RecipeNativeFetchContext,
   RecipeOutputTab,
+  RecipeRequestInfo,
   useRecipeSessionStore,
 } from "../../../state/recipeSession";
 import { AuthConfig, RecipeOutputType, SingleAuthConfig } from "types/database";
@@ -27,7 +28,11 @@ import { v4 as uuidv4 } from "uuid";
 import { ModuleSettings } from "../../../modules/authConfigs";
 import { DISCORD_LINK } from "utils/constants";
 import { getCollectionModule } from "types/modules/helpers";
-import { convertObjectToFormData } from "../../../utils/main";
+import {
+  convertFormDataToObject,
+  convertObjectToFormData,
+} from "../../../utils/main";
+import { imageRegex } from "utils/constants/regex";
 
 export function RecipeSearchButton() {
   const posthog = usePostHog();
@@ -141,17 +146,22 @@ export function RecipeSearchButton() {
       return;
     }
 
-    let fetchRequestBody: Record<string, unknown> | FormData | undefined =
-      undefined;
-    let fetchHeaders: Record<string, string> = {
-      "content-type": "application/json",
-    };
+    let fetchRequestBody: Record<string, unknown> | undefined = undefined;
+    let fetchHeaders: Record<string, string> = {};
+
+    if (editorBodyType) {
+      if (editorBodyType === RecipeMutationContentType.JSON) {
+        fetchHeaders["content-type"] = "application/json";
+      } else {
+        fetchHeaders["content-type"] = "multipart/form";
+      }
+    }
 
     let fetchMethod = recipe.method;
     let path = recipe.path;
 
     if (editorMode) {
-      if (editorBodyType === RecipeMutationContentType.JSON && editorBody) {
+      if (editorBody) {
         fetchRequestBody = parse(editorBody);
       }
 
@@ -160,7 +170,7 @@ export function RecipeSearchButton() {
 
         acc[name.toLowerCase()] = value;
         return acc;
-      }, {} as Record<string, string>);
+      }, fetchHeaders);
     } else {
       fetchRequestBody = requestBody;
     }
@@ -205,9 +215,10 @@ export function RecipeSearchButton() {
     function processConfig(config: SingleAuthConfig, _secretValue: string) {
       let secretValue = _secretValue;
 
-      if (config.payload?.prefix) {
+      if (config.payload && "prefix" in config.payload) {
         secretValue = `${config.payload.prefix} ${secretValue}`;
       }
+      console.log("in here processing", config.type, config);
 
       if (config.type === RecipeAuthType.Query) {
         url.searchParams.append(config.payload.name, secretValue);
@@ -217,6 +228,18 @@ export function RecipeSearchButton() {
         fetchHeaders["Authorization"] = `Bearer ${secretValue}`;
       } else if (config.type === RecipeAuthType.Basic) {
         fetchHeaders["Authorization"] = `Basic ${secretValue}`;
+      } else if (config.type === RecipeAuthType.OAuth2) {
+        if (
+          config.payload.token_type?.toLowerCase() === RecipeAuthType.Bearer
+        ) {
+          fetchHeaders["Authorization"] = `Bearer ${secretValue}`;
+        } else if (config.payload.token_type) {
+          fetchHeaders[
+            "Authorization"
+          ] = `${config.payload.token_type[0].toUpperCase()}${config.payload.token_type.slice(
+            1
+          )} ${secretValue}`;
+        }
       }
     }
 
@@ -374,10 +397,7 @@ export function RecipeSearchButton() {
     }
 
     // ------ Clone Request for Code Generation -------
-    let clonedBody =
-      fetchRequestBody instanceof FormData
-        ? { form: "File binary" }
-        : structuredClone(fetchRequestBody);
+    let clonedBody = structuredClone(fetchRequestBody);
 
     let clonedHeaders = structuredClone(fetchHeaders);
     let clonedUrl = new URL(path + url.search);
@@ -392,12 +412,9 @@ export function RecipeSearchButton() {
         body: clonedBody,
       },
       options: infoOptions,
-    };
+    } satisfies RecipeRequestInfo;
 
-    if (
-      !(fetchRequestBody instanceof FormData) &&
-      typeof fetchRequestBody === "object"
-    ) {
+    if (typeof fetchRequestBody === "object") {
       if (Object.keys(fetchRequestBody).length === 0) {
         fetchRequestBody = undefined;
       }
@@ -405,19 +422,22 @@ export function RecipeSearchButton() {
 
     try {
       setIsSending(true, RecipeOutputTab.Output);
-
       const payload = {
         method: fetchMethod,
         headers: fetchHeaders,
         ...(fetchRequestBody
           ? {
               body:
-                typeof fetchRequestBody === "object"
+                typeof fetchRequestBody === "object" &&
+                !(fetchRequestBody instanceof FormData)
                   ? JSON.stringify(fetchRequestBody)
                   : (fetchRequestBody as FormData | undefined),
+              body_type: editorBodyType || undefined,
             }
-          : null),
-      };
+          : {
+              body: undefined,
+            }),
+      } satisfies FetchRequest["payload"];
 
       posthog?.capture(POST_HOG_CONSTANTS.RECIPE_SUBMIT, recipeInfoLog);
 
@@ -546,6 +566,8 @@ export function RecipeSearchButton() {
             simplePayload.body = convertObjectToFormData(
               fetchRequestBody as Record<string, unknown>
             );
+
+            delete simplePayload.headers["content-type"];
           }
 
           fetch(url.toString(), simplePayload)
@@ -565,6 +587,23 @@ export function RecipeSearchButton() {
             .catch(reject);
         }
 
+        const urlString = url.toString();
+
+        if (urlString.match(imageRegex)) {
+          const contentType = urlString.split(".").pop() || "image/png";
+          resolve({
+            contentType,
+            status: 200,
+            output: JSON.stringify({
+              recipeui_text: "This endpoint returns an image file.",
+              url: urlString,
+            }),
+            headers: {
+              "content-type": contentType,
+            },
+          });
+        }
+
         if (
           !nativeFetch ||
           (!isTauri && url.origin.startsWith("http://localhost"))
@@ -573,12 +612,18 @@ export function RecipeSearchButton() {
           return;
         }
 
+        // Can't pass FormData to Tauri or ServerActions
         const fetchPayload: FetchRequest = {
           url: url.toString(),
-          // @ts-expect-error Wrongly inferring body as formdata
           payload: {
             ...payload,
-            ...(payload.body ? { body: payload.body as string } : null),
+            ...(payload.body
+              ? payload.body instanceof FormData
+                ? {
+                    body: JSON.stringify(convertFormDataToObject(payload.body)),
+                  }
+                : { body: payload.body as string }
+              : null),
           },
         };
 
@@ -607,11 +652,11 @@ export function RecipeSearchButton() {
         }
       }
 
-      if (!isStatusOk && !hasParsed) {
+      if (!isStatusOk && (!hasParsed || (hasParsed && !outputStr))) {
         const statusPrefix = `Error code ${status}.`;
         if ([401, 403, 405, 406].includes(status)) {
           output = {
-            error: `${statusPrefix} Your authentication might no longer be valid for this endpoint.`,
+            error: `${statusPrefix} Your authentication might no longer be valid for this endpoint or your parameters are wrong.`,
           };
         } else if (status === 400) {
           output = {

@@ -14,23 +14,31 @@ import {
 } from "./common";
 import { JSONSchema6, JSONSchema6Definition } from "json-schema";
 import classNames from "classnames";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/outline";
+import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useRecipeSessionStore } from "../../../../ui/state/recipeSession";
 import { produce } from "immer";
-import { RecipeMutationContentType } from "types/enums";
+import { ContentTypeLabel, RecipeMutationContentType } from "types/enums";
 import { API_SAMPLES, API_TYPE_NAMES } from "../../../utils/constants/recipe";
+import { Modal } from "../../../components/Modal";
+import { FormFieldWrapper } from "../../../modules/components/FormFieldWrapper";
+
+interface EditorJSONProps {
+  value: string;
+  setValue: (value: string) => void;
+  jsonSchema: JSONSchema6 | null;
+  typeName: (typeof API_TYPE_NAMES)[keyof typeof API_TYPE_NAMES];
+}
 
 export function EditorViewWithSchema({
   value,
   setValue,
   jsonSchema,
   typeName,
-}: {
-  value: string;
-  setValue: (value: string) => void;
-  jsonSchema: JSONSchema6 | null;
-  typeName: (typeof API_TYPE_NAMES)[keyof typeof API_TYPE_NAMES];
-}) {
+}: EditorJSONProps) {
   const { isDarkMode } = useDarkMode();
   const monacoRef = useRef<Monaco>();
 
@@ -70,12 +78,6 @@ export function EditorViewWithSchema({
     setJSONDiagnosticOptions(monacoRef.current, typeName, jsonSchema);
   }, [jsonSchema]);
 
-  // const debouncedMatching = useDebounce(value, 500);
-
-  // useEffect(() => {
-  //   renderModelMarkers();
-  // }, [debouncedMatching]);
-
   const handleEditorMount: OnMount = (editor, monaco) => {
     monacoRef.current = monaco;
 
@@ -89,7 +91,7 @@ export function EditorViewWithSchema({
 
   return (
     <MonacoEditor
-      className="pt-2"
+      className="pt-2 flex-1"
       language="json"
       keepCurrentModel={false}
       theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
@@ -101,6 +103,85 @@ export function EditorViewWithSchema({
       onMount={handleEditorMount}
       options={DEFAULT_MONACO_OPTIONS}
     />
+  );
+}
+
+export function EditorViewWithSchemaBody(props: EditorJSONProps) {
+  const [showChangeType, setShowChangeType] = useState(false);
+  const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
+
+  return (
+    <>
+      <div className="relative flex">
+        <EditorViewWithSchema {...props} />
+        <button
+          className="absolute border rounded-md  bottom-4 left-4 py-1 px-2 flex items-center justify-center space-x-1 text-sm"
+          onClick={() => {
+            setShowChangeType(!showChangeType);
+          }}
+        >
+          <SparklesIcon className="inline w-4 h-4" />
+          <span>
+            {ContentTypeLabel[editorBodyType || RecipeMutationContentType.JSON]}
+          </span>
+        </button>
+      </div>
+
+      {showChangeType && (
+        <BodyModal
+          onClose={() => {
+            setShowChangeType(false);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+export function BodyModal({ onClose }: { onClose: () => void }) {
+  const editorBodyType = useRecipeSessionStore((state) => state.editorBodyType);
+  const setEditorBodyType = useRecipeSessionStore(
+    (state) => state.setEditorBodyType
+  );
+
+  const [newBodyType, setNewBodyType] = useState<RecipeMutationContentType>(
+    editorBodyType || RecipeMutationContentType.JSON
+  );
+
+  return (
+    <Modal header="Change Body" onClose={onClose}>
+      <form
+        className="w-full space-y-4 mt-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setEditorBodyType(newBodyType);
+          onClose();
+        }}
+      >
+        <FormFieldWrapper label="Body Type">
+          <select
+            className="select select-bordered w-full max-w-xs"
+            value={newBodyType}
+            onChange={(e) =>
+              setNewBodyType(e.target.value as RecipeMutationContentType)
+            }
+          >
+            <option value={RecipeMutationContentType.JSON}>
+              {RecipeMutationContentType.JSON}
+            </option>
+            <option value={RecipeMutationContentType.FormData}>
+              {RecipeMutationContentType.FormData}
+            </option>
+          </select>
+        </FormFieldWrapper>
+        <button className="btn btn-sm btn-neutral mt-2" type="submit">
+          Submit{" "}
+        </button>
+        <div className="alert">
+          <span>Tip: CMD + S will auto format the JSON inside the editor.</span>
+        </div>
+      </form>
+    </Modal>
   );
 }
 

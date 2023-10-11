@@ -4,20 +4,27 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
-import { useRecipeSessionStore } from "../../../state/recipeSession";
-import { RecipeAuthType } from "types/enums";
+import {
+  RecipeNativeFetchContext,
+  useRecipeSessionStore,
+} from "../../../state/recipeSession";
+import { OAuth2Grant, RecipeAuthType, RecipeMethod } from "types/enums";
 import classNames from "classnames";
 import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 import {
   MultipleAuthConfig,
+  OAuth2AuthConfig,
   SingleAuthConfig,
   TraditionalSingleAuth,
 } from "types/database";
 import { useForm } from "react-hook-form";
 import { produce } from "immer";
+import { parse } from "json5";
+import { addSeconds, differenceInHours, secondsToHours } from "date-fns";
 
 export function EditorAuth() {
   const editorAuthConfig = useRecipeSessionStore(
@@ -115,11 +122,19 @@ export function EditorAuth() {
           }}
         />
         <AuthButton
-          label="OAuth (Soon)"
-          description="Join our Discord or email us to use this feature now."
-          // selected={singleConfig?.type === RecipeAuthType.OAuth}
-          className="opacity-50 pointer-events-none"
-          onClick={() => {}}
+          label="OAuth 2.0 (beta)"
+          description="Limited support for OAuth types."
+          selected={singleConfig?.type === RecipeAuthType.OAuth2}
+          onClick={() => {
+            setEditorAuthConfig({
+              type: RecipeAuthType.OAuth2,
+              payload: {
+                grant_type: OAuth2Grant.ClientCredentials,
+                access_token_url: "",
+                client_id: "",
+              },
+            });
+          }}
         />
       </div>
     </div>
@@ -141,6 +156,10 @@ function SingleAuthConfig({
 
   if (editorAuthConfig.type === RecipeAuthType.Basic) {
     return <BasicAuth editorAuthConfig={editorAuthConfig} />;
+  }
+
+  if (editorAuthConfig.type === RecipeAuthType.OAuth2) {
+    return <OAuth2 editorAuthConfig={editorAuthConfig} />;
   }
 
   return null;
@@ -190,7 +209,20 @@ function TraditionalSingleAuthConfig({
     useAuthSecret(editorAuthConfig);
 
   return (
-    <div className={classNames("py-2 p-4 pb-4")}>
+    <form
+      className={classNames("py-2 p-4 pb-4")}
+      onSubmit={async (e) => {
+        e.preventDefault();
+
+        await SecretAPI.saveSecret({
+          secretId: currentSession!.recipeId,
+          secretValue: secret,
+        });
+
+        setEditorAuthConfig(authConfig);
+        setHasChanged(false);
+      }}
+    >
       {editorAuthConfig.type !== RecipeAuthType.Bearer && (
         <AuthFormWrapper label={`${editorAuthConfig.type} Param Name`}>
           <input
@@ -250,15 +282,7 @@ function TraditionalSingleAuthConfig({
             "btn btn-sm btn-accent mt-2",
             !hasChanged && "btn-disabled"
           )}
-          onClick={async () => {
-            await SecretAPI.saveSecret({
-              secretId: currentSession!.recipeId,
-              secretValue: secret,
-            });
-
-            setEditorAuthConfig(authConfig);
-            setHasChanged(false);
-          }}
+          type="submit"
         >
           Save changes
         </button>
@@ -280,7 +304,7 @@ function TraditionalSingleAuthConfig({
           Delete secret
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -428,19 +452,26 @@ function AuthFormWrapper({
   label,
   children,
   description,
+  requiredError,
 }: {
   label: string;
   children: React.ReactNode;
   description?: string;
+  requiredError?: boolean;
 }) {
   return (
-    <div className="py-2">
-      <h2 className="font-bold text-sm mb-2 capitalize">{label}</h2>
-      {description && (
-        <p className="text-xs text-gray-500 mb-2">{description}</p>
+    <>
+      <div className="py-2">
+        <h2 className="font-bold text-sm mb-2 capitalize">{label}</h2>
+        {description && (
+          <p className="text-xs text-gray-500 mb-2">{description}</p>
+        )}
+        {children}
+      </div>
+      {requiredError && (
+        <p className="text-xs text-red-600">{`${label} is required`}</p>
       )}
-      {children}
-    </div>
+    </>
   );
 }
 
@@ -642,5 +673,249 @@ function MultipleAuthConfig({
         </button>
       </div>
     </div>
+  );
+}
+
+function OAuth2({ editorAuthConfig }: { editorAuthConfig: OAuth2AuthConfig }) {
+  const currentSession = useRecipeSessionStore(
+    (state) => state.currentSession
+  )!;
+  const setEditorAuthConfig = useRecipeSessionStore(
+    (state) => state.setEditorAuthConfig
+  );
+
+  const [authConfig, setAuthConfig] = useState<OAuth2AuthConfig | null>(null);
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { isDirty, errors },
+  } = useForm<OAuth2AuthConfig["payload"]>();
+  const [client_secret, setClientSecret] = useState("");
+
+  useEffect(() => {
+    setValue("client_id", editorAuthConfig.payload.client_id);
+    setValue("access_token_url", editorAuthConfig.payload.access_token_url);
+
+    setAuthConfig(editorAuthConfig);
+  }, [editorAuthConfig]);
+
+  const [accessToken, setAccessToken] = useState("");
+  useEffect(() => {
+    SecretAPI.getSecret({
+      secretId: `${currentSession.recipeId}`,
+      specialKey: "client_secret",
+    }).then((secret) => {
+      setClientSecret(secret || "");
+    });
+
+    SecretAPI.getSecret({
+      secretId: `${currentSession.recipeId}`,
+    }).then((secret) => {
+      setAccessToken(secret || "");
+    });
+  }, [currentSession.recipeId, setValue]);
+
+  const nativeFetch = useContext(RecipeNativeFetchContext)!;
+
+  const onSubmit = handleSubmit(async (data) => {
+    // We can encrypt it earlier but it's a bit unclear to me?
+
+    await SecretAPI.saveSecret({
+      secretId: currentSession!.recipeId,
+      specialKey: "client_secret",
+      secretValue: client_secret,
+    });
+
+    setEditorAuthConfig({
+      type: RecipeAuthType.OAuth2,
+      payload: {
+        grant_type: OAuth2Grant.ClientCredentials,
+        access_token_url: data.access_token_url,
+        client_id: data.client_id,
+      },
+    });
+
+    reset(undefined, { keepValues: true });
+
+    // We need to actually generate auth token
+  });
+
+  const client_id = watch("client_id");
+  const access_token_url = watch("access_token_url");
+
+  const onDelete = async () => {
+    // Delete all the secrets
+    await SecretAPI.deleteSecret({
+      secretId: `${currentSession.recipeId}`,
+    });
+
+    setEditorAuthConfig(null);
+  };
+
+  return (
+    <form className={classNames("py-2 p-4 pb-4")} onSubmit={onSubmit}>
+      <AuthFormWrapper
+        label={`Grant Type`}
+        requiredError={errors.grant_type !== undefined}
+      >
+        <select
+          autoCapitalize="off"
+          className={classNames("select select-sm select-bordered w-full")}
+          {...register("grant_type", {
+            required: true,
+          })}
+        >
+          <option value={OAuth2Grant.ClientCredentials}>
+            Client Credentials
+          </option>
+          <option value={OAuth2Grant.AuthorizationCode} disabled>
+            (Soon) Authorization Code
+          </option>
+        </select>
+      </AuthFormWrapper>
+      <AuthFormWrapper
+        label={`Access Token Url`}
+        requiredError={errors.access_token_url !== undefined}
+      >
+        <input
+          type="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          className={classNames("input input-bordered w-full input-sm")}
+          {...register("access_token_url", {
+            required: true,
+          })}
+        />
+      </AuthFormWrapper>
+      <AuthFormWrapper
+        label={`Client ID`}
+        requiredError={errors.client_id !== undefined}
+      >
+        <input
+          type="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          className={classNames("input input-bordered w-full input-sm")}
+          {...register("client_id", {
+            required: true,
+          })}
+        />
+      </AuthFormWrapper>
+      <AuthFormWrapper label={`Client Secret`}>
+        <input
+          type="text"
+          autoCorrect="off"
+          autoCapitalize="off"
+          className={classNames("input input-bordered w-full input-sm")}
+          value={client_secret}
+          onChange={(e) => {
+            setClientSecret(e.target.value);
+          }}
+        />
+      </AuthFormWrapper>
+
+      {client_id && client_secret && (
+        <div className="border border-dashed p-4 my-4 rounded-md opacity-70 bg-slate-600">
+          <AuthFormWrapper label="Access Token">
+            <input
+              type="text"
+              disabled
+              className="input input-bordered w-full input-sm bg-slate-600"
+              value={accessToken}
+            />
+            {editorAuthConfig.payload.expires_at ? (
+              <div className="mt-2 text-sm italic">
+                Expires in{" "}
+                {differenceInHours(
+                  new Date(editorAuthConfig.payload.expires_at),
+                  new Date()
+                )}{" "}
+                hour(s).
+              </div>
+            ) : undefined}
+          </AuthFormWrapper>
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={async () => {
+              try {
+                const response = await nativeFetch({
+                  url: access_token_url,
+                  payload: {
+                    method: RecipeMethod.POST,
+                    body: JSON.stringify({
+                      grant_type: "client_credentials",
+                    }),
+                    headers: {
+                      Authorization: `Basic ${btoa(
+                        `${client_id}:${client_secret}`
+                      )}`,
+                      "content-type": "multipart/form-data",
+                    },
+                  },
+                });
+
+                if (response.output) {
+                  const outputObject = parse(response.output);
+                  if (outputObject["access_token"]) {
+                    await SecretAPI.saveSecret({
+                      secretId: currentSession.recipeId,
+                      secretValue: outputObject["access_token"],
+                    });
+                    setAccessToken(outputObject["access_token"]);
+                  }
+
+                  if (typeof outputObject === "object" && authConfig) {
+                    setEditorAuthConfig(
+                      produce(authConfig, (draft) => {
+                        if (
+                          outputObject["expires_in"] &&
+                          typeof outputObject["expires_in"] === "number"
+                        ) {
+                          draft.payload.expires_at = addSeconds(
+                            new Date(),
+                            outputObject["expires_in"]
+                          ).toISOString();
+                        }
+
+                        if (
+                          outputObject["token_type"] &&
+                          typeof outputObject["token_type"] === "string"
+                        ) {
+                          draft.payload.token_type = outputObject["token_type"];
+                        }
+                      })
+                    );
+                  }
+                }
+              } catch (e) {
+                console.error(e);
+              }
+            }}
+          >
+            Fetch Token
+          </button>
+        </div>
+      )}
+      <div className="space-x-2">
+        <button
+          type="submit"
+          className={classNames(
+            "btn btn-sm btn-accent mt-2",
+            !isDirty && "btn-disabled"
+          )}
+        >
+          Save changes
+        </button>
+        <button
+          className={classNames("btn btn-sm btn-neutral mt-2")}
+          onClick={onDelete}
+        >
+          Delete secret
+        </button>
+      </div>
+    </form>
   );
 }

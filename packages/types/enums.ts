@@ -31,7 +31,7 @@ export enum RecipeAuthType {
   Custom = "custom",
   Multiple = "Multiple",
   Query = "query",
-  OAuth = "oauth",
+  OAuth2 = "oauth2",
   Header = "header",
   Basic = "basic",
 }
@@ -40,6 +40,11 @@ export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
 }
+
+export const ContentTypeLabel = {
+  [RecipeMutationContentType.JSON]: "JSON",
+  [RecipeMutationContentType.FormData]: "Form",
+};
 
 export enum AuthFormType {
   None,
@@ -92,4 +97,9 @@ export enum ContentType {
   HTML = "text/html",
   XML = "application/xml",
   PDF = "application/pdf",
+}
+
+export enum OAuth2Grant {
+  ClientCredentials = "client_credentials",
+  AuthorizationCode = "authorization_code",
 }

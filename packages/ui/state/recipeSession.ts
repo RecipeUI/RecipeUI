@@ -1027,7 +1027,8 @@ export interface FetchRequest {
   payload: {
     method: RecipeMethod;
     headers: Record<string, string>;
-    body: string | undefined;
+    body: string | FormData | undefined;
+    body_type?: RecipeMutationContentType;
   };
 }
 export interface FetchResponse {
