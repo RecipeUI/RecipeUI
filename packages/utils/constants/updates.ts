@@ -1,4 +1,4 @@
-export const LATEST_APP_VERSION = "0.8.8";
+export const LATEST_APP_VERSION = "0.8.9";
 export const LATEST_WEB_VERSION = "0.8.9";
 
 export const VERSION_LOGS: {

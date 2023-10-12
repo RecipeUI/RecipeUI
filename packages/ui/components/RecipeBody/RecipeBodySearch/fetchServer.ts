@@ -9,14 +9,7 @@ import { MergeDeep } from "type-fest";
 export async function fetchServer({
   url,
   payload,
-}: MergeDeep<
-  FetchRequest,
-  {
-    payload: {
-      body: string | undefined;
-    };
-  }
->): Promise<FetchResponse> {
+}: FetchRequest): Promise<FetchResponse> {
   const modifiedPayload: FetchRequest["payload"] = {
     ...payload,
     body: payload.body || undefined,
@@ -25,7 +18,8 @@ export async function fetchServer({
   if (
     (payload.body_type === RecipeMutationContentType.FormData ||
       payload.headers["content-type"].includes("form")) &&
-    payload.body
+    payload.body &&
+    typeof payload.body === "string"
   ) {
     delete modifiedPayload.headers["content-type"];
     modifiedPayload.body = convertObjectToFormData(parse(payload.body));
