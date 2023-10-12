@@ -563,10 +563,12 @@ export function RecipeSearchButton() {
             simplePayload.body
           ) {
             simplePayload.body = convertObjectToFormData(
-              fetchRequestBody as Record<string, unknown>
+              fetchRequestBody as Record<string, unknown>,
+              payload.headers["content-type"]
             );
 
-            delete simplePayload.headers["content-type"];
+            if(payload.headers["content-type"].includes("multipart/form"))
+              delete simplePayload.headers["content-type"];
           }
 
           fetch(url.toString(), simplePayload)
