@@ -172,7 +172,11 @@ function parsePartsToCurl(parts: string[]) {
 
         const lastObj = JSON.parse(parts.at(-1)!);
         const [field, value] = parts[i+1].split("=");
-        lastObj[field] = value;
+        try {
+          lastObj[field] = parse(value);
+        } catch (error) {
+          lastObj[field] = value;
+        }
         parts[parts.length-1] = JSON.stringify(lastObj);
         i++;
         break;
