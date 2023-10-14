@@ -385,6 +385,45 @@ describe("More Use Cases", () => {
         url: "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
       });
     });
+
+    test("Youtube", () => {
+      const curlString = `curl -X POST \
+        -H "Authorization: Bearer <access_token>" \
+        -H "Content-Type: multipart/form-data" \
+        -F "part=snippet,status" \
+        -F "snippet={"title": "My Playlist", "description": "A playlist created by me"}" \
+        -F "status={"privacyStatus": "public"}" \
+        https://www.googleapis.com/youtube/v3/playlists
+      `;
+
+      expectResultToEqual(parseCurl(curlString), {
+        body: {
+          "part": "snippet,status",
+          "snippet": {
+            "title": "My Playlist",
+            "description": "A playlist created by me"
+          },
+          "status": {
+            "privacyStatus": "public"
+          }
+        },
+        method: RecipeMethod.POST,
+        url: "https://www.googleapis.com/youtube/v3/playlists",
+
+        headers: {
+          Authorization: "Bearer <access_token>",
+          "Content-Type": "multipart/form-data",
+        },
+        authConfig: {
+          type: RecipeAuthType.Bearer,
+          payload: {
+            name: "Authorization",
+            default: "<access_token>",
+          },
+        },
+      });
+    });
+
   });
 });
 
@@ -429,6 +468,84 @@ describe("JSON is not valid", () => {
     });
   });
 });
+
+describe("MailChimp", () => {
+  test("MailChimp Form", () => {
+    const MAILCHIMP_REQ = `
+    curl -X POST \
+    -H "Authorization: apikey <api_key>" \
+    -H "Content-Type: multipart/form-data" \
+    -F "type=regular" \
+    -F "recipients={"list_id": "<list_id>"}" \
+    -F "settings={"subject_line": "My Newsletter", "from_name": "Chimp", "reply_to": "chimp@example.com"}" \
+    -F "content_type=template" \
+    -F "template={"id": "<template_id>", "sections": {"body_content": "Hello, this is Chimp. I hope you enjoy this newsletter."}}" \
+    https://<dc>.api.mailchimp.com/3.0/campaigns
+   `;
+
+    const result = parseCurl(MAILCHIMP_REQ);
+
+    expectResultToEqual(result, {
+      method: RecipeMethod.POST,
+      url: "https://<dc>.api.mailchimp.com/3.0/campaigns",
+      headers: {
+        Authorization: "apikey <api_key>",
+        "Content-Type": "multipart/form-data",
+      },
+      body: {
+        "type": "regular",
+        "recipients": {
+          "list_id": "<list_id>"
+        },
+        "settings": {
+          "subject_line": "My Newsletter",
+          "from_name": "Chimp",
+          "reply_to": "chimp@example.com"
+        },
+        "content_type": "template",
+        "template": {
+          "id": "<template_id>",
+          "sections": {
+            "body_content": "Hello, this is Chimp. I hope you enjoy this newsletter."
+          }
+        }
+      },
+      authConfig: {
+        payload: {
+          default: "apikey <api_key>",
+          name: "Authorization",
+        },
+        type: RecipeAuthType.Header,
+      },
+    });
+  });
+});
+
+describe("slack", () => {
+  test("slack form", () => {
+    const curlString = `
+    curl -X POST \
+      -H "Content-Type: multipart/form-data" \
+      --form "token=<YOUR_SLACK_TOKEN>" \
+      --form "channel=<YOUR_CHANNEL_ID>" \
+      --form "text=Hello, this is a message from curl" \
+      https://slack.com/api/chat.postMessage    
+    `;
+    
+    expectResultToEqual(parseCurl(curlString), {
+      method: RecipeMethod.POST,
+      url: "https://slack.com/api/chat.postMessage",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: {
+        "token": "<YOUR_SLACK_TOKEN>",
+        "channel": "<YOUR_CHANNEL_ID>",
+        "text": "Hello, this is a message from curl"
+      },
+    })
+  })
+})
 
 describe.skip("Not supported yet", () => {
   // test.skip("Lever API", () => {

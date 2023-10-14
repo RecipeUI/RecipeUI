@@ -7,9 +7,11 @@ import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
 export async function getQueryAndBodyInfo({
   url: _url,
   body,
+  contentType
 }: {
   url: string;
   body?: string | null | undefined | Record<string, unknown>;
+  contentType?: string | null | undefined;
 }) {
   let queryInfo: Pick<
     EditorSliceValues,
@@ -66,7 +68,9 @@ export async function getQueryAndBodyInfo({
       editorBodySchemaType: _bodyInfo.ts,
       editorBodySchemaJSON: _bodyInfo.json,
       editorBody: JSON.stringify(requestBody, null, 2),
-      editorBodyType: RecipeMutationContentType.JSON, //TODO: Rethink this for forms
+      editorBodyType: contentType?.includes("multipart/form") ? 
+        RecipeMutationContentType.FormData : 
+        RecipeMutationContentType.JSON,
     };
   }
 
