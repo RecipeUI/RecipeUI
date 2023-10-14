@@ -1,7 +1,7 @@
 "use client";
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useDebounce } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
@@ -14,6 +14,7 @@ import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 import { parse } from "json5";
 import { useNeedsOnboarding } from "../../state/apiSession/OnboardingAPI";
 import { ONBOARDING_CONSTANTS } from "utils/constants";
+import classNames from "classnames";
 
 export const EditorQuery = () => {
   const editorQuery = useRecipeSessionStore((state) => state.editorQuery);
@@ -26,15 +27,41 @@ export const EditorQuery = () => {
   const isEmpty = !editorQuery;
 
   const newQueryChanges = useDebounce(editorQuery, 500);
-  const urlQueryParams = useMemo(() => {
-    if (!newQueryChanges) return "Enter query params as key value pairs below";
-
+  const { error, queryString, missingParams } = useMemo(() => {
     try {
-      const params = parse(newQueryChanges) as Record<string, string>;
+      const params = parse(newQueryChanges || "{}") as Record<string, string>;
 
-      return `?${new URLSearchParams(params).toString()}`;
+      const missingParamsRecord: Record<string, string | null> = {};
+
+      const searchParams = Array.from(
+        new URL(editorUrl).searchParams.entries()
+      );
+      for (const [key, value] of searchParams) {
+        if (params[key] === undefined) {
+          missingParamsRecord[key] = value;
+        } else {
+          missingParamsRecord[key] = null;
+        }
+      }
+
+      const missingParmKeys = Object.keys(missingParamsRecord).length
+        ? missingParamsRecord
+        : null;
+
+      if (!newQueryChanges) {
+        return {
+          error: "Enter query params as key value pairs below",
+          missingParams: missingParmKeys,
+        };
+      }
+
+      return {
+        queryString: `?${new URLSearchParams(params).toString()}`,
+        queryState: params,
+        missingParams: missingParmKeys,
+      };
     } catch (e) {
-      return "Invalid query params";
+      return { error: "Invalid query params or URL" };
     }
   }, [editorUrl, newQueryChanges]);
 
@@ -55,6 +82,63 @@ export const EditorQuery = () => {
   );
 
   const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
+  const setEditorUrl = useRecipeSessionStore((state) => state.setEditorUrl);
+  const initializeDefaultQuery = useCallback(() => {
+    try {
+      const newQueryState = {
+        ...missingParams,
+        ...parse(editorQuery || "{}"),
+      } satisfies Record<string, string | null>;
+
+      setEditorQuery(JSON.stringify(newQueryState, null, 2));
+      setEditorUrl(editorUrl.split("?")[0]);
+
+      const newTypes = missingParams
+        ? Object.keys(missingParams)
+            .filter((key) => missingParams[key] !== null)
+            .map((key) => `\t${key}: string;`)
+            .join("\n")
+        : "";
+
+      if (newTypes.length === 0) {
+        return;
+      } else if (!schemaType) {
+        setSchemaType(
+          `
+export interface ${API_TYPE_NAMES.APIQueryParams} {
+${newTypes}
+}`.trim()
+        );
+        return;
+      } else {
+        let newType = schemaType
+          .split("\n")
+          .map((line) => {
+            if (
+              line.includes("export interface") &&
+              !line.trim().startsWith("//")
+            ) {
+              return `${line}\n${newTypes}`;
+            } else {
+              return line;
+            }
+          })
+          .join("\n");
+        setSchemaType(newType);
+      }
+    } catch (e) {
+      console.debug(e);
+      alert("Invalid Query. Use dev tools to debug console logs.");
+    }
+  }, [
+    editorQuery,
+    editorUrl,
+    missingParams,
+    schemaType,
+    setEditorQuery,
+    setEditorUrl,
+    setSchemaType,
+  ]);
 
   return (
     <>
@@ -65,22 +149,36 @@ export const EditorQuery = () => {
           ) : (
             <>
               <span className="w-fit break-all">{editorUrl}</span>
-              <span className="mt-2 bg-accent py-1 rounded-md text-white w-fit break-all">
-                {urlQueryParams}
+              <span
+                className={classNames(
+                  "mt-2 bg-accent py-1 rounded-md text-white w-fit break-all",
+                  error && "bg-error"
+                )}
+              >
+                {error ?? queryString}
               </span>
             </>
           )}
         </div>
         {showJSONEditor ? (
-          <EditorViewWithSchema
-            value={editorQuery}
-            setValue={setEditorQuery}
-            jsonSchema={editorQuerySchemaJSON}
-            key={`${currentSession?.id || "default"}-json-query`}
-            typeName={API_TYPE_NAMES.APIQueryParams}
-          />
+          <div className="relative flex w-full">
+            <EditorViewWithSchema
+              value={editorQuery}
+              setValue={setEditorQuery}
+              jsonSchema={editorQuerySchemaJSON}
+              key={`${currentSession?.id || "default"}-json-query`}
+              className="flex-1"
+              typeName={API_TYPE_NAMES.APIQueryParams}
+            />
+            {missingParams && (
+              <ImportFromURL onInitialize={initializeDefaultQuery} />
+            )}
+          </div>
         ) : (
-          <InitializeSchema type={EditorParamView.Query} />
+          <InitializeSchema
+            type={EditorParamView.Query}
+            customAction={initializeDefaultQuery}
+          />
         )}
         <EditorTypeScript
           key={`${currentSession?.id || "default"}-types-query`}
@@ -97,3 +195,15 @@ export const EditorQuery = () => {
     </>
   );
 };
+
+function ImportFromURL({ onInitialize }: { onInitialize: () => void }) {
+  return (
+    <button
+      className="absolute btn btn-warning btn-sm right-0 top-0 mt-2 mr-2"
+      data-tip="This will parse the query params in the URL and populate the editor with them."
+      onClick={onInitialize}
+    >
+      Fix URL
+    </button>
+  );
+}
