@@ -2,7 +2,7 @@
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
 import { useCallback, useMemo } from "react";
-import { useDebounce, useLocalStorage } from "usehooks-ts";
+import { useDebounce } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
   EditorViewWithSchema,
@@ -14,6 +14,7 @@ import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 import { EditorURLOnboarding } from "./EditorOnboarding/EditorURLOnboarding";
 import { useNeedsOnboarding } from "../../state/apiSession/OnboardingAPI";
 import { ONBOARDING_CONSTANTS } from "utils/constants";
+import { commentAllLines } from "../../utils/main";
 
 export const EditorURL = () => {
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
@@ -69,12 +70,7 @@ export const EditorURL = () => {
     setEditorURLCode(JSON.stringify(newUrlState, null, 2));
 
     // This part is not an amazing fix but it should get the job done
-    const oldTypes = editorURLSchemaType
-      ? editorURLSchemaType
-          .split(/\r?\n/)
-          .map((line) => `// ${line}`)
-          .join("\n") || ""
-      : "";
+    const oldTypes = commentAllLines(editorURLSchemaType);
 
     const newTypes = `
 export interface ${API_TYPE_NAMES.APIUrlParams} {

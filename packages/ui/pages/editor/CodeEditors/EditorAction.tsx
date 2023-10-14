@@ -16,7 +16,7 @@ export function EditorActionWrapper({
       {children}
       {!hideAction && (
         <button
-          className="absolute border rounded-md  bottom-4 left-4 py-1 px-2 flex items-center justify-center space-x-1 text-sm group/action"
+          className="absolute border rounded-md  bottom-3 left-4 py-1 px-2 flex items-center justify-center space-x-1 text-sm group/action"
           onClick={onClick}
         >
           <Cog6ToothIcon className="inline w-4 h-4 group-hover/action:animate-spin" />
