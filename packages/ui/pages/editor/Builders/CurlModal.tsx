@@ -55,6 +55,10 @@ export function CurlModal({
       const { queryInfo, bodyInfo } = await getQueryAndBodyInfo({
         url: requestInfo.url,
         body: requestInfo.body,
+        contentType: requestInfo.headers[
+          Object.keys(requestInfo.headers)
+          .find((type) => type.toLowerCase() === "content-type") || -1
+        ]
       });
 
       editorSlice = {
