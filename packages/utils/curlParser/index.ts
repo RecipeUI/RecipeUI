@@ -163,7 +163,7 @@ function parsePartsToCurl(parts: string[]) {
         break;
 
       case "-f":
-      case "--field":
+      case "--form":
         if(parts.at(-2) !== "-d"){
           result.method = RecipeMethod.POST;
           parts.push("-d");
