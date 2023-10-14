@@ -28,6 +28,7 @@ import { useRecipeSessionStore } from "../../../state/recipeSession";
 import { parse } from "json5";
 import { getQueryAndBodyInfo } from "../Builders/helpers";
 import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
+import { commentAllLines } from "../../../utils/main";
 
 /*
   This is more of a UX pattern. We want to initially flag that we noticed the user has
@@ -223,6 +224,11 @@ function LintIfMissing({ defaultExport }: { defaultExport: string }) {
   );
 }
 
+enum SettingsMode {
+  Import = "import",
+  Disable = "disable",
+}
+
 function TypeScriptSettingsModal({
   onClose,
   editorParamView,
@@ -230,26 +236,85 @@ function TypeScriptSettingsModal({
   onClose: () => void;
   editorParamView: EditorParamView;
 }) {
+  const [mode, setMode] = useState<SettingsMode>(SettingsMode.Import);
   return (
     <Modal header="TypeScript Settings" onClose={onClose}>
-      <ImportJSONToTypeScript
-        editorParamView={editorParamView}
-        onClose={onClose}
-      />
+      <p>Perform an action below</p>
+      <select
+        className="select select-bordered mt-2"
+        value={mode}
+        onChange={(e) => {
+          setMode(e.target.value as SettingsMode);
+        }}
+      >
+        <option value={SettingsMode.Import}>Import from JSON</option>
+        <option value={SettingsMode.Disable}>Disable TypeScript</option>
+      </select>
+      <div className="divider" />
+      {mode === SettingsMode.Import && (
+        <ImportJSONToTypeScript
+          editorParamView={editorParamView}
+          onClose={onClose}
+        />
+      )}
+      {mode === SettingsMode.Disable && (
+        <DisableTypeScript
+          editorParamView={editorParamView}
+          onClose={onClose}
+        />
+      )}
     </Modal>
   );
 }
 
-function ImportJSONToTypeScript({
-  editorParamView,
-  onClose,
-}: {
+interface ModalBodyProps {
   editorParamView: EditorParamView;
   onClose: () => void;
-}) {
+}
+function DisableTypeScript({ editorParamView, onClose }: ModalBodyProps) {
+  const { schemaTypes, setSchemaType, apiType } =
+    useSchemaJSON(editorParamView);
+
+  console.log("here", { apiType });
+  return (
+    <div>
+      <p>Are you sure you want to disable TypeScript?</p>
+      <button
+        className="btn btn-error btn-sm mt-2"
+        onClick={() => {
+          const newType = `
+export interface ${apiType} {
+  [key: string]: any;
+};
+          `.trim();
+
+          setSchemaType(
+            schemaTypes
+              ? `${newType}\n\n${commentAllLines(schemaTypes)}`
+              : newType
+          );
+          onClose();
+        }}
+      >
+        Disable
+      </button>
+    </div>
+  );
+}
+
+function useSchemaJSON(editorParamView: EditorParamView) {
   const editorURLJSON = useRecipeSessionStore((state) => state.editorURLCode);
   const editorQueryJSON = useRecipeSessionStore((state) => state.editorQuery);
   const editorBodyJSON = useRecipeSessionStore((state) => state.editorBody);
+  const editorURLSchemaType = useRecipeSessionStore(
+    (state) => state.editorURLSchemaType
+  );
+  const editorQuerySchemaType = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaType
+  );
+  const editorBodySchemaType = useRecipeSessionStore(
+    (state) => state.editorBodySchemaType
+  );
 
   const setEditorURLSchemaType = useRecipeSessionStore(
     (state) => state.setEditorURLSchemaType
@@ -261,31 +326,46 @@ function ImportJSONToTypeScript({
     (state) => state.setEditorBodySchemaType
   );
 
-  const { schemaJSON, setSchemaType } = useMemo(() => {
+  return useMemo(() => {
     let schemaJSON = editorBodyJSON;
     let setSchemaType = setEditorBodySchemaType;
+    let schemaTypes = editorBodySchemaType;
+    let apiType = API_TYPE_NAMES.APIRequestParams;
 
     if (editorParamView === EditorParamView.Url) {
       schemaJSON = editorURLJSON;
+      schemaTypes = editorURLSchemaType;
       setSchemaType = setEditorURLSchemaType;
+      apiType = API_TYPE_NAMES.APIUrlParams;
     } else if (editorParamView === EditorParamView.Query) {
       schemaJSON = editorQueryJSON;
+      schemaTypes = editorQuerySchemaType;
       setSchemaType = setEditorQuerySchemaType;
+      apiType = API_TYPE_NAMES.APIQueryParams;
     }
 
     return {
       schemaJSON,
       setSchemaType,
+      schemaTypes,
+      apiType,
     };
   }, [
     editorBodyJSON,
+    editorBodySchemaType,
     editorParamView,
     editorQueryJSON,
+    editorQuerySchemaType,
     editorURLJSON,
+    editorURLSchemaType,
     setEditorBodySchemaType,
     setEditorQuerySchemaType,
     setEditorURLSchemaType,
   ]);
+}
+
+function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
+  const { schemaJSON, setSchemaType } = useSchemaJSON(editorParamView);
 
   const [json, setJson] = useState(() => {
     try {
