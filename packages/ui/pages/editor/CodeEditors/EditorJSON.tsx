@@ -31,6 +31,7 @@ interface EditorJSONProps {
   setValue: (value: string) => void;
   jsonSchema: JSONSchema6 | null;
   typeName: (typeof API_TYPE_NAMES)[keyof typeof API_TYPE_NAMES];
+  className?: string;
 }
 
 export function EditorViewWithSchema({
@@ -38,6 +39,7 @@ export function EditorViewWithSchema({
   setValue,
   jsonSchema,
   typeName,
+  className,
 }: EditorJSONProps) {
   const { isDarkMode } = useDarkMode();
   const monacoRef = useRef<Monaco>();
@@ -91,7 +93,7 @@ export function EditorViewWithSchema({
 
   return (
     <MonacoEditor
-      className="pt-2 flex-1"
+      className={classNames("pt-2 flex-1", className)}
       language="json"
       keepCurrentModel={false}
       theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
@@ -311,7 +313,13 @@ const setJSONDiagnosticOptions = (
   });
 };
 
-export function InitializeSchema({ type }: { type: EditorParamView }) {
+export function InitializeSchema({
+  type,
+  customAction,
+}: {
+  type: EditorParamView;
+  customAction?: () => void;
+}) {
   const editQueryType = useRecipeSessionStore(
     (state) => state.setEditorQuerySchemaType
   );
@@ -345,6 +353,11 @@ export function InitializeSchema({ type }: { type: EditorParamView }) {
   );
 
   const onSubmit = () => {
+    if (customAction) {
+      customAction();
+      return;
+    }
+
     if (type === "query") {
       editQueryType(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.TYPE);
       setEditorQuerySchemaJSON(API_SAMPLES.API_SAMPLE_QUERY_PARAMS_TYPE.SCHEMA);

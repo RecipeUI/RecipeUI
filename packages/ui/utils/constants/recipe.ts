@@ -61,9 +61,6 @@ export const API_TYPE_NAMES = {
 };
 
 const API_SAMPLE_REQUEST_BODY_TYPE = `
-// Define your request body with TypeScript.
-// This will add auto-complete (CTRL+SPACE) and validation!
-
 export interface APIRequestParams {
   model: "gpt-3.5-turbo" | "gpt-4" | "gpt-3";
   messages: {
@@ -71,6 +68,9 @@ export interface APIRequestParams {
     content: string;
   }[];
 }
+
+// Define your request body with TypeScript.
+// This will add auto-complete (CTRL+SPACE) and validation!
 `.trim();
 
 const API_SAMPLE_REQUEST_BODY_JSON = `
@@ -114,14 +114,13 @@ const API_SAMPLE_QUERY_SCHEMA = {
 };
 
 const API_SAMPLE_QUERY_PARAMS_TYPE = `
-// Define your query params with TypeScript.
-// This will add auto-complete (CTRL+SPACE) and validation!
-
-
 export interface APIQueryParams {
   color: "red" | "blue" | "green",
   counter: number,
 }
+
+// Define your query params with TypeScript.
+// This will add auto-complete (CTRL+SPACE) and validation!
 `.trim();
 
 const API_SAMPLE_QUERY_JSON = `
@@ -137,14 +136,13 @@ const API_SAMPLE_QUERY_JSON = `
 // `
 
 const API_SAMPLE_URL_PARAMS_TYPE = `
-// Define your url params with TypeScript.
-// This will add auto-complete (CTRL+SPACE) and validation!
-
-
 export interface ${API_TYPE_NAMES.APIUrlParams} {
   // "{sort}": "asc" | "desc";
   // "{filter}": "top" | "new";
 }
+
+// Define your url params with TypeScript.
+// This will add auto-complete (CTRL+SPACE) and validation!
 `.trim();
 
 const API_SAMPLE_URL_JSON = JSON.stringify(

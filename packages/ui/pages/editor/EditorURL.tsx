@@ -1,7 +1,7 @@
 "use client";
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useDebounce, useLocalStorage } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
@@ -45,21 +45,84 @@ export const EditorURL = () => {
     ONBOARDING_CONSTANTS.URL_ONBOARDING
   );
 
+  const { editorURL, urlState, hasCorrectState } = useURLState();
+
+  const editorURLSchemaType = useRecipeSessionStore(
+    (state) => state.editorURLSchemaType
+  );
+  const setEditorURLSchemaType = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaType
+  );
+
+  const initializeDefaultSchema = useCallback(() => {
+    const newUrlState: Record<string, unknown> = {};
+    const matches = editorURL.match(/{(\w+)}/g) || [];
+    for (const match of matches) {
+      if (urlState[match] !== undefined) {
+        newUrlState[match] = urlState[match];
+        continue;
+      } else {
+        newUrlState[match] = "VALUE_HERE";
+      }
+    }
+
+    setEditorURLCode(JSON.stringify(newUrlState, null, 2));
+
+    // This part is not an amazing fix but it should get the job done
+    const oldTypes = editorURLSchemaType
+      ? editorURLSchemaType
+          .split(/\r?\n/)
+          .map((line) => `// ${line}`)
+          .join("\n") || ""
+      : "";
+
+    const newTypes = `
+export interface ${API_TYPE_NAMES.APIUrlParams} {
+  ${Object.keys(newUrlState)
+    .map((key) => `\t"${key}": string;`)
+    .join("\n")}
+}
+              `.trim();
+
+    setEditorURLSchemaType(oldTypes ? `${newTypes}\n\n${oldTypes}` : newTypes);
+  }, [
+    editorURL,
+    editorURLSchemaType,
+    setEditorURLCode,
+    setEditorURLSchemaType,
+    urlState,
+  ]);
+
   return (
     <div className="grid grid-rows-[minmax(min-content,max-content),1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-      <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-scroll break-all">
-        <EditorURLHighlightContainer />
+      <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-auto break-all">
+        <URLHighlight url={editorURL} urlState={urlState} />
       </div>
       {showJSONEditor ? (
-        <EditorViewWithSchema
-          key={`${currentSession?.id || "default"}-json-url`}
-          value={editorURLCode}
-          setValue={setEditorURLCode}
-          jsonSchema={editorURLSchemaJSON}
-          typeName={API_TYPE_NAMES.APIUrlParams}
-        />
+        <div className="flex relative">
+          <EditorViewWithSchema
+            className="flex-1"
+            key={`${currentSession?.id || "default"}-json-url`}
+            value={editorURLCode}
+            setValue={setEditorURLCode}
+            jsonSchema={editorURLSchemaJSON}
+            typeName={API_TYPE_NAMES.APIUrlParams}
+          />
+          {!hasCorrectState && (
+            <button
+              className="absolute btn btn-warning btn-sm right-0 top-0 mt-2 mr-2"
+              data-tip="This will make sure your code has the same params as your URL."
+              onClick={initializeDefaultSchema}
+            >
+              Auto Fix
+            </button>
+          )}
+        </div>
       ) : (
-        <InitializeSchema type={EditorParamView.Url} />
+        <InitializeSchema
+          type={EditorParamView.Url}
+          customAction={initializeDefaultSchema}
+        />
       )}
       <EditorTypeScript
         key={`${currentSession?.id || "default"}-types-url`}
@@ -76,7 +139,7 @@ export const EditorURL = () => {
   );
 };
 
-export function EditorURLHighlightContainer() {
+function useURLState() {
   const editorURL = useRecipeSessionStore((state) => state.editorUrl);
   const editorURLCode = useRecipeSessionStore((state) => state.editorURLCode);
   const debouncedURLCodeChanges = useDebounce(editorURLCode, 500);
@@ -89,7 +152,22 @@ export function EditorURLHighlightContainer() {
     }
   }, [debouncedURLCodeChanges]);
 
-  return <URLHighlight url={editorURL} urlState={urlState} />;
+  const hasCorrectState = useMemo(() => {
+    const matches = editorURL.match(/{(\w+)}/g)?.map((m) => m) || [];
+    const urlParams = new Set(matches);
+    const editorParams = new Set(Object.keys(urlState));
+
+    return (
+      urlParams.size === editorParams.size &&
+      matches.every((m) => editorParams.has(m))
+    );
+  }, [editorURL, urlState]);
+
+  return {
+    editorURL,
+    hasCorrectState,
+    urlState,
+  };
 }
 
 export function URLHighlight({
