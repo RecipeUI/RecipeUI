@@ -25,6 +25,7 @@ import { ContentTypeLabel, RecipeMutationContentType } from "types/enums";
 import { API_SAMPLES, API_TYPE_NAMES } from "../../../utils/constants/recipe";
 import { Modal } from "../../../components/Modal";
 import { FormFieldWrapper } from "../../../modules/components/FormFieldWrapper";
+import { EditorActionWrapper } from "./EditorAction";
 
 interface EditorJSONProps {
   value: string;
@@ -114,20 +115,16 @@ export function EditorViewWithSchemaBody(props: EditorJSONProps) {
 
   return (
     <>
-      <div className="relative flex">
+      <EditorActionWrapper
+        label={
+          ContentTypeLabel[editorBodyType || RecipeMutationContentType.JSON]
+        }
+        onClick={() => {
+          setShowChangeType(!showChangeType);
+        }}
+      >
         <EditorViewWithSchema {...props} />
-        <button
-          className="absolute border rounded-md  bottom-4 left-4 py-1 px-2 flex items-center justify-center space-x-1 text-sm"
-          onClick={() => {
-            setShowChangeType(!showChangeType);
-          }}
-        >
-          <SparklesIcon className="inline w-4 h-4" />
-          <span>
-            {ContentTypeLabel[editorBodyType || RecipeMutationContentType.JSON]}
-          </span>
-        </button>
-      </div>
+      </EditorActionWrapper>
 
       {showChangeType && (
         <BodyModal
@@ -375,7 +372,7 @@ export function InitializeSchema({
   };
   Object;
   return (
-    <div className="h-full flex justify-center items-center border-t border-recipe-slate">
+    <div className="h-full flex justify-center items-center border-t border-recipe-slate w-full">
       <button
         className="btn btn-outline opacity-30 hover:opacity-100"
         onClick={onSubmit}

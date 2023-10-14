@@ -74,11 +74,12 @@ export interface APIRequestParams {
 `.trim();
 
 const API_SAMPLE_REQUEST_BODY_JSON = `
-// Sample request body params
-// Hover over red markers to see types in action
 {
   "model": 100
 }
+
+// Sample request body params
+// Hover over red markers to see types in action
 `.trim();
 
 const API_SAMPLE_REQUEST_BODY_SCHEMA = {
@@ -124,11 +125,12 @@ export interface APIQueryParams {
 `.trim();
 
 const API_SAMPLE_QUERY_JSON = `
-// Sample query params
-// Hover over red markers to see types in action
 {
   "color": 100 
 }
+
+// Sample query params
+// Hover over red markers to see types in action
 `.trim();
 
 // const API_SAMPLE_URL_PARAMS_TYPE = {$schema: "http://json-schema.org/draft-07/schema#", type: "object", properties: Object, …}
