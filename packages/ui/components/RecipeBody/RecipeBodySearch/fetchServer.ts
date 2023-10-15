@@ -26,14 +26,15 @@ export async function fetchServer({
       parse(payload.body), 
       RecipeMutationContentType.FormData
     );
-  } else if (
-    payload.headers["content-type"].includes("application/x-www-form-urlencoded") &&
+  } else if ( 
+    (payload.body_type === RecipeMutationContentType.FormUrlEncoded ||
+      payload.headers["content-type"].includes("application/x-www-form-urlencoded")) &&
     payload.body &&
     typeof payload.body === "string"
   ) {
     modifiedPayload.body = convertObjectToFormData(
       parse(payload.body), 
-      payload.headers["content-type"]
+      RecipeMutationContentType.FormUrlEncoded
     );
   }
 

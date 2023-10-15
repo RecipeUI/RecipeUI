@@ -39,11 +39,13 @@ export enum RecipeAuthType {
 export enum RecipeMutationContentType {
   JSON = "application/json",
   FormData = "multipart/form-data",
+  FormUrlEncoded = "application/x-www-form-urlencoded"
 }
 
 export const ContentTypeLabel = {
   [RecipeMutationContentType.JSON]: "JSON",
   [RecipeMutationContentType.FormData]: "Form",
+  [RecipeMutationContentType.FormUrlEncoded]: "Form"
 };
 
 export enum AuthFormType {

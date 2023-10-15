@@ -152,8 +152,10 @@ export function RecipeSearchButton() {
     if (editorBodyType) {
       if (editorBodyType === RecipeMutationContentType.JSON) {
         fetchHeaders["content-type"] = "application/json";
-      } else {
+      } else if (editorBodyType === RecipeMutationContentType.FormData) {
         fetchHeaders["content-type"] = "multipart/form";
+      } else {
+        fetchHeaders["content-type"] = "application/x-www-form-urlencoded"
       }
     }
 

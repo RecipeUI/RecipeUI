@@ -305,7 +305,7 @@ function mergePreserveDocs({
 
 function getContentTypeHeader() {
   return {
-    name: "Content-Type",
+    name: "content-type",
     value: "application/json",
   };
 }
