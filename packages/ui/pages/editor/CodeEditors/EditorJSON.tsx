@@ -104,7 +104,7 @@ export function EditorViewWithSchema({
       }}
       beforeMount={handleEditorWillMount}
       onMount={handleEditorMount}
-      options={{...DEFAULT_MONACO_OPTIONS, ...{wordWrap: "bounded"}}}
+      options={DEFAULT_MONACO_OPTIONS}
     />
   );
 }
