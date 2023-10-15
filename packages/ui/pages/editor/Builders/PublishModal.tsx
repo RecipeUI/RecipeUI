@@ -436,8 +436,6 @@ async function getRecipesAndBackFill({
         return recipe;
       }
 
-      console.log(" in here", recipe.id, sessionRecord[recipe.id || ""]);
-
       // APIs/Recipes we upload to the cloud need a brand new session ID.
       // This is mainly to deal with 2-way syncing problems when people reupload
       // a sessionId that already exists in the cloud.

@@ -200,3 +200,12 @@ export function convertFormDataToObject(
 
   return obj;
 }
+
+export function commentAllLines(text?: string | null): string {
+  return text
+    ? text
+        .split(/\r?\n/)
+        .map((line) => `// ${line}`)
+        .join("\n")
+    : "";
+}

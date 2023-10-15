@@ -162,6 +162,25 @@ function parsePartsToCurl(parts: string[]) {
         i++; // Skip the next item which is the actual body.
         break;
 
+      case "-f":
+      case "--form":
+        if(parts.at(-2) !== "-d"){
+          result.method = RecipeMethod.POST;
+          parts.push("-d");
+          parts.push(JSON.stringify({}));
+        }
+
+        const lastObj = JSON.parse(parts.at(-1)!);
+        const [field, value] = parts[i+1].split("=");
+        try {
+          lastObj[field] = parse(value);
+        } catch (error) {
+          lastObj[field] = value;
+        }
+        parts[parts.length-1] = JSON.stringify(lastObj);
+        i++;
+        break;
+
       // TODO: Add case for location
       case "--url":
       case "--location":

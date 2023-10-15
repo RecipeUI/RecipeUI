@@ -1,7 +1,7 @@
 "use client";
 
 import MonacoEditor from "@monaco-editor/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDarkMode, useDebounce } from "usehooks-ts";
 import {
   DARKTHEME_SETTINGS,
@@ -15,10 +15,20 @@ import {
   handleEditorWillMount,
 } from "./EditorJSON";
 
-import { fetchJSONFromTypeScript } from "../../../../ui/fetchers/editor";
+import {
+  fetchJSONFromTypeScript,
+  superFetchTypesAndJSON,
+} from "../../../../ui/fetchers/editor";
 import { JSONSchema6 } from "json-schema";
 import classNames from "classnames";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { EditorActionWrapper } from "./EditorAction";
+import { Modal } from "../../../components/Modal";
+import { useRecipeSessionStore } from "../../../state/recipeSession";
+import { parse } from "json5";
+import { getQueryAndBodyInfo } from "../Builders/helpers";
+import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
+import { commentAllLines } from "../../../utils/main";
 
 /*
   This is more of a UX pattern. We want to initially flag that we noticed the user has
@@ -97,15 +107,7 @@ function useDebouncedEditorChanges({
   };
 }
 
-export const EditorTypeScript = ({
-  editorParamView,
-  schemaType,
-  defaultExport,
-  sessionId,
-
-  setSchemaType,
-  setSchemaJSON,
-}: {
+interface EditorTypeScriptProps {
   sessionId?: string;
   editorParamView: EditorParamView;
   schemaType: string | null;
@@ -113,7 +115,43 @@ export const EditorTypeScript = ({
 
   setSchemaType: (value: string | null) => void;
   setSchemaJSON: (value: JSONSchema6 | null) => void;
-}) => {
+}
+
+export const EditorTypeScript = (props: EditorTypeScriptProps) => {
+  const [settingsModal, setSettingsModal] = useState(false);
+  return (
+    <div className="relative flex border-t border-recipe-slate w-full ">
+      <EditorActionWrapper
+        label={"TypeScript"}
+        hideAction={!props.schemaType}
+        onClick={() => {
+          setSettingsModal(!settingsModal);
+        }}
+      >
+        <EditorTypeScriptInner {...props} />
+      </EditorActionWrapper>
+
+      {settingsModal && (
+        <TypeScriptSettingsModal
+          onClose={() => {
+            setSettingsModal(false);
+          }}
+          editorParamView={props.editorParamView}
+        />
+      )}
+    </div>
+  );
+};
+
+const EditorTypeScriptInner = ({
+  editorParamView,
+  schemaType,
+  defaultExport,
+  sessionId,
+
+  setSchemaType,
+  setSchemaJSON,
+}: EditorTypeScriptProps) => {
   const { isDarkMode } = useDarkMode();
 
   const { preparingChange, refreshing, hasError, changesFinalized, refresh } =
@@ -138,9 +176,9 @@ export const EditorTypeScript = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative flex-1 w-full">
       <MonacoEditor
-        className="border-t border-recipe-slate pt-2"
+        className="pt-2"
         language="typescript"
         theme={isDarkMode ? DARKTHEME_SETTINGS.name : LIGHTTHEME_SETTINGS.name}
         value={schemaType}
@@ -182,6 +220,232 @@ function LintIfMissing({ defaultExport }: { defaultExport: string }) {
       >
         <ExclamationCircleIcon className="w-6 h-6" />
       </div>
+    </div>
+  );
+}
+
+enum SettingsMode {
+  Import = "import",
+  Disable = "disable",
+}
+
+function TypeScriptSettingsModal({
+  onClose,
+  editorParamView,
+}: {
+  onClose: () => void;
+  editorParamView: EditorParamView;
+}) {
+  const [mode, setMode] = useState<SettingsMode>(SettingsMode.Import);
+  return (
+    <Modal header="TypeScript Settings" onClose={onClose}>
+      <p>Perform an action below</p>
+      <select
+        className="select select-bordered mt-2"
+        value={mode}
+        onChange={(e) => {
+          setMode(e.target.value as SettingsMode);
+        }}
+      >
+        <option value={SettingsMode.Import}>Import from JSON</option>
+        <option value={SettingsMode.Disable}>Disable TypeScript</option>
+      </select>
+      <div className="divider" />
+      {mode === SettingsMode.Import && (
+        <ImportJSONToTypeScript
+          editorParamView={editorParamView}
+          onClose={onClose}
+        />
+      )}
+      {mode === SettingsMode.Disable && (
+        <DisableTypeScript
+          editorParamView={editorParamView}
+          onClose={onClose}
+        />
+      )}
+    </Modal>
+  );
+}
+
+interface ModalBodyProps {
+  editorParamView: EditorParamView;
+  onClose: () => void;
+}
+function DisableTypeScript({ editorParamView, onClose }: ModalBodyProps) {
+  const { schemaTypes, setSchemaType, apiType } =
+    useSchemaJSON(editorParamView);
+
+  console.log("here", { apiType });
+  return (
+    <div>
+      <p>Are you sure you want to disable TypeScript?</p>
+      <button
+        className="btn btn-error btn-sm mt-2"
+        onClick={() => {
+          const newType = `
+export interface ${apiType} {
+  [key: string]: any;
+};
+          `.trim();
+
+          setSchemaType(
+            schemaTypes
+              ? `${newType}\n\n${commentAllLines(schemaTypes)}`
+              : newType
+          );
+          onClose();
+        }}
+      >
+        Disable
+      </button>
+    </div>
+  );
+}
+
+function useSchemaJSON(editorParamView: EditorParamView) {
+  const editorURLJSON = useRecipeSessionStore((state) => state.editorURLCode);
+  const editorQueryJSON = useRecipeSessionStore((state) => state.editorQuery);
+  const editorBodyJSON = useRecipeSessionStore((state) => state.editorBody);
+  const editorURLSchemaType = useRecipeSessionStore(
+    (state) => state.editorURLSchemaType
+  );
+  const editorQuerySchemaType = useRecipeSessionStore(
+    (state) => state.editorQuerySchemaType
+  );
+  const editorBodySchemaType = useRecipeSessionStore(
+    (state) => state.editorBodySchemaType
+  );
+
+  const setEditorURLSchemaType = useRecipeSessionStore(
+    (state) => state.setEditorURLSchemaType
+  );
+  const setEditorQuerySchemaType = useRecipeSessionStore(
+    (state) => state.setEditorQuerySchemaType
+  );
+  const setEditorBodySchemaType = useRecipeSessionStore(
+    (state) => state.setEditorBodySchemaType
+  );
+
+  return useMemo(() => {
+    let schemaJSON = editorBodyJSON;
+    let setSchemaType = setEditorBodySchemaType;
+    let schemaTypes = editorBodySchemaType;
+    let apiType = API_TYPE_NAMES.APIRequestParams;
+
+    if (editorParamView === EditorParamView.Url) {
+      schemaJSON = editorURLJSON;
+      schemaTypes = editorURLSchemaType;
+      setSchemaType = setEditorURLSchemaType;
+      apiType = API_TYPE_NAMES.APIUrlParams;
+    } else if (editorParamView === EditorParamView.Query) {
+      schemaJSON = editorQueryJSON;
+      schemaTypes = editorQuerySchemaType;
+      setSchemaType = setEditorQuerySchemaType;
+      apiType = API_TYPE_NAMES.APIQueryParams;
+    }
+
+    return {
+      schemaJSON,
+      setSchemaType,
+      schemaTypes,
+      apiType,
+    };
+  }, [
+    editorBodyJSON,
+    editorBodySchemaType,
+    editorParamView,
+    editorQueryJSON,
+    editorQuerySchemaType,
+    editorURLJSON,
+    editorURLSchemaType,
+    setEditorBodySchemaType,
+    setEditorQuerySchemaType,
+    setEditorURLSchemaType,
+  ]);
+}
+
+function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
+  const { schemaJSON, setSchemaType } = useSchemaJSON(editorParamView);
+
+  const [json, setJson] = useState(() => {
+    try {
+      const newString = JSON.stringify(parse(schemaJSON), null, 2);
+      return newString;
+    } catch (e) {
+      console.debug(e);
+      return "{}";
+    }
+  });
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <div>
+      <p>
+        Import from JSON? This will update your TypeScript to match the JSON you
+        paste inside here.
+      </p>
+      <textarea
+        rows={8}
+        className="textarea textarea-bordered w-full my-2 textarea-accent"
+        onChange={(e) => {
+          setJson(e.target.value);
+        }}
+        value={json}
+      />
+      <button
+        className="btn btn-accent btn-sm"
+        onClick={async (e) => {
+          e.preventDefault();
+          setLoading(true);
+
+          async function _submit() {
+            // First lets check if we have a valid JSON
+            let parsed: Record<string, any>;
+            try {
+              parsed = parse(json);
+            } catch (e) {
+              if ((e as Error).message) {
+                setError((e as Error).message);
+              } else {
+                setError("Invalid JSON");
+              }
+              return;
+            }
+
+            let apiType = API_TYPE_NAMES.APIRequestParams;
+            if (editorParamView === EditorParamView.Url) {
+              apiType = API_TYPE_NAMES.APIUrlParams;
+            } else if (editorParamView === EditorParamView.Query) {
+              apiType = API_TYPE_NAMES.APIRequestParams;
+            }
+
+            const bodyInfo = await superFetchTypesAndJSON({
+              record: parsed,
+              typeName: apiType,
+            });
+
+            setSchemaType(bodyInfo.ts);
+          }
+          try {
+            await _submit();
+            onClose();
+          } catch (e) {
+            console.debug(e);
+            setError(
+              "Unable to process types. Check the dev tool inspector for debug logs."
+            );
+            setLoading(false);
+          }
+        }}
+      >
+        {loading ? (
+          <span className="loading loading-infinity"></span>
+        ) : (
+          "Submit"
+        )}
+      </button>
     </div>
   );
 }
