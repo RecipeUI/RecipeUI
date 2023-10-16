@@ -448,9 +448,34 @@ export function useMiniRecipes(primaryRecipeId?: string) {
     [primaryRecipeId]
   );
 
+  const updateRecipe = useCallback(
+    async (
+      newRecipe: Pick<RecipeTemplateFragment, "title" | "description" | "id">
+    ) => {
+      if (!primaryRecipeId) return;
+
+      const store = await getMiniRecipeStore();
+      const recipes = await store.get(primaryRecipeId);
+      const newRecipes = (recipes || []).map((recipe) => {
+        if (recipe.id === newRecipe.id) {
+          return {
+            ...recipe,
+            ...newRecipe,
+          };
+        }
+        return recipe;
+      });
+
+      await store.put(newRecipes, primaryRecipeId);
+      eventEmitter.emit("refreshRecipes");
+    },
+    [primaryRecipeId]
+  );
+
   return {
     recipes,
     deleteRecipe,
+    updateRecipe,
   };
 }
 

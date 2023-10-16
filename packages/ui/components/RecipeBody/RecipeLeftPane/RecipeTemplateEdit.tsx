@@ -17,6 +17,8 @@ import { Modal } from "../../Modal";
 import { URLHighlight } from "../../../pages/editor/EditorURL";
 import { ResponseOutput } from "../../RecipeOutput/RecipeOutputConsole";
 import { useInitializeRecipe } from "../../../hooks/useInitializeRecipe";
+import { useForm } from "react-hook-form";
+import { FormFieldWrapper } from "../../../modules/components/FormFieldWrapper";
 
 export function RecipeTemplateEdit() {
   return (
@@ -30,7 +32,9 @@ export function RecipeTemplateEdit() {
 
 function UserTemplates() {
   const session = useRecipeSessionStore((state) => state.currentSession);
-  const { recipes, deleteRecipe } = useMiniRecipes(session?.recipeId);
+  const { recipes, deleteRecipe, updateRecipe } = useMiniRecipes(
+    session?.recipeId
+  );
 
   if (recipes.length === 0) {
     return null;
@@ -45,6 +49,7 @@ function UserTemplates() {
             key={miniRecipe.id}
             miniRecipe={miniRecipe}
             deleteRecipe={deleteRecipe}
+            updateRecipe={updateRecipe}
           />
         ))}
       </div>
@@ -55,14 +60,20 @@ function UserTemplates() {
 function UserMiniRecipe({
   miniRecipe,
   deleteRecipe,
+  updateRecipe,
 }: {
   miniRecipe: RecipeTemplateFragment;
   deleteRecipe: (templateId: string) => Promise<void>;
+  updateRecipe: ReturnType<typeof useMiniRecipes>["updateRecipe"];
 }) {
   const posthog = usePostHog();
   const hoverRef = useRef<HTMLButtonElement>(null);
   const isHover = useHover(hoverRef);
-  const [action, setAction] = useState<null | "prefill" | "send">(null);
+  const [action, setAction] = useState<null | "prefill" | "send" | "edit">(
+    null
+  );
+
+  const isEditing = action === "edit";
 
   return (
     <>
@@ -99,6 +110,16 @@ function UserMiniRecipe({
               <button
                 className=""
                 onClick={async () => {
+                  setAction("edit");
+                }}
+              >
+                EDIT
+              </button>
+            </li>
+            <li>
+              <button
+                className=""
+                onClick={async () => {
                   if (
                     !(await confirm("Are you sure you want to delete this?"))
                   ) {
@@ -118,26 +139,41 @@ function UserMiniRecipe({
             </li>
           </ul>
         </div>
-        <h3 className="font-bold">{miniRecipe.title}</h3>
-        <p className="text-sm line-clamp-3">{miniRecipe.description}</p>
-
-        <div className="flex-1" />
-        <div className="flex space-x-1  sm:block sm:space-x-2 relative">
-          <button
-            className={classNames(
-              "btn btn-sm btn-neutral"
-              // loadingTemplate && "btn-disabled"
-            )}
-            ref={hoverRef}
-            onClick={async () => {
-              setAction("send");
+        {isEditing ? (
+          <EditMiniRecipe
+            recipeInfo={{
+              title: miniRecipe.title,
+              description: miniRecipe.description,
+              id: miniRecipe.id,
             }}
-          >
-            Send
-          </button>
-        </div>
+            updateRecipe={updateRecipe}
+            onFinish={() => {
+              setAction(null);
+            }}
+          />
+        ) : (
+          <>
+            <h3 className="font-bold">{miniRecipe.title}</h3>
+            <p className="text-sm line-clamp-3">{miniRecipe.description}</p>
+            <div className="flex-1" />
+            <div className="flex space-x-1  sm:block sm:space-x-2 relative">
+              <button
+                className={classNames(
+                  "btn btn-sm btn-neutral"
+                  // loadingTemplate && "btn-disabled"
+                )}
+                ref={hoverRef}
+                onClick={async () => {
+                  setAction("send");
+                }}
+              >
+                Send
+              </button>
+            </div>
+          </>
+        )}
       </div>
-      {action && (
+      {action && action !== "edit" && (
         <RecipeSendModal
           onClose={() => setAction(null)}
           miniRecipe={miniRecipe}
@@ -145,6 +181,53 @@ function UserMiniRecipe({
         />
       )}
     </>
+  );
+}
+
+function EditMiniRecipe({
+  recipeInfo,
+  onFinish,
+  updateRecipe,
+}: {
+  recipeInfo: {
+    title: string;
+    description: string;
+    id: string;
+  };
+  updateRecipe: ReturnType<typeof useMiniRecipes>["updateRecipe"];
+  onFinish: () => void;
+}) {
+  const { register, handleSubmit } = useForm({
+    defaultValues: recipeInfo,
+  });
+
+  const submit = handleSubmit(async (data) => {
+    await updateRecipe(data);
+    onFinish();
+  });
+
+  return (
+    <form onSubmit={submit}>
+      <FormFieldWrapper label="Title">
+        <input
+          className="input input-bordered input-sm w-full"
+          {...register("title", { required: true })}
+        />
+      </FormFieldWrapper>
+      <FormFieldWrapper label="Title">
+        <textarea
+          className="textarea textarea-bordered textarea-sm w-full"
+          rows={4}
+          {...register("description", { required: true })}
+        />
+      </FormFieldWrapper>
+      <div className="flex-1" />
+      <div className="flex space-x-1  sm:block sm:space-x-2 relative">
+        <button className={classNames("btn btn-sm btn-neutral")} type="submit">
+          Submit
+        </button>
+      </div>
+    </form>
   );
 }
 

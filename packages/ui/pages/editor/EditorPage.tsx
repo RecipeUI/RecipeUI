@@ -230,11 +230,6 @@ function NewRequest() {
         </section>
       </div>
       {curlModal && <CurlModal onClose={() => setCurlModal(false)} />}
-      {/* {importBuilderModal && (
-        <ImportBuilderModal onClose={() => setImportBuilderModal(false)} 
-          initialUrl={im}
-        />
-      )} */}
     </div>
   );
 }

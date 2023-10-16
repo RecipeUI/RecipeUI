@@ -275,7 +275,6 @@ function DisableTypeScript({ editorParamView, onClose }: ModalBodyProps) {
   const { schemaTypes, setSchemaType, apiType } =
     useSchemaJSON(editorParamView);
 
-  console.log("here", { apiType });
   return (
     <div>
       <p>Are you sure you want to disable TypeScript?</p>
