@@ -26,6 +26,7 @@ import { API_SAMPLES, API_TYPE_NAMES } from "../../../utils/constants/recipe";
 import { Modal } from "../../../components/Modal";
 import { FormFieldWrapper } from "../../../modules/components/FormFieldWrapper";
 import { EditorActionWrapper } from "./EditorAction";
+import { ImportJSONToTypeScript } from "./EditorTypeScript";
 
 interface EditorJSONProps {
   value: string;
@@ -313,9 +314,11 @@ const setJSONDiagnosticOptions = (
 export function InitializeSchema({
   type,
   customAction,
+  allowImport,
 }: {
   type: EditorParamView;
   customAction?: () => void;
+  allowImport?: boolean;
 }) {
   const editQueryType = useRecipeSessionStore(
     (state) => state.setEditorQuerySchemaType
@@ -370,15 +373,69 @@ export function InitializeSchema({
       setEditorUrlCode(API_SAMPLES.API_SAMPLE_URL_PARAMS_TYPE.JSON);
     }
   };
-  Object;
+
+  const [importJSONModal, setImportJSONModal] = useState(false);
+
   return (
-    <div className="h-full flex justify-center items-center border-t border-recipe-slate w-full">
-      <button
-        className="btn btn-outline opacity-30 hover:opacity-100"
-        onClick={onSubmit}
-      >
-        Initialize {type} schema
-      </button>
+    <div className="h-full flex  justify-center items-center border-t border-recipe-slate w-full">
+      <div className="flex flex-col space-y-6">
+        {allowImport && (
+          <button
+            className="btn btn-outline opacity-30 hover:opacity-100"
+            onClick={() => {
+              setImportJSONModal(true);
+            }}
+          >
+            Import JSON
+          </button>
+        )}
+        <button
+          className="btn btn-outline opacity-30 hover:opacity-100"
+          onClick={onSubmit}
+        >
+          Initialize {type} schema
+        </button>
+      </div>
+      {importJSONModal && (
+        <JSONModalWindow
+          onClose={() => {
+            setImportJSONModal(false);
+          }}
+          type={type}
+          onJSONUpdate={(json) => {
+            console.log("json update", json);
+            if (type === "query") {
+              setEditorQuery(json);
+            } else if (type === "body") {
+              setEditorBody(json);
+              console.log("updating");
+            } else if (type === "url") {
+              setEditorUrlCode(json);
+            }
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function JSONModalWindow({
+  onClose,
+  type,
+  onJSONUpdate,
+}: {
+  onClose: () => void;
+  type: EditorParamView;
+  onJSONUpdate: (json: string) => void;
+}) {
+  return (
+    <Modal header="Import JSON" onClose={onClose}>
+      <ImportJSONToTypeScript
+        onboarding
+        editorParamView={type}
+        onClose={onClose}
+        onJSONUpdate={onJSONUpdate}
+      />
+    </Modal>
   );
 }

@@ -37,11 +37,7 @@ export function EditorBody() {
         </select>
       )}
 
-      {editorBodyType === null && (
-        <InitializeSchema type={EditorParamView.Body} />
-      )}
-
-      {editorBodyType != null && <JSONEditorContainer />}
+      <JSONEditorContainer />
     </div>
   );
 }
@@ -77,7 +73,7 @@ export const JSONEditorContainer = () => {
           typeName={API_TYPE_NAMES.APIRequestParams}
         />
       ) : (
-        <InitializeSchema type={EditorParamView.Body} />
+        <InitializeSchema type={EditorParamView.Body} allowImport />
       )}
       {(editorBodySchemaJSON || editorBody) && (
         <EditorTypeScript
