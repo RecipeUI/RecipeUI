@@ -152,7 +152,9 @@ function EditorHeader() {
             {title}
             <PencilSquareIcon className="w-6 h-6 ml-2 mb-1" />
           </h2>
-          <p className="text-sm mt-1">{description}</p>
+          <ReactMarkdown className="text-sm mt-1 recipe-md">
+            {description.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n")}
+          </ReactMarkdown>
         </div>
       ) : (
         <div className="flex flex-col space-y-2">
@@ -164,7 +166,7 @@ function EditorHeader() {
           />
           <textarea
             className="textarea textarea-sm textarea-bordered  text-black dark:text-gray-400"
-            rows={4}
+            rows={8}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -177,7 +179,7 @@ function EditorHeader() {
 
               setEditorHeader({
                 title,
-                description,
+                description: description.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n"),
               });
               setEditing(false);
             }}
