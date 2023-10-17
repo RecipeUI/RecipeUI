@@ -128,6 +128,10 @@ function EditorHeader() {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(editorHeader.title);
   const [description, setDescription] = useState(editorHeader.description);
+  useEffect(() => {
+    setTitle(editorHeader.title);
+    setDescription(editorHeader.description);
+  }, [editorHeader]);
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 

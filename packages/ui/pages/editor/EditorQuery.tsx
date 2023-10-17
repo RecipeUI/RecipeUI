@@ -172,7 +172,9 @@ ${newTypes}
             />
           </div>
         ) : (
-          <InitializeSchema type={EditorParamView.Query} />
+          <div className="row-span-2">
+            <InitializeSchema type={EditorParamView.Query} />
+          </div>
         )}
         {showJSONEditor && (
           <EditorTypeScript

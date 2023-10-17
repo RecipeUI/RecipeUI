@@ -324,7 +324,7 @@ export async function getConfigForSessionStore({
     };
   }
 
-  return config;
+  return config as APISessionConfig;
 }
 
 // We can also delete the miniRecipes
