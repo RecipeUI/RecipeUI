@@ -434,15 +434,13 @@ export function ImportJSONToTypeScript({
             if (editorParamView === EditorParamView.Url) {
               apiType = API_TYPE_NAMES.APIUrlParams;
             } else if (editorParamView === EditorParamView.Query) {
-              apiType = API_TYPE_NAMES.APIRequestParams;
+              apiType = API_TYPE_NAMES.APIQueryParams;
             }
 
             const bodyInfo = await superFetchTypesAndJSON({
               record: parsed,
               typeName: apiType,
             });
-
-            // TODO: Need to do json schema or it will not be valid
 
             setSchemaType(bodyInfo.ts);
             onJSONUpdate?.(JSON.stringify(parsed, null, 2));
