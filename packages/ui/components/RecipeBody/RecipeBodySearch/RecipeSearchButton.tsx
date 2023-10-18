@@ -642,12 +642,17 @@ export function RecipeSearchButton() {
       if (contentType?.includes("text/")) {
         output = { text: outputStr };
         hasParsed = true;
+      } else if (contentType?.includes("xml")) {
+        hasParsed = true;
+        output = {
+          xml: outputStr,
+        };
       } else {
         try {
           output = parse(outputStr);
           hasParsed = true;
         } catch (e) {
-          output = { response: "unable to parse json" };
+          output = { response: "unable to parse json", content: outputStr };
         }
       }
 
