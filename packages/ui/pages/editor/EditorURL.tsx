@@ -93,32 +93,35 @@ ${Object.keys(newUrlState)
 
   return (
     <div className="grid grid-rows-[minmax(min-content,max-content),1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-      <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-auto break-all">
-        <URLHighlight url={editorURL} urlState={urlState} />
-      </div>
-      <div className="flex relative">
-        <EditorViewWithSchema
-          className="flex-1"
-          key={`${currentSession?.id || "default"}-json-url`}
-          value={editorURLCode}
-          setValue={setEditorURLCode}
-          jsonSchema={editorURLSchemaJSON}
-          typeName={API_TYPE_NAMES.APIUrlParams}
-        />
-      </div>
+      {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV ? (
+        <EditorURLOnboarding className="row-span-3 p-6" />
+      ) : (
+        <>
+          <div className="p-2 px-8 text-sm border-b border-recipe-slate tooltip tooltip-error text-start overflow-x-auto break-all">
+            <URLHighlight url={editorURL} urlState={urlState} />
+          </div>
+          <div className="flex relative">
+            <EditorViewWithSchema
+              className="flex-1"
+              key={`${currentSession?.id || "default"}-json-url`}
+              value={editorURLCode}
+              setValue={setEditorURLCode}
+              jsonSchema={editorURLSchemaJSON}
+              typeName={API_TYPE_NAMES.APIUrlParams}
+            />
+          </div>
 
-      {showJSONEditor && (
-        <EditorTypeScript
-          key={`${currentSession?.id || "default"}-types-url`}
-          editorParamView={EditorParamView.Url}
-          schemaType={schemaType}
-          setSchemaJSON={setSchemaJSON}
-          setSchemaType={setSchemaType}
-          defaultExport={API_TYPE_NAMES.APIUrlParams}
-        />
-      )}
-      {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV && (
-        <EditorURLOnboarding />
+          {showJSONEditor && (
+            <EditorTypeScript
+              key={`${currentSession?.id || "default"}-types-url`}
+              editorParamView={EditorParamView.Url}
+              schemaType={schemaType}
+              setSchemaJSON={setSchemaJSON}
+              setSchemaType={setSchemaType}
+              defaultExport={API_TYPE_NAMES.APIUrlParams}
+            />
+          )}
+        </>
       )}
     </div>
   );

@@ -143,65 +143,56 @@ ${newTypes}
   return (
     <>
       <div className="grid grid-rows-[auto,1fr,1fr] flex-1 h-full z-20 overflow-x-auto">
-        <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto h-fit">
-          {isEmpty ? (
-            "Enter query params as a key value object below"
-          ) : (
-            <>
-              <span className="w-fit break-all">{editorUrl}</span>
-              <span
-                className={classNames(
-                  "mt-2 bg-accent py-1 rounded-md text-white w-fit break-all",
-                  error && "bg-error"
-                )}
-              >
-                {error ?? queryString}
-              </span>
-            </>
-          )}
-        </div>
-        {showJSONEditor ? (
-          <div className="relative flex w-full">
-            <EditorViewWithSchema
-              value={editorQuery}
-              setValue={setEditorQuery}
-              jsonSchema={editorQuerySchemaJSON}
-              key={`${currentSession?.id || "default"}-json-query`}
-              className="flex-1"
-              typeName={API_TYPE_NAMES.APIQueryParams}
-            />
-          </div>
+        {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV ? (
+          <EditorQueryOnboarding className="row-span-3 p-6" />
         ) : (
-          <div className="row-span-2">
-            <InitializeSchema type={EditorParamView.Query} />
-          </div>
-        )}
-        {showJSONEditor && (
-          <EditorTypeScript
-            key={`${currentSession?.id || "default"}-types-query`}
-            setSchemaJSON={setSchemaJSON}
-            setSchemaType={setSchemaType}
-            editorParamView={EditorParamView.Query}
-            schemaType={schemaType}
-            defaultExport={API_TYPE_NAMES.APIQueryParams}
-          />
+          <>
+            <div className="p-2 px-8 text-sm border-b border-recipe-slate overflow-x-auto h-fit">
+              {isEmpty ? (
+                "Enter query params as a key value object below"
+              ) : (
+                <>
+                  <span className="w-fit break-all">{editorUrl}</span>
+                  <span
+                    className={classNames(
+                      "mt-2 bg-accent py-1 rounded-md text-white w-fit break-all",
+                      error && "bg-error"
+                    )}
+                  >
+                    {error ?? queryString}
+                  </span>
+                </>
+              )}
+            </div>
+            {showJSONEditor ? (
+              <div className="relative flex w-full">
+                <EditorViewWithSchema
+                  value={editorQuery}
+                  setValue={setEditorQuery}
+                  jsonSchema={editorQuerySchemaJSON}
+                  key={`${currentSession?.id || "default"}-json-query`}
+                  className="flex-1"
+                  typeName={API_TYPE_NAMES.APIQueryParams}
+                />
+              </div>
+            ) : (
+              <div className="row-span-2">
+                <InitializeSchema type={EditorParamView.Query} />
+              </div>
+            )}
+            {showJSONEditor && (
+              <EditorTypeScript
+                key={`${currentSession?.id || "default"}-types-query`}
+                setSchemaJSON={setSchemaJSON}
+                setSchemaType={setSchemaType}
+                editorParamView={EditorParamView.Query}
+                schemaType={schemaType}
+                defaultExport={API_TYPE_NAMES.APIQueryParams}
+              />
+            )}
+          </>
         )}
       </div>
-      {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV && (
-        <EditorQueryOnboarding />
-      )}
     </>
   );
 };
-
-function ImportFromURL({ onInitialize }: { onInitialize: () => void }) {
-  return (
-    <button
-      className="absolute btn btn-warning btn-sm right-0 top-0 mt-2 mr-2"
-      data-tip="This will parse the query params in the URL and populate the editor with them."
-      onClick={onInitialize}
-    >
-      Fix URL
-    </button>
-  );
-}
