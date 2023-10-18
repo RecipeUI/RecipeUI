@@ -87,6 +87,6 @@ jobs:
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: 'App v__VERSION__'
-          releaseBody: 'Continuous bug fixes and improvements.'
+          releaseBody: 'Read the version changelog for details.'
           releaseDraft: true
           args: ${{ matrix.settings.args }}

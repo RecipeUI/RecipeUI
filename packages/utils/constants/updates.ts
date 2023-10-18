@@ -1,5 +1,5 @@
-export const LATEST_APP_VERSION = "0.8.9";
-export const LATEST_WEB_VERSION = "0.8.9";
+export const LATEST_APP_VERSION = "0.8.10";
+export const LATEST_WEB_VERSION = "0.8.10";
 
 export const VERSION_LOGS: {
   version: string;
@@ -8,6 +8,11 @@ export const VERSION_LOGS: {
   ignore?: boolean;
   type?: "minor" | "major" | "patch";
 }[] = [
+  {
+    version: "0.8.10",
+    update:
+      "Improved importing for query and URL. Minor bug fixes and improvements.",
+  },
   {
     version: "0.8.9",
     update:
