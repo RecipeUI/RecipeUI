@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getQueryAndBodyInfo } from "./helpers";
 import { SecretAPI } from "../../../state/apiSession/SecretAPI";
 import { ErrorBase } from "types/common";
+import ReactCodeMirror from "@uiw/react-codemirror";
 
 export function CurlModal({
   onClose,
@@ -55,10 +56,12 @@ export function CurlModal({
       const { queryInfo, bodyInfo } = await getQueryAndBodyInfo({
         url: requestInfo.url,
         body: requestInfo.body,
-        contentType: requestInfo.headers[
-          Object.keys(requestInfo.headers)
-          .find((type) => type.toLowerCase() === "content-type") || -1
-        ]
+        contentType:
+          requestInfo.headers[
+            Object.keys(requestInfo.headers).find(
+              (type) => type.toLowerCase() === "content-type"
+            ) || -1
+          ],
       });
 
       editorSlice = {
@@ -122,14 +125,14 @@ export function CurlModal({
             {"We couldn't parse your cURL snippet. Please try again."}
           </div>
         )}
-        <textarea
-          rows={8}
-          className={classNames(
-            "textarea  w-full",
-            error ? "textarea-error" : "textarea-accent"
-          )}
+        <ReactCodeMirror
+          height="400px"
+          className={classNames(" w-full")}
           value={curlString}
-          onChange={(e) => setCurlString(e.target.value)}
+          basicSetup={{
+            foldGutter: false,
+          }}
+          onChange={(newVal) => setCurlString(newVal)}
         />
         {loading ? (
           <span className="loading  loading-lg loading-bars"></span>

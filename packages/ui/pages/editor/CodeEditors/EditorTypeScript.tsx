@@ -29,6 +29,9 @@ import { parse } from "json5";
 import { getQueryAndBodyInfo } from "../Builders/helpers";
 import { API_TYPE_NAMES } from "../../../utils/constants/recipe";
 import { commentAllLines } from "../../../utils/main";
+import ReactCodeMirror, { basicSetup } from "@uiw/react-codemirror";
+import { json as jsonModule, jsonParseLinter } from "@codemirror/lang-json";
+import { linter, lintGutter } from "@codemirror/lint";
 
 /*
   This is more of a UX pattern. We want to initially flag that we noticed the user has
@@ -391,17 +394,23 @@ export function ImportJSONToTypeScript({
     ? "Import from JSON? This will update your TypeScript to match the JSON you paste inside here."
     : "Paste a JSON body and we will import the JSON and the TypeScript together.";
 
+  const isDarkMode = useDarkMode().isDarkMode;
+
   return (
     <div>
       <p>{onboardingDescription}</p>
-      <textarea
-        rows={8}
-        className="textarea textarea-bordered w-full my-2 textarea-accent"
-        onChange={(e) => {
-          setJson(e.target.value);
-        }}
+
+      <ReactCodeMirror
         value={json}
+        height="300px"
+        className="h-full !outline-none border-none max-w-sm sm:max-w-none my-6"
+        theme={isDarkMode ? "dark" : "light"}
+        extensions={[jsonModule(), linter(jsonParseLinter()), lintGutter()]}
+        onChange={(value) => {
+          setJson(value);
+        }}
       />
+
       {error && (
         <div className="text-error mb-4">
           <p>{error}</p>
@@ -427,7 +436,8 @@ export function ImportJSONToTypeScript({
               } else {
                 setError("Invalid JSON");
               }
-              return;
+
+              throw e;
             }
 
             let apiType = API_TYPE_NAMES.APIRequestParams;
@@ -450,9 +460,14 @@ export function ImportJSONToTypeScript({
             onClose();
           } catch (e) {
             console.debug(e);
-            setError(
-              "Unable to process types. Check the dev tool inspector for debug logs."
-            );
+
+            if ((e as Error).message) {
+              setError((e as Error).message);
+            } else {
+              setError(
+                "Unable to process types. Check the dev tool inspector for debug logs."
+              );
+            }
             setLoading(false);
           }
         }}

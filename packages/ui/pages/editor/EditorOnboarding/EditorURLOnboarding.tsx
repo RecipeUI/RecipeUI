@@ -30,7 +30,7 @@ export function EditorURLOnboarding({ className }: { className?: string }) {
         [Tutorial] Type safety with url params
       </h1>
       <p className="mt-2">The URL below makes use of URL params</p>
-      <code className="code-snippet-onboarding">
+      <code className="code-snippet-onboarding overflow-x-auto">
         <URLHighlight
           url="https://www.reddit.com/r/{subreddit}/{sort}.json"
           urlState={{

@@ -274,6 +274,7 @@ import { RecipeMethod } from "types/enums";
 import { emit } from "@tauri-apps/api/event";
 import { useLatestVersionDetails } from "../../pages/editor/EditorUpdates";
 import { hasMajorUpdate } from "utils/constants/updates";
+import { isSemverLessThan } from "../../utils/main";
 
 function TauriUpdateExtension() {
   const [version, setVersion] = useState("");
@@ -322,7 +323,8 @@ function TauriUpdateExtension() {
   if (
     !version ||
     latestVersion.isLoading ||
-    (latestVersion?.data && version >= latestVersion.data)
+    (latestVersion?.data &&
+      isSemverLessThan({ oldVer: latestVersion.data, newVer: version }))
   ) {
     return null;
   }
@@ -330,7 +332,7 @@ function TauriUpdateExtension() {
   return (
     <button
       className={classNames(
-        "ml-2 btn btn-accent btn-xs  -mr-2",
+        "ml-2 btn btn-accent btn-xs -mr-2",
         hasMajorUpdate && "animate-bounce"
       )}
       onClick={() => {

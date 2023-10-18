@@ -85,60 +85,6 @@ function UserMiniRecipe({
           //   "!border-accent !border-4 border-dashed "
         )}
       >
-        <div className="absolute top-2 right-2 mr-1 dropdown dropdown-left  sm:inline-block cursor-pointer">
-          <label
-            tabIndex={0}
-            // className={classNames(loadingTemplate && "btn-disabled")}
-          >
-            <EllipsisHorizontalIcon className="w-6 h-6" />
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content  menu  shadow rounded-box  mt-1 grid  overflow-auto bg-base-100 text-xs r-0 top-5"
-          >
-            <li>
-              <button
-                className=""
-                onClick={async () => {
-                  setAction("prefill");
-                }}
-              >
-                PREFILL
-              </button>
-            </li>
-            <li>
-              <button
-                className=""
-                onClick={async () => {
-                  setAction("edit");
-                }}
-              >
-                EDIT
-              </button>
-            </li>
-            <li>
-              <button
-                className=""
-                onClick={async () => {
-                  if (
-                    !(await confirm("Are you sure you want to delete this?"))
-                  ) {
-                    return;
-                  }
-
-                  posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE);
-
-                  deleteRecipe(miniRecipe.id).then(() => {
-                    alert("Recipe deleted");
-                    return;
-                  });
-                }}
-              >
-                DELETE
-              </button>
-            </li>
-          </ul>
-        </div>
         {isEditing ? (
           <EditMiniRecipe
             recipeInfo={{
@@ -153,6 +99,69 @@ function UserMiniRecipe({
           />
         ) : (
           <>
+            <div
+              className={classNames(
+                "absolute top-2 right-2 mr-1 dropdown dropdown-left  sm:inline-block cursor-pointer",
+                "hidden"
+              )}
+            >
+              <label
+                tabIndex={0}
+                // className={classNames(loadingTemplate && "btn-disabled")}
+              >
+                <EllipsisHorizontalIcon className="w-6 h-6" />
+              </label>
+              <ul
+                tabIndex={0}
+                className={classNames(
+                  "dropdown-content  menu  shadow rounded-box  mt-1 grid  overflow-auto bg-base-100 text-xs r-0 top-5"
+                )}
+              >
+                <li>
+                  <button
+                    className=""
+                    onClick={async () => {
+                      setAction("prefill");
+                    }}
+                  >
+                    PREFILL
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=""
+                    onClick={async () => {
+                      setAction("edit");
+                    }}
+                  >
+                    EDIT
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=""
+                    onClick={async () => {
+                      if (
+                        !(await confirm(
+                          "Are you sure you want to delete this?"
+                        ))
+                      ) {
+                        return;
+                      }
+
+                      posthog?.capture(POST_HOG_CONSTANTS.TEMPLATE_DELETE);
+
+                      deleteRecipe(miniRecipe.id).then(() => {
+                        alert("Recipe deleted");
+                        return;
+                      });
+                    }}
+                  >
+                    DELETE
+                  </button>
+                </li>
+              </ul>
+            </div>
             <h3 className="font-bold">{miniRecipe.title}</h3>
             <p className="text-sm line-clamp-3">{miniRecipe.description}</p>
             <div className="flex-1" />
@@ -214,7 +223,7 @@ function EditMiniRecipe({
           {...register("title", { required: true })}
         />
       </FormFieldWrapper>
-      <FormFieldWrapper label="Title">
+      <FormFieldWrapper label="Description">
         <textarea
           className="textarea textarea-bordered textarea-sm w-full"
           rows={4}
