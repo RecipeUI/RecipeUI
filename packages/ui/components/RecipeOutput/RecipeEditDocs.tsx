@@ -16,7 +16,7 @@ import {
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { URL_PARAM_REGEX } from "utils/constants";
+import { MARKDOWN_NEWLINES_REGEX, URL_PARAM_REGEX } from "utils/constants";
 
 const DefinitionContext = createContext<{
   definitions: JSONSchema6["definitions"];
@@ -160,8 +160,8 @@ function EditorHeader() {
             {title}
             <PencilSquareIcon className="w-6 h-6 ml-2 mb-1" />
           </h2>
-          <ReactMarkdown className="text-sm mt-1 recipe-md">
-            {description.replaceAll(/(?<!\n)\n(?!\n)/g, "\n\n")}
+          <ReactMarkdown className="text-sm mt-1 recipe-md space-y-4">
+            {description.replaceAll(MARKDOWN_NEWLINES_REGEX, "\n\n")}
           </ReactMarkdown>
         </div>
       ) : (
@@ -359,8 +359,8 @@ function DocContainer({
         )}
       </div>
       {!editing ? (
-        <ReactMarkdown className="text-xs mt-2 cursor-pointer recipe-md space-y-2">
-          {description}
+        <ReactMarkdown className="text-xs mt-2 cursor-pointer recipe-md space-y-4">
+          {description.replaceAll(MARKDOWN_NEWLINES_REGEX, "\n\n")}
         </ReactMarkdown>
       ) : (
         <div className="space-y-2 flex flex-col py-4 text-black dark:text-gray-400">

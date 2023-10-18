@@ -19,3 +19,4 @@ export enum CollectionType {
 }
 
 export const URL_PARAM_REGEX = new RegExp(/{(\w+)}/, "g");
+export const MARKDOWN_NEWLINES_REGEX = new RegExp(/(?<!\n)\n(?!\n)/, "g");

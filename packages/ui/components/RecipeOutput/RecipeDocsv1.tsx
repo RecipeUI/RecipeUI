@@ -18,6 +18,7 @@ import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { getDefaultValuev1, getValueInObjPath } from "../../utils/main";
 import { EyeSlashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
+import { MARKDOWN_NEWLINES_REGEX } from "utils/constants";
 
 export function RecipeDocs() {
   const selectedRecipe = useContext(RecipeContext);
@@ -62,8 +63,11 @@ export function RecipeDocs() {
             {selectedRecipe.title}
           </h1>
           {selectedRecipe.summary && (
-            <ReactMarkdown className="mt-2 recipe-md">
-              {selectedRecipe.summary}
+            <ReactMarkdown className="mt-2 recipe-md space-y-4">
+              {selectedRecipe.summary.replaceAll(
+                MARKDOWN_NEWLINES_REGEX,
+                "\n\n"
+              )}
             </ReactMarkdown>
           )}
         </>
@@ -369,12 +373,12 @@ function RecipeDocsParamContainer({
       </div>
       {paramSchema.description && (
         <ReactMarkdown
-          className="text-sm mt-2"
+          className="text-sm mt-2 recipe-md"
           components={{
             a: (props) => <a {...props} className="text-blue-600 underline" />,
           }}
         >
-          {paramSchema.description}
+          {paramSchema.description.replaceAll(MARKDOWN_NEWLINES_REGEX, "\n\n")}
         </ReactMarkdown>
       )}
       {/* {paramSchema.type === RecipeParamType.Array &&
