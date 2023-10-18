@@ -11,6 +11,11 @@ import {
 import { Modal } from "../../Modal";
 import { CoreRecipeAPI } from "../../../state/apiSession/RecipeAPI";
 import { RecipeSessionFolder } from "types/database";
+import { RecipeAPI } from "../../RecipeAPI";
+import {
+  getConfigForSessionStore,
+  setConfigForSessionStore,
+} from "../../../state/apiSession";
 
 export function EditSessionModal({
   onClose,
@@ -24,6 +29,10 @@ export function EditSessionModal({
     (state) => state.updateSessionName
   );
 
+  const setEditorHeader = useRecipeSessionStore(
+    (state) => state.setEditorHeader
+  );
+
   return (
     <Modal header="Edit Session" onClose={onClose}>
       <form
@@ -31,6 +40,31 @@ export function EditSessionModal({
           e.preventDefault();
           if (name) {
             updateSessionName(session, name);
+
+            if (session.id === session.recipeId) {
+              // Update recipe name too
+              try {
+                const config = await getConfigForSessionStore({
+                  recipeId: session.recipeId,
+                });
+
+                const newEditorHeader = {
+                  title: name,
+                  description: config?.editorHeader.description || "",
+                };
+
+                await setConfigForSessionStore({
+                  recipeId: session.recipeId,
+                  config: {
+                    ...config,
+                    editorHeader: newEditorHeader,
+                  },
+                });
+                setEditorHeader(newEditorHeader);
+              } catch (e) {
+                //
+              }
+            }
           }
 
           onClose();

@@ -17,7 +17,7 @@ export async function fetchServer({
 
   if (
     (payload.body_type === RecipeMutationContentType.FormData ||
-      payload.headers["content-type"].includes("multipart/form")) &&
+      payload.headers["content-type"]?.includes("multipart/form")) &&
     payload.body &&
     typeof payload.body === "string"
   ) {

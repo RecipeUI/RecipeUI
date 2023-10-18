@@ -164,20 +164,20 @@ function parsePartsToCurl(parts: string[]) {
 
       case "-f":
       case "--form":
-        if(parts.at(-2) !== "-d"){
+        if (parts.at(-2) !== "-d") {
           result.method = RecipeMethod.POST;
           parts.push("-d");
           parts.push(JSON.stringify({}));
         }
 
         const lastObj = JSON.parse(parts.at(-1)!);
-        const [field, value] = parts[i+1].split("=");
+        const [field, value] = parts[i + 1].split("=");
         try {
           lastObj[field] = parse(value);
         } catch (error) {
           lastObj[field] = value;
         }
-        parts[parts.length-1] = JSON.stringify(lastObj);
+        parts[parts.length - 1] = JSON.stringify(lastObj);
         i++;
         break;
 

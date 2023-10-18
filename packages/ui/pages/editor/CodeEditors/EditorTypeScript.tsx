@@ -275,7 +275,6 @@ function DisableTypeScript({ editorParamView, onClose }: ModalBodyProps) {
   const { schemaTypes, setSchemaType, apiType } =
     useSchemaJSON(editorParamView);
 
-  console.log("here", { apiType });
   return (
     <div>
       <p>Are you sure you want to disable TypeScript?</p>
@@ -364,7 +363,15 @@ function useSchemaJSON(editorParamView: EditorParamView) {
   ]);
 }
 
-function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
+export function ImportJSONToTypeScript({
+  editorParamView,
+  onClose,
+  onboarding,
+  onJSONUpdate,
+}: ModalBodyProps & {
+  onboarding?: boolean;
+  onJSONUpdate?: (json: string) => void;
+}) {
   const { schemaJSON, setSchemaType } = useSchemaJSON(editorParamView);
 
   const [json, setJson] = useState(() => {
@@ -380,12 +387,13 @@ function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const onboardingDescription = !onboarding
+    ? "Import from JSON? This will update your TypeScript to match the JSON you paste inside here."
+    : "Paste a JSON body and we will import the JSON and the TypeScript together.";
+
   return (
     <div>
-      <p>
-        Import from JSON? This will update your TypeScript to match the JSON you
-        paste inside here.
-      </p>
+      <p>{onboardingDescription}</p>
       <textarea
         rows={8}
         className="textarea textarea-bordered w-full my-2 textarea-accent"
@@ -394,6 +402,11 @@ function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
         }}
         value={json}
       />
+      {error && (
+        <div className="text-error mb-4">
+          <p>{error}</p>
+        </div>
+      )}
       <button
         className="btn btn-accent btn-sm"
         onClick={async (e) => {
@@ -403,9 +416,12 @@ function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
           async function _submit() {
             // First lets check if we have a valid JSON
             let parsed: Record<string, any>;
+            setError(null);
+
             try {
               parsed = parse(json);
             } catch (e) {
+              console.debug(e);
               if ((e as Error).message) {
                 setError((e as Error).message);
               } else {
@@ -418,7 +434,7 @@ function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
             if (editorParamView === EditorParamView.Url) {
               apiType = API_TYPE_NAMES.APIUrlParams;
             } else if (editorParamView === EditorParamView.Query) {
-              apiType = API_TYPE_NAMES.APIRequestParams;
+              apiType = API_TYPE_NAMES.APIQueryParams;
             }
 
             const bodyInfo = await superFetchTypesAndJSON({
@@ -427,6 +443,7 @@ function ImportJSONToTypeScript({ editorParamView, onClose }: ModalBodyProps) {
             });
 
             setSchemaType(bodyInfo.ts);
+            onJSONUpdate?.(JSON.stringify(parsed, null, 2));
           }
           try {
             await _submit();

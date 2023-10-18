@@ -398,14 +398,14 @@ describe("More Use Cases", () => {
 
       expectResultToEqual(parseCurl(curlString), {
         body: {
-          "part": "snippet,status",
-          "snippet": {
-            "title": "My Playlist",
-            "description": "A playlist created by me"
+          part: "snippet,status",
+          snippet: {
+            title: "My Playlist",
+            description: "A playlist created by me",
           },
-          "status": {
-            "privacyStatus": "public"
-          }
+          status: {
+            privacyStatus: "public",
+          },
         },
         method: RecipeMethod.POST,
         url: "https://www.googleapis.com/youtube/v3/playlists",
@@ -423,7 +423,6 @@ describe("More Use Cases", () => {
         },
       });
     });
-
   });
 });
 
@@ -493,22 +492,23 @@ describe("MailChimp", () => {
         "Content-Type": "multipart/form-data",
       },
       body: {
-        "type": "regular",
-        "recipients": {
-          "list_id": "<list_id>"
+        type: "regular",
+        recipients: {
+          list_id: "<list_id>",
         },
-        "settings": {
-          "subject_line": "My Newsletter",
-          "from_name": "Chimp",
-          "reply_to": "chimp@example.com"
+        settings: {
+          subject_line: "My Newsletter",
+          from_name: "Chimp",
+          reply_to: "chimp@example.com",
         },
-        "content_type": "template",
-        "template": {
-          "id": "<template_id>",
-          "sections": {
-            "body_content": "Hello, this is Chimp. I hope you enjoy this newsletter."
-          }
-        }
+        content_type: "template",
+        template: {
+          id: "<template_id>",
+          sections: {
+            body_content:
+              "Hello, this is Chimp. I hope you enjoy this newsletter.",
+          },
+        },
       },
       authConfig: {
         payload: {
@@ -531,7 +531,7 @@ describe("slack", () => {
       --form "text=Hello, this is a message from curl" \
       https://slack.com/api/chat.postMessage    
     `;
-    
+
     expectResultToEqual(parseCurl(curlString), {
       method: RecipeMethod.POST,
       url: "https://slack.com/api/chat.postMessage",
@@ -539,13 +539,36 @@ describe("slack", () => {
         "Content-Type": "multipart/form-data",
       },
       body: {
-        "token": "<YOUR_SLACK_TOKEN>",
-        "channel": "<YOUR_CHANNEL_ID>",
-        "text": "Hello, this is a message from curl"
+        token: "<YOUR_SLACK_TOKEN>",
+        channel: "<YOUR_CHANNEL_ID>",
+        text: "Hello, this is a message from curl",
       },
-    })
-  })
-})
+    });
+  });
+});
+
+describe.skip("Test cases to FIX", () => {
+  test("Capture spaces in url without string", () => {
+    const url =
+      "https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}";
+
+    const urlWithQuotes = `curl "${url}"`;
+    expectResultToEqual(parseCurl(urlWithQuotes), {
+      method: RecipeMethod.GET,
+      headers: {},
+      url: url,
+      body: null,
+    });
+
+    const urlWithNoQuotes = `curl ${url}`;
+    expectResultToEqual(parseCurl(urlWithNoQuotes), {
+      method: RecipeMethod.GET,
+      headers: {},
+      url: url,
+      body: null,
+    });
+  });
+});
 
 describe.skip("Not supported yet", () => {
   // test.skip("Lever API", () => {

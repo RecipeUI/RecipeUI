@@ -59,5 +59,7 @@ export async function superFetchTypesAndJSON({
   const ts = await fetchTypeScriptFromJSON({ record, typeName });
   const json = await fetchJSONFromTypeScript({ types: ts });
 
-  return { json, ts };
+  const regex = new RegExp(typeName, "gi");
+
+  return { json, ts: ts.replaceAll(regex, typeName) };
 }

@@ -6,16 +6,20 @@ import {
 } from "../../state/recipeSession";
 import { ReactNode, useContext, useMemo, useRef, useState } from "react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { BasicSetupOptions } from "@uiw/react-codemirror";
 import { useDarkMode } from "usehooks-ts";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
+import { xml } from "@codemirror/lang-xml";
+
 import { Recipe, RecipeOutputType } from "types/database";
 import { useOutput } from "../../state/apiSession/OutputAPI";
 import { RecipeSaveButton } from "../RecipeBody/RecipeBodySearch/RecipeSaveButton";
 import { Modal } from "../Modal";
 import { imageRegex } from "utils/constants/regex";
-const codeMirrorSetup = {
+import xmlFormat from "xml-formatter";
+
+const codeMirrorSetup: BasicSetupOptions = {
   lineNumbers: true,
   highlightActiveLine: false,
 };
@@ -168,6 +172,8 @@ export function ResponseOutput({
       sessionOutput.contentType?.includes("text")
     ) {
       return [markdown()];
+    } else if (sessionOutput.contentType?.includes("xml")) {
+      return [xml()];
     } else {
       return [json()];
     }
@@ -187,6 +193,11 @@ export function ResponseOutput({
       sessionOutput.output["text"]
     ) {
       _output = sessionOutput.output["text"] as string;
+    } else if (
+      sessionOutput.contentType?.includes("xml") &&
+      sessionOutput.output["xml"]
+    ) {
+      _output = xmlFormat(sessionOutput.output["xml"] as string);
     } else {
       _output = JSON.stringify(sessionOutput.output, null, 2);
     }
@@ -201,6 +212,7 @@ export function ResponseOutput({
   const { isDarkMode } = useDarkMode();
 
   const { contentType } = sessionOutput;
+
   return (
     <>
       <CodeMirror

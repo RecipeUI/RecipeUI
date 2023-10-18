@@ -37,11 +37,7 @@ export function EditorBody() {
         </select>
       )}
 
-      {editorBodyType === null && (
-        <InitializeSchema type={EditorParamView.Body} />
-      )}
-
-      {editorBodyType != null && <JSONEditorContainer />}
+      <JSONEditorContainer />
     </div>
   );
 }
@@ -77,17 +73,19 @@ export const JSONEditorContainer = () => {
           typeName={API_TYPE_NAMES.APIRequestParams}
         />
       ) : (
-        <InitializeSchema type={EditorParamView.Body} />
+        <InitializeSchema type={EditorParamView.Body} allowImport />
       )}
-      <EditorTypeScript
-        // This key is important, it refreshes changes for us when we switch tabs
-        key={`${currentSession?.id || "default"}-types-body`}
-        schemaType={editorBodySchemaType}
-        editorParamView={EditorParamView.Body}
-        setSchemaJSON={setEditorBodySchemaJSON}
-        setSchemaType={setEditorBodySchemaType}
-        defaultExport={API_TYPE_NAMES.APIRequestParams}
-      />
+      {(editorBodySchemaJSON || editorBody) && (
+        <EditorTypeScript
+          // This key is important, it refreshes changes for us when we switch tabs
+          key={`${currentSession?.id || "default"}-types-body`}
+          schemaType={editorBodySchemaType}
+          editorParamView={EditorParamView.Body}
+          setSchemaJSON={setEditorBodySchemaJSON}
+          setSchemaType={setEditorBodySchemaType}
+          defaultExport={API_TYPE_NAMES.APIRequestParams}
+        />
+      )}
     </div>
   );
 };

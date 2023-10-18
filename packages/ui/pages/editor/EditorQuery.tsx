@@ -1,7 +1,7 @@
 "use client";
 
 import { useRecipeSessionStore } from "../../../ui/state/recipeSession";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDebounce } from "usehooks-ts";
 import { EditorParamView } from "./CodeEditors/common";
 import {
@@ -27,6 +27,7 @@ export const EditorQuery = () => {
   const isEmpty = !editorQuery;
 
   const newQueryChanges = useDebounce(editorQuery, 500);
+  const newEditorURLChanges = useDebounce(editorUrl, 500);
   const { error, queryString, missingParams } = useMemo(() => {
     try {
       const params = parse(newQueryChanges || "{}") as Record<string, string>;
@@ -34,7 +35,7 @@ export const EditorQuery = () => {
       const missingParamsRecord: Record<string, string | null> = {};
 
       const searchParams = Array.from(
-        new URL(editorUrl).searchParams.entries()
+        new URL(newEditorURLChanges).searchParams.entries()
       );
       for (const [key, value] of searchParams) {
         if (params[key] === undefined) {
@@ -63,7 +64,7 @@ export const EditorQuery = () => {
     } catch (e) {
       return { error: "Invalid query params or URL" };
     }
-  }, [editorUrl, newQueryChanges]);
+  }, [newEditorURLChanges, newQueryChanges]);
 
   const currentSession = useRecipeSessionStore((state) => state.currentSession);
 
@@ -83,62 +84,61 @@ export const EditorQuery = () => {
 
   const showJSONEditor = Boolean(editorQuerySchemaJSON || editorQuery);
   const setEditorUrl = useRecipeSessionStore((state) => state.setEditorUrl);
-  const initializeDefaultQuery = useCallback(() => {
-    try {
-      const newQueryState = {
-        ...missingParams,
-        ...parse(editorQuery || "{}"),
-      } satisfies Record<string, string | null>;
 
-      setEditorQuery(JSON.stringify(newQueryState, null, 2));
-      setEditorUrl(editorUrl.split("?")[0]);
+  useEffect(() => {
+    async function initializeDefault() {
+      try {
+        const newQueryState = {
+          ...missingParams,
+          ...parse(editorQuery || "{}"),
+        } satisfies Record<string, string | null>;
 
-      const newTypes = missingParams
-        ? Object.keys(missingParams)
-            .filter((key) => missingParams[key] !== null)
-            .map((key) => `\t${key}: string;`)
-            .join("\n")
-        : "";
+        setEditorQuery(JSON.stringify(newQueryState, null, 2));
+        setEditorUrl(editorUrl.split("?")[0]);
 
-      if (newTypes.length === 0) {
-        return;
-      } else if (!schemaType) {
-        setSchemaType(
-          `
+        const newTypes = missingParams
+          ? Object.keys(missingParams)
+              .filter((key) => missingParams[key] !== null)
+              .map((key) => `\t${key}: string;`)
+              .join("\n")
+          : "";
+
+        if (newTypes.length === 0) {
+          return;
+        } else if (!schemaType) {
+          setSchemaType(
+            `
 export interface ${API_TYPE_NAMES.APIQueryParams} {
 ${newTypes}
 }`.trim()
-        );
-        return;
-      } else {
-        let newType = schemaType
-          .split("\n")
-          .map((line) => {
-            if (
-              line.includes("export interface") &&
-              !line.trim().startsWith("//")
-            ) {
-              return `${line}\n${newTypes}`;
-            } else {
-              return line;
-            }
-          })
-          .join("\n");
-        setSchemaType(newType);
+          );
+          return;
+        } else {
+          let newType = schemaType
+            .split("\n")
+            .map((line) => {
+              if (
+                line.includes("export interface") &&
+                !line.trim().startsWith("//")
+              ) {
+                return `${line}\n${newTypes}`;
+              } else {
+                return line;
+              }
+            })
+            .join("\n");
+          setSchemaType(newType);
+        }
+      } catch (e) {
+        console.debug(e);
+        alert("Invalid Query. Use dev tools to debug console logs.");
       }
-    } catch (e) {
-      console.debug(e);
-      alert("Invalid Query. Use dev tools to debug console logs.");
     }
-  }, [
-    editorQuery,
-    editorUrl,
-    missingParams,
-    schemaType,
-    setEditorQuery,
-    setEditorUrl,
-    setSchemaType,
-  ]);
+
+    if (missingParams) {
+      initializeDefault();
+    }
+  }, [missingParams]);
 
   return (
     <>
@@ -170,24 +170,22 @@ ${newTypes}
               className="flex-1"
               typeName={API_TYPE_NAMES.APIQueryParams}
             />
-            {missingParams && (
-              <ImportFromURL onInitialize={initializeDefaultQuery} />
-            )}
           </div>
         ) : (
-          <InitializeSchema
-            type={EditorParamView.Query}
-            customAction={initializeDefaultQuery}
+          <div className="row-span-2">
+            <InitializeSchema type={EditorParamView.Query} />
+          </div>
+        )}
+        {showJSONEditor && (
+          <EditorTypeScript
+            key={`${currentSession?.id || "default"}-types-query`}
+            setSchemaJSON={setSchemaJSON}
+            setSchemaType={setSchemaType}
+            editorParamView={EditorParamView.Query}
+            schemaType={schemaType}
+            defaultExport={API_TYPE_NAMES.APIQueryParams}
           />
         )}
-        <EditorTypeScript
-          key={`${currentSession?.id || "default"}-types-query`}
-          setSchemaJSON={setSchemaJSON}
-          setSchemaType={setSchemaType}
-          editorParamView={EditorParamView.Query}
-          schemaType={schemaType}
-          defaultExport={API_TYPE_NAMES.APIQueryParams}
-        />
       </div>
       {showJSONEditor && needsOnboarding && process.env.NEXT_PUBLIC_ENV && (
         <EditorQueryOnboarding />
