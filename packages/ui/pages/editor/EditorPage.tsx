@@ -29,7 +29,7 @@ import {
 } from "../../utils/constants/recipe";
 import { useDarkMode } from "usehooks-ts";
 import { EditorUpdates } from "./EditorUpdates";
-import { DISCORD_LINK } from "utils/constants";
+import { DISCORD_LINK, URL_PARAM_REGEX } from "utils/constants";
 import { useLocalProjects } from "../../state/apiSession/RecipeUICollectionsAPI";
 import { CollectionModule } from "types/modules";
 import { getCollectionModule } from "types/modules/helpers";
@@ -420,7 +420,7 @@ function CoreEditor() {
   }, [session?.id]);
 
   const BODY_ROUTES = useMemo(() => {
-    const hasURLParams = editorUrl.match(/{(\w+)}/g);
+    const hasURLParams = editorUrl.match(URL_PARAM_REGEX);
     let mainRoutes = [...EDITOR_ROUTES];
 
     if (editorMethod === RecipeMethod.GET) {

@@ -17,3 +17,5 @@ export enum CollectionType {
   Core = "core",
   Community = "community",
 }
+
+export const URL_PARAM_REGEX = new RegExp(/{(\w+)}/, "g");

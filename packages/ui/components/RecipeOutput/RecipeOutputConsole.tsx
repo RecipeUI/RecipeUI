@@ -215,6 +215,8 @@ export function ResponseOutput({
 
   return (
     <>
+      {contentType?.includes("text/html") && <HTMLPreview html={output} />}
+
       <CodeMirror
         readOnly={true}
         value={output}
@@ -224,7 +226,6 @@ export function ResponseOutput({
         theme={isDarkMode ? "dark" : "light"}
         extensions={extensions}
       />
-      {contentType?.includes("text/html") && <HTMLPreview html={output} />}
     </>
   );
 }
@@ -236,8 +237,10 @@ function HTMLPreview({ html }: { html: string }) {
   return (
     <div>
       {!showPreview ? (
-        <div className="border rounded-md mt-2 p-4">
-          <p className="text-sm">Do you want to render the HTML?</p>
+        <div className="border mb-4 p-4">
+          <p className="text-sm">
+            Do you want to render the HTML from the response below?
+          </p>
           <button
             className="btn btn-neutral btn-xs mt-2"
             onClick={() => {
@@ -248,11 +251,11 @@ function HTMLPreview({ html }: { html: string }) {
           </button>
         </div>
       ) : (
-        <div className="mockup-browser  bg-base-300 mt-4 overflow-x-scroll ">
+        <div className="mockup-browser bg-base-300 mb-4 overflow-x-scroll">
           <div className="mockup-browser-toolbar">
             <div className="input">{editorUrl}</div>
           </div>
-          <iframe srcDoc={html} className="w-full h-full  min-h-[200px]" />
+          <iframe srcDoc={html} className="w-full h-full  min-h-[400px]" />
         </div>
       )}
     </div>

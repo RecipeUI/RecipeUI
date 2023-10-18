@@ -13,7 +13,7 @@ import { EditorTypeScript } from "./CodeEditors/EditorTypeScript";
 import { API_TYPE_NAMES } from "../../utils/constants/recipe";
 import { EditorURLOnboarding } from "./EditorOnboarding/EditorURLOnboarding";
 import { useNeedsOnboarding } from "../../state/apiSession/OnboardingAPI";
-import { ONBOARDING_CONSTANTS } from "utils/constants";
+import { ONBOARDING_CONSTANTS, URL_PARAM_REGEX } from "utils/constants";
 import { commentAllLines } from "../../utils/main";
 
 export const EditorURL = () => {
@@ -58,7 +58,7 @@ export const EditorURL = () => {
   useEffect(() => {
     async function initializeDefaultSchema() {
       const newUrlState: Record<string, unknown> = {};
-      const matches = editorURL.match(/{(\w+)}/g) || [];
+      const matches = editorURL.match(URL_PARAM_REGEX) || [];
       for (const match of matches) {
         if (urlState[match] !== undefined) {
           newUrlState[match] = urlState[match];

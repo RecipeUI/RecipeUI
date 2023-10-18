@@ -16,6 +16,7 @@ import {
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { JSONSchema6 } from "json-schema";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { URL_PARAM_REGEX } from "utils/constants";
 
 const DefinitionContext = createContext<{
   definitions: JSONSchema6["definitions"];
@@ -32,17 +33,12 @@ export function RecipeEditDocs() {
   const querySchema = useRecipeSessionStore(
     (state) => state.editorQuerySchemaJSON
   );
-  const urlSchema = useRecipeSessionStore((state) => state.editorURLSchemaJSON);
 
   const updateEditorBodySchemaJSON = useRecipeSessionStore(
     (state) => state.updateEditorBodySchemaJSON
   );
   const updateEditorQuerySchemaJSON = useRecipeSessionStore(
     (state) => state.updateEditorQuerySchemaJSON
-  );
-
-  const updateEditorURLSchemaJSON = useRecipeSessionStore(
-    (state) => state.updateEditorURLSchemaJSON
   );
 
   const bodyRoute = useRecipeSessionStore((state) => state.bodyRoute);
@@ -79,8 +75,44 @@ export function RecipeEditDocs() {
     </div>
   ) : null;
 
-  const urlParams = urlSchema ? (
-    <div className="py-4" id="docQueryBody">
+  return (
+    <div
+      className={classNames(
+        "sm:absolute inset-0 px-4 overflow-y-auto right-pane-bg pb-8 pt-8 "
+        // loadingTemplate && "cursor-wait pointer-events-none"
+      )}
+    >
+      <EditorHeader />
+      <EditorURLDocs />
+      {bodyRoute === RecipeBodyRoute.Query ? (
+        <>
+          {queryParams}
+          {requestBody}
+        </>
+      ) : (
+        <>
+          {requestBody}
+          {queryParams}
+        </>
+      )}
+    </div>
+  );
+}
+
+function EditorURLDocs() {
+  const urlSchema = useRecipeSessionStore((state) => state.editorURLSchemaJSON);
+  const editorUrl = useRecipeSessionStore((state) => state.editorUrl);
+  const matches = editorUrl.match(URL_PARAM_REGEX) || [];
+  const updateEditorURLSchemaJSON = useRecipeSessionStore(
+    (state) => state.updateEditorURLSchemaJSON
+  );
+
+  if (matches.length === 0 || !urlSchema) {
+    return null;
+  }
+
+  return (
+    <div className="py-4">
       <h3 className="text-lg mb-4 font-bold text-black dark:text-white">
         Url Params
       </h3>
@@ -92,30 +124,6 @@ export function RecipeEditDocs() {
       >
         <ObjectDocContainer schema={urlSchema} path="" />
       </DefinitionContext.Provider>
-    </div>
-  ) : null;
-
-  return (
-    <div
-      className={classNames(
-        "sm:absolute inset-0 px-4 overflow-y-auto right-pane-bg pb-8 pt-8 "
-        // loadingTemplate && "cursor-wait pointer-events-none"
-      )}
-    >
-      <EditorHeader />
-      {bodyRoute === RecipeBodyRoute.Query ? (
-        <>
-          {urlParams}
-          {queryParams}
-          {requestBody}
-        </>
-      ) : (
-        <>
-          {urlParams}
-          {requestBody}
-          {queryParams}
-        </>
-      )}
     </div>
   );
 }
