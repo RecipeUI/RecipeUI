@@ -144,6 +144,11 @@ export function BodyModal({ onClose }: { onClose: () => void }) {
     (state) => state.setEditorBodyType
   );
 
+  const editorHeaders = useRecipeSessionStore((state) => state.editorHeaders);
+  const setEditorHeaders = useRecipeSessionStore(
+    (state) => state.setEditorHeaders
+  );
+
   const [newBodyType, setNewBodyType] = useState<RecipeMutationContentType>(
     editorBodyType || RecipeMutationContentType.JSON
   );
@@ -155,6 +160,13 @@ export function BodyModal({ onClose }: { onClose: () => void }) {
         onSubmit={(e) => {
           e.preventDefault();
           setEditorBodyType(newBodyType);
+          const filteredHeaders = editorHeaders.filter(
+            obj => obj["name"].toLowerCase() !== "content-type"
+          )
+          setEditorHeaders([{
+            name: "content-type", 
+            value: newBodyType
+          }, ...filteredHeaders])
           onClose();
         }}
       >
@@ -171,6 +183,9 @@ export function BodyModal({ onClose }: { onClose: () => void }) {
             </option>
             <option value={RecipeMutationContentType.FormData}>
               {RecipeMutationContentType.FormData}
+            </option>
+            <option value={RecipeMutationContentType.FormUrlEncoded}>
+              {RecipeMutationContentType.FormUrlEncoded}
             </option>
           </select>
         </FormFieldWrapper>

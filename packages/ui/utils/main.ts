@@ -165,8 +165,20 @@ export function isSemverLessThan({
 }
 
 export function convertObjectToFormData(
-  obj: Record<string, unknown>
-): FormData {
+  obj: Record<string, unknown>,
+  contentType: string
+): FormData | string {
+  if(contentType.includes("application/x-www-form-urlencoded")){
+    const data = new URLSearchParams();
+    for(const key in obj){
+      const value = obj[key];
+      data.append(
+        key, 
+        typeof value === "object" ? JSON.stringify(value) : String(value)
+      );
+    }
+    return data.toString();
+  }
   const formData = new FormData();
   Object.entries(obj).forEach(([key, value]) => {
     formData.append(

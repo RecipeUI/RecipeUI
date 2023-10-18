@@ -17,12 +17,25 @@ export async function fetchServer({
 
   if (
     (payload.body_type === RecipeMutationContentType.FormData ||
-      payload.headers["content-type"]?.includes("form")) &&
+      payload.headers["content-type"]?.includes("multipart/form")) &&
     payload.body &&
     typeof payload.body === "string"
   ) {
     delete modifiedPayload.headers["content-type"];
-    modifiedPayload.body = convertObjectToFormData(parse(payload.body));
+    modifiedPayload.body = convertObjectToFormData(
+      parse(payload.body), 
+      RecipeMutationContentType.FormData
+    );
+  } else if ( 
+    (payload.body_type === RecipeMutationContentType.FormUrlEncoded ||
+      payload.headers["content-type"].includes("application/x-www-form-urlencoded")) &&
+    payload.body &&
+    typeof payload.body === "string"
+  ) {
+    modifiedPayload.body = convertObjectToFormData(
+      parse(payload.body), 
+      RecipeMutationContentType.FormUrlEncoded
+    );
   }
 
   const { body_type, ...newPayload } = modifiedPayload;

@@ -152,8 +152,10 @@ export function RecipeSearchButton() {
     if (editorBodyType) {
       if (editorBodyType === RecipeMutationContentType.JSON) {
         fetchHeaders["content-type"] = "application/json";
-      } else {
+      } else if (editorBodyType === RecipeMutationContentType.FormData) {
         fetchHeaders["content-type"] = "multipart/form";
+      } else {
+        fetchHeaders["content-type"] = "application/x-www-form-urlencoded"
       }
     }
 
@@ -563,10 +565,12 @@ export function RecipeSearchButton() {
             simplePayload.body
           ) {
             simplePayload.body = convertObjectToFormData(
-              fetchRequestBody as Record<string, unknown>
+              fetchRequestBody as Record<string, unknown>,
+              payload.headers["content-type"]
             );
 
-            delete simplePayload.headers["content-type"];
+            if(payload.headers["content-type"].includes("multipart/form"))
+              delete simplePayload.headers["content-type"];
           }
 
           fetch(url.toString(), simplePayload)

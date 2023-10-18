@@ -30,10 +30,13 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
     };
 
     let mut is_form_data = false;
+    let mut is_form_urlencoded = false;
 
     for (key, value) in &payload.headers {
         if key.to_lowercase() == "content-type" && value.contains("form") {
-            is_form_data = true;
+            if value.contains("multipart/form-data") {is_form_data = true;}
+            if value.contains("application/x-www-form-urlencoded") {is_form_urlencoded = true;}
+            
         } else {
             request_builder = request_builder.header(key, value);
         }
@@ -51,9 +54,10 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
             if let Ok(json_body) = serde_json::Value::from_str(&unwrapped_body) {
                 if let Some(body_map) = json_body.as_object() {
                     for (key, value) in body_map {
-                        // Assuming all values are simple strings for simplicity.
                         if let Some(value_str) = value.as_str() {
                             form = form.text(key.to_string(), value_str.to_string());
+                        } else {
+                            form = form.text(key.to_string(), value.to_string());
                         }
                     }
                 }
@@ -63,6 +67,28 @@ async fn fetch_wrapper(url: String, payload: Payload) -> Result<FetchServerOutpu
 
             println!("Form: {:?}", form);
             request_builder = request_builder.multipart(form);
+        } else if is_form_urlencoded {
+
+            request_builder = request_builder.header("content-type", "application/x-www-form-urlencoded");
+            
+            let mut form = HashMap::new();
+
+            if let Ok(json_body) = serde_json::Value::from_str(&unwrapped_body) {
+                if let Some(body_map) = json_body.as_object() {
+                    for (key, value) in body_map {
+                        if let Some(value_str) = value.as_str() {
+                            form.insert(key.to_string(), value_str.to_string());
+                        } else {
+                            form.insert(key.to_string(), value.to_string());
+                        }
+                    }
+                }
+            } else {
+                // Handle JSON parsing error if necessary.
+            }
+
+            request_builder = request_builder.form(&form);
+
         } else {
             request_builder = request_builder.body(unwrapped_body);
         }
