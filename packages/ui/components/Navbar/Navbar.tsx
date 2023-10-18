@@ -320,11 +320,14 @@ function TauriUpdateExtension() {
     },
   });
 
+  const githubVersion = latestVersion.data;
+
   if (
     !version ||
     latestVersion.isLoading ||
-    (latestVersion?.data &&
-      isSemverLessThan({ oldVer: latestVersion.data, newVer: version }))
+    (githubVersion &&
+      isSemverLessThan({ oldVer: githubVersion, newVer: version })) ||
+    githubVersion === version
   ) {
     return null;
   }
